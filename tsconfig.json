@@ -1,0 +1,55 @@
+{
+  "compilerOptions": {
+    // declarations
+    "declaration": true,
+    "declarationDir": "/",
+    "declarationMap": true,
+
+    // compilation result
+    "module": "ESNext",
+    "outDir": "lib",
+    "rootDir": "./",
+    "preserveConstEnums": false,
+    "sourceMap": true,
+    "downlevelIteration": true,
+    "isolatedModules": true,
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "target": "ESNext",
+
+    // development options
+    "extendedDiagnostics": true,
+    "listFiles": true,
+    "pretty": true,
+    "traceResolution": true,
+
+    // compilation process
+    "incremental": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "removeComments": true,
+
+    // code quality
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "forceConsistentCasingInFileNames": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "strictBindCallApply": true,
+//    "noUncheckedIndexedAccess": true todo - to turn on at ts v4.1
+    "strict": true,
+    "strictFunctionTypes": true,
+    "alwaysStrict": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowUnreachableCode": false
+  },
+  "include": [
+    "Illuminate/index.ts"
+  ],
+  "exclude": [],
+  "$schema": "https://json.schemastore.org/tsconfig"
+}

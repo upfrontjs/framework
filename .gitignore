@@ -1,0 +1,19 @@
+# compiled output
+lib
+
+# coverage data
+/tests/coverage
+
+# IDEs and editors
+.idea
+.vscode
+
+# logs
+*.log
+tsconfig.tsbuildinfo
+
+# dependencies
+node_modules
+
+# system Files
+.DS_Store

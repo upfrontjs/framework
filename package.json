@@ -1,0 +1,43 @@
+{
+  "name": "velaral",
+  "version": "0.1.0",
+  "description": "Frontend data handling framework inspired by laravel.",
+  "main": "lib/index",
+  "types": "lib/index",
+  "scripts": {
+    "test": "jest",
+    "test-with-coverage": "jest --coverage",
+    "lint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
+    "compile": "tsc --project tsconfig.json"
+  },
+  "author": "Nandor Kraszlan",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nandi95/Velaral"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/preset-typescript": "^7.12.1",
+    "@qiwi/mixin": "^1.2.5",
+    "@types/jest": "^26.0.15",
+    "@types/lodash": "^4.14.165",
+    "@types/pluralize": "0.0.29",
+    "@typescript-eslint/eslint-plugin": "^4.8.1",
+    "@typescript-eslint/parser": "^4.8.1",
+    "babel-eslint": "^10.1.0",
+    "babel-jest": "^26.6.3",
+    "eslint": "^7.13.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^24.1.3",
+    "jest": "^26.6.3",
+    "jest-fetch-mock": "^3.0.3",
+    "lodash": "^4.17.20",
+    "pluralize": "^8.0.0",
+    "ts-jest": "^26.4.4",
+    "ts-loader": "^8.0.11",
+    "typescript": "^4.0.5",
+    "webpack": "^5.6.0"
+  }
+}

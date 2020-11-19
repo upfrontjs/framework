@@ -1,4 +1,4 @@
-import GuardsAttributes from '../../../Illuminate/Eloquent/Concerns/GuardsAttributes';
+import GuardsAttributes from '../../../src/Eloquent/Concerns/GuardsAttributes';
 
 class TestClass extends GuardsAttributes {
     protected initialise(): { guarded?: string[]; fillable?: string[] } {

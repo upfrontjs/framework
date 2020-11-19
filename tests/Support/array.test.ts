@@ -1,6 +1,6 @@
-import Collection from '../../Illuminate/Support/Collection';
-import Paginator from '../../Illuminate/Pagination/Paginator';
-import '../../Illuminate/Support/array';
+import Collection from '../../src/Support/Collection';
+import Paginator from '../../src/Pagination/Paginator';
+import '../../src/Support/array';
 
 describe('array helpers', () => {
     it('can return a collection by calling collect()', () => {

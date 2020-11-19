@@ -1,5 +1,5 @@
-import CastsAttributes from '../../../Illuminate/Eloquent/Concerns/CastsAttributes';
-import Collection from '../../../Illuminate/Support/Collection';
+import CastsAttributes from '../../../src/Eloquent/Concerns/CastsAttributes';
+import Collection from '../../../src/Support/Collection';
 
 class CastingClass extends CastsAttributes {
     public getCasts() {

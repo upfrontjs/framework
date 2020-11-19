@@ -1,5 +1,5 @@
-import CallsApi from '../../../Illuminate/Eloquent/Concerns/CallsApi';
-import LogicException from '../../../Illuminate/Exceptions/LogicException';
+import CallsApi from '../../../src/Eloquent/Concerns/CallsApi';
+import LogicException from '../../../src/Exceptions/LogicException';
 // import type { MockResponseInit } from 'jest-fetch-mock';
 import fetchMock from 'jest-fetch-mock';
 import data from '../../mock/Models/data';

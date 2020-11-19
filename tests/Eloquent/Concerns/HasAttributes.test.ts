@@ -1,4 +1,4 @@
-import Model from '../../../Illuminate/Eloquent/Model';
+import Model from '../../../src/Eloquent/Model';
 
 class AttributableClass extends Model {
     protected initialise(): { guarded?: string[]; fillable?: string[] } {

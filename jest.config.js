@@ -7,8 +7,8 @@ module.exports = {
         "^.+\\.[j]sx?$": "babel-jest",
     },
     collectCoverageFrom: [
-        '<rootDir>/Illuminate/**/*.ts',
-        '!<rootDir>/Illuminate/index.ts'
+        '<rootDir>/src/**/*.ts',
+        '!<rootDir>/src/index.ts'
     ],
     coverageDirectory: "<rootDir>/tests/coverage",
     coverageProvider: "babel",

@@ -1,4 +1,4 @@
-import Paginator from '../../Illuminate/Pagination/Paginator';
+import Paginator from '../../src/Pagination/Paginator';
 
 declare global {
     interface Array<T> {

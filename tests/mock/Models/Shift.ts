@@ -1,5 +1,5 @@
-import Model from '../../../Illuminate/Eloquent/Model';
+import Model from '../../../src/Eloquent/Model';
 
 export default class Shift extends Model {
-    
+
 }

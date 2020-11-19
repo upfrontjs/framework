@@ -1,6 +1,6 @@
-import Collection from '../../Illuminate/Support/Collection';
-import Paginator from '../../Illuminate/Pagination/Paginator';
-import '../../Illuminate/Support/function';
+import Collection from '../../src/Support/Collection';
+import Paginator from '../../src/Pagination/Paginator';
+import '../../src/Support/function';
 
 describe('function helpers', () => {
     it('can create a collection by calling the collect() helper method', () => {

@@ -1,4 +1,4 @@
-import Collection from '../../Illuminate/Support/Collection';
+import Collection from '../../src/Support/Collection';
 
 let collection: Collection<any>;
 

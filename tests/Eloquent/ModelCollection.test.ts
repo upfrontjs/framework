@@ -1,8 +1,8 @@
-import Collection from '../../Illuminate/Support/Collection';
-import ModelCollection from '../../Illuminate/Eloquent/ModelCollection';
+import Collection from '../../src/Support/Collection';
+import ModelCollection from '../../src/Eloquent/ModelCollection';
 import data from '../mock/Models/data';
 import User from '../mock/Models/User';
-import Model from '../../Illuminate/Eloquent/Model';
+import Model from '../../src/Eloquent/Model';
 
 let collection: ModelCollection<Model>;
 const incompatibleElementsError = ModelCollection.name + ' can only handle Model values.';

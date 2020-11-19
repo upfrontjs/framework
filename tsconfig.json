@@ -48,7 +48,7 @@
     "allowUnreachableCode": false
   },
   "include": [
-    "Illuminate/index.ts"
+    "src/index.ts"
   ],
   "exclude": [],
   "$schema": "https://json.schemastore.org/tsconfig"

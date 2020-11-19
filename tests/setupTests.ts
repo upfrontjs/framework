@@ -1,8 +1,8 @@
-import '../Illuminate/Support/string';
-import '../Illuminate/Support/array';
-import '../Illuminate/Support/function';
+import '../src/Support/string';
+import '../src/Support/array';
+import '../src/Support/function';
 import fetchMock from 'jest-fetch-mock';
-import Config from '../Illuminate/Support/Config';
+import Config from '../src/Support/Config';
 
 new Config().set('baseEndPoint', 'https://test-api-endpoint.com/');
 

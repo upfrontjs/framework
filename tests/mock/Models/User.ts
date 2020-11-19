@@ -1,4 +1,4 @@
-import Model from '../../../Illuminate/Eloquent/Model';
+import Model from '../../../src/Eloquent/Model';
 import Team from './Team';
 
 export default class User extends Model {

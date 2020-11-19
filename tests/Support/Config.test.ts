@@ -1,5 +1,5 @@
-import Config from '../../Illuminate/Support/Config';
-import API from '../../Illuminate/Services/API';
+import Config from '../../src/Support/Config';
+import API from '../../src/Services/API';
 
 let config = new Config();
 

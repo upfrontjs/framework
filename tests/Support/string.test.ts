@@ -1,4 +1,4 @@
-import '../../Illuminate/Support/string';
+import '../../src/Support/string';
 
 describe('string helpers', () => {
     describe('ucFirst()', () => {

@@ -199,7 +199,7 @@ export default class HasRelations extends CallsApi {
      *
      * @param {Model} related
      *
-     * @return {BelongsToMany}
+     * @return {Model}
      */
     // public belongsToMany(related: new() => Model): BelongsToMany {
     //     return new BelongsToMany(this as unknown as Model, related);
@@ -210,7 +210,7 @@ export default class HasRelations extends CallsApi {
      *
      * @param {Model} related
      *
-     * @return {HasOne}
+     * @return {Model}
      */
     // public hasOne(related: new() => Model): HasOne {
     //     return new HasOne(this as unknown as Model, related);
@@ -221,7 +221,7 @@ export default class HasRelations extends CallsApi {
      *
      * @param {Model} related
      *
-     * @return {HasMany}
+     * @return {Model}
      */
     // public hasMany(related: new() => Model): HasMany {
     //     return new HasMany(this as unknown as Model, related);
@@ -233,7 +233,7 @@ export default class HasRelations extends CallsApi {
      * @param {Model} related
      * @param {string?} morphName
      *
-     * @return {HasMany}
+     * @return {Model}
      */
     // public morphs(related: new() => Model, morphName?: string): Polymorphic {
     //     return new Polymorphic(this as unknown as Model, related, morphName);

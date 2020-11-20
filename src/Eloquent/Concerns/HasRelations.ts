@@ -13,18 +13,38 @@ export default class HasRelations extends CallsApi {
     protected relations: Record<string, (Model | ModelCollection<Model>)> = {};
 
     /**
-     * Load a relationship from remote.
+     * Load a relationships from remote.
      *
-     * @param relations
+     * @param {string|string[]} relations
+     * @param {boolean} forceReload - Whether the already loaded relations should also be reloaded.
+     *
+     * @return {Promise<this>}
      */
-    public async load(...relations: string[]): Promise<this> {
-        relations = Array.from(relations).flat();
-
-        for (const relation of relations) {
-            this.setAttribute(relation, await this.getAttribute(relation));
+    public async load(relations: string|string[], forceReload = false): Promise<this> {
+        if (!Array.isArray(relations)) {
+            relations = [relations];
         }
 
-        return Promise.resolve(this); // todo - how would the user catch?
+        const promises: any[] = [];
+
+        for (const relation of relations) {
+            if (!forceReload && this.relationLoaded(relation)) {
+                continue;
+            }
+
+            if (!this.relationDefined(relation)) {
+                throw new InvalidOffsetException('\'' + relation + '\' relationship has not been defined');
+            }
+
+            promises.push(
+                ((this[relation] as CallableFunction)() as Model).get()
+                    .then((data: Model|ModelCollection<Model>) => this.addRelation(relation, data))
+            );
+        }
+
+        await Promise.all(promises);
+
+        return Promise.resolve(this);
     }
 
     /**
@@ -33,11 +53,7 @@ export default class HasRelations extends CallsApi {
      * @param {string} key
      */
     public relationLoaded(key: string): boolean {
-        try {
-            return !!this.getRelation(key);
-        } catch (exception) {
-            return false;
-        }
+        return this.loadedRelations().includes(key);
     }
 
     /**
@@ -58,7 +74,7 @@ export default class HasRelations extends CallsApi {
      */
     public getRelation(name: string): Model | ModelCollection<Model> {
         if (this.relationDefined(name)) {
-            if (!(name in this.relations)) {
+            if (!this.relations[name]) {
                 throw new LogicException(
                     'Trying to access the \'' + name + '\' relationship before it has been loaded'
                 );
@@ -244,7 +260,7 @@ export default class HasRelations extends CallsApi {
      *
      * @param {string} name
      */
-    public getMorphs(name: string): Record<'id'|'type', string> {
+    protected getMorphs(name: string): Record<'id'|'type', string> {
         return { id: name + '_id', type: name + '_type' };
     }
 }

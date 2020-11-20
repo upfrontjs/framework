@@ -5,7 +5,7 @@ import API from '../../Services/API';
 import ApiResponseHandler from '../../Services/ApiResponseHandler';
 import type HandlesApiResponse from '../../Contracts/HandlesApiResponse';
 import type Model from '../Model';
-import type ModelCollection from '../ModelCollection';
+import ModelCollection from '../ModelCollection';
 import BuildsQuery from './BuildsQuery';
 
 export default class CallsApi extends BuildsQuery {
@@ -63,7 +63,7 @@ export default class CallsApi extends BuildsQuery {
     protected async call(
         method: 'get'|'post'|'delete'|'patch'|'put',
         data?: Record<string, unknown>
-    ): Promise<Record<string, unknown>> {
+    ): Promise<Record<string, unknown>|Record<string, unknown>[]> {
         if (!this.getEndpoint().length) {
             throw new LogicException(
                 'Endpoint has not been defined for this \'' + method + '\' method on ' + this.constructor.name
@@ -104,22 +104,22 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Promise<undefined | Model | ModelCollection<Model>>}
      */
-    public async get(data?: Record<string, unknown>): Promise<undefined | Model | ModelCollection<Model>> {
+    public async get(data?: Record<string, unknown>): Promise<Model | ModelCollection<Model>> {
         const responseData = await this.call('get', Object.assign({}, data, this.compileQueryParameters()));
 
         this.syncOriginal();
         this.resetEndpoint();
         this.resetQueryParameters();
 
-        return Promise.resolve(this.newModelInstanceFromResponse(responseData));
+        return Promise.resolve(this.newInstanceFromResponse(responseData));
     }
 
     /**
-     * The get method made available as static method.
+     * The get method made available as a static method.
      *
      * @param {object?} data
      *
-     * @see get
+     * @see {CallsApi.prototype.get}
      */
     static async get(data?: Record<string, unknown>): Promise<undefined | Model | ModelCollection<Model>> {
         return new this().get(data);
@@ -200,7 +200,7 @@ export default class CallsApi extends BuildsQuery {
     }
 
     /**
-     * Parse the data into a model.
+     * Parse the data into a model or model collection.
      *
      * @param {object} data
      *
@@ -208,8 +208,18 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Model}
      */
-    protected newModelInstanceFromResponse(data: Record<string, unknown>): Model {
-        return new (this as unknown as new (attributes?: Record<string, any>) => Model)(data);
+    protected newInstanceFromResponse(
+        data: Record<string, unknown>|Record<string, unknown>[]
+    ): Model|ModelCollection<Model> {
+        if (Array.isArray(data)) {
+            const collection = new ModelCollection();
+
+            data.forEach(modelData => collection.push(new (<typeof Model> this.constructor)(modelData)));
+
+            return collection;
+        }
+
+        return new (<typeof Model> this.constructor)(data);
     }
 
     /**

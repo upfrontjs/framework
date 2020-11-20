@@ -1,10 +1,17 @@
-import Model from '../../../src/Eloquent/Model';
+import HasAttributes from "../../../src/Eloquent/Concerns/HasAttributes";
 
-class AttributableClass extends Model {
+class AttributableClass extends HasAttributes {
     protected initialise(): { guarded?: string[]; fillable?: string[] } {
         return {
             fillable: ['*']
         };
+    }
+    public relationLoaded() {
+        return false;
+    }
+
+    public relationDefined() {
+        return false;
     }
 }
 

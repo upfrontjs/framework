@@ -40,7 +40,7 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "strictBindCallApply": true,
-//    "noUncheckedIndexedAccess": true, todo - user type guard doesn't seem to affect the eval of this rule as of yet
+//    "noUncheckedIndexedAccess": true, // todo - user type guard doesn't seem to affect the eval of this rule as of yet
     "strict": true,
     "strictFunctionTypes": true,
     "alwaysStrict": true,

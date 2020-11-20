@@ -1,3 +1,4 @@
+import ModelCollection from '../ModelCollection';
 import LogicException from '../../Exceptions/LogicException';
 import type ApiCaller from '../../Contracts/ApiCaller';
 import Config from '../../Support/Config';
@@ -5,7 +6,6 @@ import API from '../../Services/API';
 import ApiResponseHandler from '../../Services/ApiResponseHandler';
 import type HandlesApiResponse from '../../Contracts/HandlesApiResponse';
 import type Model from '../Model';
-import ModelCollection from '../ModelCollection';
 import BuildsQuery from './BuildsQuery';
 
 export default class CallsApi extends BuildsQuery {

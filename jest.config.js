@@ -38,7 +38,7 @@ module.exports = {
         "Math"
     ]
 };
-// todo - figure out dependencies (lodash, pluralize) - likely to delivery with the package
+// todo - figure out dependencies (lodash, pluralize, uuid) - likely to delivery with the package
 // todo - what about file uploads? (request customisation can set it to form/multipart-data
 // https://github.com/marchaos/jest-mock-extended
 // https://github.com/hustcc/jest-date-mock

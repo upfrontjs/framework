@@ -3,6 +3,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 import pluralize from 'pluralize';
+import * as uuid from 'uuid';
+import snakeCase from 'lodash/snakeCase';
 
 export {}; // this file needs to be a module
 
@@ -15,6 +17,7 @@ declare global {
         start(token: string): string;
         camel(): string;
         snake(): string;
+        kebab(): string;
         plural(): string;
         singular(): string;
         before(token: string): string;
@@ -24,7 +27,12 @@ declare global {
         pascal(): string;
         limit(count: number, limiter?: string): string;
         words(count: number, limiter?: string): string;
-        is(compareValue: string | RegExp): boolean;
+        is(compareValue: string | RegExp, ignoreCase?: boolean): boolean;
+        includesAll(tokens: string[]): boolean;
+    }
+
+    interface StringConstructor {
+        uuid(): string;
     }
 }
 
@@ -39,9 +47,15 @@ if (!('ucFirst' in String.prototype)) {
 if (!('isUuid' in String.prototype)) {
     Object.defineProperty(String.prototype, 'isUuid', {
         value: function (): boolean {
-            const regex = RegExp(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/, 'i');
+            return uuid.validate(this);
+        }
+    });
+}
 
-            return !!regex.exec(this);
+if (!('uuid' in String)) {
+    Object.defineProperty(String, 'uuid', {
+        value: function (): string {
+            return uuid.v4();
         }
     });
 }
@@ -65,7 +79,7 @@ if (!('start' in String.prototype)) {
 if (!('before' in String.prototype)) {
     Object.defineProperty(String.prototype, 'before', {
         value: function (token: string): string {
-            return this.substring(0, this.indexOf(token));
+            return this.indexOf(token) !== -1 ? this.substring(0, this.indexOf(token)) : this;
         }
     });
 }
@@ -73,7 +87,7 @@ if (!('before' in String.prototype)) {
 if (!('beforeLast' in String.prototype)) {
     Object.defineProperty(String.prototype, 'beforeLast', {
         value: function (token: string): string {
-            return this.substring(0, this.lastIndexOf(token));
+            return this.lastIndexOf(token) !== -1 ? this.substring(0, this.lastIndexOf(token)) : this;
         }
     });
 }
@@ -81,7 +95,9 @@ if (!('beforeLast' in String.prototype)) {
 if (!('after' in String.prototype)) {
     Object.defineProperty(String.prototype, 'after', {
         value: function (token: string): string {
-            return this.substring(this.indexOf(token), this.length);
+            return this.indexOf(token) !== -1
+                ? this.substring(this.indexOf(token) + token.length, this.length)
+                : this;
         }
     });
 }
@@ -90,7 +106,9 @@ if (!('after' in String.prototype)) {
 if (!('afterLast' in String.prototype)) {
     Object.defineProperty(String.prototype, 'afterLast', {
         value: function (token: string): string {
-            return this.substring(this.lastIndexOf(token), this.length);
+            return this.lastIndexOf(token) !== -1
+                ? this.substring(this.lastIndexOf(token) + token.length, this.length)
+                : this;
         }
     });
 }
@@ -98,7 +116,7 @@ if (!('afterLast' in String.prototype)) {
 if (!('pascal' in String.prototype)) {
     Object.defineProperty(String.prototype, 'pascal', {
         value: function (): string {
-            return this.ucFirst().split(/[_ -]/g).reduce((previous: string, next: string) => previous + next.ucFirst());
+            return this.camel().ucFirst();
         }
     });
 }
@@ -106,19 +124,24 @@ if (!('pascal' in String.prototype)) {
 if (!('title' in String.prototype)) {
     Object.defineProperty(String.prototype, 'title', {
         value: function (): string {
-            return this.ucFirst().split(/[_ -]/g)
+            return this.snake().ucFirst().split('_')
                 .reduce((previous: string, next: string) => previous + ' ' + next.ucFirst());
         }
     });
 }
-// todo - update to lodash methods
+
 if (!('snake' in String.prototype)) {
     Object.defineProperty(String.prototype, 'snake', {
         value: function (): string {
-            const string = this.replace(/[ -]/g, '_');
-            const matches = string.match(/[A-Z][a-z]+/g);
+            return snakeCase(this);
+        }
+    });
+}
 
-            return matches ? matches.map((string: string) => string.toLowerCase()).join('_') : string;
+if (!('kebab' in String.prototype)) {
+    Object.defineProperty(String.prototype, 'kebab', {
+        value: function (): string {
+            return this.snake().replace(/_/g, '-');
         }
     });
 }
@@ -126,10 +149,9 @@ if (!('snake' in String.prototype)) {
 if (!('camel' in String.prototype)) {
     Object.defineProperty(String.prototype, 'camel', {
         value: function (): string {
-            return this.replace(/(?:^\w|[A-Z]|\b\w)/g, (word: string, index: number) => {
-                return index === 0 ? word.toLowerCase() : word.toUpperCase();
-            })
-                .replace(/\s+/g, '');
+            const titleCase = this.title().replace(/ /g, '');
+
+            return titleCase.charAt(0).toLowerCase() + titleCase.slice(1);
         }
     });
 }
@@ -168,12 +190,25 @@ if (!('singular' in String.prototype)) {
 
 if (!('is' in String.prototype)) {
     Object.defineProperty(String.prototype, 'is', {
-        value: function (compareValue: string | RegExp): boolean {
-            return !!this.matchAll(compareValue).length;
+        value: function (compareValue: string | RegExp, ignoreCase = false): boolean {
+            if (typeof compareValue === 'string') {
+                compareValue = new RegExp(
+                    compareValue.replace(/\*/g, '.*'),
+                    ignoreCase ? 'i' : ''
+                );
+            }
+
+            const match = this.match(compareValue);
+
+            return !!match && !!match.length && match[0] === this;
         }
     });
 }
 
-/* Yet to implement: */
-//includesAll
-//kebab
+if (!('includesAll' in String.prototype)) {
+    Object.defineProperty(String.prototype, 'includesAll', {
+        value: function (tokens: string[]): boolean {
+            return tokens.every(token => this.includes(token));
+        }
+    });
+}

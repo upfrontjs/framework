@@ -161,8 +161,10 @@ export default class HasRelations extends CallsApi {
      *
      * @return {string}
      */
-    public getForeignKey(): string {
-        return (this as unknown as Model).getName().snake() + '_' + (this as unknown as Model).getKeyName();
+    public getForeignKeyName(): string {
+        return (this as unknown as Model).getName().snake().toLowerCase()
+            + '_'
+            + (this as unknown as Model).getKeyName();
     }
 
     /**
@@ -190,17 +192,17 @@ export default class HasRelations extends CallsApi {
     }
 
     /**
-     * Instantiate a new belongs to relationship.
+     * Set the endpoint on the correct model for querying.
      *
      * @param {Model} related
-     * @param {string} foreignKey
+     * @param {string=} foreignKey
      *
      * @return {Model}
      */
-    public belongsTo(related: new() => Model, foreignKey?: string): Model {
+    public belongsTo<T extends Model>(related: new() => T, foreignKey?: string): T {
         const relatedModel = new related();
+        foreignKey = foreignKey ?? relatedModel.getForeignKeyName();
         const foreignKeyValue = this.getAttribute(this.foreignKey);
-        foreignKey = foreignKey ?? relatedModel.getForeignKey();
 
         if (relatedModel.relationDefined((this as unknown as Model).getName().toLowerCase())) {
             relatedModel.addRelation((this as unknown as Model).getName().toLowerCase(), this);
@@ -216,56 +218,97 @@ export default class HasRelations extends CallsApi {
     }
 
     /**
-     * Instantiate a new belongs to relationship.
+     * Set the endpoint on the correct model for querying.
      *
      * @param {Model} related
+     * @param {string=} foreignKey
      *
      * @return {Model}
      */
-    // public belongsToMany(related: new() => Model): BelongsToMany {
-    //     return new BelongsToMany(this as unknown as Model, related);
-    // }
+    public belongsToMany<T extends Model>(related: new() => T, foreignKey?: string): T {
+        const relatedModel = new related();
+        foreignKey = foreignKey ?? relatedModel.getForeignKeyName();
+        const foreignKeyValue = this.getAttribute(this.foreignKey);
+
+        if (relatedModel.relationDefined((this as unknown as Model).getName().toLowerCase().plural())) {
+            relatedModel.addRelation((this as unknown as Model).getName().toLowerCase().plural(), this);
+        }
+
+        if (!foreignKeyValue) {
+            throw new LogicException(
+                (this as unknown as Model).getName() + ' doesn\'t have ' + foreignKey + ' defined.'
+            );
+        }
+
+        return relatedModel.whereKey(String(foreignKeyValue));
+    }
 
     /**
-     * Instantiate a new has one relationship.
+     * Set the endpoint on the correct model for querying.
      *
      * @param {Model} related
+     * @param {string=} foreignKey
      *
      * @return {Model}
      */
-    // public hasOne(related: new() => Model): HasOne {
-    //     return new HasOne(this as unknown as Model, related);
-    // }
+    public hasOne<T extends Model>(related: new() => T, foreignKey?: string): T {
+        const relatedModel = new related();
+
+        if (relatedModel.relationDefined((this as unknown as Model).getName().toLowerCase())) {
+            relatedModel.addRelation((this as unknown as Model).getName().toLowerCase(), this);
+        }
+
+        return relatedModel.where(foreignKey ?? this.getForeignKeyName(), '=', (this as unknown as Model).getKey());
+    }
 
     /**
-     * Instantiate a new has many relationship.
+     * Set the endpoint on the correct model for querying.
      *
      * @param {Model} related
+     * @param {string=} foreignKey
      *
      * @return {Model}
      */
-    // public hasMany(related: new() => Model): HasMany {
-    //     return new HasMany(this as unknown as Model, related);
-    // }
+    public hasMany<T extends Model>(related: new() => T, foreignKey?: string): T {
+        const relatedModel = new related();
+
+        if (relatedModel.relationDefined((this as unknown as Model).getName().toLowerCase().plural())) {
+            relatedModel.addRelation((this as unknown as Model).getName().toLowerCase().plural(), this);
+        }
+
+        return relatedModel.where(foreignKey ?? this.getForeignKeyName(), '=', (this as unknown as Model).getKey());
+    }
 
     /**
-     * Instantiate a new polymorphic relationship.
+     * Set the endpoint on the correct model for querying.
      *
      * @param {Model} related
-     * @param {string?} morphName
+     * @param {string=} morphName
      *
      * @return {Model}
      */
-    // public morphs(related: new() => Model, morphName?: string): Polymorphic {
-    //     return new Polymorphic(this as unknown as Model, related, morphName);
-    // }
+    public morphs<T extends Model>(related: new() => T, morphName?: string): T {
+        const relatedModel = new related();
+
+        if (relatedModel.relationDefined((this as unknown as Model).getName().toLowerCase().plural())) {
+            relatedModel.addRelation((this as unknown as Model).getName().toLowerCase().plural(), this);
+        }
+
+        const morphs = relatedModel.getMorphs();
+
+        return relatedModel
+            .where(morphs.type, '=', morphName ?? (this as unknown as Model).getName())
+            .where(morphs.id, '=', (this as unknown as Model).getKey());
+    }
 
     /**
      * Get the polymorphic column names.
      *
-     * @param {string} name
+     * @param {string=} name
      */
-    protected getMorphs(name: string): Record<'id'|'type', string> {
+    protected getMorphs(name?: string): Record<'id'|'type', string> {
+        name = name ?? (this as unknown as Model).getName().toLowerCase() + 'able';
+
         return { id: name + '_id', type: name + '_type' };
     }
 }

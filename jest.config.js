@@ -40,6 +40,8 @@ module.exports = {
 };
 // todo - figure out dependencies (lodash, pluralize, uuid) - likely to delivery with the package
 // todo - what about file uploads? (request customisation can set it to form/multipart-data
+// todo - update private modifiers to # where it makes sense
+// todo - review circular dependency fix (require() within the function)
 // https://github.com/marchaos/jest-mock-extended
 // https://github.com/hustcc/jest-date-mock
 

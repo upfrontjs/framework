@@ -1,4 +1,4 @@
-import ModelCollection from '../ModelCollection';
+import type ModelCollection from '../ModelCollection';
 import LogicException from '../../Exceptions/LogicException';
 import type ApiCaller from '../../Contracts/ApiCaller';
 import Config from '../../Support/Config';
@@ -212,7 +212,9 @@ export default class CallsApi extends BuildsQuery {
         data: Record<string, unknown>|Record<string, unknown>[]
     ): Model|ModelCollection<Model> {
         if (Array.isArray(data)) {
-            const collection = new ModelCollection();
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const modelCollectionConstructor: new() => ModelCollection<Model> = require('../ModelCollection');
+            const collection = new modelCollectionConstructor();
 
             data.forEach(modelData => collection.push(new (<typeof Model> this.constructor)(modelData)));
 

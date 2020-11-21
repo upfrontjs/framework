@@ -61,10 +61,11 @@ export default class ModelCollection<T> extends Collection<any> {
 
         const args = Array.isArray(values) ? values : [values];
 
-        return new Collection(args
-            .flat()
-            .filter(arg => typeof arg === 'string' || typeof arg === 'number' || arg instanceof Model)
-            .map(arg => String(arg instanceof Model ? arg.getKey() : arg))
+        return new Collection(
+            args
+                .flat()
+                .filter(arg => typeof arg === 'string' || typeof arg === 'number' || arg instanceof Model)
+                .map(arg => String(arg instanceof Model ? arg.getKey() : arg))
         );
     }
 

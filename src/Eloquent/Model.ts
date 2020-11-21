@@ -113,17 +113,6 @@ export default class Model extends SoftDeletes {
         return this.constructor.name;
     }
 
-    // /**
-    //  * Create a model collection from the given models.
-    //  *
-    //  * @param {Model[]} models
-    //  *
-    //  * @return
-    //  */
-    // static collect(models: Model[]): ModelCollection<Model> {
-    //     return new ModelCollection(models);
-    // }
-
     // static async all(): Promise<ModelCollection<Model<Record<string, unknown>>>> {
     //     await new this().get();
     // }

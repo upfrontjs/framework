@@ -1,4 +1,4 @@
-import ModelCollection from '../ModelCollection';
+import type ModelCollection from '../ModelCollection';
 import type Model from '../Model';
 import LogicException from '../../Exceptions/LogicException';
 import CallsApi from './CallsApi';
@@ -126,8 +126,12 @@ export default class HasRelations extends CallsApi {
         if (!this.relationDefined(name)) {
             throw new LogicException('Attempted to add an undefined relation: \'' + name + '\'');
         }
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const modelCollectionConstructor: new() => ModelCollection<Model> = require('../ModelCollection');
 
-        if (value instanceof HasRelations || ModelCollection.isModelCollection(value)) {
+        if (value instanceof HasRelations
+            || (<typeof ModelCollection> modelCollectionConstructor).isModelCollection(value)
+        ) {
             this.relations[name] = value;
 
             return this;
@@ -138,7 +142,8 @@ export default class HasRelations extends CallsApi {
 
         // set up the relations by calling the constructor of the related models
         if (Array.isArray(value)) {
-            const collection = new ModelCollection();
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const collection = new modelCollectionConstructor();
 
             value.forEach(modelData => collection.push(new (<typeof Model> relatedModel.constructor)(modelData)));
             relation = collection;

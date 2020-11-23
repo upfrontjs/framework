@@ -59,4 +59,16 @@ describe('config', () => {
             expect(config.has('API')).toBe(false);
         });
     });
+
+    describe('reset()', () => {
+        it('can empty the configuration', function () {
+            config.set('API', new API());
+
+            expect(config.has('API')).toBe(true);
+
+            config.reset();
+
+            expect(config.has('API')).toBe(false);
+        });
+    });
 });

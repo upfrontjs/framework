@@ -1,4 +1,4 @@
-import HasAttributes from "../../../src/Eloquent/Concerns/HasAttributes";
+import HasAttributes from '../../../src/Eloquent/Concerns/HasAttributes';
 
 class AttributableClass extends HasAttributes {
     protected initialise(): { guarded?: string[]; fillable?: string[] } {

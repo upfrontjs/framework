@@ -24,25 +24,22 @@ export default class CallsApi extends BuildsQuery {
     protected mutatedEndpoint = '';
 
     /**
-     * The class responsible for making api calls.
-     *
-     * @protected
-     */
-    protected static API: ApiCaller | undefined;
-
-    /**
-     * The provided response handler used to parse out the response.
-     *
-     * @protected
-     */
-    protected static ApiResponseHandler: HandlesApiResponse | undefined;
-
-    /**
      * Boolean flag indicating whether there is an ongoing request or not.
      *
      * @type {boolean}
      */
-    public loading = false;
+    public get loading(): boolean {
+        return this.requestCount > 0;
+    }
+
+    /**
+     * Indication of the number of request currently ongoing on this class.
+     *
+     * @private
+     *
+     * @type {number}
+     */
+    private requestCount = 0;
 
     /**
      * Reset the endpoint.
@@ -57,44 +54,37 @@ export default class CallsApi extends BuildsQuery {
      *
      * @param {'get'|'post'|'delete'|'patch'|'put'} method
      * @param {Record<string, any>?} data
+     * @param {Record<string, string|string[]>} customHeaders
      *
      * @protected
+     *
+     * @return {Promise<object>}
      */
     protected async call(
         method: 'get'|'post'|'delete'|'patch'|'put',
-        data?: Record<string, unknown>
-    ): Promise<Record<string, unknown>|Record<string, unknown>[]> {
+        data?: Record<string, unknown>,
+        customHeaders?: Record<string, string|string[]>
+    ): Promise<any> {
         if (!this.getEndpoint().length) {
             throw new LogicException(
-                'Endpoint has not been defined for this \'' + method + '\' method on ' + this.constructor.name
+                'Endpoint has not been defined when calling \'' + method + '\' method on ' + this.constructor.name
             );
         }
 
-        this.loading = true;
+        this.requestCount++;
         const config = new Config();
+        const ApiCaller = config.get('API', new API) as ApiCaller;
+        const HandlesApiResponse = config.get('ApiResponseHandler', new ApiResponseHandler) as HandlesApiResponse;
 
-        if (!CallsApi.API) {
-            CallsApi.API = config.get('API', new API) as ApiCaller;
-        }
-
-        if (!CallsApi.ApiResponseHandler) {
-            CallsApi.ApiResponseHandler = config.get(
-                'ApiResponseHandler',
-                new ApiResponseHandler
-            ) as HandlesApiResponse;
-        }
-
-        return CallsApi.ApiResponseHandler.handle(
-            CallsApi.API.call(
+        return HandlesApiResponse.handle(
+            ApiCaller.call(
                 String(config.get('baseEndPoint', '')).finish('/') + this.getEndpoint(),
                 method,
-                data
+                data,
+                customHeaders
             )
         )
-            .then(response => {
-                this.loading = false;
-                return response;
-            });
+            .finally(() => this.requestCount--);
     }
 
     /**

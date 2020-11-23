@@ -98,12 +98,12 @@ export default class HasRelations extends CallsApi {
     public relationDefined(name: string): boolean {
         if (this[name] instanceof Function) {
             const value = (this[name] as CallableFunction)();
-            const methodDefinition = Reflect.getOwnPropertyDescriptor(this, name);
+            const methodDefinition = (this[name] as CallableFunction).toString();
 
             if (value instanceof HasRelations && methodDefinition) {
-                const regex = RegExp('/return this.(belongsTo|belongsToMany|hasOne|HasMany|morphs)\\(', 'g');
+                const regex = RegExp(/return this.(belongsTo|belongsToMany|hasOne|hasMany|morphs)\(/, 'g');
 
-                return !!regex.exec(String(methodDefinition.value))?.length;
+                return !!regex.exec(methodDefinition)?.length;
             }
         }
 
@@ -162,9 +162,9 @@ export default class HasRelations extends CallsApi {
      * @return {string}
      */
     public getForeignKeyName(): string {
-        return (this as unknown as Model).getName().snake().toLowerCase()
+        return ((this as unknown as Model).getName().snake().toLowerCase()
             + '_'
-            + (this as unknown as Model).getKeyName();
+            + (this as unknown as Model).getKeyName())[this.attributeCasing]();
     }
 
     /**
@@ -202,16 +202,16 @@ export default class HasRelations extends CallsApi {
     public belongsTo<T extends Model>(related: new() => T, foreignKey?: string): T {
         const relatedModel = new related();
         foreignKey = foreignKey ?? relatedModel.getForeignKeyName();
-        const foreignKeyValue = this.getAttribute(this.foreignKey);
-
-        if (relatedModel.relationDefined((this as unknown as Model).getName().toLowerCase())) {
-            relatedModel.addRelation((this as unknown as Model).getName().toLowerCase(), this);
-        }
+        const foreignKeyValue = this.getAttribute(foreignKey);
 
         if (!foreignKeyValue) {
             throw new LogicException(
-                (this as unknown as Model).getName() + ' doesn\'t have ' + foreignKey + ' defined.'
+                (this as unknown as Model).getName() + ' doesn\'t have \'' + foreignKey + '\' defined.'
             );
+        }
+
+        if (relatedModel.relationDefined((this as unknown as Model).getName().toLowerCase())) {
+            relatedModel.addRelation((this as unknown as Model).getName().toLowerCase(), this);
         }
 
         return relatedModel.setEndpoint(relatedModel.getEndpoint().finish('/') + String(foreignKeyValue));

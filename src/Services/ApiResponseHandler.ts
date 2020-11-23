@@ -7,9 +7,9 @@ export default class ApiResponseHandler implements HandlesApiResponse {
     public async handle(promise: Promise<Response>): Promise<Record<string, unknown>> {
         return promise
             .then(async (response: Response) => this.handleSuccess(response))
-            .catch(response => {
-                this.handleError(response);
-                return response;
+            .catch(error => {
+                this.handleError(error);
+                return error; // todo - what?
             })
             .finally(() => this.handleFinally());
     }
@@ -17,7 +17,7 @@ export default class ApiResponseHandler implements HandlesApiResponse {
     /**
      * Parse the data from the response.
      *
-     * @param {Response}response
+     * @param {Response} response
      *
      * @return {Promise<any>}
      */
@@ -33,7 +33,7 @@ export default class ApiResponseHandler implements HandlesApiResponse {
 
         }
 
-        if (typeof body === 'object' && 'data' in body) {
+        if (body && typeof body === 'object' && 'data' in body) {
             body = body.data;
         }
 
@@ -43,7 +43,7 @@ export default class ApiResponseHandler implements HandlesApiResponse {
     /**
      * Handle successful request.
      *
-     * @param {Response}response
+     * @param {Response} response
      *
      * @return {Promise<any>}
      */
@@ -59,7 +59,7 @@ export default class ApiResponseHandler implements HandlesApiResponse {
      * @return {void}
      */
     public handleError(rejectReason: unknown): void {
-        throw new Error('Request has failed with the message:\n' + String(rejectReason));
+        throw new Error('Request has failed with the following message:\n' + String(rejectReason));
     }
 
     /**

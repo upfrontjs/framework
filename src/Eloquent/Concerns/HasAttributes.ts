@@ -97,7 +97,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
         if (key in this.attributes) {
             // If it has an accessor call it.
             if (this.hasGetAccessor(key)) {
-                return (this[`get${key.title()}Attribute`] as CallableFunction)(this.attributes[key]);
+                return (this[`get${key.pascal()}Attribute`] as CallableFunction)(this.attributes[key]);
             }
 
             return this.castAttribute(key, this.attributes[key]);
@@ -154,7 +154,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      */
     public setAttribute(key: string, value: unknown): this {
         if (this.hasSetMutator(key)) {
-            (this[`set${key.title()}Attribute`] as CallableFunction)(value);
+            (this[`set${key.pascal()}Attribute`] as CallableFunction)(value);
 
             return this;
         }
@@ -178,7 +178,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      * @return {boolean}
      */
     public hasSetMutator(key: string): boolean {
-        return `set${key.title()}Attribute` in this && this[`set${key.title()}Attribute`] instanceof Function;
+        return `set${key.pascal()}Attribute` in this && this[`set${key.pascal()}Attribute`] instanceof Function;
     }
 
     /**
@@ -189,7 +189,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      * @return {boolean}
      */
     public hasGetAccessor(key: string): boolean {
-        return `get${key.title()}Attribute` in this && this[`get${key.title()}Attribute`] instanceof Function;
+        return `get${key.pascal()}Attribute` in this && this[`get${key.pascal()}Attribute`] instanceof Function;
     }
 
     /**

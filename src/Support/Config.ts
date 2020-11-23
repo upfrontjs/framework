@@ -11,7 +11,7 @@ interface Configuration extends Record<string, unknown> {
     // DateTime: AbstractDateTime;
 }
 
-class Config {
+export default class Config {
     /**
      * The configuration object.
      *
@@ -54,6 +54,8 @@ class Config {
      *
      * @param {string} key
      * @param {any}    value
+     *
+     * @return {this}
      */
     public set(key: keyof Configuration|string, value: unknown): this {
         Config.configuration[key] = value;
@@ -65,6 +67,8 @@ class Config {
      * Remove a config value.
      *
      * @param {string} key
+     *
+     * @return {this}
      */
     public unset(key: keyof Configuration|string): this {
         if (this.has(key)) {
@@ -73,8 +77,15 @@ class Config {
 
         return this;
     }
+
+    /**
+     * Empty the configuration.
+     *
+     * @return {this}
+     */
+    public reset(): this {
+        Config.configuration = {};
+
+        return this;
+    }
 }
-
-export default Config;
-
-

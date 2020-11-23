@@ -1,8 +1,10 @@
 import CallsApi from '../../../src/Eloquent/Concerns/CallsApi';
 import LogicException from '../../../src/Exceptions/LogicException';
-// import type { MockResponseInit } from 'jest-fetch-mock';
+import type { MockResponseInit } from 'jest-fetch-mock';
 import fetchMock from 'jest-fetch-mock';
 import data from '../../mock/Models/data';
+import Config from '../../../src/Support/Config';
+import API from '../../../src/Services/API';
 
 class Caller extends CallsApi {
     public get endpoint(): string {
@@ -11,43 +13,43 @@ class Caller extends CallsApi {
 }
 
 let caller: Caller;
-
-// @ts-ignore
 let sampleResponse: MockResponseInit;
+const config = new Config();
 
-// @ts-ignore
-const resetResponse = (body?: string|Record<string, any>): void => {
-    const response = {
+const resetResponse = (response?: string|Record<string, any>): void => {
+    let responseObject = {
         status: 200,
         body: JSON.stringify(data.UserOne)
     };
 
-    if (body && typeof body === 'string') {
-        response.body = body;
+    if (response && typeof response === 'string') {
+        responseObject.body = response;
         return;
     }
 
-    if (body && typeof body === 'object') {
-        response.body = JSON.stringify(Object.assign({}, data.UserOne, body));
+    if (response && typeof response === 'object') {
+        responseObject = Object.assign(responseObject, response);
     }
 
-    sampleResponse = response;
+    sampleResponse = responseObject;
 };
 
-// jest.spyOn(window, 'fetch').mockImplementation().mockImplementation(async () => {
-//     const response = new Response('hi');
-//     return Promise.resolve(response);
-// });
-// jest.spyOn(global, 'fetch').mockImplementation().mockImplementation(async () => {
-//     const response = new Response('hi');
-//     return Promise.resolve(response);
-// });
+const getLastFetchCall = (): { url: string; method: 'get'|'post'|'delete'|'patch'|'put'; headers: Headers} => {
+    // @ts-expect-error
+    const calls = fetch.mock.calls;
+
+    const lastCall = calls[calls.length - 1];
+    lastCall[1].url = lastCall[0];
+
+    return lastCall[1];
+};
 
 describe('callsApi', () => {
     beforeEach(() => {
         caller = new Caller();
         fetchMock.resetMocks();
-        // resetResponse();
+        resetResponse();
+        config.reset();
     });
 
     describe('constructor()', () => {
@@ -64,18 +66,36 @@ describe('callsApi', () => {
             // @ts-expect-error
             await expect(caller.call('get')).rejects.toStrictEqual(
                 new LogicException(
-                    'Endpoint has not been defined for this \'get\' method on ' + caller.constructor.name
+                    'Endpoint has not been defined when calling \'get\' method on ' + caller.constructor.name
                 )
             );
         });
 
         it('returns a promise with the response',  async () => {
-            //// @ts-expect-error
-            fetchMock.mockResponseOnce(JSON.stringify({ hi: 1 }));
+            fetchMock.mockResponseOnce(async () => Promise.resolve(sampleResponse));
             // @ts-expect-error
-            const data = await caller.call('get');
+            const responseData = await caller.call('get');
 
-            expect(data).toStrictEqual({ hi: 1 });
+            expect(responseData).toStrictEqual(data.UserOne);
+        });
+
+        it('gets the ApiCaller from the config if set',  async () => {
+            const api = new class customAPICallerImplementation extends API {
+                initRequest(): Partial<RequestInit> {
+                    const headers = new Headers();
+                    headers.set('custom', 'header');
+
+                    return { headers };
+                }
+            };
+
+            new Config({ API: api });
+
+            fetchMock.mockResponseOnce(async () => Promise.resolve(sampleResponse));
+            // @ts-expect-error
+            await caller.call('get');
+            expect(getLastFetchCall().headers.has('custom')).toBe(true);
+            expect(getLastFetchCall().headers.get('custom')).toBe('header');
         });
     });
 });

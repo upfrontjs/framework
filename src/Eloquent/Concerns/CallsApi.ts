@@ -7,6 +7,7 @@ import ApiResponseHandler from '../../Services/ApiResponseHandler';
 import type HandlesApiResponse from '../../Contracts/HandlesApiResponse';
 import type Model from '../Model';
 import BuildsQuery from './BuildsQuery';
+import InvalidArgumentException from "../../Exceptions/InvalidArgumentException";
 
 export default class CallsApi extends BuildsQuery {
     /**
@@ -96,8 +97,6 @@ export default class CallsApi extends BuildsQuery {
      */
     public async get(data?: Record<string, unknown>): Promise<Model | ModelCollection<Model>> {
         const responseData = await this.call('get', Object.assign({}, data, this.compileQueryParameters()));
-
-        this.syncOriginal();
         this.resetEndpoint();
         this.resetQueryParameters();
 
@@ -209,6 +208,12 @@ export default class CallsApi extends BuildsQuery {
             data.forEach(modelData => collection.push(new (<typeof Model> this.constructor)(modelData)));
 
             return collection;
+        }
+
+        if (!data || typeof data !== 'object') {
+            throw new InvalidArgumentException(
+                'Unexpected response type. Ensure that the endpoint returns model data.'
+            );
         }
 
         return new (<typeof Model> this.constructor)(data);

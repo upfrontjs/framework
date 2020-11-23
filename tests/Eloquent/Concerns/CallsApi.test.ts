@@ -5,6 +5,7 @@ import fetchMock from 'jest-fetch-mock';
 import data from '../../mock/Models/data';
 import Config from '../../../src/Support/Config';
 import API from '../../../src/Services/API';
+import ApiResponseHandler from "../../../src/Services/ApiResponseHandler";
 
 class Caller extends CallsApi {
     public get endpoint(): string {
@@ -96,6 +97,22 @@ describe('callsApi', () => {
             await caller.call('get');
             expect(getLastFetchCall().headers.has('custom')).toBe(true);
             expect(getLastFetchCall().headers.get('custom')).toBe('header');
+        });
+
+        it('gets the HandlesApiResponse from the config if set',  async () => {
+            const mockFn = jest.fn();
+            const handler = new class customApiResponseHandlerImplementation extends ApiResponseHandler {
+                handleFinally() {
+                    mockFn();
+                }
+            };
+
+            new Config({ ApiResponseHandler: handler });
+
+            fetchMock.mockResponseOnce(async () => Promise.resolve(sampleResponse));
+            // @ts-expect-error
+            await caller.call('get');
+            expect(mockFn).toHaveBeenCalled();
         });
     });
 });

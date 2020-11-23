@@ -8,8 +8,7 @@ module.exports = {
     },
     collectCoverageFrom: [
         '<rootDir>/src/**/*.ts',
-        '!<rootDir>/src/index.ts',
-        '!<rootDir>/src/Services/*.ts'
+        '!<rootDir>/src/index.ts'
     ],
     coverageDirectory: "<rootDir>/tests/coverage",
     coverageProvider: "babel",
@@ -45,6 +44,7 @@ module.exports = {
 // todo - review circular dependency fix (require() within the function)
 // todo - improve typings (eg.: collection pluck K extends keyof T, better user guards)
 // todo - will need a cookbook to show the cool shit one might not think of straight away
+// todo - choose the right license
 // https://github.com/marchaos/jest-mock-extended
 // https://github.com/hustcc/jest-date-mock
 

@@ -1,11 +1,25 @@
 import type ApiCaller from '../Contracts/ApiCaller';
-import queryString from 'querystring';
+import qs from 'qs';
+import type { IStringifyOptions } from 'qs';
 
 export default class API implements ApiCaller {
     /**
      * Enable indexing object by strings.
      */
-    [index: string]: Record<string, unknown> | CallableFunction
+    [index: string]: Record<string, unknown> | CallableFunction | IStringifyOptions
+
+    /**
+     * The settings for the parsing of the get parameters.
+     *
+     * @protected
+     */
+    protected readonly getParamEncodingOptions: IStringifyOptions = {
+        arrayFormat: 'brackets',
+        strictNullHandling: true,
+        indices: true,
+        encodeValuesOnly: true,
+        charset: 'utf-8'
+    };
 
     /**
      * The implementation of the expected call method.
@@ -60,11 +74,6 @@ export default class API implements ApiCaller {
 
         const headers = new Headers(initOptions.headers);
 
-        // if not already set, set the Content-Type
-        if (!headers.has('Content-Type')) {
-            headers.set('Content-Type', 'application/json; charset=UTF-8');
-        }
-
         // if explicitly or implicitly a GET method
         if (!initOptions.method || initOptions.method.toLowerCase() === 'get') {
             // if it was merged in above, we delete it to avoid:
@@ -79,10 +88,15 @@ export default class API implements ApiCaller {
                     headers.set('Content-Type', 'multipart/form-data');
                     initOptions.body = data;
                 } else {
+                    headers.set('Content-Type', 'application/json; charset=UTF-8');
                     initOptions.body = JSON.stringify(data);
                 }
             } else {
-                url = url.finish('?') + queryString.stringify(data);
+                headers.set(
+                    'Content-Type',
+                    'application/x-www-form-urlencoded; charset=' + String(this.getParamEncodingOptions.charset)
+                );
+                url = url.finish('?') + qs.stringify(data, this.getParamEncodingOptions);
             }
         }
 

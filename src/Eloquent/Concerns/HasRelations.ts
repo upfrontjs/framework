@@ -53,7 +53,7 @@ export default class HasRelations extends CallsApi {
      * @param {string} key
      */
     public relationLoaded(key: string): boolean {
-        return this.loadedRelations().includes(key);
+        return this.loadedRelationKeys().includes(key);
     }
 
     /**
@@ -61,8 +61,8 @@ export default class HasRelations extends CallsApi {
      *
      * @return {string[]}
      */
-    public loadedRelations(): string[] {
-        return Object.keys(this.relations);
+    public loadedRelationKeys(): string[] {
+        return Object.keys(this.getRelations());
     }
 
     /**

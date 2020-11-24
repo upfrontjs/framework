@@ -54,7 +54,7 @@ export default class CallsApi extends BuildsQuery {
      * The call method that mediates between the model and api handlers.
      *
      * @param {'get'|'post'|'delete'|'patch'|'put'} method
-     * @param {Record<string, any>?} data
+     * @param {Record<string, any>=} data
      * @param {Record<string, string|string[]>} customHeaders
      *
      * @protected
@@ -91,22 +91,22 @@ export default class CallsApi extends BuildsQuery {
     /**
      * Send a GET request to the endpoint.
      *
-     * @param {object?} data
+     * @param {object=} data
      *
-     * @return {Promise<undefined | Model | ModelCollection<Model>>}
+     * @return {Promise<Model | ModelCollection<Model>>}
      */
     public async get(data?: Record<string, unknown>): Promise<Model | ModelCollection<Model>> {
         const responseData = await this.call('get', Object.assign({}, data, this.compileQueryParameters()));
         this.resetEndpoint();
         this.resetQueryParameters();
 
-        return Promise.resolve(this.newInstanceFromResponse(responseData));
+        return Promise.resolve(this.newInstanceFromResponseData(responseData));
     }
 
     /**
      * The get method made available as a static method.
      *
-     * @param {object?} data
+     * @param {object=} data
      *
      * @see {CallsApi.prototype.get}
      */
@@ -172,7 +172,7 @@ export default class CallsApi extends BuildsQuery {
      * Send a DELETE request to the endpoint.
      * Returns true on success otherwise false.
      *
-     * @param {object?} data
+     * @param {object=} data
      *
      * @return {Promise<boolean>}
      */
@@ -197,8 +197,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Model}
      */
-    // todo - data from server should force fill
-    protected newInstanceFromResponse(
+    protected newInstanceFromResponseData(
         data: Record<string, unknown>|Record<string, unknown>[]
     ): Model|ModelCollection<Model> {
         if (!data
@@ -210,9 +209,21 @@ export default class CallsApi extends BuildsQuery {
             );
         }
 
-        const model: new (attributes: Record<string, any>) => Model = <typeof Model> this.constructor;
-
         let result: Model|ModelCollection<Model>;
+
+        const forceFilledModel = (data: Record<string, unknown>): Model => {
+            const instance = new (<typeof Model> this.constructor)(data);
+            const keysToSearch = instance.getAttributeKeys().concat(instance.loadedRelationKeys());
+            const missingAttributeKeys = Object.keys(data).filter(key => !keysToSearch.includes(key));
+
+            if (missingAttributeKeys.length) {
+                // treat response data as a source of truth and
+                // set properties regardless of guarding
+                missingAttributeKeys.forEach(key => instance.setAttribute(key, data[key]));
+            }
+
+            return instance;
+        };
 
         if (Array.isArray(data)) {
             // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -221,15 +232,13 @@ export default class CallsApi extends BuildsQuery {
 
             data.forEach(modelData => {
                 if (!modelData || typeof data !== 'object') {
-                    const instance = new model(modelData);
-
-                    collection.push(instance);
+                    collection.push(forceFilledModel(modelData));
                 }
             });
 
             result = collection;
         } else  {
-            result = new model(data);
+            result = forceFilledModel(data);
         }
 
         return result;

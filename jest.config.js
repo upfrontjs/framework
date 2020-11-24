@@ -38,3 +38,9 @@ module.exports = {
         "Math"
     ]
 };
+
+// todo - review these:
+//  - https://github.com/marchaos/jest-mock-extended
+//  - https://github.com/hustcc/jest-date-mock
+//  - https://github.com/codeandcats/jest-helpers
+//  - https://github.com/capricorn86/happy-dom

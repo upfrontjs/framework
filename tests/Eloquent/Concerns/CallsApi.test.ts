@@ -1,11 +1,11 @@
 import CallsApi from '../../../src/Eloquent/Concerns/CallsApi';
 import LogicException from '../../../src/Exceptions/LogicException';
-import type { MockResponseInit } from 'jest-fetch-mock';
 import fetchMock from 'jest-fetch-mock';
 import data from '../../mock/Models/data';
 import Config from '../../../src/Support/Config';
 import API from '../../../src/Services/API';
-import ApiResponseHandler from "../../../src/Services/ApiResponseHandler";
+import ApiResponseHandler from '../../../src/Services/ApiResponseHandler';
+import { buildResponse, getLastFetchCall } from '../../test-helpers';
 
 class Caller extends CallsApi {
     public get endpoint(): string {
@@ -14,42 +14,12 @@ class Caller extends CallsApi {
 }
 
 let caller: Caller;
-let sampleResponse: MockResponseInit;
 const config = new Config();
-
-const resetResponse = (response?: string|Record<string, any>): void => {
-    let responseObject = {
-        status: 200,
-        body: JSON.stringify(data.UserOne)
-    };
-
-    if (response && typeof response === 'string') {
-        responseObject.body = response;
-        return;
-    }
-
-    if (response && typeof response === 'object') {
-        responseObject = Object.assign(responseObject, response);
-    }
-
-    sampleResponse = responseObject;
-};
-
-const getLastFetchCall = (): { url: string; method: 'get'|'post'|'delete'|'patch'|'put'; headers: Headers} => {
-    // @ts-expect-error
-    const calls = fetch.mock.calls;
-
-    const lastCall = calls[calls.length - 1];
-    lastCall[1].url = lastCall[0];
-
-    return lastCall[1];
-};
 
 describe('callsApi', () => {
     beforeEach(() => {
         caller = new Caller();
         fetchMock.resetMocks();
-        resetResponse();
         config.reset();
     });
 
@@ -73,7 +43,7 @@ describe('callsApi', () => {
         });
 
         it('returns a promise with the response',  async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(sampleResponse));
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse()));
             // @ts-expect-error
             const responseData = await caller.call('get');
 
@@ -92,7 +62,7 @@ describe('callsApi', () => {
 
             new Config({ API: api });
 
-            fetchMock.mockResponseOnce(async () => Promise.resolve(sampleResponse));
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse()));
             // @ts-expect-error
             await caller.call('get');
             expect(getLastFetchCall().headers.has('custom')).toBe(true);
@@ -109,7 +79,7 @@ describe('callsApi', () => {
 
             new Config({ ApiResponseHandler: handler });
 
-            fetchMock.mockResponseOnce(async () => Promise.resolve(sampleResponse));
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse()));
             // @ts-expect-error
             await caller.call('get');
             expect(mockFn).toHaveBeenCalled();

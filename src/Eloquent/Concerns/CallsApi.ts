@@ -7,7 +7,7 @@ import ApiResponseHandler from '../../Services/ApiResponseHandler';
 import type HandlesApiResponse from '../../Contracts/HandlesApiResponse';
 import type Model from '../Model';
 import BuildsQuery from './BuildsQuery';
-import InvalidArgumentException from "../../Exceptions/InvalidArgumentException";
+import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 
 export default class CallsApi extends BuildsQuery {
     /**

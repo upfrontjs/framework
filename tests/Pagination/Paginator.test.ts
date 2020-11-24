@@ -1,18 +1,5 @@
 import Paginator from '../../src/Pagination/Paginator';
 
-declare global {
-    interface Array<T> {
-        has(o: T): boolean;
-    }
-}
-
-Object.defineProperty(Array.prototype, 'has', {
-    value: function (value: any) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-        return this.indexOf(value) !== -1;
-    }
-});
-
 describe('paginator', () => {
     const elements: number[] = [1, 2, 3, 4, 5];
     let paginator: Paginator<number>;

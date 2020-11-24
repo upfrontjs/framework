@@ -4,40 +4,11 @@ export default class ApiResponseHandler implements HandlesApiResponse {
     /**
      * @inheritDoc
      */
-    public async handle(promise: Promise<Response>): Promise<Record<string, unknown>> {
+    public async handle(promise: Promise<Response>): Promise<any> {
         return promise
             .then(async (response: Response) => this.handleSuccess(response))
-            .catch(error => {
-                this.handleError(error);
-                return error; // todo - what?
-            })
+            .catch(error => this.handleError(error))
             .finally(() => this.handleFinally());
-    }
-
-    /**
-     * Parse the data from the response.
-     *
-     * @param {Response} response
-     *
-     * @return {Promise<any>}
-     */
-    public async getData(response: Response): Promise<Record<'data', any>> {
-        let body = await response.json();
-
-        if (typeof body === 'string') {
-            body = {
-                data: body.toLowerCase() === 'true' || body.toLowerCase() === 'false'
-                    ? Boolean(body.toLowerCase())
-                    : body
-            };
-
-        }
-
-        if (body && typeof body === 'object' && 'data' in body) {
-            body = body.data;
-        }
-
-        return Promise.resolve(body);
     }
 
     /**
@@ -47,8 +18,8 @@ export default class ApiResponseHandler implements HandlesApiResponse {
      *
      * @return {Promise<any>}
      */
-    public async handleSuccess(response: Response): Promise<Record<string, unknown>> {
-        return this.getData(response);
+    public async handleSuccess(response: Response): Promise<any> {
+        return await response.json();
     }
 
     /**

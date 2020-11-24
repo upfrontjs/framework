@@ -5,12 +5,6 @@
 // todo - improve typings (eg.: collection pluck K extends keyof T, better user guards)
 // todo - choose the right license
 
-
-// https://github.com/marchaos/jest-mock-extended
-// https://github.com/hustcc/jest-date-mock
-
-// https://github.com/capricorn86/happy-dom
-
 // todo - will need a cookbook to show the cool shit one might not think of straight away eg.:
     - local scope building
     - straight up send a form with the CallsApi methods

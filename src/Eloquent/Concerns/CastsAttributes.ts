@@ -97,7 +97,7 @@ export default class CastsAttributes {
 
                 if (typeof boolean !== 'boolean') {
                     throw new LogicException(
-                        '\'' + key + '\' is not castable to a boolean type in ' + this.constructor.name
+                        '\'' + key + '\' is not castable to a boolean type in \'' + this.constructor.name + '\'.'
                     );
                 }
 
@@ -108,7 +108,7 @@ export default class CastsAttributes {
 
                 if (isNaN(number)) {
                     throw new LogicException(
-                        '\'' + key + '\' is not castable to a number type in ' + this.constructor.name
+                        '\'' + key + '\' is not castable to a number type in \'' + this.constructor.name + '\'.'
                     );
                 }
 
@@ -120,7 +120,7 @@ export default class CastsAttributes {
             else if (cast === 'collection') {
                 if (!Array.isArray(value)) {
                     throw new LogicException(
-                        '\'' + key + '\' is not castable to a collection type in ' + this.constructor.name
+                        '\'' + key + '\' is not castable to a collection type in \'' + this.constructor.name + '\'.'
                     );
                 }
 
@@ -135,8 +135,9 @@ export default class CastsAttributes {
             else {
                 // either or both hasCast() and getCastType() has been overridden and hasCast()
                 // returns true while getCastType() cannot determine the cast type
-                throw new LogicException('Impossible logic path reached. ' +
-                    'hasCast() and getCastType() implementations are not in sync');
+                throw new LogicException(
+                    'Impossible logic path reached. hasCast() and getCastType() implementations are not in sync.'
+                );
             }
         } else {
             result = value;

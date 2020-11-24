@@ -1,7 +1,13 @@
 const path = require('path');
+const packageJson = require('./package.json');
+const vendorDependencies = Object.keys(packageJson['dependencies']);
 
+// todo - https://github.com/TypeStrong/ts-loader#babel
 module.exports = {
-    entry: './index.ts',
+    entry: {
+        main: './src/index.ts',
+        vendor: vendorDependencies
+    },
     devtool: 'inline-source-map',
     module: {
         rules: [
@@ -16,8 +22,9 @@ module.exports = {
         extensions: [ '.tsx', '.ts', '.js' ],
     },
     output: {
-        filename: 'levaral.js',
+        filename: '[name].js',
+        chunkFilename: '[chunkhash].js',
         path: path.resolve(__dirname, 'lib'),
-        library: 'Levaral'
+        library: 'Upfront'
     },
 };

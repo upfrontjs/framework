@@ -7,6 +7,7 @@ import Model from '../../src/Eloquent/Model';
 let collection: ModelCollection<Model>;
 const incompatibleElementsError = ModelCollection.name + ' can only handle Model values.';
 
+// todo - server side pagination on this?
 describe('constructor()', () => {
     const elements = [new User(data.UserOne), new User(data.UserTwo), new User(data.UserOne)];
 

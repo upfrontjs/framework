@@ -37,7 +37,7 @@ describe('callsApi', () => {
             // @ts-expect-error
             await expect(caller.call('get')).rejects.toStrictEqual(
                 new LogicException(
-                    'Endpoint has not been defined when calling \'get\' method on ' + caller.constructor.name
+                    'Endpoint is not defined when calling \'get\' method on \'' + caller.constructor.name + '\'.'
                 )
             );
         });

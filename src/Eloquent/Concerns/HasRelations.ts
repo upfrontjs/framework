@@ -33,7 +33,7 @@ export default class HasRelations extends CallsApi {
             }
 
             if (!this.relationDefined(relation)) {
-                throw new InvalidOffsetException('\'' + relation + '\' relationship has not been defined');
+                throw new InvalidOffsetException('\'' + relation + '\' relationship is not defined.');
             }
 
             promises.push(
@@ -76,14 +76,14 @@ export default class HasRelations extends CallsApi {
         if (this.relationDefined(name)) {
             if (!this.relations[name]) {
                 throw new LogicException(
-                    'Trying to access the \'' + name + '\' relationship before it has been loaded'
+                    'Trying to access the \'' + name + '\' relationship before it is loaded.'
                 );
             }
 
             return this.relations[name];
         }
 
-        throw new InvalidOffsetException('\'' + name + '\' relationship has not been defined');
+        throw new InvalidOffsetException('\'' + name + '\' relationship is not defined.');
     }
 
     /**
@@ -124,7 +124,7 @@ export default class HasRelations extends CallsApi {
         value: Record<string, any>|Record<string, any>[]|Model|ModelCollection<Model>
     ): this {
         if (!this.relationDefined(name)) {
-            throw new LogicException('Attempted to add an undefined relation: \'' + name + '\'');
+            throw new LogicException('Attempted to add an undefined relation: \'' + name + '\'.');
         }
 
         // eslint-disable-next-line @typescript-eslint/no-var-requires

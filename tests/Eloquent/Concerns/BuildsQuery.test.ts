@@ -460,7 +460,8 @@ describe('buildsQuery', () => {
             const failingCall = () => builder.whereBetween('column', { 'something': 1 });
 
             expect(failingCall).toThrow(
-                'Expected an array with 2 values for \'whereBetween\' got: ' + JSON.stringify({ 'something': 1 })
+                'Expected an array with 2 values for \'whereBetween\' got: \''
+                + JSON.stringify({ 'something': 1 }) + '\'.'
             );
         });
 
@@ -503,7 +504,8 @@ describe('buildsQuery', () => {
             const failingCall = () => builder.whereNotBetween('column', { 'something': 1 });
 
             expect(failingCall).toThrow(
-                'Expected an array with 2 values for \'whereNotBetween\' got: ' + JSON.stringify({ 'something': 1 })
+                'Expected an array with 2 values for \'whereNotBetween\' got: \''
+                + JSON.stringify({ 'something': 1 }) + '\'.'
             );
         });
 
@@ -531,7 +533,8 @@ describe('buildsQuery', () => {
             const failingCall = () => builder.orWhereNotBetween('column', { 'something': 1 });
 
             expect(failingCall).toThrow(
-                'Expected an array with 2 values for \'orWhereNotBetween\' got: ' + JSON.stringify({ 'something': 1 })
+                'Expected an array with 2 values for \'orWhereNotBetween\' got: \''
+                + JSON.stringify({ 'something': 1 }) + '\'.'
             );
         });
     });

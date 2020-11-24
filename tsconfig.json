@@ -19,12 +19,6 @@
     ],
     "target": "ESNext",
 
-    // development options
-    "extendedDiagnostics": true,
-    "listFiles": true,
-    "pretty": true,
-    "traceResolution": true,
-
     // compilation process
     "incremental": true,
     "moduleResolution": "node",
@@ -50,6 +44,9 @@
   "include": [
     "src/index.ts"
   ],
-  "exclude": [],
+  "exclude": [
+    "**/node_modules/",
+    "**/.*"
+  ],
   "$schema": "https://json.schemastore.org/tsconfig"
 }

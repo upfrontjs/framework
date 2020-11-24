@@ -68,7 +68,7 @@ export default class CallsApi extends BuildsQuery {
     ): Promise<any> {
         if (!this.getEndpoint().length) {
             throw new LogicException(
-                'Endpoint has not been defined when calling \'' + method + '\' method on ' + this.constructor.name
+                'Endpoint is not defined when calling \'' + method + '\' method on \'' + this.constructor.name + '\'.'
             );
         }
 
@@ -197,26 +197,42 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Model}
      */
+    // todo - data from server should force fill
     protected newInstanceFromResponse(
         data: Record<string, unknown>|Record<string, unknown>[]
     ): Model|ModelCollection<Model> {
+        if (!data
+            || typeof data !== 'object'
+            || Array.isArray(data) && !data.every(entry => typeof entry === 'object' && !entry)
+        ) {
+            throw new InvalidArgumentException(
+                'Unexpected response type. Ensure that the endpoint returns model data only.'
+            );
+        }
+
+        const model: new (attributes: Record<string, any>) => Model = <typeof Model> this.constructor;
+
+        let result: Model|ModelCollection<Model>;
+
         if (Array.isArray(data)) {
             // eslint-disable-next-line @typescript-eslint/no-var-requires
             const modelCollectionConstructor: new() => ModelCollection<Model> = require('../ModelCollection');
             const collection = new modelCollectionConstructor();
 
-            data.forEach(modelData => collection.push(new (<typeof Model> this.constructor)(modelData)));
+            data.forEach(modelData => {
+                if (!modelData || typeof data !== 'object') {
+                    const instance = new model(modelData);
 
-            return collection;
+                    collection.push(instance);
+                }
+            });
+
+            result = collection;
+        } else  {
+            result = new model(data);
         }
 
-        if (!data || typeof data !== 'object') {
-            throw new InvalidArgumentException(
-                'Unexpected response type. Ensure that the endpoint returns model data.'
-            );
-        }
-
-        return new (<typeof Model> this.constructor)(data);
+        return result;
     }
 
     /**

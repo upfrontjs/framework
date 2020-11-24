@@ -57,7 +57,7 @@ describe('castsAttributes', () => {
             expect(caster.getValue('test', 'false')).toBe(false);
 
             const func = () => caster.getValue('test', 'random value');
-            expect(func).toThrow('\'test\' is not castable to a boolean type in ' + caster.constructor.name);
+            expect(func).toThrow('\'test\' is not castable to a boolean type in \'' + caster.constructor.name + '\'.');
         });
 
         it('can cast to a string', () => {
@@ -77,7 +77,7 @@ describe('castsAttributes', () => {
             expect(caster.getValue('test', '0.1')).toBe(0.1);
 
             const func = () => caster.getValue('test', 'random value');
-            expect(func).toThrow('\'test\' is not castable to a number type in ' + caster.constructor.name);
+            expect(func).toThrow('\'test\' is not castable to a number type in \'' + caster.constructor.name + '\'.');
         });
 
         it('can cast to a collection', () => {
@@ -86,7 +86,8 @@ describe('castsAttributes', () => {
             expect(caster.getValue('test', ['1'])).toStrictEqual(new Collection(['1']));
 
             const func = () => caster.getValue('test', 'random value');
-            expect(func).toThrow('\'test\' is not castable to a collection type in ' + caster.constructor.name);
+            expect(func)
+                .toThrow('\'test\' is not castable to a collection type in \'' + caster.constructor.name + '\'.');
         });
 
         it.todo('can cast to a dateTime');
@@ -112,7 +113,7 @@ describe('castsAttributes', () => {
             const failingCall = () => caster.getValue('test', '1');
 
             expect(failingCall).toThrow('Impossible logic path reached. hasCast() ' +
-                'and getCastType() implementations are not in sync');
+                'and getCastType() implementations are not in sync.');
         });
     });
 });

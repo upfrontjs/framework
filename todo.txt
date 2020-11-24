@@ -9,3 +9,5 @@
     - local scope building
     - straight up send a form with the CallsApi methods
     - nested filters (given their api implements some parsing of Model.where('relation.column', 'value')
+
+// todo - create CONTRIBUTING (https://docs.github.com/en/free-pro-team@latest/github/building-a-strong-community/setting-guidelines-for-repository-contributors) file and include the following https://github.com/microsoft/TypeScript/wiki/Coding-guidelines

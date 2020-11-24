@@ -505,7 +505,7 @@ export default class BuildsQuery extends HasAttributes {
     public whereBetween(column: string, values: any[], boolean: 'and'|'or' = 'and'): this {
         if (!Array.isArray(values) || values.length !== 2) {
             throw new InvalidArgumentException('Expected an array with 2 values for \'whereBetween\'' +
-                ' got: ' + JSON.stringify(values));
+                ' got: \'' + JSON.stringify(values) + '\'.');
         }
 
         return this.where(column, 'between', values, boolean);
@@ -548,7 +548,7 @@ export default class BuildsQuery extends HasAttributes {
     public whereNotBetween(column: string, values: any[], boolean: 'and'|'or' = 'and'): this {
         if (!Array.isArray(values) || values.length !== 2) {
             throw new InvalidArgumentException('Expected an array with 2 values for \'whereNotBetween\'' +
-                ' got: ' + JSON.stringify(values));
+                ' got: \'' + JSON.stringify(values) + '\'.');
         }
 
         return this.where(column, 'notBetween', values, boolean);
@@ -578,7 +578,7 @@ export default class BuildsQuery extends HasAttributes {
     public orWhereNotBetween(column: string, values: any[]): this {
         if (!Array.isArray(values) || values.length !== 2) {
             throw new InvalidArgumentException('Expected an array with 2 values for \'orWhereNotBetween\'' +
-                ' got: ' + JSON.stringify(values));
+                ' got: \'' + JSON.stringify(values) + '\'.');
         }
 
         return this.where(column, 'notBetween', values, 'or');

@@ -9,9 +9,17 @@ export default interface ApiCaller {
     /**
      * If defined it should return a request configuration object.
      *
+     * @param {string} url - The endpoint the request goes to.
+     * @param {'get' | 'post' | 'delete' | 'patch' | 'put'} method - The method the request uses.
+     * @param {object=} data - The optional data to send with the request.
+     *
      * @return {Partial<RequestInit>}
      */
-    initRequest?(method: 'get'|'post'|'delete'|'patch'|'put', data?: Record<string, unknown>): Partial<RequestInit>;
+    initRequest?(
+        url: string,
+        method: 'get'|'post'|'delete'|'patch'|'put',
+        data?: Record<string, unknown>
+    ): Partial<RequestInit>;
 
     /**
      * The expected signature of the call method.

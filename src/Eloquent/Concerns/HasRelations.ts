@@ -126,6 +126,7 @@ export default class HasRelations extends CallsApi {
         if (!this.relationDefined(name)) {
             throw new LogicException('Attempted to add an undefined relation: \'' + name + '\'');
         }
+
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         const modelCollectionConstructor: new() => ModelCollection<Model> = require('../ModelCollection');
 
@@ -133,6 +134,7 @@ export default class HasRelations extends CallsApi {
             || (<typeof ModelCollection> modelCollectionConstructor).isModelCollection(value)
         ) {
             this.relations[name] = value;
+            this.createDescriptors(name);
 
             return this;
         }
@@ -152,8 +154,38 @@ export default class HasRelations extends CallsApi {
         }
 
         this.relations[name] = relation;
+        this.createDescriptors(name);
 
         return this;
+    }
+
+    /**
+     * Remove the relation and its magic access if set.
+     *
+     * @param {string} name
+     *
+     * @return {this}
+     */
+    public removeRelation(name: string): this {
+        delete this.relations[name];
+
+        if (Object.getOwnPropertyDescriptor(this, name)
+            && this.relationDefined(name)
+            && !(this[name] instanceof Function)
+        ) {
+            delete this[name];
+        }
+
+        return this;
+    }
+
+    /**
+     * Get all the relations.
+     *
+     * @return {object}
+     */
+    public getRelations(): Record<string, (Model | ModelCollection<Model>)> {
+        return this.relations;
     }
 
     /**

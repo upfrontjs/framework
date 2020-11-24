@@ -38,14 +38,3 @@ module.exports = {
         "Math"
     ]
 };
-// todo - figure out dependencies (lodash, pluralize, uuid) - likely to delivery with the package
-// todo - what about file uploads? (request customisation can set it to form/multipart-data
-// todo - update private modifiers to # where it makes sense
-// todo - review circular dependency fix (require() within the function)
-// todo - improve typings (eg.: collection pluck K extends keyof T, better user guards)
-// todo - will need a cookbook to show the cool shit one might not think of straight away
-// todo - choose the right license
-// https://github.com/marchaos/jest-mock-extended
-// https://github.com/hustcc/jest-date-mock
-
-// https://github.com/capricorn86/happy-dom

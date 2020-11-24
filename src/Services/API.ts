@@ -64,7 +64,7 @@ export default class API implements ApiCaller {
 
         // merge in the user provided RequestInit object
         if (this.initRequest && this.initRequest instanceof Function) {
-            const initMethodValue = this.initRequest(method, data);
+            const initMethodValue = this.initRequest(url, method, data);
 
             // only merge if it is in fact an object
             if (initOptions && typeof initMethodValue === 'object') {

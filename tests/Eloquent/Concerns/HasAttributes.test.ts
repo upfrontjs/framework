@@ -156,6 +156,58 @@ describe('hasAttributes', () => {
 
             expect(attributable.setAttribute('test', 1)).toBeInstanceOf(AttributableClass);
         });
+
+        it('creates the accessor', () => {
+            attributable = new AttributableClass();
+            attributable.setAttribute('test', 1);
+
+            expect(attributable.test).toBe(1);
+        });
+    });
+
+    describe('createDescriptors()', () => {
+        it('can create accessors and getters for the given key', () => {
+            attributable = new AttributableClass();
+
+            attributable.createDescriptors('test');
+
+            const descriptor = Object.getOwnPropertyDescriptor(attributable, 'test');
+
+            // eslint-disable-next-line @typescript-eslint/unbound-method
+            expect(descriptor?.get).not.toBeUndefined();
+            // eslint-disable-next-line @typescript-eslint/unbound-method
+            expect(descriptor?.set).not.toBeUndefined();
+        });
+
+        it('can create accessors and getters for multiple keys', () => {
+            attributable = new AttributableClass();
+
+            const keys = ['multiple', 'keys'];
+            attributable.createDescriptors(keys);
+
+            keys.forEach(key => {
+                const descriptor = Object.getOwnPropertyDescriptor(attributable, key);
+
+                // eslint-disable-next-line @typescript-eslint/unbound-method
+                expect(descriptor?.get).not.toBeUndefined();
+                // eslint-disable-next-line @typescript-eslint/unbound-method
+                expect(descriptor?.set).not.toBeUndefined();
+            });
+        });
+    });
+
+    describe('deleteAttribute()', () => {
+        it('deletes the attribute and class property if defined', () => {
+            attributable = new AttributableClass({ test: 1 });
+
+            expect(attributable.test).toBe(1);
+            expect(Object.getOwnPropertyDescriptor(attributable, 'test')).not.toBeUndefined();
+
+            attributable.deleteAttribute('test');
+
+            expect(attributable.test).toBeUndefined();
+            expect(Object.getOwnPropertyDescriptor(attributable, 'test')).toBeUndefined();
+        });
     });
 
     describe('hasSetMutator()', () => {

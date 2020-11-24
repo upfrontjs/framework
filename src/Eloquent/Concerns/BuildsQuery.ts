@@ -119,7 +119,7 @@ export default class BuildsQuery extends HasAttributes {
             params.columns = this.columns;
         }
 
-        if (this.withs.length) {
+        if (this.withs.length) {// todo - filters on relations?
             params.with = this.withs;
         }
 

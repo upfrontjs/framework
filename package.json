@@ -1,7 +1,7 @@
 {
   "name": "upfront",
   "version": "0.1.0",
-  "description": "Frontend data handling framework inspired by laravel.",
+  "description": "Frontend data handling framework complementary to backend model systems.",
   "main": "lib/index",
   "types": "lib/index",
   "scripts": {

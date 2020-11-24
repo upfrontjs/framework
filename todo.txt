@@ -1,0 +1,17 @@
+// todo - figure out dependencies (lodash, pluralize, uuid) - likely to delivery with the package
+// todo - make sure to test file uploads
+// todo - update private modifiers to # where it makes sense
+// todo - review circular dependency fix (require() within the function)
+// todo - improve typings (eg.: collection pluck K extends keyof T, better user guards)
+// todo - choose the right license
+
+
+// https://github.com/marchaos/jest-mock-extended
+// https://github.com/hustcc/jest-date-mock
+
+// https://github.com/capricorn86/happy-dom
+
+// todo - will need a cookbook to show the cool shit one might not think of straight away eg.:
+    - local scope building
+    - straight up send a form with the CallsApi methods
+    - nested filters (given their api implements some parsing of Model.where('relation.column', 'value')

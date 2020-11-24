@@ -50,7 +50,15 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
         super();
 
         if (attributes instanceof HasAttributes) {
-            return this.constructor(attributes.attributes);
+            // if newing up with a constructor, we'll take the attributes
+            // in their current state, not the original.
+            const allProperties = attributes.attributes;
+
+            if (typeof attributes['relations'] === 'object' && attributes['relations']) {
+                Object.assign(allProperties, attributes.relations);
+            }
+
+            return this.constructor(allProperties);
         }
 
         if (attributes && Object.keys(attributes)) {
@@ -59,22 +67,13 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
                     return;
                 }
 
-                // cast name to the expected format
-                const adjustedName = String.prototype[this.attributeCasing].call(name);
-
                 if (!!attributes[name]
                     && typeof attributes[name] === 'object'
-                    && (this as unknown as HasRelations).relationDefined(adjustedName)
+                    && (this as unknown as HasRelations).relationDefined(name.camel())
                 ) {
-                    (this as unknown as HasRelations).addRelation(adjustedName, attributes[name]);
+                    // always except the relation name in camel casing
+                    (this as unknown as HasRelations).addRelation(name.camel(), attributes[name]);
                 }
-
-                // set up accessors and mutators
-                const descriptor: PropertyDescriptor = {};
-                descriptor.get = () => this.getAttribute(adjustedName);
-                descriptor.set = (newValue) => this.setAttribute(adjustedName, newValue);
-
-                Object.defineProperty(this, adjustedName, descriptor);
             });
 
             this.fill(attributes);
@@ -156,6 +155,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
         if (this.hasSetMutator(key)) {
             (this[`set${key.pascal()}Attribute`] as CallableFunction)(value);
 
+            this.createDescriptors(key);
             return this;
         }
 
@@ -166,6 +166,51 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
         }
 
         this.attributes[key] = value;
+        this.createDescriptors(key);
+
+        return this;
+    }
+
+    /**
+     * Create descriptors for the given key(s) therefore allowing magic access.
+     *
+     * @param {string|string[]} keys
+     *
+     * @return {this}
+     */
+    createDescriptors(keys: string|string[]): this {
+        keys = Array.isArray(keys) ? keys : [keys];
+
+        keys.forEach(key => {
+            if (!Object.getOwnPropertyDescriptor(this, key)) {
+                // set up accessors and mutators
+                const descriptor: PropertyDescriptor = {
+                    get: () => this.getAttribute(key),
+                    set: (newValue) => this.setAttribute(key, newValue),
+                    enumerable: true,
+                    configurable: true
+                };
+
+                Object.defineProperty(this, key, descriptor);
+            }
+        });
+
+        return this;
+    }
+
+    /**
+     * Remove the attribute and its magic access if set.
+     *
+     * @param {string} key
+     *
+     * @return {this}
+     */
+    deleteAttribute(key: string): this {
+        delete this.attributes[key];
+
+        if (Object.getOwnPropertyDescriptor(this, key) && !(this as unknown as HasRelations).relationDefined(key)) {
+            delete this[key];
+        }
 
         return this;
     }

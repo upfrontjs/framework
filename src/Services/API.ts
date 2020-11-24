@@ -101,7 +101,7 @@ export default class API implements ApiCaller {
         }
 
         // append passed in custom headers
-        if (customHeaders && typeof customHeaders === 'object' && customHeaders.length) {
+        if (customHeaders && typeof customHeaders === 'object') {
             Object.keys(customHeaders).forEach(header => {
                 const headerValue = customHeaders[header];
 

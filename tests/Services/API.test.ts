@@ -24,7 +24,7 @@ describe('api', () => {
 
     describe('initConfig()', () => {
         it('can encode get parameters', () => {
-            const urlWithParams = api.getConfig(url, 'get', {
+            const config = api.getConfig(url, 'get', {
                 nested: {
                     objects: [
                         { id: 1 },
@@ -32,14 +32,17 @@ describe('api', () => {
                     ]
                 },
                 array: [1, 2]
-            })
-                .url;
+            });
 
-            expect(urlWithParams).toBe(
+            expect(config.url).toBe(
                 url
                 + '?'
                 + 'nested[objects][][id]=1&nested[objects][][id]=2&array[]=1&array[]=2'
             );
+
+            // @ts-expect-error
+            expect(config.requestInit.headers.get('Content-Type'))
+                .toBe('application/x-www-form-urlencoded; charset=utf-8');
         });
 
         it('can merge in config into the RequestInit from requestOptions', () => {
@@ -97,6 +100,59 @@ describe('api', () => {
 
             // @ts-expect-error
             expect(config.headers.has('custom')).toBe(true);
+        });
+
+        it('removes the merged in body if it is a get method', () => {
+            Object.defineProperty(api, 'requestOptions', {
+                value: {
+                    body: 'value'
+                }
+            });
+
+            const config = api.getConfig(url, 'get').requestInit;
+
+            expect(config.body).toBeUndefined();
+        });
+
+        it('can prepare FormData', () => {
+            const form = new FormData();
+            form.append('key', 'value');
+
+            const config = api.getConfig(url, 'post', form).requestInit;
+
+            expect(config.body).toBeInstanceOf(FormData);
+            // @ts-expect-error
+            expect(config.headers.get('Content-Type')).toBe('multipart/form-data');
+        });
+
+        it('stringifies the given data', () => {
+            const data = { custom: 'value' };
+            const config = api.getConfig(url, 'post', data).requestInit;
+
+            expect(config.body).toBe(JSON.stringify(data));
+            // @ts-expect-error
+            expect(config.headers.get('Content-Type')).toBe('application/json; charset=UTF-8');
+        });
+
+        it('processes the given custom headers', () => {
+            const header: Record<string, string|string[]> = { custom: 'header' };
+            const config = api.getConfig(url, 'post', undefined, header).requestInit;
+
+            // @ts-expect-error
+            expect(config.headers.get('custom')).toBe('header');
+
+            header.custom = ['multiple', 'values'];
+
+            const newConfig = api.getConfig(url, 'post', undefined, header).requestInit;
+
+            // @ts-expect-error
+            expect(newConfig.headers.get('custom')).toBe(header.custom.join(', '));
+        });
+    });
+
+    describe('call()', () => {
+        it('returns a promise', () => {
+            expect(api.call(url, 'get')).toBeInstanceOf(Promise);
         });
     });
 });

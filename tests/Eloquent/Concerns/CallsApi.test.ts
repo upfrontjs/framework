@@ -6,10 +6,16 @@ import Config from '../../../src/Support/Config';
 import API from '../../../src/Services/API';
 import ApiResponseHandler from '../../../src/Services/ApiResponseHandler';
 import { buildResponse, getLastFetchCall } from '../../test-helpers';
+import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
+import User from '../../mock/Models/User';
 
 class Caller extends CallsApi {
     public get endpoint(): string {
         return 'endpoint';
+    }
+
+    users(): User {
+        return this.hasMany(User);
     }
 }
 
@@ -84,5 +90,22 @@ describe('callsApi', () => {
             await caller.call('get');
             expect(mockFn).toHaveBeenCalled();
         });
+    });
+
+    describe('newInstanceFromResponseData()', () => {
+        it('throws error if unexpected data given', () => {
+            //@ts-expect-error
+            expect(() => caller.newInstanceFromResponseData(null)).toThrow(new InvalidArgumentException(
+                'Unexpected response type. Ensure that the endpoint returns model data only.'
+            ));
+        });
+
+        // eslint-disable-next-line jest/no-commented-out-tests
+        // it('can construct a single instance', () => {
+        //     const teamData = data.TeamOne;
+        //     teamData.users = [data.UserOne, data.UserTwo];
+        //     //@ts-expect-error
+        //     expect(caller.newInstanceFromResponseData(null)).toStrictEqual();
+        // });
     });
 });

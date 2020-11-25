@@ -36,9 +36,13 @@ describe('isModelCollection()', () => {
     });
 
     it('can assert that it\' a model collection', () => {
-        expect(ModelCollection.isModelCollection(1)).toBe(false);
         expect(ModelCollection.isModelCollection(elements)).toBe(false);
         expect(ModelCollection.isModelCollection(new Collection(elements))).toBe(false);
+        const baseLanguageTypes = [1, 'string', null, undefined, NaN, true, () => {}, {}, []];
+
+        baseLanguageTypes.forEach(type => {
+            expect(ModelCollection.isModelCollection(type)).toBe(false);
+        });
 
         expect(ModelCollection.isModelCollection(collection)).toBe(true);
     });
@@ -168,7 +172,8 @@ describe('duplicates()', () => {
         const duplicateOnlyCollection = collection.duplicates();
 
         expect(duplicateOnlyCollection).toHaveLength(1);
-        expect(duplicateOnlyCollection.includes(elements[0]) && !duplicateOnlyCollection.includes(elements[1])).toBe(true);
+        expect(duplicateOnlyCollection.includes(elements[0]) && !duplicateOnlyCollection.includes(elements[1]))
+            .toBe(true);
     });
 
     it('can check for duplicates by key', () => {
@@ -444,27 +449,6 @@ describe('find()', () => {
         collection[0] = 1;
         const func = () => collection.find(1);
         expect(func).toThrow(incompatibleElementsError);
-    });
-});
-
-describe('isModelCollection()', () => {
-    const elements = [new User(data.UserOne), new User(data.UserTwo)];
-
-    beforeEach(() => {
-        collection = new ModelCollection(elements);
-    });
-
-    it('can determine if the given value is a collection or not', () => {
-        expect(ModelCollection.isModelCollection(collection)).toBe(true);
-        // const baseLanguageTypes = [1, 'string', null, undefined, NaN, true, () => {}, {}, []];
-        //
-        // baseLanguageTypes.forEach(type => {
-        //     expect(ModelCollection.isModelCollection(type)).toBe(false);
-        // });
-        //
-        // expect(ModelCollection.isModelCollection([{}])).toBe(false);
-        // expect(ModelCollection.isModelCollection(new Collection(elements[0]))).toBe(false);
-        // expect(ModelCollection.isModelCollection([elements[0]])).toBe(false);
     });
 });
 

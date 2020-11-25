@@ -50,14 +50,9 @@ export default class SoftDeletes extends HasTimestamps {
      *
      * @return {Promise<boolean>}
      */
-    async delete(data?: Record<string, unknown>): Promise<boolean> {
-        return super.delete(data).then(boolean => {
-            if (boolean) {
-                // todo - a date time string, the format of which is defined on the castAttributes
-                this.setAttribute(this.getDeletedAtColumn(), new Date());
-            }
-
-            return boolean;
-        });
-    }
+    // async delete(data?: Record<string, unknown>): Promise<boolean> {
+    //     if (!this.usesSoftDeletes()) {
+    //         super.delete(data);
+    //     }
+    // }
 }

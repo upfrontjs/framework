@@ -211,20 +211,6 @@ export default class CallsApi extends BuildsQuery {
 
         let result: Model|ModelCollection<Model>;
 
-        const forceFilledModel = (data: Record<string, unknown>): Model => {
-            const instance = new (<typeof Model> this.constructor)(data);
-            const keysToSearch = instance.getAttributeKeys().concat(instance.loadedRelationKeys());
-            const missingAttributeKeys = Object.keys(data).filter(key => !keysToSearch.includes(key));
-
-            if (missingAttributeKeys.length) {
-                // treat response data as a source of truth and
-                // set properties regardless of guarding
-                missingAttributeKeys.forEach(key => instance.setAttribute(key, data[key]));
-            }
-
-            return instance;
-        };
-
         if (Array.isArray(data)) {
             // eslint-disable-next-line @typescript-eslint/no-var-requires
             const modelCollectionConstructor: new() => ModelCollection<Model> = require('../ModelCollection');
@@ -232,16 +218,48 @@ export default class CallsApi extends BuildsQuery {
 
             data.forEach(modelData => {
                 if (!modelData || typeof data !== 'object') {
-                    collection.push(forceFilledModel(modelData));
+                    collection.push(this.forceFilledModel(modelData));
                 }
             });
 
             result = collection;
         } else  {
-            result = forceFilledModel(data);
+            result = this.forceFilledModel(data);
         }
 
         return result;
+    }
+
+    /**
+     * Create a model and ensure that all data given has been set on the model.
+     *
+     * @param {object} data
+     *
+     * @private
+     *
+     * @return {Model}
+     */
+    private forceFilledModel(data: Record<string, unknown>): Model {
+        const instance = new (<typeof Model> this.constructor)(data);
+        const keysToSearch = instance.getAttributeKeys().concat(instance.loadedRelationKeys());
+        const missingAttributeKeys = Object.keys(data).filter(key => !keysToSearch.includes(key));
+
+        if (missingAttributeKeys.length) {
+            // treat response data as a source of truth and
+            // set properties regardless of guarding
+            missingAttributeKeys.forEach(key => instance.setAttribute(key, data[key]));
+
+            const expectedRelationName = (this as unknown as Model).getName().camel();
+
+            // if relation is defined and references a singular entity,
+            // set the relation of this on the instance
+            if (instance.relationDefined(expectedRelationName) && !instance.relationLoaded(expectedRelationName)) {
+                instance.addRelation(expectedRelationName, this);
+            }
+        }
+
+        // todo - set a last synced attribute to tell when the model was last fetched from remote?
+        return instance;
     }
 
     /**

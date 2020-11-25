@@ -8,7 +8,7 @@ export default class User extends Model {
         };
     }
 
-    team(): Model {
+    team(): Team {
         return this.belongsTo(Team);
     }
 }

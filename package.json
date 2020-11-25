@@ -8,7 +8,7 @@
     "test": "jest",
     "test-with-coverage": "npm run test --coverage",
     "lint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
-    "compile": "tsc --project tsconfig.json --pretty --extendedDiagnostics --listFiles --generateTrace ."
+    "compile": "tsc --project tsconfig.json --pretty --extendedDiagnostics --listFiles"
   },
   "author": "Nandor Kraszlan",
   "repository": {

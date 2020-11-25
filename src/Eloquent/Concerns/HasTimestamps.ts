@@ -60,4 +60,5 @@ export default class HasTimestamps extends HasRelations {
     }
 
     // public freshTimestamps()
+    // public touch
 }

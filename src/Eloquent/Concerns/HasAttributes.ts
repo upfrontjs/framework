@@ -5,6 +5,7 @@ import GuardsAttributes from './GuardsAttributes';
 import type HasRelations from './HasRelations';
 import type Model from '../Model';
 import type ModelCollection from '../ModelCollection';
+import { isObject } from '../../Support/function';
 
 export type Attributes = Record<string, unknown>;
 
@@ -70,14 +71,14 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
             // in their current state, not the original.
             const allProperties = attributes.attributes;
 
-            if (typeof attributes['relations'] === 'object' && attributes['relations'] !== null) {
+            if (isObject(attributes['relations'])) {
                 Object.assign(allProperties, attributes.relations);
             }
 
             return this.constructor(allProperties);
         }
 
-        if (attributes !== null && typeof attributes === 'object' && Object.keys(attributes).length) {
+        if (isObject(attributes) && Object.keys(attributes).length) {
             this.fill(attributes);
             this.syncOriginal();
         }
@@ -145,10 +146,6 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
         return Object.keys(this.attributes);
     }
 
-    // private isObject(value: any): value is NonNullable<Record<any, any>> {
-    //     return value !== null && typeof value === 'object'
-    // }
-
     /**
      * Set a given attribute on the model.
      *
@@ -165,8 +162,8 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
             return this;
         }
 
-        if (value !== null && typeof value === 'object' && (this as unknown as HasRelations).relationDefined(key)) {
-            (this as unknown as HasRelations).addRelation(key, value as any);
+        if (isObject(value) && (this as unknown as HasRelations).relationDefined(key)) {
+            (this as unknown as HasRelations).addRelation(key, value);
 
             // todo - automagically set the relation id on this
 

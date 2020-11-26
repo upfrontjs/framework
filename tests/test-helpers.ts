@@ -1,5 +1,6 @@
 import type { MockResponseInit } from 'jest-fetch-mock';
 import data from './mock/Models/data';
+import { isObject } from '../src/Support/function';
 
 export const buildResponse = (response?: string|Record<string, any>): MockResponseInit => {
     let responseObject: MockResponseInit = {
@@ -11,7 +12,7 @@ export const buildResponse = (response?: string|Record<string, any>): MockRespon
         responseObject.body = response;
     }
 
-    if (response !== null && typeof response === 'object') {
+    if (isObject(response)) {
         responseObject = Object.assign(responseObject, response);
     }
 

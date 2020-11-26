@@ -1034,7 +1034,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     public reduceRight(
         callback: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T,
         initialValue?: T
-    ): T{
+    ): T {
         if (!initialValue) {
             return this.toArray().reduceRight(callback);
         }

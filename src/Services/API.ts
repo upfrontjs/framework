@@ -1,6 +1,7 @@
 import type ApiCaller from '../Contracts/ApiCaller';
 import qs from 'qs';
 import type { IStringifyOptions } from 'qs';
+import { isObject } from '../Support/function';
 
 export default class API implements ApiCaller {
     /**
@@ -58,7 +59,7 @@ export default class API implements ApiCaller {
         const initOptions: RequestInit = { method };
 
         // merge in the user provided RequestInit object
-        if (this.requestOptions) {
+        if (isObject(this.requestOptions)) {
             Object.assign(initOptions, this.requestOptions);
         }
 
@@ -66,8 +67,7 @@ export default class API implements ApiCaller {
         if (this.initRequest && this.initRequest instanceof Function) {
             const initMethodValue = this.initRequest(url, method, data);
 
-            // only merge if it is in fact an object
-            if (initMethodValue !== null && typeof initMethodValue === 'object') {
+            if (isObject(initMethodValue)) {
                 Object.assign(initOptions, initMethodValue);
             }
         }
@@ -101,7 +101,7 @@ export default class API implements ApiCaller {
         }
 
         // append passed in custom headers
-        if (customHeaders !== null && typeof customHeaders === 'object') {
+        if (isObject(customHeaders)) {
             Object.keys(customHeaders).forEach(header => {
                 const headerValue = customHeaders[header];
 

@@ -2,6 +2,7 @@ import Collection from '../Support/Collection';
 import Model from './Model';
 import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
 
+// todo - what? why any?
 export default class ModelCollection<T> extends Collection<any> {
     constructor(models?: T[]) {
         super(models);

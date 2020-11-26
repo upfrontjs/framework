@@ -3,8 +3,6 @@ import Paginator from '../Pagination/Paginator';
 import type Model from '../Eloquent/Model';
 import FactoryBuilder from '../Eloquent/Factory/FactoryBuilder';
 
-export {}; // this file needs to be a module
-
 declare global {
     /**
      * Create a collection from the array.
@@ -58,3 +56,8 @@ if (!!window && !('factory' in window)) {
         }
     });
 }
+
+
+export const isObject = (value: any): value is NonNullable<Record<any, any>> => {
+    return value !== null && typeof value === 'object' && !Array.isArray(value);
+};

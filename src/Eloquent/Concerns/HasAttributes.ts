@@ -3,6 +3,10 @@ import isEqual from 'lodash/isEqual';
 import cloneDeep from 'lodash/cloneDeep';
 import GuardsAttributes from './GuardsAttributes';
 import type HasRelations from './HasRelations';
+import type Model from '../Model';
+import type ModelCollection from '../ModelCollection';
+
+export type Attributes = Record<string, unknown>;
 
 export default class HasAttributes extends GuardsAttributes implements Jsonable {
     /**
@@ -26,7 +30,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @type {object}
      */
-    protected attributes: Record<string, any> = {};
+    protected attributes: Attributes = {};
 
     /**
      * The attribute's original state.
@@ -35,7 +39,19 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @type {object}
      */
-    protected original: Record<string, any> = {};
+    protected original: Attributes = {};
+
+    /**
+     * The loaded relations for the model.
+     *
+     * @protected
+     */
+    // This property placed here because extending classes are
+    // not yet constructed therefore when HasAttributes
+    // constructs it may ultimately references
+    // this.relations, and it wouldn't be
+    // set otherwise.
+    protected relations: Record<string, (Model | ModelCollection<Model>)> = {};
 
     /**
      * Create a new instance.
@@ -46,7 +62,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @return {this}
      */
-    constructor(attributes?: Record<string, any>) {
+    constructor(attributes?: Attributes) {
         super();
 
         if (attributes instanceof HasAttributes) {
@@ -54,28 +70,14 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
             // in their current state, not the original.
             const allProperties = attributes.attributes;
 
-            if (typeof attributes['relations'] === 'object' && attributes['relations']) {
+            if (typeof attributes['relations'] === 'object' && attributes['relations'] !== null) {
                 Object.assign(allProperties, attributes.relations);
             }
 
             return this.constructor(allProperties);
         }
 
-        if (attributes && Object.keys(attributes)) {
-            Object.keys(attributes).forEach(name => {
-                if (name === 'prototype' || name === 'constructor' || name === 'length') {
-                    return;
-                }
-
-                if (!!attributes[name]
-                    && typeof attributes[name] === 'object'
-                    && (this as unknown as HasRelations).relationDefined(name.camel())
-                ) {
-                    // always except the relation name in camel casing
-                    (this as unknown as HasRelations).addRelation(name.camel(), attributes[name]);
-                }
-            });
-
+        if (attributes !== null && typeof attributes === 'object' && Object.keys(attributes).length) {
             this.fill(attributes);
             this.syncOriginal();
         }
@@ -124,8 +126,8 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @return {object}
      */
-    public getAttributes(): Record<string, any> {
-        const result: Record<string, any> = {};
+    public getAttributes(): Attributes {
+        const result: Attributes = {};
 
         Object.keys(this.attributes).forEach((name: string) => {
             result[name] = this.getAttribute(name);
@@ -143,6 +145,10 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
         return Object.keys(this.attributes);
     }
 
+    // private isObject(value: any): value is NonNullable<Record<any, any>> {
+    //     return value !== null && typeof value === 'object'
+    // }
+
     /**
      * Set a given attribute on the model.
      *
@@ -159,8 +165,10 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
             return this;
         }
 
-        if (!!value && value instanceof Object && (this as unknown as HasRelations).relationDefined(key)) {
-            (this as unknown as HasRelations).addRelation(key, value);
+        if (value !== null && typeof value === 'object' && (this as unknown as HasRelations).relationDefined(key)) {
+            (this as unknown as HasRelations).addRelation(key, value as any);
+
+            // todo - automagically set the relation id on this
 
             return this;
         }
@@ -244,7 +252,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @return {this}
      */
-    public fill(attributes: Record<string, any>): this {
+    public fill(attributes: Attributes): this {
         this.forceFill(this.getFillableFromObject(attributes));
 
         return this;
@@ -257,7 +265,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @return {this}
      */
-    public forceFill(attributes: Record<string, any>): this {
+    public forceFill(attributes: Attributes): this {
         Object.keys(attributes).forEach(name => {
             this.setAttribute(name[this.attributeCasing](), attributes[name]);
         });
@@ -307,12 +315,12 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @return {any}
      */
-    public getOriginal(key?: string, defaultValue?: any): Record<string, any> | any {
+    public getOriginal(key?: string, defaultValue?: any): Attributes | any {
         if (key) {
             return this.original[key] ? this.castAttribute(key, this.original[key]) : defaultValue;
         }
 
-        const result: Record<string, any> = {};
+        const result: Attributes = {};
 
         Object.keys(this.original).forEach(name => {
             result[name] = this.castAttribute(name, this.original[name]);
@@ -333,7 +341,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @return {any}
      */
-    public getRawOriginal(key?: string, defaultValue?: any): Record<string, any> | any {
+    public getRawOriginal(key?: string, defaultValue?: any): Attributes | any {
         if (key) {
             return this.original[key] ?? defaultValue;
         }
@@ -352,14 +360,14 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @return {object|null}
      */
-    public getChanges(key?: string): Record<string, any> | null {
+    public getChanges(key?: string): Attributes | null {
         if (key && this.attributes[key]) {
             return !isEqual(this.getRawOriginal(key), this.attributes[key])
                 ? { [key]: this.castAttribute(key, this.attributes[key]) }
                 : null;
         }
 
-        const result: Record<string, any> = {};
+        const result: Attributes = {};
 
         Object.keys(this.attributes).forEach(name => {
             if (!isEqual(this.getRawOriginal(name), this.attributes[name])) {
@@ -414,8 +422,8 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @return {object}
      */
-    public only(attributes: string[]): Record<string, any> {
-        const result: Record<string, any> = {};
+    public only(attributes: string[]): Attributes {
+        const result: Attributes = {};
 
         attributes.forEach((name: string) => {
             if (name in this.attributes) {
@@ -433,8 +441,8 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @return {object}
      */
-    public except(attributes: string[]): Record<string, any> {
-        const result: Record<string, any> = {};
+    public except(attributes: string[]): Attributes {
+        const result: Attributes = {};
 
         this.getAttributeKeys()
             .filter(name => !attributes.includes(name))

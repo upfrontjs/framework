@@ -1,5 +1,7 @@
 import Collection from './Collection';
 import Paginator from '../Pagination/Paginator';
+import type Model from '../Eloquent/Model';
+import FactoryBuilder from '../Eloquent/Factory/FactoryBuilder';
 
 export {}; // this file needs to be a module
 
@@ -21,6 +23,16 @@ declare global {
      * @return {Paginator}
      */
     function paginate<T>(items: T[]): Paginator<T>;
+
+    /**
+     * Return the Factory builder.
+     *
+     * @param {Model} modelConstructor
+     * @param {number} amount
+     *
+     * @return {Paginator}
+     */
+    function factory(modelConstructor: new () => Model, amount?: number): FactoryBuilder;
 }
 
 if (!!window && !('collect' in window)) {
@@ -35,6 +47,14 @@ if (!!window && !('paginate' in window)) {
     Object.defineProperty(window, 'paginate', {
         value: function (...items: any[]) {
             return new Paginator(items.flat());
+        }
+    });
+}
+
+if (!!window && !('factory' in window)) {
+    Object.defineProperty(window, 'factory', {
+        value: function (modelConstructor: new () => Model, amount = 1): FactoryBuilder {
+            return new FactoryBuilder(modelConstructor).times(amount);
         }
     });
 }

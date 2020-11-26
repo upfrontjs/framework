@@ -24,7 +24,7 @@ export default class HasTimestamps extends HasRelations {
      *
      * @type {boolean}
      */
-    protected readonly timestamps = true;
+    protected readonly timestamps: boolean = true;
 
     /**
      * Get the name of the created at attribute.

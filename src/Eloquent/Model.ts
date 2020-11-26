@@ -1,4 +1,5 @@
 import SoftDeletes from './Concerns/SoftDeletes';
+import FactoryBuilder from "./Factory/FactoryBuilder";
 
 // todo - https://www.npmjs.com/package/@qiwi/mixin
 
@@ -111,6 +112,13 @@ export default class Model extends SoftDeletes {
      */
     public getName(): string {
         return this.constructor.name;
+    }
+
+    /**
+     * Call the factory fluently from the model.
+     */
+    public static factory(): FactoryBuilder {
+        return new FactoryBuilder(this);
     }
 
     // static async all(): Promise<ModelCollection<Model<Record<string, unknown>>>> {

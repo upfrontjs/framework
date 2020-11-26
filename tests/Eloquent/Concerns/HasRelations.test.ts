@@ -2,7 +2,7 @@ import HasRelations from '../../../src/Eloquent/Concerns/HasRelations';
 import Team from '../../mock/Models/Team';
 
 class TestClass extends HasRelations {
-    team() {
+    $team() {
         return this.belongsTo(Team);
     }
     getName(): string {

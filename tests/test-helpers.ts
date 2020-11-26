@@ -11,7 +11,7 @@ export const buildResponse = (response?: string|Record<string, any>): MockRespon
         responseObject.body = response;
     }
 
-    if (response && typeof response === 'object') {
+    if (response !== null && typeof response === 'object') {
         responseObject = Object.assign(responseObject, response);
     }
 

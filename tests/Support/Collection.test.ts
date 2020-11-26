@@ -204,7 +204,7 @@ describe('unique()', () => {
 
         collection = new Collection(items);
         expect(
-            collection.unique((obj: Record<string, number|string>) => obj.id.toString() + obj.name.toString())
+            collection.unique(obj => String(obj.id) + String(obj.name))
         ).toHaveLength(2);
     });
 
@@ -1020,7 +1020,7 @@ describe('array-methods', () => {
             expect(collection.lastIndexOf('something')).toStrictEqual(-1);
         });
 
-        it('can search for the last occurence from the given index backwards', () => {
+        it('can search for the last occurrence from the given index backwards', () => {
             const lastElement = elements[elements.length - 1];
             collection[1] = lastElement;
 
@@ -1035,10 +1035,10 @@ describe('array-methods', () => {
         });
 
         it('reverses the collection', () => {
-            const reveresedCollection = collection.reverse();
+            const reversedCollection = collection.reverse();
 
-            expect(reveresedCollection.first()).toStrictEqual(elements[elements.length - 1]);
-            expect(reveresedCollection.last()).toStrictEqual(elements[0]);
+            expect(reversedCollection.first()).toStrictEqual(elements[elements.length - 1]);
+            expect(reversedCollection.last()).toStrictEqual(elements[0]);
         });
     });
 
@@ -1231,7 +1231,7 @@ describe('array-methods', () => {
             expect(collection.join('+')).toBe(elements.join('+'));
         });
 
-        it('can join the collection elements with the defult "\'" string', () => {
+        it('can join the collection elements with the default "\'" string', () => {
             expect(collection.join()).toBe(elements.join());
         });
     });

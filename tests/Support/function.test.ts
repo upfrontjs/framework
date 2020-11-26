@@ -1,6 +1,8 @@
 import Collection from '../../src/Support/Collection';
 import Paginator from '../../src/Pagination/Paginator';
 import '../../src/Support/function';
+import User from '../mock/Models/User';
+import FactoryBuilder from '../../src/Eloquent/Factory/FactoryBuilder';
 
 describe('function helpers', () => {
     it('can create a collection by calling the collect() helper method', () => {
@@ -17,5 +19,11 @@ describe('function helpers', () => {
 
         expect(window.paginate([1, 2])).toBeInstanceOf(Paginator);
         expect(window.paginate([1, 2]).hasPages()).toBe(false);
+    });
+
+    it('can create a factory builder by calling the factory() helper method', () => {
+        expect(factory(User)).toBeInstanceOf(FactoryBuilder);
+
+        expect(window.factory(User)).toBeInstanceOf(FactoryBuilder);
     });
 });

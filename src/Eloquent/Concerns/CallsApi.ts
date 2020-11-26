@@ -8,6 +8,7 @@ import type HandlesApiResponse from '../../Contracts/HandlesApiResponse';
 import type Model from '../Model';
 import BuildsQuery from './BuildsQuery';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
+import type { Attributes } from './HasAttributes';
 
 export default class CallsApi extends BuildsQuery {
     /**
@@ -45,7 +46,7 @@ export default class CallsApi extends BuildsQuery {
     /**
      * Reset the endpoint.
      */
-    constructor(attributes?: Record<string, unknown>) {
+    constructor(attributes?: Attributes) {
         super(attributes); // todo try to move it down the chain to omit the argument
         this.resetEndpoint();
     }
@@ -198,11 +199,11 @@ export default class CallsApi extends BuildsQuery {
      * @return {Model}
      */
     protected newInstanceFromResponseData(
-        data: Record<string, unknown>|Record<string, unknown>[]
+        data: Attributes|Attributes[]
     ): Model|ModelCollection<Model> {
-        if (!data
+        if (data === null
             || typeof data !== 'object'
-            || Array.isArray(data) && !data.every(entry => typeof entry === 'object' && !entry)
+            || Array.isArray(data) && data.some(entry => typeof entry !== 'object' || entry === null)
         ) {
             throw new InvalidArgumentException(
                 'Unexpected response type. Ensure that the endpoint returns model data only.'
@@ -212,8 +213,8 @@ export default class CallsApi extends BuildsQuery {
         let result: Model|ModelCollection<Model>;
 
         if (Array.isArray(data)) {
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            const modelCollectionConstructor: new() => ModelCollection<Model> = require('../ModelCollection');
+            // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-member-access
+            const modelCollectionConstructor: new() => ModelCollection<Model> = require('../ModelCollection').default;
             const collection = new modelCollectionConstructor();
 
             data.forEach(modelData => {
@@ -239,7 +240,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Model}
      */
-    private forceFilledModel(data: Record<string, unknown>): Model {
+    private forceFilledModel(data: Attributes): Model {
         const instance = new (<typeof Model> this.constructor)(data);
         const keysToSearch = instance.getAttributeKeys().concat(instance.loadedRelationKeys());
         const missingAttributeKeys = Object.keys(data).filter(key => !keysToSearch.includes(key));
@@ -248,14 +249,6 @@ export default class CallsApi extends BuildsQuery {
             // treat response data as a source of truth and
             // set properties regardless of guarding
             missingAttributeKeys.forEach(key => instance.setAttribute(key, data[key]));
-
-            const expectedRelationName = (this as unknown as Model).getName().camel();
-
-            // if relation is defined and references a singular entity,
-            // set the relation of this on the instance
-            if (instance.relationDefined(expectedRelationName) && !instance.relationLoaded(expectedRelationName)) {
-                instance.addRelation(expectedRelationName, this);
-            }
         }
 
         // todo - set a last synced attribute to tell when the model was last fetched from remote?

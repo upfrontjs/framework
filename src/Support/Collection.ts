@@ -198,7 +198,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {boolean}
      */
-    public hasDuplicates(key?: string | ((obj: Record<string, T>) => T)): boolean {
+    public hasDuplicates(key?: string | ((obj: T) => T)): boolean {
         return !!this._newInstance(this.toArray()).duplicates(key).length;
     }
 
@@ -227,17 +227,19 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
             return this._newInstance(values);
         }
 
-        const objects: Record<string, T>[] = [];
+        const objects: T[] = [];
 
-        this.forEach((object: Record<string, T>) => {
+        this.forEach(object => {
             let boolean: boolean;
 
             if (key instanceof Function) {
-                boolean = !objects.some((obj) => isEqual(key(obj), key(object)));
+                boolean = !objects.some(obj => isEqual(key(obj), key(object)));
             } else if (key && key in object) {
-                boolean = !objects.some((obj) => isEqual(obj[key], object[key]));
+                boolean = !objects.some(obj =>
+                    isEqual((obj as Record<string, unknown>)[key], (object as Record<string, unknown>)[key])
+                );
             } else {
-                boolean = !objects.some((obj) => isEqual(obj, object));
+                boolean = !objects.some(obj => isEqual(obj, object));
             }
 
             if (boolean) {
@@ -257,7 +259,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    public duplicates(key?: string | ((obj: Record<string, T>) => T)): this {
+    public duplicates(key?: string | ((obj: T) => T)): this {
         const array = this.toArray();
 
         if (!this._allAreObjects()) {
@@ -268,22 +270,28 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
             return this._newInstance(uniq(duplicates));
         }
 
-        const objects: Record<string, T>[] = [];
+        const objects: T[] = [];
 
-        this.forEach((object: Record<string, T>) => {
+        this.forEach(object => {
             let boolean: boolean;
 
             if (key instanceof Function) {
                 boolean =
-                    array.filter((obj: Record<string, any>) => isEqual(key(object), key(obj))).length > 1 &&
+                    array.filter(obj => isEqual(key(object), key(obj))).length > 1 &&
                     !objects.some(obj => isEqual(key(object), key(obj)));
             } else if (key && key in object) {
                 boolean =
-                    array.filter((obj: Record<string, any>) => isEqual(object[key], obj[key])).length > 1 &&
-                    !objects.some((obj) => isEqual(object[key], obj[key]));
+                    array.filter(obj => isEqual(
+                        (object as Record<string, unknown>)[key],
+                        (obj as Record<string, unknown>)[key])
+                    ).length > 1
+                    && !objects.some(obj => isEqual(
+                        (object as Record<string, unknown>)[key],
+                        (obj as Record<string, unknown>)[key])
+                    );
             } else {
-                boolean = array.filter((obj) => isEqual(object, obj)).length > 1 &&
-                    !objects.some((obj) => isEqual(object, obj));
+                boolean = array.filter(obj => isEqual(object, obj)).length > 1 &&
+                    !objects.some(obj => isEqual(object, obj));
             }
 
             if (boolean) {
@@ -659,8 +667,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
 
         if (Array.isArray(properties)) {
             return new Collection(
-                this.map((item: Record<string, T>) => {
-                    const obj: Record<string, T> = {};
+                this.map((item: Record<string, unknown>) => {
+                    const obj: Record<string, unknown> = {};
 
                     properties.forEach(property => obj[property] = item[property]);
 
@@ -787,7 +795,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    public forEach(callback: (value: any, index: number, array: any[]) => void, thisArg?: Array<any>): this {
+    public forEach(callback: (value: T, index: number, array: T[]) => void, thisArg?: Array<any>): this {
         this.toArray().forEach(callback, thisArg);
 
         return this;
@@ -1041,7 +1049,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {boolean}
      */
-    protected _allAreObjects(): this is Collection<Record<string, T>> {
-        return this.every(item => typeof item === 'object' && item instanceof Object);
+    protected _allAreObjects(): this is Collection<Record<string, any>> {
+        return this.every(item => typeof item === 'object' && item !== null);
     }
 }

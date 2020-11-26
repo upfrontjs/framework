@@ -3,14 +3,19 @@ import type Model from '../Model';
 import LogicException from '../../Exceptions/LogicException';
 import CallsApi from './CallsApi';
 import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
+import type { Attributes } from './HasAttributes';
 
 export default class HasRelations extends CallsApi {
     /**
-     * The loaded relations for the model.
+     * The string all the relation methods expected to prefixed by.
      *
      * @protected
+     *
+     * @return {string}
      */
-    protected relations: Record<string, (Model | ModelCollection<Model>)> = {};
+    protected get relationMethodPrefix(): string {
+        return '$';
+    }
 
     /**
      * Load a relationships from remote.
@@ -20,6 +25,7 @@ export default class HasRelations extends CallsApi {
      *
      * @return {Promise<this>}
      */
+    // todo - in tests mock the response from the fakeDB implemented by the config
     public async load(relations: string|string[], forceReload = false): Promise<this> {
         if (!Array.isArray(relations)) {
             relations = [relations];
@@ -37,7 +43,7 @@ export default class HasRelations extends CallsApi {
             }
 
             promises.push(
-                ((this[relation] as CallableFunction)() as Model).get()
+                ((this[relation.start(this.relationMethodPrefix)] as CallableFunction)() as Model).get()
                     .then((data: Model|ModelCollection<Model>) => this.addRelation(relation, data))
             );
         }
@@ -96,6 +102,7 @@ export default class HasRelations extends CallsApi {
      */
     // todo - update to protected
     public relationDefined(name: string): boolean {
+        name = name.start(this.relationMethodPrefix);
         if (this[name] instanceof Function) {
             const value = (this[name] as CallableFunction)();
             const methodDefinition = (this[name] as CallableFunction).toString();
@@ -121,14 +128,16 @@ export default class HasRelations extends CallsApi {
      */
     public addRelation(
         name: string,
-        value: Record<string, any>|Record<string, any>[]|Model|ModelCollection<Model>
+        value: Attributes|Attributes[]|Model|ModelCollection<Model>
     ): this {
         if (!this.relationDefined(name)) {
-            throw new LogicException('Attempted to add an undefined relation: \'' + name + '\'.');
+            throw new LogicException(
+                'Attempted to add an undefined relation: \'' + name.start(this.relationMethodPrefix) + '\'.'
+            );
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const modelCollectionConstructor: new() => ModelCollection<Model> = require('../ModelCollection');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-member-access
+        const modelCollectionConstructor: new() => ModelCollection<Model> = require('../ModelCollection').default;
 
         if (value instanceof HasRelations
             || (<typeof ModelCollection> modelCollectionConstructor).isModelCollection(value)
@@ -139,7 +148,7 @@ export default class HasRelations extends CallsApi {
             return this;
         }
 
-        const relatedModel: Model = (this[name] as CallableFunction)();
+        const relatedModel: Model = (this[name.start(this.relationMethodPrefix)] as CallableFunction)();
         let relation: ModelCollection<Model>|Model;
 
         // set up the relations by calling the constructor of the related models

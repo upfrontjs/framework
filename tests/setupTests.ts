@@ -19,3 +19,7 @@ Object.defineProperty(Array.prototype, 'has', {
         return this.indexOf(value) !== -1;
     }
 });
+
+global.beforeEach(() => {
+    new Config().reset();
+});

@@ -1,4 +1,5 @@
 import CastsAttributes from './CastsAttributes';
+import type { Attributes } from './HasAttributes';
 
 export default class GuardsAttributes extends CastsAttributes {
     /**
@@ -149,7 +150,7 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @return {object}
      */
-    protected getFillableFromObject(attributes: Record<string, unknown>): Record<string, unknown> {
+    protected getFillableFromObject(attributes: Attributes): Partial<Attributes> {
         if (this.getFillable().includes('*')) {
             return attributes;
         }

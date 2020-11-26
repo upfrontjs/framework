@@ -67,7 +67,7 @@ export default class API implements ApiCaller {
             const initMethodValue = this.initRequest(url, method, data);
 
             // only merge if it is in fact an object
-            if (initOptions && typeof initMethodValue === 'object') {
+            if (initMethodValue !== null && typeof initMethodValue === 'object') {
                 Object.assign(initOptions, initMethodValue);
             }
         }
@@ -101,7 +101,7 @@ export default class API implements ApiCaller {
         }
 
         // append passed in custom headers
-        if (customHeaders && typeof customHeaders === 'object') {
+        if (customHeaders !== null && typeof customHeaders === 'object') {
             Object.keys(customHeaders).forEach(header => {
                 const headerValue = customHeaders[header];
 

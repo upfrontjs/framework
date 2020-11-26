@@ -153,13 +153,12 @@ export default class HasRelations extends CallsApi {
 
         // set up the relations by calling the constructor of the related models
         if (Array.isArray(value)) {
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
             const collection = new modelCollectionConstructor();
 
             value.forEach(modelData => collection.push(new (<typeof Model> relatedModel.constructor)(modelData)));
             relation = collection;
         } else {
-            relation = new (<typeof Model> relatedModel.constructor)(value);
+            relation = new (<typeof Model> relatedModel.constructor)(value as Attributes);
         }
 
         this.relations[name] = relation;

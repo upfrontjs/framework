@@ -1,12 +1,12 @@
 {
   "name": "upfront",
   "version": "0.1.0",
-  "description": "Frontend data handling framework complementary to backend model systems.",
+  "description": "Data handling framework complementary to backend model systems.",
   "main": "lib/index",
   "types": "lib/index",
   "scripts": {
     "test": "jest",
-    "test-with-coverage": "npm run test --coverage",
+    "test-with-coverage": "npm run test -- --coverage",
     "lint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
     "compile": "tsc --project tsconfig.json --pretty --extendedDiagnostics --listFiles"
   },

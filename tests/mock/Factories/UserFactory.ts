@@ -25,9 +25,9 @@ export default class UserFactory extends Factory {
         };
     }
 
-    public manager(): Attributes {
+    public resolvedName(): Attributes {
         return {
-            type: () => 'manager'
+            name: () => 'resolved name'
         };
     }
 }

@@ -6,17 +6,6 @@ import User from '../mock/Models/User';
 let collection: ModelCollection<User>;
 const incompatibleElementsError = ModelCollection.name + ' can only handle Model values.';
 
-// const integrityCheck = () => {
-//     // eslint-disable-next-line
-// eslint-disable-next-line jest/no-commented-out-tests
-//     it('checks the collection\'s integrity before the method', () => {
-//         // @ts-expect-error
-//         collection[0] = 1;
-//         const func = () => collection.unique();
-//         expect(func).toThrow(incompatibleElementsError);
-//     });
-// };
-
 // todo - server side pagination on this?
 describe('constructor()', () => {
     const elements = [new User(data.UserOne), new User(data.UserTwo), new User(data.UserOne)];

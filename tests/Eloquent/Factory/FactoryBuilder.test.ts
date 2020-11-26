@@ -2,25 +2,30 @@ import FactoryBuilder from '../../../src/Eloquent/Factory/FactoryBuilder';
 import User from '../../mock/Models/User';
 import Team from '../../mock/Models/Team';
 import Model from '../../../src/Eloquent/Model';
-import type { Attributes } from '../../../src/Eloquent/Concerns/HasAttributes';
 import ModelCollection from '../../../src/Eloquent/ModelCollection';
+import InvalidOffsetException from '../../../src/Exceptions/InvalidOffsetException';
+import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
+import Factory from '../../../src/Eloquent/Factory/Factory';
 
-class FactoryBuilderTester extends FactoryBuilder {
-    public model: Model;
-    constructor(modelConstructor: new (attributes?: Attributes) => Model) {
-        super(modelConstructor);
-        this.model = new modelConstructor;
+class FakeFactory extends Factory {
+    // @ts-expect-error
+    scopeAsProperty = 0;
+
+    invalidScope() {
+        return null;
     }
 }
 
-let factoryBuilder: FactoryBuilderTester;
+let factoryBuilder: FactoryBuilder;
 
 describe('factoryBuilder', () => {
     beforeEach(() => {
-        factoryBuilder = new FactoryBuilderTester(User);
+        factoryBuilder = new FactoryBuilder(User);
     });
 
     describe('states()', () => {
+        const factoryName = new User().factory().constructor.name;
+
         it('can return the model with the states applied', () => {
             const user: User = factoryBuilder.state('withTeam').create() as User;
             expect(user.team).toBeInstanceOf(Team);
@@ -30,11 +35,102 @@ describe('factoryBuilder', () => {
         });
 
         it('can take multiple arguments', () => {
-            const user: User = factoryBuilder.state('withTeam').create() as User;
-            expect(user.team).toBeInstanceOf(Team);
+            const user: User = factoryBuilder.create() as User;
+            const newUser = factoryBuilder.state(['withTeam', 'nameOverridden']).create() as User;
 
-            const newUser = factoryBuilder.state('nameOverridden').create() as User;
+            expect(newUser.team).toBeInstanceOf(Team);
             expect(newUser.name).not.toBe(user.name);
+        });
+
+        it('throws error if the given state is not defined', () => {
+            const failingFunc = jest.fn(
+                () => factoryBuilder.state('undefinedScope').create()
+            );
+
+            expect(failingFunc).toThrow(
+                new InvalidOffsetException(
+                    '\'undefinedScope\' is not defined on the \'' + factoryName + '\' class.'
+                )
+            );
+        });
+
+        it('throws error if the given state is not a function', () => {
+            User.prototype.factory = () => new FakeFactory();
+
+            const failingFunc = jest.fn(
+                () => factoryBuilder.state('scopeAsProperty').create()
+            );
+
+            expect(failingFunc).toThrow(
+                new InvalidOffsetException(
+                    '\'scopeAsProperty\' is not a method on the \'' + FakeFactory.name + '\' class.'
+                )
+            );
+        });
+
+        it('throws error if the given state is not a returning an object', () => {
+            User.prototype.factory = () => new FakeFactory();
+
+            const failingFunc = jest.fn(
+                () => factoryBuilder.state('invalidScope').create()
+            );
+
+            expect(failingFunc).toThrow(
+                new InvalidOffsetException(
+                    '\'invalidScope\' is not returning an object on \'' + FakeFactory.name + '\' class.'
+                )
+            );
+        });
+    });
+
+    describe('getFactory()', () => {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        const userFactory = User.prototype.factory;
+
+        afterEach(() => {
+            User.prototype.factory = userFactory;
+        });
+
+        it('throws error if the factory resolved isn\'t an instanceof Factory', () => {
+            // @ts-expect-error
+            User.prototype.factory = () => ({});
+
+            // @ts-expect-error
+            const failingFunc = jest.fn(() => factoryBuilder.getFactory());
+
+            expect(failingFunc).toThrow(
+                new InvalidArgumentException(
+                    'Invalid return type defined on the factory() method on the \'' + User.name + '\' class.'
+                )
+            );
+        });
+
+        it('throws error if factory is not defined on the model or isn\'t a function', () => {
+            // @ts-expect-error
+            User.prototype.factory = 1;
+
+            // @ts-expect-error
+            let failingFunc = jest.fn(() => factoryBuilder.getFactory());
+
+            expect(failingFunc).toThrow(
+                new InvalidOffsetException(
+                    'The method factory() is either not defined or not and instance of Function on the \''
+                    + User.name + '\' class.'
+                )
+            );
+
+            // @ts-expect-error
+            delete User.prototype?.factory;
+
+            // @ts-expect-error
+            failingFunc = jest.fn(() => factoryBuilder.getFactory());
+
+            expect(failingFunc).toThrow(
+                new InvalidOffsetException(
+                    'The method factory() is either not defined or not and instance of Function on the \''
+                    + User.name + '\' class.'
+                )
+            );
         });
     });
 
@@ -52,7 +148,22 @@ describe('factoryBuilder', () => {
     });
 
     describe('make()', () => {
+        it('doesn\'t set the id and timestamps', () => {
+            const model = factoryBuilder.make() as Model;
 
+            expect(model[model.getUpdatedAtColumn()]).toBeNull();
+            expect(model[model.getCreatedAtColumn()]).toBeNull();
+            expect(model[model.getDeletedAtColumn()]).toBeNull();
+            expect(model.getKey()).toBeUndefined();
+        });
+
+        it('can return a model', () => {
+            expect(factoryBuilder.make()).toBeInstanceOf(Model);
+        });
+
+        it('can return a model collection', () => {
+            expect(factoryBuilder.times(2).make()).toBeInstanceOf(ModelCollection);
+        });
     });
 
     describe('create()', () => {
@@ -79,7 +190,7 @@ describe('factoryBuilder', () => {
         });
 
         it('doesn\'t set the dates if they\'re disabled', () => {
-            factoryBuilder = new FactoryBuilderTester(Team);
+            factoryBuilder = new FactoryBuilder(Team);
 
             const team = factoryBuilder.create() as User;
 
@@ -90,14 +201,77 @@ describe('factoryBuilder', () => {
     });
 
     describe('raw()', () => {
+        it('returns raw attributes', () => {
+            expect(factoryBuilder.raw()).toStrictEqual({
+                name: 'username 1',
+                createdAt: null,
+                updatedAt: null,
+                deletedAt: null
+            });
+        });
 
-    });
+        it('merges in states', () => {
+            expect(factoryBuilder.state('nameOverridden').raw()).toStrictEqual({
+                name: 'overridden name',
+                createdAt: null,
+                updatedAt: null,
+                deletedAt: null
+            });
+        });
 
-    describe('getFactory()', () => {
+        it('merges in argument', () => {
+            expect(factoryBuilder.raw({ createdAt: 'value' })).toStrictEqual({
+                name: 'username 1',
+                createdAt: 'value',
+                updatedAt: null,
+                deletedAt: null
+            });
+        });
 
+        it('resolves methods when merging', () => {
+            expect(factoryBuilder.state('resolvedName').raw()).toStrictEqual({
+                name: 'resolved name',
+                createdAt: null,
+                updatedAt: null,
+                deletedAt: null
+            });
+        });
     });
 
     describe('getId()', () => {
+        it('can return uuid if primaryKey is uuid', () => {
+            // @ts-expect-error
+            factoryBuilder.model.primaryKey = 'uuid';
 
+            // @ts-expect-error
+            expect((factoryBuilder.getKey() as string).isUuid()).toBe(true);
+
+            // @ts-expect-error
+            factoryBuilder.model.primaryKey = 'id';
+        });
+
+        it('returns unique sequential ids', () => {
+            // @ts-expect-error
+            const id1 = factoryBuilder.getKey();
+            // @ts-expect-error
+            const id2 = factoryBuilder.getKey();
+
+            expect(id1).not.toBe(id2);
+        });
+
+        it('returns unique sequential ids without interference from other models', () => {
+            // @ts-expect-error
+            const userId1 = factoryBuilder.getKey();
+            // @ts-expect-error
+            const userId2 = factoryBuilder.getKey();
+
+            // @ts-expect-error
+            const teamId1 = new FactoryBuilder(Team).getKey();
+            // @ts-expect-error
+            const teamId2 = new FactoryBuilder(Team).getKey();
+
+            expect(teamId1).toBe(userId1);
+            expect(teamId2).toBe(userId2);
+        });
     });
 });

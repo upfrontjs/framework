@@ -32,7 +32,7 @@ export default class HasTimestamps extends HasRelations {
      * @return {string}
      */
     public getCreatedAtColumn(): string {
-        return HasTimestamps.CREATED_AT;
+        return HasTimestamps.CREATED_AT[this.attributeCasing]();
     }
 
     /**
@@ -41,7 +41,7 @@ export default class HasTimestamps extends HasRelations {
      * @return {string}
      */
     public getUpdatedAtColumn(): string {
-        return HasTimestamps.UPDATED_AT;
+        return HasTimestamps.UPDATED_AT[this.attributeCasing]();
     }
 
     // public touch() {

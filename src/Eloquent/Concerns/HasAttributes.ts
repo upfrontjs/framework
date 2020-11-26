@@ -9,6 +9,7 @@ import { isObject } from '../../Support/function';
 
 export type Attributes = Record<string, unknown>;
 
+// todo - make hidden relations/attributes (set the property enumerable to false)
 export default class HasAttributes extends GuardsAttributes implements Jsonable {
     /**
      * Allow a indexing by string.

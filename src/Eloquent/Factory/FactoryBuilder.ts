@@ -108,7 +108,7 @@ export default class FactoryBuilder {
             }
 
             if (!model.getKey()) {
-                model.setAttribute(model.getKeyName(), this.getId());
+                model.setAttribute(model.getKeyName(), this.getKey());
             }
 
             model.syncOriginal();
@@ -215,7 +215,7 @@ export default class FactoryBuilder {
      *
      * @return {string|number}
      */
-    protected getId(): string|number {
+    protected getKey(): string|number {
         const config = new Config();
 
         if (this.model.getKeyName() === 'uuid') {

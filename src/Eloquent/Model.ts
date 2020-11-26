@@ -1,5 +1,5 @@
 import SoftDeletes from './Concerns/SoftDeletes';
-import FactoryBuilder from "./Factory/FactoryBuilder";
+import FactoryBuilder from './Factory/FactoryBuilder';
 
 // todo - https://www.npmjs.com/package/@qiwi/mixin
 

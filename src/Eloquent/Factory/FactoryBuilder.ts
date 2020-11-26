@@ -120,7 +120,7 @@ export default class FactoryBuilder {
             return modelOrCollection;
         }
 
-        addAttributes(modelOrCollection);
+        addAttributes(modelOrCollection as Model);
 
         return modelOrCollection;
     }

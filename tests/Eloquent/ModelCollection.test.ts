@@ -2,10 +2,20 @@ import Collection from '../../src/Support/Collection';
 import ModelCollection from '../../src/Eloquent/ModelCollection';
 import data from '../mock/Models/data';
 import User from '../mock/Models/User';
-import Model from '../../src/Eloquent/Model';
 
-let collection: ModelCollection<Model>;
+let collection: ModelCollection<User>;
 const incompatibleElementsError = ModelCollection.name + ' can only handle Model values.';
+
+// const integrityCheck = () => {
+//     // eslint-disable-next-line
+// eslint-disable-next-line jest/no-commented-out-tests
+//     it('checks the collection\'s integrity before the method', () => {
+//         // @ts-expect-error
+//         collection[0] = 1;
+//         const func = () => collection.unique();
+//         expect(func).toThrow(incompatibleElementsError);
+//     });
+// };
 
 // todo - server side pagination on this?
 describe('constructor()', () => {
@@ -23,6 +33,7 @@ describe('constructor()', () => {
     });
 
     it('checks the collection\'s integrity after setting the models', () => {
+        // @ts-expect-error
         const func = () => new ModelCollection([1]);
         expect(func).toThrow(incompatibleElementsError);
     });
@@ -91,6 +102,7 @@ describe('modelKeys()', () => {
     });
 
     it('checks the collection\'s integrity before the method', () => {
+        // @ts-expect-error
         collection[0] = 1;
         const func = () => collection.modelKeys();
         expect(func).toThrow(incompatibleElementsError);
@@ -118,7 +130,7 @@ describe('unique()', () => {
     });
 
     it('can de-duplicate the collection by the given function', () => {
-        expect(collection.unique((model: Model) => model.getName())).toHaveLength(1);
+        expect(collection.unique(model => model.getName())).toHaveLength(1);
         expect(collection.first()).toStrictEqual(elements[0]);
     });
 
@@ -128,6 +140,7 @@ describe('unique()', () => {
     });
 
     it('checks the collection\'s integrity before the method', () => {
+        // @ts-expect-error
         collection[0] = 1;
         const func = () => collection.unique();
         expect(func).toThrow(incompatibleElementsError);
@@ -155,6 +168,7 @@ describe('hasDuplicates()', () => {
     });
 
     it('checks the collection\'s integrity before the method', () => {
+        // @ts-expect-error
         collection[0] = 1;
         const func = () => collection.hasDuplicates();
         expect(func).toThrow(incompatibleElementsError);
@@ -181,7 +195,7 @@ describe('duplicates()', () => {
         collection = new ModelCollection(items);
 
         expect(collection.duplicates('name')).toHaveLength(1);
-        expect(collection.first().name).toStrictEqual(data.UserOne.name);
+        expect(collection.first()?.name).toStrictEqual(data.UserOne.name);
     });
 
     it('can check for duplicates by passing a function name that is called on the model', () => {
@@ -199,6 +213,7 @@ describe('duplicates()', () => {
     });
 
     it('checks the collection\'s integrity before the method', () => {
+        // @ts-expect-error
         collection[0] = 1;
         const func = () => collection.duplicates();
         expect(func).toThrow(incompatibleElementsError);
@@ -226,6 +241,7 @@ describe('delete()', () => {
     });
 
     it('checks the collection\'s integrity before the method', () => {
+        // @ts-expect-error
         collection[0] = 1;
         const func = () => collection.delete(collection[1]);
         expect(func).toThrow(incompatibleElementsError);
@@ -249,6 +265,7 @@ describe('includes()', () => {
     });
 
     it('checks the collection\'s integrity before the method', () => {
+        // @ts-expect-error
         collection[0] = 1;
         const func = () => collection.includes(new User(data.UserOne));
         expect(func).toThrow(incompatibleElementsError);
@@ -268,13 +285,14 @@ describe('diff()', () => {
     });
 
     it('accepts number of arguments', () => {
-        const diffCollection = collection.diff(collection.first(), collection.last());
+        const diffCollection = collection.diff(collection.first() as User, collection.last() as User);
 
         expect(diffCollection).toHaveLength(1);
         expect(diffCollection.first()).toBe(elements[1]);
     });
 
     it('checks the collection\'s integrity before the method', () => {
+        // @ts-expect-error
         collection[0] = 1;
         const func = () => collection.diff();
         expect(func).toThrow(incompatibleElementsError);
@@ -316,6 +334,7 @@ describe('union()', () => {
     });
 
     it('checks the collection\'s integrity before the method', () => {
+        // @ts-expect-error
         collection[0] = 1;
         const func = () => collection.union([new User(data.UserTwo), new User({ ...data.UserTwo, id: 3 })]);
         expect(func).toThrow(incompatibleElementsError);
@@ -346,6 +365,7 @@ describe('only()', () => {
     });
 
     it('checks the collection\'s integrity before the method', () => {
+        // @ts-expect-error
         collection[0] = 1;
         const func = () => collection.only(1);
         expect(func).toThrow(incompatibleElementsError);
@@ -379,6 +399,7 @@ describe('except()', () => {
     });
 
     it('checks the collection\'s integrity before the method', () => {
+        // @ts-expect-error
         collection[0] = 1;
         const func = () => collection.except(1);
         expect(func).toThrow(incompatibleElementsError);
@@ -420,7 +441,7 @@ describe('push()', () => {
     });
 });
 
-describe('find()', () => {
+describe('findByKey()', () => {
     const elements = [new User(data.UserOne), new User(data.UserTwo)];
 
     beforeEach(() => {
@@ -428,26 +449,31 @@ describe('find()', () => {
     });
 
     it('can find the correct model', () => {
-        const result = collection.find(data.UserOne.id);
-        expect(collection.find(data.UserOne.id)).toBeInstanceOf(Model);
+        const result = collection.findByKey(data.UserOne.id);
+        expect(collection.findByKey(data.UserOne.id)).toBeInstanceOf(User);
         expect(result).toStrictEqual(elements[0]);
     });
 
     it('returns undefined if nothing found', () => {
-        expect(collection.find(10)).toBeUndefined();
+        expect(collection.findByKey(10)).toBeUndefined();
     });
 
     it('returns a collection on multiple hits', () => {
-        expect(collection.find(1, 2)).toBeInstanceOf(ModelCollection);
+        expect(collection.findByKey([1, 2])).toBeInstanceOf(ModelCollection);
     });
 
     it('can be chained if has multiple results', () => {
-        expect(collection.find(1, 2)?.nth(1)).toHaveLength(elements.length);
+        expect(collection.findByKey([1, 2])?.nth(1)).toHaveLength(elements.length);
+    });
+
+    it('can return a default value if on not found', () => {
+        expect(collection.findByKey('randomKey', 1)).toBe(1);
     });
 
     it('checks the collection\'s integrity before the method', () => {
+        // @ts-expect-error
         collection[0] = 1;
-        const func = () => collection.find(1);
+        const func = () => collection.findByKey(1);
         expect(func).toThrow(incompatibleElementsError);
     });
 });
@@ -516,12 +542,14 @@ describe('intersect()', () => {
     });
 
     it('checks the collection\'s integrity before the method', () => {
+        // @ts-expect-error
         collection[0] = 1;
         const func = () => collection.intersect(elements[0]);
         expect(func).toThrow(incompatibleElementsError);
     });
 
     it('checks the argument\'s integrity before the method', () => {
+        // @ts-expect-error
         collection[0] = 1;
         // @ts-expect-error
         const func = () => collection.intersect(1);
@@ -545,10 +573,11 @@ describe('pad()', () => {
     });
 
     it('can pad the collection', () => {
-        expect(collection.pad(-5, elements[1]).first().getKey()).toBe(elements[1].getKey());
+        expect(collection.pad(-5, elements[1]).first()?.getKey()).toBe(elements[1].getKey());
     });
 
     it('checks the argument\'s integrity before the method', () => {
+        // @ts-expect-error
         const func = () => collection.pad(4, 1);
         expect(func).toThrow(incompatibleElementsError);
     });

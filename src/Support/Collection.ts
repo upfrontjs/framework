@@ -4,6 +4,7 @@ import type Arrayable from '../Contracts/Arrayable';
 import type Jsonable from '../Contracts/Jsonable';
 import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
 
+// todo - remove rest parameters, friendship ended with rest parameters now arg|arg[] is my best friend
 export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, ArrayLike<T> {
     /**
      * Allow indexing by number

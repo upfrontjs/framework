@@ -31,7 +31,10 @@ export default abstract class Factory implements FactoryHooks {
      *
      * @return {object}
      */
-    public abstract definition(model: Model): Attributes;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public definition(_model: Model): Attributes {
+        return {};
+    }
 
     /**
      * Get the name of the class.

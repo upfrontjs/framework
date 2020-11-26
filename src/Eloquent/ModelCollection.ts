@@ -3,7 +3,7 @@ import Model from './Model';
 import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
 
 // todo - what? why any?
-export default class ModelCollection<T> extends Collection<any> {
+export default class ModelCollection<T extends Model> extends Collection<T> {
     constructor(models?: T[]) {
         super(models);
         this._throwIfNotModels();
@@ -12,7 +12,7 @@ export default class ModelCollection<T> extends Collection<any> {
     /**
      * Throw error if not every item is a Model.
      *
-     * @param {any[]} iterable
+     * @param {any[]=} iterable
      *
      * @private
      */
@@ -37,6 +37,8 @@ export default class ModelCollection<T> extends Collection<any> {
             return !!iterable.length && iterable.every((item) => item instanceof Model);
         }
 
+        // the below instanceof check is not redundant
+        // once this is transformed into javascript
         return this.every(item => item instanceof Model);
     }
 
@@ -77,7 +79,7 @@ export default class ModelCollection<T> extends Collection<any> {
      */
     modelKeys(): Collection<number|string> {
         this._throwIfNotModels();
-        const ids = this.map((model: Model) => model.getKey());
+        const ids = this.map(model => model.getKey());
 
         return new Collection(ids.toArray());
     }
@@ -86,18 +88,19 @@ export default class ModelCollection<T> extends Collection<any> {
      * Find the Model(s) based on the given key(s).
      *
      * @param {string|number|string[]|number[]} key
+     * @param {any} defaultVal
      *
-     * @return {Model|ModelCollection|undefined}
+     * @return {Model|ModelCollection|undefined|any}
      */
-    find(...key: number[]|string[]): this|Model|undefined {
+    public findByKey(key: (number|string)[]|number|string, defaultVal?: any): this|T|undefined|any {
         this._throwIfNotModels();
 
         const keys = new Set(this._getArgumentKeys(key));
 
-        const result: Model[] = [];
+        const result: T[] = [];
 
         keys.forEach(key => {
-            const model = this.toArray().find((model: Model) => String(model.getKey()) === key);
+            const model = this.toArray().find(model => String(model.getKey()) === key);
 
             if (model) {
                 result.push(model);
@@ -112,7 +115,7 @@ export default class ModelCollection<T> extends Collection<any> {
             return this._newInstance(result);
         }
 
-        return undefined;
+        return defaultVal;
     }
 
     /**
@@ -124,11 +127,11 @@ export default class ModelCollection<T> extends Collection<any> {
      *
      * @return {this}
      */
-    unique(key?: string|((model: Model) => any)): this {
+    public unique(key?: string|((model: T) => any)): this {
         this._throwIfNotModels();
-        const modelArray: Model[] = [];
+        const modelArray: T[] = [];
 
-        this.forEach((model: Model) => {
+        this.forEach(model => {
             let boolean;
 
             if (key || key && key in model) {
@@ -159,7 +162,7 @@ export default class ModelCollection<T> extends Collection<any> {
      *
      * @return {boolean}
      */
-    hasDuplicates(key?: string): boolean {
+    public hasDuplicates(key?: string): boolean {
         return !!new ModelCollection(this.toArray()).duplicates(key).length;
     }
 
@@ -172,35 +175,35 @@ export default class ModelCollection<T> extends Collection<any> {
      *
      * @return {this}
      */
-    duplicates<U>(key?: string|((model: Model) => U)): this {
+    public duplicates<U>(key?: string|((model: T) => U)): this {
         this._throwIfNotModels();
 
-        const array: Model[] = this.toArray();
-        const values: Model[] = [];
+        const array: T[] = this.toArray();
+        const values: T[] = [];
 
-        this.forEach((model: Model) => {
+        this.forEach(model => {
             let boolean: boolean;
 
             if (key instanceof Function) {
                 boolean =
-                    !values.some((item) => key(item) === key(model)) &&
-                    array.filter((item) => key(item) === key(model)).length > 1;
+                    !values.some(item => key(item) === key(model)) &&
+                    array.filter(item => key(item) === key(model)).length > 1;
             } else if (key && model[key] !== undefined) {
                 if (model[key] instanceof Function) {
                     boolean =
                         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                        !values.some((item) => item[key]() === model[key]()) &&
+                        !values.some(item => item[key]() === model[key]()) &&
                         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                        array.filter((item) => item[key]() === model[key]()).length > 1;
+                        array.filter(item => item[key]() === model[key]()).length > 1;
                 } else {
                     boolean =
-                        !values.some((item) => item[String(key)] === model[String(key)]) &&
-                        array.filter((item) => item[String(key)] === model[String(key)]).length > 1;
+                        !values.some(item => item[String(key)] === model[String(key)]) &&
+                        array.filter(item => item[String(key)] === model[String(key)]).length > 1;
                 }
             } else {
                 boolean =
-                    !values.some((item) => item.is(model)) &&
-                    array.filter((item: Model) => item.is(model)).length > 1;
+                    !values.some(item => item.is(model)) &&
+                    array.filter(item => item.is(model)).length > 1;
             }
 
             if (boolean) {
@@ -219,15 +222,15 @@ export default class ModelCollection<T> extends Collection<any> {
      *
      * @return {this}
      */
-    diff(...models: Model[]): this {
+    public diff(...models: T[]): this {
         this._throwIfNotModels();
-        const modelCollection = new ModelCollection(models.flat());
+        const modelCollection = new ModelCollection(models.flat() as T[]);
 
         const result = this.toArray().filter((item) => {
             return !modelCollection.includes(item);
         });
 
-        result.push(...modelCollection.toArray().filter((arg) => !this.includes(arg)));
+        result.push(...modelCollection.toArray().filter(arg => !this.includes(arg)));
 
         return this._newInstance(result);
     }
@@ -239,11 +242,11 @@ export default class ModelCollection<T> extends Collection<any> {
      *
      * @return {this}
      */
-    only(...values: (string|number|Model)[]): this {
+    public only(...values: (string|number|Model)[]): this {
         this._throwIfNotModels();
         const modelKeys = this._getArgumentKeys(values);
 
-        return this._newInstance(this.toArray().filter((model: Model) => modelKeys.includes(String(model.getKey()))));
+        return this._newInstance(this.toArray().filter(model => modelKeys.includes(String(model.getKey()))));
     }
 
     /**
@@ -253,11 +256,11 @@ export default class ModelCollection<T> extends Collection<any> {
      *
      * @return {this}
      */
-    except(values: any|any[]): this {
+    public except(values: any|any[]): this {
         this._throwIfNotModels();
         const modelKeys = this._getArgumentKeys(values);
 
-        return this._newInstance(this.toArray().filter((model: Model) => !modelKeys.includes(String(model.getKey()))));
+        return this._newInstance(this.toArray().filter(model => !modelKeys.includes(String(model.getKey()))));
     }
 
     /**
@@ -284,11 +287,11 @@ export default class ModelCollection<T> extends Collection<any> {
      *
      * @return {this}
      */
-    intersect(...models: Model[]): this {
+    public intersect(...models: T[]): this {
         this._throwIfNotModels();
-        this._throwIfNotModels(Array.from(models).flat());
+        this._throwIfNotModels(models);
 
-        return super.intersect(Array.from(models).flat());
+        return super.intersect(...Array.of(models).flat());
     }
 
     /**
@@ -301,10 +304,10 @@ export default class ModelCollection<T> extends Collection<any> {
      *
      * @see Model#is
      */
-    delete(model: Model): this {
+    public delete(model: T): this {
         this._throwIfNotModels();
 
-        return this._newInstance(this.toArray().filter((item: Model) => !item.is(model)));
+        return this._newInstance(this.toArray().filter(item => !item.is(model)));
     }
 
     /**
@@ -314,11 +317,11 @@ export default class ModelCollection<T> extends Collection<any> {
      *
      * @return {this}
      */
-    union(iterable: Model[]|ModelCollection<Model>): this {
+    public union(iterable: T[]|ModelCollection<T>): this {
         this._throwIfNotModels(iterable);
 
         const collection = this._newInstance(this.toArray());
-        collection.push(...iterable.filter((model: Model) => !this.includes(model)));
+        collection.push(...iterable.filter((model: T) => !this.includes(model)));
 
         return collection;
     }
@@ -330,11 +333,11 @@ export default class ModelCollection<T> extends Collection<any> {
      *
      * @return {boolean}
      */
-    includes(model: Model): boolean {
+    public includes(model: T): boolean {
         this._throwIfNotModels();
         const id = this._getArgumentKeys(model)[0];
 
-        return !!this.toArray().filter((item: Model) => String(item.getKey()) === id).length;
+        return !!this.toArray().filter(item => String(item.getKey()) === id).length;
     }
 
     /**
@@ -342,7 +345,7 @@ export default class ModelCollection<T> extends Collection<any> {
      *
      * @param {...Model} items
      */
-    push(...items: Model[]): number {
+    public push(...items: T[]): number {
         this._throwIfNotModels(Array.of(...items).flat());
 
         return super.push(...items);
@@ -353,7 +356,7 @@ export default class ModelCollection<T> extends Collection<any> {
      *
      * @param {...Model} items
      */
-    unshift(...items: Model[]): number {
+    public unshift(...items: T[]): number {
         this._throwIfNotModels(items.flat());
 
         return super.unshift(...items);

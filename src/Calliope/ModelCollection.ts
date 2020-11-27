@@ -2,7 +2,7 @@ import Collection from '../Support/Collection';
 import Model from './Model';
 import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
 
-// todo - what? why any?
+// todo - server side pagination on this?
 export default class ModelCollection<T extends Model> extends Collection<T> {
     constructor(models?: T[]) {
         super(models);

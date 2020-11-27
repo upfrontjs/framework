@@ -1,4 +1,4 @@
-import Model from '../../../src/Eloquent/Model';
+import Model from '../../../src/Calliope/Model';
 
 export default class File extends Model {
 

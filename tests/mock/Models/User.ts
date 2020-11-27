@@ -1,6 +1,6 @@
-import Model from '../../../src/Eloquent/Model';
+import Model from '../../../src/Calliope/Model';
 import Team from './Team';
-import type Factory from '../../../src/Eloquent/Factory/Factory';
+import type Factory from '../../../src/Calliope/Factory/Factory';
 import UserFactory from '../Factories/UserFactory';
 
 export default class User extends Model {

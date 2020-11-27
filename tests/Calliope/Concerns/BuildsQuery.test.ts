@@ -1,4 +1,4 @@
-import BuildsQuery from '../../../src/Eloquent/Concerns/BuildsQuery';
+import BuildsQuery from '../../../src/Calliope/Concerns/BuildsQuery';
 
 class TestClass extends BuildsQuery {
     public compiledParams(): Record<string, unknown> {

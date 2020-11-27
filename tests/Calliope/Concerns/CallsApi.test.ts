@@ -1,4 +1,4 @@
-import CallsApi from '../../../src/Eloquent/Concerns/CallsApi';
+import CallsApi from '../../../src/Calliope/Concerns/CallsApi';
 import LogicException from '../../../src/Exceptions/LogicException';
 import fetchMock from 'jest-fetch-mock';
 import data from '../../mock/Models/data';

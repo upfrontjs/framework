@@ -1,7 +1,7 @@
-import Factory from '../../../src/Eloquent/Factory/Factory';
-import type { Attributes } from '../../../src/Eloquent/Concerns/HasAttributes';
+import Factory from '../../../src/Calliope/Factory/Factory';
+import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 import Team from '../Models/Team';
-import type Model from '../../../src/Eloquent/Model';
+import type Model from '../../../src/Calliope/Model';
 
 export default class UserFactory extends Factory {
     public definition(): Attributes {

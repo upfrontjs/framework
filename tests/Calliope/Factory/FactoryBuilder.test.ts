@@ -1,11 +1,11 @@
-import FactoryBuilder from '../../../src/Eloquent/Factory/FactoryBuilder';
+import FactoryBuilder from '../../../src/Calliope/Factory/FactoryBuilder';
 import User from '../../mock/Models/User';
 import Team from '../../mock/Models/Team';
-import Model from '../../../src/Eloquent/Model';
-import ModelCollection from '../../../src/Eloquent/ModelCollection';
+import Model from '../../../src/Calliope/Model';
+import ModelCollection from '../../../src/Calliope/ModelCollection';
 import InvalidOffsetException from '../../../src/Exceptions/InvalidOffsetException';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
-import Factory from '../../../src/Eloquent/Factory/Factory';
+import Factory from '../../../src/Calliope/Factory/Factory';
 
 class FakeFactory extends Factory {
     // @ts-expect-error

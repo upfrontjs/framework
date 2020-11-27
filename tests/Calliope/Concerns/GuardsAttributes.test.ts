@@ -1,4 +1,4 @@
-import GuardsAttributes from '../../../src/Eloquent/Concerns/GuardsAttributes';
+import GuardsAttributes from '../../../src/Calliope/Concerns/GuardsAttributes';
 
 class TestClass extends GuardsAttributes {
     protected initialise(): { guarded?: string[]; fillable?: string[] } {

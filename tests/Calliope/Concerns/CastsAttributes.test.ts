@@ -1,4 +1,4 @@
-import CastsAttributes from '../../../src/Eloquent/Concerns/CastsAttributes';
+import CastsAttributes from '../../../src/Calliope/Concerns/CastsAttributes';
 import Collection from '../../../src/Support/Collection';
 
 class CastingClass extends CastsAttributes {

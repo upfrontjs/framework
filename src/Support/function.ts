@@ -1,7 +1,7 @@
 import Collection from './Collection';
 import Paginator from '../Pagination/Paginator';
-import type Model from '../Eloquent/Model';
-import FactoryBuilder from '../Eloquent/Factory/FactoryBuilder';
+import type Model from '../Calliope/Model';
+import FactoryBuilder from '../Calliope/Factory/FactoryBuilder';
 
 declare global {
     /**

@@ -1,5 +1,5 @@
-import Factory from '../../../src/Eloquent/Factory/Factory';
-import type { Attributes } from '../../../src/Eloquent/Concerns/HasAttributes';
+import Factory from '../../../src/Calliope/Factory/Factory';
+import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 
 export default class TeamFactory extends Factory {
     public definition(): Attributes {

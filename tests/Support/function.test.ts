@@ -2,7 +2,7 @@ import Collection from '../../src/Support/Collection';
 import Paginator from '../../src/Pagination/Paginator';
 import '../../src/Support/function';
 import User from '../mock/Models/User';
-import FactoryBuilder from '../../src/Eloquent/Factory/FactoryBuilder';
+import FactoryBuilder from '../../src/Calliope/Factory/FactoryBuilder';
 
 describe('function helpers', () => {
     it('can create a collection by calling the collect() helper method', () => {

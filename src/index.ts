@@ -1,9 +1,9 @@
-import Model from './Eloquent/Model';
+import Model from './Calliope/Model';
 import Collection from './Support/Collection';
-import ModelCollection from './Eloquent/ModelCollection';
+import ModelCollection from './Calliope/ModelCollection';
 import Paginator from './Pagination/Paginator';
 import Config from './Support/Config';
-import Factory from './Eloquent/Factory/Factory';
+import Factory from './Calliope/Factory/Factory';
 
 import './Support/array';
 import './Support/string';

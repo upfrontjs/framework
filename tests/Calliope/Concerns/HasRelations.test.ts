@@ -1,4 +1,4 @@
-import HasRelations from '../../../src/Eloquent/Concerns/HasRelations';
+import HasRelations from '../../../src/Calliope/Concerns/HasRelations';
 import Team from '../../mock/Models/Team';
 
 class TestClass extends HasRelations {

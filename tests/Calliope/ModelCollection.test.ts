@@ -1,12 +1,11 @@
 import Collection from '../../src/Support/Collection';
-import ModelCollection from '../../src/Eloquent/ModelCollection';
+import ModelCollection from '../../src/Calliope/ModelCollection';
 import data from '../mock/Models/data';
 import User from '../mock/Models/User';
 
 let collection: ModelCollection<User>;
 const incompatibleElementsError = ModelCollection.name + ' can only handle Model values.';
 
-// todo - server side pagination on this?
 describe('constructor()', () => {
     const elements = [new User(data.UserOne), new User(data.UserTwo), new User(data.UserOne)];
 

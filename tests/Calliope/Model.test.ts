@@ -1,4 +1,4 @@
-import Model from '../../src/Eloquent/Model';
+import Model from '../../src/Calliope/Model';
 import User from '../mock/Models/User';
 import data from '../mock/Models/data';
 

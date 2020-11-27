@@ -1,6 +1,5 @@
 import Collection from '../Support/Collection';
 import Model from './Model';
-import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
 
 // todo - server side pagination on this?
 export default class ModelCollection<T extends Model> extends Collection<T> {
@@ -18,7 +17,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      */
     protected _throwIfNotModels(iterable: any = null): void {
         if (!this._isModelArray(iterable)) {
-            throw new InvalidArgumentException(this.constructor.name + ' can only handle Model values.');
+            throw new TypeError(this.constructor.name + ' can only handle Model values.');
         }
     }
 

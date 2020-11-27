@@ -7,7 +7,6 @@ import ApiResponseHandler from '../../Services/ApiResponseHandler';
 import type HandlesApiResponse from '../../Contracts/HandlesApiResponse';
 import type Model from '../Model';
 import BuildsQuery from './BuildsQuery';
-import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import type { Attributes } from './HasAttributes';
 
 export default class CallsApi extends BuildsQuery {
@@ -205,7 +204,7 @@ export default class CallsApi extends BuildsQuery {
             || typeof data !== 'object'
             || Array.isArray(data) && data.some(entry => typeof entry !== 'object' || entry === null)
         ) {
-            throw new InvalidArgumentException(
+            throw new TypeError(
                 'Unexpected response type. Ensure that the endpoint returns model data only.'
             );
         }

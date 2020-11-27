@@ -3,7 +3,6 @@ import type { Attributes } from '../Concerns/HasAttributes';
 import ModelCollection from '../ModelCollection';
 import Factory from './Factory';
 import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
-import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import Config from '../../Support/Config';
 
 export default class FactoryBuilder {
@@ -153,7 +152,7 @@ export default class FactoryBuilder {
             const attributesFromState = (factory[state] as CallableFunction)(attributes);
 
             if (!attributesFromState || typeof attributesFromState !== 'object') {
-                throw new InvalidArgumentException(
+                throw new TypeError(
                     '\'' + state + '\' is not returning an object on \'' + factory.getClassName() + '\' class.'
                 );
             }
@@ -200,7 +199,7 @@ export default class FactoryBuilder {
         const factory = this.model.factory();
 
         if (!(factory instanceof Factory)) {
-            throw new InvalidArgumentException(
+            throw new TypeError(
                 'Invalid return type defined on the factory() method on the \'' + this.model.getName() + '\' class.'
             );
         }

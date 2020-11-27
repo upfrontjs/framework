@@ -164,7 +164,10 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
         }
 
         if (value !== null && typeof value === 'object' && (this as unknown as HasRelations).relationDefined(key)) {
-            (this as unknown as HasRelations).addRelation(key, value as NonNullable<any>);
+            (this as unknown as HasRelations).addRelation(
+                key,
+                value as Attributes|Attributes[]|Model|ModelCollection<Model>
+            );
 
             // todo - automagically set the relation id on this
 

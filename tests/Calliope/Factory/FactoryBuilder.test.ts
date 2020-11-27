@@ -4,7 +4,6 @@ import Team from '../../mock/Models/Team';
 import Model from '../../../src/Calliope/Model';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
 import InvalidOffsetException from '../../../src/Exceptions/InvalidOffsetException';
-import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import Factory from '../../../src/Calliope/Factory/Factory';
 
 class FakeFactory extends Factory {
@@ -76,7 +75,7 @@ describe('factoryBuilder', () => {
             );
 
             expect(failingFunc).toThrow(
-                new InvalidOffsetException(
+                new TypeError(
                     '\'invalidScope\' is not returning an object on \'' + FakeFactory.name + '\' class.'
                 )
             );
@@ -99,7 +98,7 @@ describe('factoryBuilder', () => {
             const failingFunc = jest.fn(() => factoryBuilder.getFactory());
 
             expect(failingFunc).toThrow(
-                new InvalidArgumentException(
+                new TypeError(
                     'Invalid return type defined on the factory() method on the \'' + User.name + '\' class.'
                 )
             );

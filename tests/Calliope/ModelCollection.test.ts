@@ -4,7 +4,7 @@ import data from '../mock/Models/data';
 import User from '../mock/Models/User';
 
 let collection: ModelCollection<User>;
-const incompatibleElementsError = ModelCollection.name + ' can only handle Model values.';
+const incompatibleElementsError = new TypeError(ModelCollection.name + ' can only handle Model values.');
 
 describe('modelCollection', () => {
     const elements: [User, User, User] = [new User(data.UserOne), new User(data.UserTwo), new User(data.UserThree)];

@@ -6,7 +6,6 @@ import Config from '../../../src/Support/Config';
 import API from '../../../src/Services/API';
 import ApiResponseHandler from '../../../src/Services/ApiResponseHandler';
 import { buildResponse, getLastFetchCall } from '../../test-helpers';
-import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import User from '../../mock/Models/User';
 
 class Caller extends CallsApi {
@@ -95,7 +94,7 @@ describe('callsApi', () => {
     describe('newInstanceFromResponseData()', () => {
         it('throws error if unexpected data given', () => {
             //@ts-expect-error
-            expect(() => caller.newInstanceFromResponseData(null)).toThrow(new InvalidArgumentException(
+            expect(() => caller.newInstanceFromResponseData(null)).toThrow(new TypeError(
                 'Unexpected response type. Ensure that the endpoint returns model data only.'
             ));
         });

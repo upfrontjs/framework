@@ -6,6 +6,7 @@ import ModelCollection from '../../../src/Calliope/ModelCollection';
 import InvalidOffsetException from '../../../src/Exceptions/InvalidOffsetException';
 import Factory from '../../../src/Calliope/Factory/Factory';
 import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
+import Collection from '../../../src/Support/Collection';
 
 class FakeFactory extends Factory {
     // @ts-expect-error
@@ -208,6 +209,24 @@ describe('factoryBuilder', () => {
                 updatedAt: null,
                 deletedAt: null
             });
+        });
+
+        it('returns multiple raw attributes', () => {
+            expect(factoryBuilder.times(2).raw())
+                .toStrictEqual(new Collection([
+                    {
+                        name: 'username 1',
+                        createdAt: null,
+                        updatedAt: null,
+                        deletedAt: null
+                    },
+                    {
+                        name: 'username 1',
+                        createdAt: null,
+                        updatedAt: null,
+                        deletedAt: null
+                    }
+                ]));
         });
 
         it('merges in states', () => {

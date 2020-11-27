@@ -4,6 +4,7 @@ import ModelCollection from '../ModelCollection';
 import Factory from './Factory';
 import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
 import Config from '../../Support/Config';
+import Collection from "../../Support/Collection";
 
 export default class FactoryBuilder {
     /**
@@ -72,16 +73,16 @@ export default class FactoryBuilder {
     public make(attributes?: Attributes): Model|ModelCollection<Model> {
         const compiledAttributes = this.raw(attributes);
 
-        if (this.amount > 1) {
+        if (Collection.isCollection(compiledAttributes)) {
             const models: Model[] = [];
 
-            for (let i = 0; i < this.amount; i++) {
-                models.push(new (<typeof Model> this.model.constructor)(compiledAttributes));
-            }
+            compiledAttributes.forEach(attributes => {
+                models.push(new (<typeof Model> this.model.constructor)(attributes as Attributes));
+            });
 
             return new ModelCollection(models);
         } else {
-            return new (<typeof Model> this.model.constructor)(compiledAttributes);
+            return new (<typeof Model> this.model.constructor)(compiledAttributes as Attributes);
         }
     }
 
@@ -131,7 +132,7 @@ export default class FactoryBuilder {
      *
      * @return {object}
      */
-    public raw(attributes: Attributes = {}): Attributes {
+    public raw(attributes: Attributes = {}): Attributes | Collection<Attributes> {
         const factory = this.getFactory();
         let compiledAttributes = this.resolveAttributes(factory.definition(this.model));
 
@@ -168,7 +169,9 @@ export default class FactoryBuilder {
             attributes[this.model.getDeletedAtColumn()] = attributes[this.model.getDeletedAtColumn()] ?? null;
         }
 
-        return this.resolveAttributes(attributes, compiledAttributes);
+        compiledAttributes = this.resolveAttributes(attributes, compiledAttributes);
+
+        return this.amount > 1 ? Collection.times(this.amount, compiledAttributes) : compiledAttributes;
     }
 
     /**

@@ -98,11 +98,10 @@ describe('callsApi', () => {
             ));
         });
 
-        // eslint-disable-next-line jest/no-commented-out-tests
-        // it('can construct a single instance of a model', () => {
-        //     const userData = User.factory().raw();
-        //     //@ts-expect-error
-        //     expect(caller.newInstanceFromResponseData(null)).toStrictEqual();
-        // });
+        it('can construct a single instance of a model', () => {
+            const userData = User.factory().raw();
+            //@ts-expect-error
+            expect(caller.newInstanceFromResponseData(userData)).toStrictEqual();
+        });
     });
 });

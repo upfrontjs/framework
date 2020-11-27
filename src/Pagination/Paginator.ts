@@ -59,7 +59,7 @@ class Paginator<T> implements ArrayLike<T>, Iterable<T> {
      */
     public *[Symbol.iterator](): Iterator<T> {
         for (let i = 0; i < this.elements.length; i++) {
-            yield this.elements[i];
+            yield this.elements[i] as T;
         }
     }
 

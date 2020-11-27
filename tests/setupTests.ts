@@ -10,7 +10,7 @@ fetchMock.enableMocks();
 
 declare global {
     interface Array<T> {
-        has(o: T): boolean;
+        has(value: T): boolean;
     }
 }
 

@@ -78,13 +78,15 @@ describe('paginator', () => {
             it('can set to last page', () => {
                 const lastItem = elements[elements.length - 1];
 
-                expect(paginator.last().items.has(lastItem)).toBe(true);
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+                expect(paginator.last().items.has(lastItem as number)).toBe(true);
             });
         });
 
         describe('first()', () => {
             it('can set to first page', () => {
-                expect(paginator.first().items.has(elements[0])).toBe(true);
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+                expect(paginator.first().items.has(elements[0] as number)).toBe(true);
             });
         });
 
@@ -108,7 +110,8 @@ describe('paginator', () => {
                         .last()
                         .previous()
                         .items
-                        .has(elements[elements.length - 2])
+                        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+                        .has(elements[elements.length - 2] as number)
                 ).toBe(true);
             });
 
@@ -118,23 +121,27 @@ describe('paginator', () => {
                         .last()
                         .next()
                         .items
-                        .has(elements[elements.length - 1])
+                        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+                        .has(elements[elements.length - 1] as number)
                 ).toBe(true);
             });
 
             it('jumps to first page if wrapping is enabled', () => {
                 paginator = new Paginator(paginator.getAll(), 1, true);
-                expect(paginator.last().next().items.has(elements[0])).toBe(true);
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+                expect(paginator.last().next().items.has(elements[0] as number)).toBe(true);
             });
         });
 
         describe('previous()', () => {
             it('can paginate to the previous page', () => {
-                expect(paginator.next().previous().items.has(elements[0])).toBe(true);
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+                expect(paginator.next().previous().items.has(elements[0] as number)).toBe(true);
             });
 
             it('does nothing if there isn\'t a previous page', () => {
-                expect(paginator.first().previous().items.has(elements[0])).toBe(true);
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+                expect(paginator.first().previous().items.has(elements[0] as number)).toBe(true);
             });
 
             it('jumps to last page if wrapping is enabled', () => {
@@ -143,7 +150,9 @@ describe('paginator', () => {
                     paginator
                         .first()
                         .previous()
-                        .items.has(elements[elements.length - 1])
+                        .items
+                        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+                        .has(elements[elements.length - 1] as number)
                 ).toBe(true);
             });
         });

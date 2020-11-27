@@ -268,7 +268,7 @@ describe('duplicates()', () => {
         collection = new Collection(elements);
 
         expect(
-            collection.duplicates((obj: Record<string, number|string>) => obj.id.toString() + obj.name.toString())
+            collection.duplicates((obj: Record<string, number|string>) => String(obj.id) + String(obj.name))
         ).toHaveLength(2);
     });
 });
@@ -712,11 +712,11 @@ describe('takeWhile()', () => {
     });
 
     it('can take items from the collection while the condition is true', () => {
-        expect(collection.takeWhile((item) => item < 4)).toHaveLength(3);
+        expect(collection.takeWhile(item => item < 4)).toHaveLength(3);
     });
 
     it('can be chained', () => {
-        expect(collection.takeWhile((item) => item < 4).toArray()).toHaveLength(3);
+        expect(collection.takeWhile(item => item < 4).toArray()).toHaveLength(3);
     });
 });
 
@@ -728,11 +728,11 @@ describe('takeUntil()', () => {
     });
 
     it('can take items from the collection until the condition is true', () => {
-        expect(collection.takeUntil((item) => item >= 4)).toHaveLength(3);
+        expect(collection.takeUntil(item => item >= 4)).toHaveLength(3);
     });
 
     it('can be chained', () => {
-        expect(collection.takeUntil((item) => item >= 4).toArray()).toHaveLength(3);
+        expect(collection.takeUntil(item => item >= 4).toArray()).toHaveLength(3);
     });
 });
 
@@ -776,20 +776,20 @@ describe('skipWhile()', () => {
     });
 
     it('can skip the elements while the condition is true', () => {
-        expect(collection.skipWhile((item) => item <= 2)).toHaveLength(3);
+        expect(collection.skipWhile(item => item <= 2)).toHaveLength(3);
     });
 
     it('skips items from the beginning', () => {
-        expect(collection.skipWhile((item) => item <= 4)).toStrictEqual(
+        expect(collection.skipWhile(item => item <= 4)).toStrictEqual(
             new Collection([elements[elements.length - 1]])
         );
-        expect(collection.skipWhile((item) => item <= 4)).toHaveLength(1);
+        expect(collection.skipWhile(item => item <= 4)).toHaveLength(1);
     });
 
     it('can be chained', () => {
         expect(
             collection
-                .skipWhile((item) => item <= 2)
+                .skipWhile(item => item <= 2)
                 .nth(1)
                 .toArray()
         ).toHaveLength(3);
@@ -804,20 +804,22 @@ describe('skipUntil()', () => {
     });
 
     it('can skip the elements until the condition is true', () => {
-        expect(collection.skipUntil((item) => item > 2)).toHaveLength(3);
+        expect(collection.skipUntil(item => item > 2)).toHaveLength(3);
     });
 
     it('skips items from the beginning', () => {
-        expect(collection.skipUntil((item) => item >= elements[elements.length - 1])).toStrictEqual(
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        expect(collection.skipUntil(item => item >= (elements[elements.length - 1] as number))).toStrictEqual(
             new Collection([elements[elements.length - 1]])
         );
-        expect(collection.skipUntil((item) => item >= elements[elements.length - 1])).toHaveLength(1);
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        expect(collection.skipUntil(item => item >= (elements[elements.length - 1] as number))).toHaveLength(1);
     });
 
     it('can be chained', () => {
         expect(
             collection
-                .skipUntil((item) => item >= 2)
+                .skipUntil(item => item >= 2)
                 .nth(1)
                 .toArray()
         ).toHaveLength(4);
@@ -891,7 +893,7 @@ describe('pluck()', () => {
 
         collection = new Collection(elements);
 
-        expect(collection.pluck('id').first()).toBe(elements[0].id);
+        expect(collection.pluck('id').first()).toBe(elements[0]?.id);
     });
 
     it('can pluck multiple values from objects', () => {
@@ -973,7 +975,8 @@ describe('array-methods', () => {
         });
 
         it('transform values', () => {
-            expect(collection.map(elem => elem * 2).first()).toStrictEqual(elements[0] * 2);
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+            expect(collection.map(elem => elem * 2).first()).toStrictEqual((elements[0] as number) * 2);
         });
 
         it('returns a new collection', () => {
@@ -1015,7 +1018,8 @@ describe('array-methods', () => {
             collection[0] = lastElement;
 
             expect(collection.lastIndexOf(lastElement))
-                .toStrictEqual(elements.lastIndexOf(elements[elements.length - 1]));
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+                .toStrictEqual(elements.lastIndexOf(elements[elements.length - 1] as number));
 
             expect(collection.lastIndexOf('something')).toStrictEqual(-1);
         });
@@ -1221,7 +1225,8 @@ describe('array-methods', () => {
 
     describe('indexOf()', () => {
         it('can return the index of the found element or -1 on not found', () => {
-            expect(collection.indexOf(elements[0])).toStrictEqual(elements.indexOf(elements[0]));
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+            expect(collection.indexOf(elements[0])).toStrictEqual(elements.indexOf(elements[0] as number));
             expect(collection.indexOf('something')).toStrictEqual(-1);
         });
     });

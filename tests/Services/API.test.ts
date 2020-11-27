@@ -148,6 +148,23 @@ describe('api', () => {
             // @ts-expect-error
             expect(newConfig.headers.get('custom')).toBe(header.custom.join(', '));
         });
+
+        it('only merges custom headers if their value is a string or string[]', () => {
+            const header: Record<string, null|null[]> = { custom: null };
+            // @ts-expect-error
+            const config = api.getConfig(url, 'post', undefined, header).requestInit;
+
+            // @ts-expect-error
+            expect(config.headers.has('custom')).toBe(false);
+
+            header.custom = [null];
+
+            // @ts-expect-error
+            const newConfig = api.getConfig(url, 'post', undefined, header).requestInit;
+
+            // @ts-expect-error
+            expect(newConfig.headers.has('custom')).toBe(false);
+        });
     });
 
     describe('call()', () => {

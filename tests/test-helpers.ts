@@ -31,5 +31,6 @@ export const getFetchCalls = (): { url: string; method: 'get'|'post'|'delete'|'p
 export const getLastFetchCall = (): { url: string; method: 'get'|'post'|'delete'|'patch'|'put'; headers: Headers} => {
     const calls = getFetchCalls();
 
+    // @ts-expect-error
     return calls[calls.length - 1];
 };

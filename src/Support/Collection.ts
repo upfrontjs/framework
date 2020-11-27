@@ -51,7 +51,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      */
     public *[Symbol.iterator](): Iterator<T> {
         for (let i = 0; i < this.length; i++) {
-            yield this[i];
+            yield this[i] as T;
         }
     }
 
@@ -86,10 +86,10 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      * @return {this}
      */
     protected _setArray(array: T[]): this {
-        const keys: number[] = Array.from(array.keys());
-
-        keys.forEach(key => this[key] = array[key]);
-        this.length = keys.length;
+        for (const [index, value] of array.entries()) {
+            this[index] = value;
+        }
+        this.length = array.length;
 
         return this;
     }
@@ -157,10 +157,10 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
         }
 
         if (count > 1) {
-            const randomElements = [];
+            const randomElements: T[] = [];
 
             for (let i = 0; i < count; i++) {
-                randomElements.push(this[Math.floor(Math.random() * this.length)]);
+                randomElements.push(this[Math.floor(Math.random() * this.length)] as T);
             }
 
             return this._newInstance(randomElements);
@@ -565,7 +565,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
         const items: T[] = [];
 
         while (this.length && !closure(this[0])) {
-            items.push(this.splice(0, 1)[0]);
+            items.push(this.splice(0, 1)[0] as T);
         }
 
         return this._newInstance(items);
@@ -582,8 +582,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     public takeWhile(closure: (item: any) => boolean): this {
         const items: T[] = [];
 
-        while (this.length  && closure(this[0])) {
-            items.push(this.splice(0, 1)[0]);
+        while (this.length && closure(this[0])) {
+            items.push(this.splice(0, 1)[0] as T);
         }
 
         return this._newInstance(items);
@@ -645,7 +645,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     public skipWhile(closure: (item: T) => boolean): this {
         const array = this.toArray();
 
-        while (array.length && closure(array[0])) {
+        while (array.length && closure(array[0] as T)) {
             array.shift();
         }
 
@@ -881,7 +881,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {Collection}
      */
-    // todo - what happens to a collection of collections? ¯\_(ツ)_/¯
+    // todo - what happens to a collection of collections? ¯\_(ツ)_/¯ (eg.: after chunk)
     public flat<D extends number = 1>(depth?: D): Collection<unknown> {
         return new Collection(this.toArray().flat(depth) as unknown[]);
     }

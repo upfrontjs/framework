@@ -29,9 +29,9 @@ export default class API implements ApiCaller {
      */
     public async call(
         url: string,
-        method: 'get'|'post'|'delete'|'patch'|'put',
+        method: 'get' | 'post' | 'delete' | 'patch' | 'put',
         data?: Record<string, any>,
-        customHeaders?: Record<string, string|string[]>
+        customHeaders?: Record<string, string | string[]>
     ): Promise<Response> {
         const config = this.initConfig(url, method, data, customHeaders);
 
@@ -52,9 +52,9 @@ export default class API implements ApiCaller {
      */
     protected initConfig(
         url: string,
-        method: 'get'|'post'|'delete'|'patch'|'put',
+        method: 'get' | 'post' | 'delete' | 'patch' | 'put',
         data?: Record<string, any>,
-        customHeaders?: Record<string, string|string[]>
+        customHeaders?: Record<string, string | string[]>
     ): { url: string; requestInit: RequestInit } {
         const initOptions: RequestInit = { method };
 
@@ -106,9 +106,16 @@ export default class API implements ApiCaller {
                 const headerValue = customHeaders[header];
 
                 if (Array.isArray(headerValue)) {
-                    headerValue.forEach(value => headers.append(header, value));
+                    headerValue.forEach(value => {
+                        // this isn't redundant once it's transpiled to js
+                        if (typeof value === 'string') {
+                            headers.append(header, value);
+                        }
+                    });
                 } else {
-                    headers.append(header, headerValue);
+                    if (typeof headerValue === 'string') {
+                        headers.append(header, headerValue);
+                    }
                 }
             });
         }

@@ -163,8 +163,8 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
             return this;
         }
 
-        if (isObject(value) && (this as unknown as HasRelations).relationDefined(key)) {
-            (this as unknown as HasRelations).addRelation(key, value);
+        if (value !== null && typeof value === 'object' && (this as unknown as HasRelations).relationDefined(key)) {
+            (this as unknown as HasRelations).addRelation(key, value as NonNullable<any>);
 
             // todo - automagically set the relation id on this
 
@@ -457,6 +457,8 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      * @inheritDoc
      */
     public toJson(): string {
-        return JSON.stringify(this.getAttributes());
+        return JSON.stringify(
+            Object.assign({}, this.getAttributes(), (this as unknown as HasRelations).getRelations())
+        );
     }
 }

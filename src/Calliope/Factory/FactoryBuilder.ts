@@ -150,7 +150,7 @@ export default class FactoryBuilder {
                 );
             }
 
-            const attributesFromState = factory[state](attributes);
+            const attributesFromState = (factory[state] as CallableFunction)(attributes);
 
             if (!attributesFromState || typeof attributesFromState !== 'object') {
                 throw new InvalidArgumentException(
@@ -233,6 +233,6 @@ export default class FactoryBuilder {
             config.set('lastIds', lastIds);
         }
 
-        return lastIds[this.model.getName()];
+        return lastIds[this.model.getName()] as number;
     }
 }

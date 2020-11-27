@@ -1,7 +1,7 @@
 import ApiResponseHandler from '../../src/Services/ApiResponseHandler';
-import data from '../mock/Models/data';
 import fetchMock from 'jest-fetch-mock';
 import { buildResponse } from '../test-helpers';
+import User from '../mock/Models/User';
 
 const handler = new ApiResponseHandler();
 
@@ -11,10 +11,10 @@ describe('apiResponseHandler', () => {
     });
 
     it('can parse the body if data wrapped', async () => {
-        fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({ data: data.UserOne })));
+        fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({ data: User.factory().raw() })));
         const parsedResponse = await handler.handle(fetch('url'));
 
-        expect(parsedResponse).toStrictEqual(data.UserOne);
+        expect(parsedResponse).toStrictEqual(User.factory().raw());
     });
 
     it('casts to boolean if only string boolean returned', async () => {
@@ -28,7 +28,7 @@ describe('apiResponseHandler', () => {
     it('calls the handleFinally method', async () => {
         const mockFn = jest.fn();
         handler.handleFinally = () => mockFn();
-        fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(data.UserOne)));
+        fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
         await handler.handle(fetch('url'));
 
         expect(mockFn).toHaveBeenCalled();

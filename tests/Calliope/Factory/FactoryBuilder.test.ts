@@ -5,6 +5,7 @@ import Model from '../../../src/Calliope/Model';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
 import InvalidOffsetException from '../../../src/Exceptions/InvalidOffsetException';
 import Factory from '../../../src/Calliope/Factory/Factory';
+import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 
 class FakeFactory extends Factory {
     // @ts-expect-error
@@ -228,12 +229,24 @@ describe('factoryBuilder', () => {
         });
 
         it('resolves methods when merging', () => {
-            expect(factoryBuilder.state('resolvedName').raw()).toStrictEqual({
-                name: 'resolved name',
-                createdAt: null,
-                updatedAt: null,
-                deletedAt: null
-            });
+            // the resolving happens in the following order:
+            // 1 - definition
+            // 2 - states
+            // 3 - arguments
+            const now = new Date().toISOString();
+
+            expect(factoryBuilder.state('resolvedName')
+                .raw({
+                    deletedAt: (attributes: Attributes) => {
+                        return attributes.deletegdAt ?? now;
+                    }
+                }))
+                .toStrictEqual({
+                    name: 'resolved name',
+                    createdAt: null,
+                    updatedAt: null,
+                    deletedAt: now
+                });
         });
     });
 

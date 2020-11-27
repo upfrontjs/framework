@@ -15,7 +15,7 @@ export default class UserFactory extends Factory {
 
         return {
             team_id: team.getKey(),
-            team: team
+            team: team // both model and attributes are acceptable
         };
     }
 

@@ -1,4 +1,5 @@
 import type HandlesApiResponse from '../Contracts/HandlesApiResponse';
+import { isObject } from '../Support/function';
 
 export default class ApiResponseHandler implements HandlesApiResponse {
     /**
@@ -19,7 +20,13 @@ export default class ApiResponseHandler implements HandlesApiResponse {
      * @return {Promise<any>}
      */
     public async handleSuccess(response: Response): Promise<any> {
-        return await response.json();
+        let responseData = await response.json();
+
+        if (isObject(responseData) && 'data' in responseData) {
+            responseData = responseData.data;
+        }
+
+        return Promise.resolve(responseData);
     }
 
     /**

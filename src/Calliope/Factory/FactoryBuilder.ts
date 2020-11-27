@@ -133,8 +133,7 @@ export default class FactoryBuilder {
      */
     public raw(attributes: Attributes = {}): Attributes {
         const factory = this.getFactory();
-        const baseAttributes = factory.definition(this.model);
-        attributes = Object.assign({}, baseAttributes, attributes);
+        let compiledAttributes = this.resolveAttributes(factory.definition(this.model));
 
         this.states?.forEach(state => {
             if (!(state in factory)) {
@@ -157,13 +156,7 @@ export default class FactoryBuilder {
                 );
             }
 
-            Object.assign(attributes, attributesFromState);
-        });
-
-        Object.keys(attributes).forEach(key => {
-            if (attributes[key] instanceof Function) {
-                attributes[key] = (attributes[key] as CallableFunction)(attributes);
-            }
+            compiledAttributes = this.resolveAttributes(attributesFromState, compiledAttributes);
         });
 
         if (this.model.usesTimestamps()) {
@@ -175,7 +168,27 @@ export default class FactoryBuilder {
             attributes[this.model.getDeletedAtColumn()] = attributes[this.model.getDeletedAtColumn()] ?? null;
         }
 
-        return attributes;
+        return this.resolveAttributes(attributes, compiledAttributes);
+    }
+
+    /**
+     * Resolve the methods in the attributes.
+     *
+     * @param {object} attributes
+     * @param {object} previouslyResolvedAttributes
+     *
+     * @private
+     *
+     * @return {object}
+     */
+    private resolveAttributes(attributes: Attributes, previouslyResolvedAttributes = {}): Attributes {
+        Object.keys(attributes).forEach(key => {
+            if (attributes[key] instanceof Function) {
+                attributes[key] = (attributes[key] as CallableFunction)(previouslyResolvedAttributes);
+            }
+        });
+
+        return Object.assign(previouslyResolvedAttributes, attributes);
     }
 
     // todo has/for (polymorphic too)

@@ -1,11 +1,10 @@
 import type { MockResponseInit } from 'jest-fetch-mock';
-import data from './mock/Models/data';
 import { isObject } from '../src/Support/function';
 
 export const buildResponse = (response?: string|Record<string, any>): MockResponseInit => {
     let responseObject: MockResponseInit = {
         status: 200,
-        body: JSON.stringify(data.UserOne)
+        body: JSON.stringify({ data: 'value' })
     };
 
     if (response && typeof response === 'string') {
@@ -13,6 +12,14 @@ export const buildResponse = (response?: string|Record<string, any>): MockRespon
     }
 
     if (isObject(response)) {
+        if (!response.body) {
+            responseObject.body = JSON.stringify(response);
+        } else {
+            if (isObject(response.body)) {
+                response.body = JSON.stringify(response.body);
+            }
+        }
+
         responseObject = Object.assign(responseObject, response);
     }
 

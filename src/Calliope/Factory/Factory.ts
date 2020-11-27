@@ -32,7 +32,7 @@ export default abstract class Factory implements FactoryHooks {
      * @return {object}
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public definition(_model: Model): Attributes {
+    public definition(_emptyModel: Model): Attributes {
         return {};
     }
 

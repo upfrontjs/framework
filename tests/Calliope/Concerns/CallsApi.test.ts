@@ -1,7 +1,6 @@
 import CallsApi from '../../../src/Calliope/Concerns/CallsApi';
 import LogicException from '../../../src/Exceptions/LogicException';
 import fetchMock from 'jest-fetch-mock';
-import data from '../../mock/Models/data';
 import Config from '../../../src/Support/Config';
 import API from '../../../src/Services/API';
 import ApiResponseHandler from '../../../src/Services/ApiResponseHandler';
@@ -48,11 +47,11 @@ describe('callsApi', () => {
         });
 
         it('returns a promise with the response',  async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse()));
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
             // @ts-expect-error
             const responseData = await caller.call('get');
 
-            expect(responseData).toStrictEqual(data.UserOne);
+            expect(responseData).toStrictEqual(User.factory().raw());
         });
 
         it('gets the ApiCaller from the config if set',  async () => {
@@ -100,9 +99,8 @@ describe('callsApi', () => {
         });
 
         // eslint-disable-next-line jest/no-commented-out-tests
-        // it('can construct a single instance', () => {
-        //     const teamData = data.TeamOne;
-        //     teamData.users = [data.UserOne, data.UserTwo];
+        // it('can construct a single instance of a model', () => {
+        //     const userData = User.factory().raw();
         //     //@ts-expect-error
         //     expect(caller.newInstanceFromResponseData(null)).toStrictEqual();
         // });

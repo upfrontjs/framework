@@ -1,17 +1,16 @@
 import Model from '../../src/Calliope/Model';
 import User from '../mock/Models/User';
-import data from '../mock/Models/data';
 
 let user: Model;
 
 describe('model', () => {
     beforeEach(() => {
-        user = new User(data.UserOne);
+        user = User.factory().create() as User;
     });
 
     describe('construct()', () => {
         it('can instantiate a model',  () => {
-            expect(new User(data.UserOne)).toBeInstanceOf(Model);
+            expect(user).toBeInstanceOf(Model);
         });
     });
 
@@ -40,10 +39,10 @@ describe('model', () => {
             expect(user.is(1)).toBe(false);
             expect(user.is({})).toBe(false);
             expect(user.is({ id: user.getKey() })).toBe(false);
-            expect(user.is(new User(data.UserTwo))).toBe(false);
+            expect(user.is(User.factory().create())).toBe(false);
 
             expect(user.is(user)).toBe(true);
-            expect(user.is(new User(data.UserOne))).toBe(true);
+            expect(user.is(User.factory().create())).toBe(true);
         });
     });
 
@@ -52,10 +51,10 @@ describe('model', () => {
             expect(user.isNot(1)).toBe(true);
             expect(user.isNot({})).toBe(true);
             expect(user.isNot({ id: user.getKey() })).toBe(true);
-            expect(user.isNot(new User(data.UserTwo))).toBe(true);
+            expect(user.isNot(User.factory().create())).toBe(true);
 
             expect(user.isNot(user)).toBe(false);
-            expect(user.isNot(new User(data.UserOne))).toBe(false);
+            expect(user.isNot(User.factory().create())).toBe(false);
         });
     });
 });

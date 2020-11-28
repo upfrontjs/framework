@@ -124,7 +124,7 @@ export default class CastsAttributes {
                     );
                 }
 
-                result = new Collection(value);
+                result = new Collection(cloneDeep(value));
             }
             else if (cast === 'dateTime') {
                 //todo - DateTime
@@ -140,7 +140,7 @@ export default class CastsAttributes {
                 );
             }
         } else {
-            result = value;
+            result = cloneDeep(value);
         }
 
         return result;

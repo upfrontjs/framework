@@ -100,7 +100,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
         if (key in this.attributes) {
             // If it has an accessor call it.
             if (this.hasGetAccessor(key)) {
-                return (this[`get${key.pascal()}Attribute`] as CallableFunction)(this.attributes[key]);
+                return (this[`get${key.pascal()}Attribute`] as CallableFunction)(cloneDeep(this.attributes[key]));
             }
 
             return this.castAttribute(key, this.attributes[key]);
@@ -344,7 +344,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      */
     public getRawOriginal(key?: string, defaultValue?: any): Attributes | any {
         if (key) {
-            return this.original[key] ?? defaultValue;
+            return this.original[key] ? cloneDeep(this.original[key]) : defaultValue;
         }
 
         if (!Object.keys(this.original).length) {

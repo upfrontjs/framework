@@ -1144,6 +1144,14 @@ describe('array-methods', () => {
         it('returns the new length of the collection', () => {
             expect(collection.push(6)).toStrictEqual(elements.length + 1);
         });
+
+        it('can push an empty collection to the correct key', () => {
+            collection = new Collection();
+            collection.push(1);
+            expect(collection[0]).toBe(1);
+            // @ts-expect-error
+            expect(collection['NaN']).toBeUndefined();
+        });
     });
 
     describe('shift()', () => {
@@ -1177,6 +1185,14 @@ describe('array-methods', () => {
 
         it('returns the new length', () => {
             expect(collection.unshift(1)).toStrictEqual(elements.length + 1);
+        });
+
+        it('can unshift an empty collection to the correct key', () => {
+            collection = new Collection();
+            collection.unshift(1);
+            expect(collection[0]).toBe(1);
+            // @ts-expect-error
+            expect(collection['NaN']).toBeUndefined();
         });
     });
 

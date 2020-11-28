@@ -1,7 +1,6 @@
 import FactoryBuilder from '../../../src/Calliope/Factory/FactoryBuilder';
 import User from '../../mock/Models/User';
 import Team from '../../mock/Models/Team';
-import Model from '../../../src/Calliope/Model';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
 import InvalidOffsetException from '../../../src/Exceptions/InvalidOffsetException';
 import Factory from '../../../src/Calliope/Factory/Factory';
@@ -25,7 +24,7 @@ describe('factoryBuilder', () => {
     });
 
     describe('states()', () => {
-        const factoryName = new User().factory().constructor.name;
+        const factoryName: string = new User().factory().constructor.name;
 
         it('can return the model with the states applied', () => {
             const user: User = factoryBuilder.state('withTeam').create() as User;
@@ -64,7 +63,7 @@ describe('factoryBuilder', () => {
 
             expect(failingFunc).toThrow(
                 new InvalidOffsetException(
-                    '\'scopeAsProperty\' is not a method on the \'' + FakeFactory.name + '\' class.'
+                    '\'scopeAsProperty\' is not a method on the \'' + String(FakeFactory.name) + '\' class.'
                 )
             );
         });
@@ -78,7 +77,7 @@ describe('factoryBuilder', () => {
 
             expect(failingFunc).toThrow(
                 new TypeError(
-                    '\'invalidScope\' is not returning an object on \'' + FakeFactory.name + '\' class.'
+                    '\'invalidScope\' is not returning an object on \'' + String(FakeFactory.name) + '\' class.'
                 )
             );
         });
@@ -143,14 +142,14 @@ describe('factoryBuilder', () => {
         });
 
         it('can return a model when the amount is <= 1 or by default', () => {
-            expect(factoryBuilder.times(1).create()).toBeInstanceOf(Model);
-            expect(factoryBuilder.create()).toBeInstanceOf(Model);
+            expect(factoryBuilder.times(1).create()).toBeInstanceOf(User);
+            expect(factoryBuilder.create()).toBeInstanceOf(User);
         });
     });
 
     describe('make()', () => {
         it('doesn\'t set the id and timestamps', () => {
-            const model = factoryBuilder.make() as Model;
+            const model = factoryBuilder.make() as User;
 
             expect(model[model.getUpdatedAtColumn()]).toBeNull();
             expect(model[model.getCreatedAtColumn()]).toBeNull();
@@ -159,7 +158,7 @@ describe('factoryBuilder', () => {
         });
 
         it('can return a model', () => {
-            expect(factoryBuilder.make()).toBeInstanceOf(Model);
+            expect(factoryBuilder.make()).toBeInstanceOf(User);
         });
 
         it('can return a model collection', () => {
@@ -199,6 +198,10 @@ describe('factoryBuilder', () => {
             expect(team.updatedAt).toBeUndefined();
             expect(team.deletedAt).toBeUndefined();
         });
+    });
+
+    describe('afterCreating()', () => {
+
     });
 
     describe('raw()', () => {

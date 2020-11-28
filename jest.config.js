@@ -25,7 +25,7 @@ module.exports = {
     testPathIgnorePatterns: [
         '/node_modules/'
     ],
-    bail: true,
+    bail: false,
     notify: true,
     notifyMode: 'failure-change',
     globals: {

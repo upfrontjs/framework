@@ -1,7 +1,6 @@
 import Collection from '../Support/Collection';
 import Model from './Model';
 
-// todo - server side pagination on this?
 export default class ModelCollection<T extends Model> extends Collection<T> {
     constructor(models?: T[]) {
         super(models);
@@ -345,7 +344,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      * @param {...Model} items
      */
     public push(...items: T[]): number {
-        this._throwIfNotModels(Array.of(...items).flat());
+        this._throwIfNotModels(Array.of(...items));
 
         return super.push(...items);
     }
@@ -356,7 +355,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      * @param {...Model} items
      */
     public unshift(...items: T[]): number {
-        this._throwIfNotModels(items.flat());
+        this._throwIfNotModels(Array.of(...items));
 
         return super.unshift(...items);
     }

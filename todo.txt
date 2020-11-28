@@ -4,6 +4,7 @@
 // todo - improve typings (eg.: collection pluck K extends keyof T, better user guards)
 // todo - choose the right license
 // todo - review all instances of eslint-disable-next-line
+// todo - in tests in the `it` block rename the names from assertions (it can) to expectations (it should)
 
 // todo - will need a cookbook to show the cool shit one might not think of straight away eg.: also in vue-press
     - local scope building

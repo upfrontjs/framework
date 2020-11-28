@@ -13,11 +13,9 @@ export const buildResponse = (response?: string|Record<string, any>): MockRespon
 
     if (isObject(response)) {
         if (!response.body) {
-            responseObject.body = JSON.stringify(response);
+            response.body = JSON.stringify(response);
         } else {
-            if (isObject(response.body)) {
-                response.body = JSON.stringify(response.body);
-            }
+            response.body = JSON.stringify(response.body);
         }
 
         responseObject = Object.assign(responseObject, response);

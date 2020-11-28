@@ -927,7 +927,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      */
     public push(...items: T[]): number {
         // ensure indexes are continuous
-        let key = Number(this.keys()[this.length - 1]) + 1;
+        let key = this.length ? Number(this.keys()[this.length - 1]) + 1 : 0;
 
         for (const item of items) {
             this[key] = item;

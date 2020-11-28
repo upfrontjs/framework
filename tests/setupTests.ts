@@ -4,7 +4,7 @@ import '../src/Support/function';
 import fetchMock from 'jest-fetch-mock';
 import Config from '../src/Support/Config';
 
-new Config().set('baseEndPoint', 'https://test-api-endpoint.com/');
+const config = new Config();
 
 fetchMock.enableMocks();
 
@@ -21,5 +21,6 @@ Object.defineProperty(Array.prototype, 'has', {
 });
 
 global.beforeEach(() => {
-    new Config().reset();
+    config.reset();
+    config.set('baseEndPoint', 'https://test-api-endpoint.com');
 });

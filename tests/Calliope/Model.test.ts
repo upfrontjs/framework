@@ -42,7 +42,6 @@ describe('model', () => {
             expect(user.is(User.factory().create())).toBe(false);
 
             expect(user.is(user)).toBe(true);
-            expect(user.is(User.factory().create())).toBe(true);
         });
     });
 
@@ -54,7 +53,6 @@ describe('model', () => {
             expect(user.isNot(User.factory().create())).toBe(true);
 
             expect(user.isNot(user)).toBe(false);
-            expect(user.isNot(User.factory().create())).toBe(false);
         });
     });
 });

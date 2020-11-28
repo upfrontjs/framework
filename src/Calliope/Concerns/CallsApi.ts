@@ -8,12 +8,13 @@ import type HandlesApiResponse from '../../Contracts/HandlesApiResponse';
 import type Model from '../Model';
 import BuildsQuery from './BuildsQuery';
 import type { Attributes } from './HasAttributes';
+import { isObject } from '../../Support/function';
 
 export default class CallsApi extends BuildsQuery {
     /**
      * The basic endpoint that model should you.
      */
-    public get endpoint(): string {
+    protected get endpoint(): string {
         return '';
     }
 
@@ -79,7 +80,7 @@ export default class CallsApi extends BuildsQuery {
 
         return HandlesApiResponse.handle(
             ApiCaller.call(
-                String(config.get('baseEndPoint', '')).finish('/') + this.getEndpoint(),
+                String(config.get('baseEndPoint', '')) + this.getEndpoint().start('/'),
                 method,
                 data,
                 customHeaders
@@ -110,7 +111,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @see {CallsApi.prototype.get}
      */
-    static async get(data?: Record<string, unknown>): Promise<undefined | Model | ModelCollection<Model>> {
+    static async get(data?: Record<string, unknown>): Promise<Model | ModelCollection<Model>> {
         return new this().get(data);
     }
 
@@ -217,7 +218,7 @@ export default class CallsApi extends BuildsQuery {
             const collection = new modelCollectionConstructor();
 
             data.forEach(modelData => {
-                if (!modelData || typeof data !== 'object') {
+                if (isObject(modelData)) {
                     collection.push(this.forceFilledModel(modelData));
                 }
             });
@@ -282,7 +283,9 @@ export default class CallsApi extends BuildsQuery {
      * @return {this}
      */
     public resetEndpoint(): this {
-        this.mutatedEndpoint = this.endpoint.length ? this.endpoint : this.constructor.name.toLowerCase().plural();
+        this.mutatedEndpoint = typeof this.endpoint === 'string' && this.endpoint.length
+            ? this.endpoint
+            : this.constructor.name.toLowerCase().plural();
 
         return this;
     }

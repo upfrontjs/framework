@@ -117,7 +117,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
                 return defaultVal;
             }
 
-            return  this[key] instanceof Function ? (this[key] as CallableFunction)() : this[key];
+            return this[key] instanceof Function ? (this[key] as CallableFunction)() : this[key];
         }
 
         return defaultVal;
@@ -351,7 +351,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
             return defaultValue;
         }
 
-        return this.original;
+        return cloneDeep(this.original);
     }
 
     /**

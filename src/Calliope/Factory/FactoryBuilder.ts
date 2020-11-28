@@ -97,7 +97,7 @@ export default class FactoryBuilder {
      * @return {Model|ModelCollection<Model>}
      */
     public create(attributes?: Attributes): Model|ModelCollection<Model> {
-        const modelOrCollection = this.make(attributes);
+        const modelOrCollection = this.compileRaw(attributes);
 
         const addAttributes = (model: Model) => {
             if (model.usesTimestamps()) {

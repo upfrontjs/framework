@@ -24,18 +24,36 @@ export const buildResponse = (response?: string|Record<string, any>): MockRespon
     return responseObject;
 };
 
-export const getFetchCalls = (): { url: string; method: 'get'|'post'|'delete'|'patch'|'put'; headers: Headers}[] => {
+type FetchCall = {
+    url: string;
+    method: 'get'|'post'|'delete'|'patch'|'put';
+    headers: Headers;
+    body?: any;
+};
+
+/**
+ * Arrange information into an object.
+ */
+export const getFetchCalls = (): FetchCall[] => {
     // @ts-expect-error
     const calls = fetch.mock.calls;
 
-    return calls.map((array: [string, { method: 'get'|'post'|'delete'|'patch'|'put'; headers: Headers }]) => {
+    return calls.map((array: [string, Partial<FetchCall>]) => {
         return Object.assign(array[1], { url: array[0] });
     });
 };
 
-export const getLastFetchCall = (): { url: string; method: 'get'|'post'|'delete'|'patch'|'put'; headers: Headers} => {
+export const getLastFetchCall = (): FetchCall => {
     const calls = getFetchCalls();
+    const lastCall: NonNullable<any> = calls[calls.length - 1];
 
-    // @ts-expect-error
-    return calls[calls.length - 1];
+    if ('body' in lastCall && typeof lastCall.body === 'string') {
+        try {
+            lastCall.body = JSON.parse(lastCall.body);
+        }
+        // eslint-disable-next-line no-empty
+        catch (e) {}
+    }
+
+    return lastCall;
 };

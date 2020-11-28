@@ -20,6 +20,7 @@ const mockUserModelResponse = (user: User): void => {
 describe('callsApi', () => {
     beforeEach(() => {
         caller = new User();
+        caller.usesSoftDeletes = () => false;
         fetchMock.resetMocks();
         config.unset('ApiResponseHandler');
         config.unset('API');
@@ -158,6 +159,14 @@ describe('callsApi', () => {
     });
 
     describe('get()', () => {
+        it('sends a GET request', async () => {
+            const user = User.factory().create() as User;
+            mockUserModelResponse(user);
+
+            await caller.get();
+            expect(getLastFetchCall().method).toBe('get');
+        });
+
         it('returns a promise with new model or model collection', async () => {
             const user = User.factory().create() as User;
             mockUserModelResponse(user);
@@ -216,6 +225,280 @@ describe('callsApi', () => {
             const data = await User.get();
 
             expect(data).toStrictEqual(user);
+        });
+    });
+
+    describe('post()', () => {
+        it('can send a POST request', async () => {
+            mockUserModelResponse(caller as User);
+            await caller.post({ key: 'value' });
+
+            expect(getLastFetchCall().method).toBe('post');
+        });
+
+        it('returns this or new model depending on the response', async () => {
+            const responseUser = User.factory().create() as User;
+            const callerUser = User.factory().create() as User;
+
+            // if response returns model data
+            mockUserModelResponse(responseUser);
+            let returnModel = await callerUser.post(responseUser.getRawOriginal());
+
+            // a new model will be returned using the response data
+            expect(callerUser).not.toStrictEqual(returnModel);
+
+            // if response isn't model data
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse('1')));
+            returnModel = await callerUser.post({ key: 'value' });
+
+            // the returned model is the calling model
+            expect(callerUser).toStrictEqual(returnModel);
+        });
+
+        it('resets the endpoint', async () => {
+            mockUserModelResponse(User.factory().create() as User);
+
+            caller.setEndpoint('endpoint');
+            await caller.post({ key: 'value' });
+            expect(caller.getEndpoint()).toBe('users');
+        });
+
+        it('resets the query parameters', async () => {
+            caller.whereKey(43);
+            // @ts-expect-error
+            expect(caller.compileQueryParameters().wheres).toHaveLength(1);
+
+            mockUserModelResponse(User.factory().create() as User);
+            await caller.post({ key: 'value' });
+
+            // @ts-expect-error
+            expect(caller.compileQueryParameters().wheres).toBeUndefined();
+        });
+
+        it('can send query parameters in the request', async () => {
+            caller.whereKey(43);
+
+            mockUserModelResponse(User.factory().create() as User);
+            await caller.post({ key: 'value' });
+
+            expect(getLastFetchCall()?.body).toStrictEqual({
+                key: 'value',
+                wheres: [
+                    {
+                        boolean: 'and',
+                        column: 'id',
+                        operator: '=',
+                        value: 43
+                    }
+                ]
+            });
+        });
+    });
+
+    describe('put()', () => {
+        it('can send a PUT request', async () => {
+            mockUserModelResponse(caller as User);
+            await caller.put({ key: 'value' });
+
+            expect(getLastFetchCall().method).toBe('put');
+        });
+
+        it('returns this or new model depending on the response', async () => {
+            const responseUser = User.factory().create() as User;
+            const callerUser = User.factory().create() as User;
+
+            // if response returns model data
+            mockUserModelResponse(responseUser);
+            let returnModel = await callerUser.put(responseUser.getRawOriginal());
+
+            // a new model will be returned using the response data
+            expect(callerUser).not.toStrictEqual(returnModel);
+
+            // if response isn't model data
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse('1')));
+            returnModel = await callerUser.put({ key: 'value' });
+
+            // the returned model is the calling model
+            expect(callerUser).toStrictEqual(returnModel);
+        });
+
+        it('resets the endpoint', async () => {
+            mockUserModelResponse(User.factory().create() as User);
+
+            caller.setEndpoint('endpoint');
+            await caller.put({ key: 'value' });
+            expect(caller.getEndpoint()).toBe('users');
+        });
+
+        it('resets the query parameters', async () => {
+            caller.whereKey(43);
+            // @ts-expect-error
+            expect(caller.compileQueryParameters().wheres).toHaveLength(1);
+
+            mockUserModelResponse(User.factory().create() as User);
+            await caller.put({ key: 'value' });
+
+            // @ts-expect-error
+            expect(caller.compileQueryParameters().wheres).toBeUndefined();
+        });
+
+        it('can send query parameters in the request', async () => {
+            caller.whereKey(43);
+
+            mockUserModelResponse(User.factory().create() as User);
+            await caller.put({ key: 'value' });
+
+            expect(getLastFetchCall()?.body).toStrictEqual({
+                key: 'value',
+                wheres: [
+                    {
+                        boolean: 'and',
+                        column: 'id',
+                        operator: '=',
+                        value: 43
+                    }
+                ]
+            });
+        });
+    });
+
+    describe('patch()', () => {
+        it('can send a PATCH request', async () => {
+            mockUserModelResponse(caller as User);
+            await caller.patch({ key: 'value' });
+
+            expect(getLastFetchCall().method).toBe('patch');
+        });
+
+        it('returns this or new model depending on the response', async () => {
+            const responseUser = User.factory().create() as User;
+            const callerUser = User.factory().create() as User;
+
+            // if response returns model data
+            mockUserModelResponse(responseUser);
+            let returnModel = await callerUser.patch(responseUser.getRawOriginal());
+
+            // a new model will be returned using the response data
+            expect(callerUser).not.toStrictEqual(returnModel);
+
+            // if response isn't model data
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse('1')));
+            returnModel = await callerUser.patch({ key: 'value' });
+
+            // the returned model is the calling model
+            expect(callerUser).toStrictEqual(returnModel);
+        });
+
+        it('resets the endpoint', async () => {
+            mockUserModelResponse(User.factory().create() as User);
+
+            caller.setEndpoint('endpoint');
+            await caller.patch({ key: 'value' });
+            expect(caller.getEndpoint()).toBe('users');
+        });
+
+        it('resets the query parameters', async () => {
+            caller.whereKey(43);
+            // @ts-expect-error
+            expect(caller.compileQueryParameters().wheres).toHaveLength(1);
+
+            mockUserModelResponse(User.factory().create() as User);
+            await caller.patch({ key: 'value' });
+
+            // @ts-expect-error
+            expect(caller.compileQueryParameters().wheres).toBeUndefined();
+        });
+
+        it('can send query parameters in the request', async () => {
+            caller.whereKey(43);
+
+            mockUserModelResponse(User.factory().create() as User);
+            await caller.patch({ key: 'value' });
+
+            expect(getLastFetchCall()?.body).toStrictEqual({
+                key: 'value',
+                wheres: [
+                    {
+                        boolean: 'and',
+                        column: 'id',
+                        operator: '=',
+                        value: 43
+                    }
+                ]
+            });
+        });
+    });
+
+    describe('delete()', () => {
+        it('can send a DELETE request', async () => {
+            mockUserModelResponse(caller as User);
+            await caller.delete();
+
+            expect(getLastFetchCall().method).toBe('delete');
+        });
+
+        it('can send information in the request body', async () => {
+            mockUserModelResponse(caller as User);
+            await caller.delete({ key: 'value' });
+
+            expect(getLastFetchCall()?.body).toStrictEqual({ key: 'value' });
+        });
+
+        it('returns this or new model depending on the response', async () => {
+            const responseUser = User.factory().create() as User;
+            const callerUser = User.factory().create() as User;
+
+            // if response returns model data
+            mockUserModelResponse(responseUser);
+            let returnModel = await callerUser.delete(responseUser.getRawOriginal());
+
+            // a new model will be returned using the response data
+            expect(callerUser).not.toStrictEqual(returnModel);
+
+            // if response isn't model data
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse('1')));
+            returnModel = await callerUser.delete();
+
+            // the returned model is the calling model
+            expect(callerUser).toStrictEqual(returnModel);
+        });
+
+        it('resets the endpoint', async () => {
+            mockUserModelResponse(User.factory().create() as User);
+
+            caller.setEndpoint('endpoint');
+            await caller.delete();
+            expect(caller.getEndpoint()).toBe('users');
+        });
+
+        it('resets the query parameters', async () => {
+            caller.whereKey(43);
+            // @ts-expect-error
+            expect(caller.compileQueryParameters().wheres).toHaveLength(1);
+
+            mockUserModelResponse(User.factory().create() as User);
+            await caller.delete();
+
+            // @ts-expect-error
+            expect(caller.compileQueryParameters().wheres).toBeUndefined();
+        });
+
+        it('can send query parameters in the request', async () => {
+            caller.whereKey(43);
+
+            mockUserModelResponse(User.factory().create() as User);
+            await caller.delete();
+
+            expect(getLastFetchCall()?.body).toStrictEqual({
+                wheres: [
+                    {
+                        boolean: 'and',
+                        column: 'id',
+                        operator: '=',
+                        value: 43
+                    }
+                ]
+            });
         });
     });
 });

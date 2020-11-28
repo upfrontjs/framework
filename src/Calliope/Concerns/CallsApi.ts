@@ -94,14 +94,16 @@ export default class CallsApi extends BuildsQuery {
      *
      * @param {object=} data
      *
-     * @return {Promise<Model | ModelCollection<Model>>}
+     * @return {Promise<Model|ModelCollection<Model>>}
      */
-    public async get(data?: Record<string, unknown>): Promise<Model | ModelCollection<Model>> {
-        const responseData = await this.call('get', Object.assign({}, data, this.compileQueryParameters()));
-        this.resetEndpoint();
-        this.resetQueryParameters();
+    public async get(data?: Record<string, unknown>): Promise<Model|ModelCollection<Model>> {
+        return this.call('get', Object.assign({}, data, this.compileQueryParameters()))
+            .then(responseData => {
+                this.resetEndpoint();
+                this.resetQueryParameters();
 
-        return Promise.resolve(this.newInstanceFromResponseData(responseData));
+                return this.newInstanceFromResponseData(responseData);
+            });
     }
 
     /**
@@ -111,7 +113,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @see {CallsApi.prototype.get}
      */
-    static async get(data?: Record<string, unknown>): Promise<Model | ModelCollection<Model>> {
+    static async get(data?: Record<string, unknown>): Promise<Model|ModelCollection<Model>> {
         return new this().get(data);
     }
 
@@ -122,14 +124,13 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async post(data: Record<string, unknown>): Promise<this> {
+    public async post(data: Record<string, unknown>): Promise<this|Model> {
         return this.call('post', Object.assign({}, data, this.compileQueryParameters()))
-            .then(() => {
-                this.syncOriginal();
+            .then(responseData => {
                 this.resetEndpoint();
                 this.resetQueryParameters();
 
-                return this;
+                return this.getResponseModel(this as unknown as Model, responseData);
             });
     }
 
@@ -140,14 +141,13 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async put(data: Record<string, unknown>): Promise<this> {
+    public async put(data: Record<string, unknown>): Promise<this|Model> {
         return this.call('put', Object.assign({}, data, this.compileQueryParameters()))
-            .then(() => {
-                this.syncOriginal();
+            .then(responseData => {
                 this.resetEndpoint();
                 this.resetQueryParameters();
 
-                return this;
+                return this.getResponseModel(this as unknown as Model, responseData);
             });
     }
 
@@ -158,14 +158,13 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async patch(data: Record<string, unknown>): Promise<this> {
+    public async patch(data: Record<string, unknown>): Promise<this|Model> {
         return this.call('patch', Object.assign({}, data, this.compileQueryParameters()))
-            .then(() => {
-                this.syncOriginal();
+            .then(responseData => {
                 this.resetEndpoint();
                 this.resetQueryParameters();
 
-                return this;
+                return this.getResponseModel(this as unknown as Model, responseData);
             });
     }
 
@@ -177,16 +176,29 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Promise<boolean>}
      */
-    public async delete(data?: Record<string, unknown>): Promise<boolean> {
+    public async delete(data?: Record<string, unknown>): Promise<this|Model> {
         return this.call('delete', Object.assign({}, data, this.compileQueryParameters()))
-            .then(() => {
-                this.syncOriginal();
+            .then(responseData => {
                 this.resetEndpoint();
                 this.resetQueryParameters();
 
-                return true;
-            })
-            .catch(() => false);
+                return this.getResponseModel(this as unknown as Model, responseData);
+            });
+    }
+
+    /**
+     * Determine whether to return this or a new model from the response.
+     *
+     * @param {Model} defaultVal
+     * @param {object=} responseData
+     *
+     * @private
+     *
+     * @return {Model|this}
+     */
+    private getResponseModel(defaultVal: Model, responseData?: Attributes): this|Model {
+        // returning a collection outside of GET is unexpected.
+        return isObject(responseData) ? this.newInstanceFromResponseData(responseData) as Model : defaultVal;
     }
 
     /**

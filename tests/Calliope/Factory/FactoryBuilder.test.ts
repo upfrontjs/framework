@@ -227,8 +227,6 @@ describe('factoryBuilder', () => {
             expect(team.updatedAt).toBeUndefined();
             expect(team.deletedAt).toBeUndefined();
         });
-
-        it.todo('calls the afterCreating hook if defined');
     });
 
     describe('afterCreating()', () => {

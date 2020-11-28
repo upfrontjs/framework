@@ -10,6 +10,7 @@ import BuildsQuery from './BuildsQuery';
 import type { Attributes } from './HasAttributes';
 import { isObject } from '../../Support/function';
 
+// todo - improve return types (from model to this?)
 export default class CallsApi extends BuildsQuery {
     /**
      * The basic endpoint that model should you.

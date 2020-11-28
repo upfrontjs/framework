@@ -438,12 +438,14 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
     /**
      * Get all model attributes except the given keys.
      *
-     * @param {string[]} attributes
+     * @param {string|string[]} attributes
      *
      * @return {object}
      */
-    public except(attributes: string[]): Attributes {
+    public except(attributes: string|string[]): Attributes {
         const result: Attributes = {};
+
+        attributes = Array.isArray(attributes) ? attributes : [attributes];
 
         this.getAttributeKeys()
             .filter(name => !attributes.includes(name))

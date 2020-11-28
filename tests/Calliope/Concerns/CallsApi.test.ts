@@ -87,6 +87,56 @@ describe('callsApi', () => {
             await caller.call('get');
             expect(mockFn).toHaveBeenCalled();
         });
+
+        it('internally counts the number of ongoing requests', async () => {
+            jest.useFakeTimers();
+            fetchMock.mockResponse(async () => new Promise( resolve =>
+                setTimeout(
+                    () => resolve(buildResponse((User.factory().create() as User).getRawOriginal())),
+                    100
+                )
+            ));
+
+            // @ts-expect-error
+            const promise1 = caller.call('get');
+            // @ts-expect-error
+            const promise2 = caller.call('get');
+
+            // @ts-expect-error
+            expect(caller.requestCount).toBe(2);
+
+            jest.runAllTimers();
+
+            await Promise.all([promise1, promise2]);
+
+            // @ts-expect-error
+            expect(caller.requestCount).toBe(0);
+
+            jest.useRealTimers();
+        });
+
+        it('can determine whether there is an ongoing request or not', async () => {
+            jest.useFakeTimers();
+            fetchMock.mockResponseOnce(async () => new Promise( resolve =>
+                setTimeout(
+                    () => resolve(buildResponse((User.factory().create() as User).getRawOriginal())),
+                    100
+                )
+            ));
+
+            // @ts-expect-error
+            const promise = caller.call('get');
+
+            expect(caller.loading).toBe(true);
+
+            jest.runAllTimers();
+
+            await promise;
+
+            expect(caller.loading).toBe(false);
+
+            jest.useRealTimers();
+        });
     });
 
     describe('newInstanceFromResponseData()', () => {
@@ -173,6 +223,17 @@ describe('callsApi', () => {
 
             const data = await caller.get();
             expect(data).toStrictEqual(user);
+        });
+
+        it('force fills the models from the response', async () => {
+            const user = User.factory().create() as User;
+            mockUserModelResponse(user);
+            // @ts-expect-error
+            User.prototype.fillable = [];
+
+            const data = await caller.get();
+            // @ts-expect-error
+            expect(data.name).toStrictEqual(user.name);
         });
 
         it('resets the endpoint', async () => {

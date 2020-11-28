@@ -6,6 +6,8 @@ import InvalidOffsetException from '../../../src/Exceptions/InvalidOffsetExcepti
 import Factory from '../../../src/Calliope/Factory/Factory';
 import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 import Collection from '../../../src/Support/Collection';
+import UserFactory from '../../mock/Factories/UserFactory';
+import type Model from '../../../src/Calliope/Model';
 
 class FakeFactory extends Factory {
     // @ts-expect-error
@@ -166,6 +168,33 @@ describe('factoryBuilder', () => {
         });
     });
 
+    describe('afterMaking()', () => {
+        it('calls the afterCreating with the created model or collection', () => {
+            const mockFn = jest.fn();
+            const unCalledMockFn = jest.fn();
+            // eslint-disable-next-line @typescript-eslint/unbound-method
+            const originalFactory = User.prototype.factory;
+
+            class MockUserFactory extends UserFactory {
+                afterCreating(modelOrCollection: Model | ModelCollection<Model>) {
+                    unCalledMockFn(modelOrCollection);
+                }
+
+                afterMaking(modelOrCollection: Model | ModelCollection<Model>) {
+                    mockFn(modelOrCollection);
+                }
+            }
+            User.prototype.factory = () => new MockUserFactory();
+
+            factoryBuilder.make();
+            expect(mockFn).toHaveBeenCalled();
+            expect(mockFn).toHaveBeenCalledWith(factoryBuilder.make());
+            expect(unCalledMockFn).not.toHaveBeenCalled();
+
+            User.prototype.factory = originalFactory;
+        });
+    });
+
     describe('create()', () => {
         it('can create independent models', () => {
             const userOne = factoryBuilder.create() as User;
@@ -198,10 +227,35 @@ describe('factoryBuilder', () => {
             expect(team.updatedAt).toBeUndefined();
             expect(team.deletedAt).toBeUndefined();
         });
+
+        it.todo('calls the afterCreating hook if defined');
     });
 
     describe('afterCreating()', () => {
+        it('calls the afterCreating with the created model or collection', () => {
+            const mockFn = jest.fn();
+            const unCalledMockFn = jest.fn();
+            // eslint-disable-next-line @typescript-eslint/unbound-method
+            const originalFactory = User.prototype.factory;
 
+            class MockUserFactory extends UserFactory {
+                afterCreating(modelOrCollection: Model | ModelCollection<Model>) {
+                    mockFn(modelOrCollection);
+                }
+
+                afterMaking(modelOrCollection: Model | ModelCollection<Model>) {
+                    unCalledMockFn(modelOrCollection);
+                }
+            }
+            User.prototype.factory = () => new MockUserFactory();
+
+            factoryBuilder.create();
+            expect(mockFn).toHaveBeenCalled();
+            expect(mockFn).toHaveBeenCalledWith(factoryBuilder.create({ id: 1 }));
+            expect(unCalledMockFn).not.toHaveBeenCalled();
+
+            User.prototype.factory = originalFactory;
+        });
     });
 
     describe('raw()', () => {

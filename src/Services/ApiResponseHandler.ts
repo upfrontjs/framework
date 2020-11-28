@@ -36,7 +36,7 @@ export default class ApiResponseHandler implements HandlesApiResponse {
      *
      * @return {void}
      */
-    public handleError(rejectReason: unknown): void {
+    public handleError(rejectReason: unknown): never {
         throw new Error('Request has failed with the following message:\n' + String(rejectReason));
     }
 

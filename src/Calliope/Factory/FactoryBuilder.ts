@@ -4,7 +4,7 @@ import ModelCollection from '../ModelCollection';
 import Factory from './Factory';
 import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
 import Config from '../../Support/Config';
-import Collection from "../../Support/Collection";
+import Collection from '../../Support/Collection';
 
 export default class FactoryBuilder {
     /**
@@ -24,6 +24,13 @@ export default class FactoryBuilder {
      * @type {Model}
      */
     protected model: Model;
+
+    /**
+     * The memoized factory instance.
+     *
+     * @protected
+     */
+    protected factory: Factory | undefined;
 
     /**
      * The states to be called when constructing the attributes.
@@ -71,19 +78,15 @@ export default class FactoryBuilder {
      * @return {Model|ModelCollection<Model>}
      */
     public make(attributes?: Attributes): Model|ModelCollection<Model> {
-        const compiledAttributes = this.raw(attributes);
+        const modelOrCollection = this.compileRaw(attributes);
 
-        if (Collection.isCollection(compiledAttributes)) {
-            const models: Model[] = [];
+        const factory = this.getFactory();
 
-            compiledAttributes.forEach(attributes => {
-                models.push(new (<typeof Model> this.model.constructor)(attributes as Attributes));
-            });
-
-            return new ModelCollection(models);
-        } else {
-            return new (<typeof Model> this.model.constructor)(compiledAttributes as Attributes);
+        if ('afterMaking' in factory && factory.afterMaking instanceof Function) {
+            factory.afterMaking(modelOrCollection);
         }
+
+        return modelOrCollection;
     }
 
     /**
@@ -122,7 +125,38 @@ export default class FactoryBuilder {
 
         addAttributes(modelOrCollection as Model);
 
+        const factory = this.getFactory();
+
+        if ('afterCreating' in factory && factory.afterCreating instanceof Function) {
+            factory.afterCreating(modelOrCollection);
+        }
+
         return modelOrCollection;
+    }
+
+    /**
+     * Create a model or model collection instance from the raw attributes.
+     *
+     * @param {object=} attributes
+     *
+     * @protected
+     *
+     * @return {Model|ModelCollection<Model>}
+     */
+    protected compileRaw(attributes?: Attributes): Model|ModelCollection<Model> {
+        const compiledAttributes = this.raw(attributes);
+
+        if (Collection.isCollection(compiledAttributes)) {
+            const models: Model[] = [];
+
+            compiledAttributes.forEach(attributes => {
+                models.push(new (<typeof Model> this.model.constructor)(attributes as Attributes));
+            });
+
+            return new ModelCollection(models);
+        } else {
+            return new (<typeof Model> this.model.constructor)(compiledAttributes as Attributes);
+        }
     }
 
     /**
@@ -130,7 +164,7 @@ export default class FactoryBuilder {
      *
      * @param {object=} attributes
      *
-     * @return {object}
+     * @return {object|object[]}
      */
     public raw(attributes: Attributes = {}): Attributes | Collection<Attributes> {
         const factory = this.getFactory();
@@ -204,6 +238,10 @@ export default class FactoryBuilder {
      * @return {Factory}
      */
     protected getFactory(): Factory {
+        if (this.factory) {
+            return this.factory;
+        }
+
         if (!('factory' in this.model) || !(this.model.factory instanceof Function)) {
             throw new InvalidOffsetException(
                 'The method factory() is either not defined or not and instance of Function on the \''
@@ -219,6 +257,8 @@ export default class FactoryBuilder {
                 'Invalid return type defined on the factory() method on the \'' + this.model.getName() + '\' class.'
             );
         }
+
+        this.factory = factory;
 
         return factory;
     }

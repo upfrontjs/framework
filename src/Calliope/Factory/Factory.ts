@@ -6,16 +6,16 @@ interface FactoryHooks {
     /**
      * The factory hook to be called where the value might be changed.
      *
-     * @param {Model|ModelCollection<Model>} models
+     * @param {Model|ModelCollection<Model>} modelOrCollection
      */
-    afterMaking?(models: Model|ModelCollection<Model>): void;
+    afterMaking?(modelOrCollection: Model|ModelCollection<Model>): void;
 
     /**
      * The factory hook to be called where the value might be changed.
      *
-     * @param {Model|ModelCollection<Model>} models
+     * @param {Model|ModelCollection<Model>} modelOrCollection
      */
-    afterCreating?(models: Model|ModelCollection<Model>): void;
+    afterCreating?(modelOrCollection: Model|ModelCollection<Model>): void;
 
     /**
      * The class can be indexed by strings

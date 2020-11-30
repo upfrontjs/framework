@@ -137,7 +137,7 @@ export default class Model extends SoftDeletes {
     // public static async find(id: string|number): Promise<undefined|Model> {
     //     return new this()
     //         .resetEndpoint()
-    //         .appendToEndpoint('/' + id.toString())
+    //         .setEndpoint(this.getEndpoint().finis('/') + id.toString())
     //         .get();
     // }
     //
@@ -150,5 +150,5 @@ export default class Model extends SoftDeletes {
     //     this.select(this.getAttributeKeys()).find(this.getKey());
     // }
 
-    // todo - refresh, findMany all, update, save to implement
+    // todo - findMany all, update, save to implement
 }

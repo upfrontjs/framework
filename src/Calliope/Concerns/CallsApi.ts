@@ -13,7 +13,7 @@ import { isObject } from '../../Support/function';
 // todo - improve return types (from model to this?)
 export default class CallsApi extends BuildsQuery {
     /**
-     * The basic endpoint that model should you.
+     * The basic endpoint that model queries.
      */
     protected get endpoint(): string {
         return '';

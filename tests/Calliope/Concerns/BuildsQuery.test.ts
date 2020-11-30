@@ -659,6 +659,28 @@ describe('buildsQuery', () => {
         });
     });
 
+    describe('without()', () => {
+        it('can unset required relations', () => {
+            expect(builder.without(['relation'])).toBeInstanceOf(BuildsQuery);
+            expect(builder.with(['relation1', 'relation2']).without(['relation1']).compiledParams().with)
+                .toStrictEqual(['relation2']);
+        });
+
+        it('can be called statically', () => {
+            // @ts-expect-error
+            const originalWithRelations = TestClass.prototype.withRelations;
+            // @ts-expect-error
+            TestClass.prototype.withRelations = ['relations'];
+            builder = BuildsQuery.without(['relation']);
+
+            // @ts-expect-error
+            expect(builder.compileQueryParameters().with).toBeUndefined();
+
+            // @ts-expect-error
+            TestClass.prototype.withRelations = originalWithRelations;
+        });
+    });
+
     describe('scope()', () => {
         it('can set required scopes', () => {
             expect(builder.scope(['testScope'])).toBeInstanceOf(BuildsQuery);

@@ -165,6 +165,20 @@ describe('api', () => {
             // @ts-expect-error
             expect(newConfig.headers.has('custom')).toBe(false);
         });
+
+        it('merges in headers from the config if set', () => {
+            config.set('headers', { 'custom-header': 'value' });
+
+            const initConfig = api.getConfig(url, 'post').requestInit;
+
+            // @ts-expect-error
+            expect(initConfig.headers.has('custom-header')).toBe(true);
+
+            // @ts-expect-error
+            expect(initConfig.headers.get('custom-header')).toBe('value');
+
+            config.unset('headers');
+        });
     });
 
     describe('call()', () => {

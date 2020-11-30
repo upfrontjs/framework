@@ -2,6 +2,7 @@ import type ApiCaller from '../Contracts/ApiCaller';
 import qs from 'qs';
 import type { IStringifyOptions } from 'qs';
 import { isObject } from '../Support/function';
+import Config from '../Support/Config';
 
 export default class API implements ApiCaller {
     /**
@@ -57,6 +58,7 @@ export default class API implements ApiCaller {
         customHeaders?: Record<string, string | string[]>
     ): { url: string; requestInit: RequestInit } {
         const initOptions: RequestInit = { method };
+        const configHeaders = new Headers(new Config().get('headers', undefined) as HeadersInit|undefined);
 
         // merge in the user provided RequestInit object
         if (isObject(this.requestOptions)) {
@@ -73,6 +75,9 @@ export default class API implements ApiCaller {
         }
 
         const headers = new Headers(initOptions.headers);
+        configHeaders.forEach((value, name) => {
+            headers.append(name, value);
+        });
 
         // if explicitly or implicitly a GET method
         if (!initOptions.method || initOptions.method.toLowerCase() === 'get') {

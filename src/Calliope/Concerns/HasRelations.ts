@@ -139,6 +139,8 @@ export default class HasRelations extends CallsApi {
         // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-member-access
         const modelCollectionConstructor: new() => ModelCollection<Model> = require('../ModelCollection').default;
 
+        // todo - automagically set the relation id on this if possible?
+
         if (value instanceof HasRelations
             || (<typeof ModelCollection> modelCollectionConstructor).isModelCollection(value)
         ) {

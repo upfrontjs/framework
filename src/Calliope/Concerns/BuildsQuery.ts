@@ -22,13 +22,31 @@ export default class BuildsQuery extends HasAttributes {
     protected columns: string[] = [];
 
     /**
-     * the requested eager-loaded models for the query.
+     * The requested eager-loaded models for the query.
      *
      * @protected
      *
      * @type {string[]}
      */
     protected withs: string[] = [];
+
+    /**
+     * The override to remove the previously added relations from the request.
+     *
+     * @protected
+     *
+     * @type {string}
+     */
+    protected withouts: string[] = [];
+
+    /**
+     * The relations that should be included on every request.
+     *
+     * @protected
+     *
+     * @type {string}
+     */
+    protected withRelations: string[] = [];
 
     /**
      * The backend scopes to be applied on the query.
@@ -119,8 +137,10 @@ export default class BuildsQuery extends HasAttributes {
             params.columns = this.columns;
         }
 
-        if (this.withs.length) {// todo - filters on relations?
-            params.with = this.withs;
+        const withs = this.withs.concat(this.withRelations).filter(relation => !this.withouts.includes(relation));
+
+        if (withs.length) {// todo - filters on relations?
+            params.with = withs;
         }
 
         if (this.scopes.length) {
@@ -161,6 +181,7 @@ export default class BuildsQuery extends HasAttributes {
         this.wheres = [];
         this.columns = [];
         this.withs = [];
+        this.withouts = [];
         this.scopes = [];
         this.relationsExists = [];
         this.orders = [];
@@ -764,6 +785,31 @@ export default class BuildsQuery extends HasAttributes {
      */
     public static with(relations: string[]): BuildsQuery {
         return BuildsQuery.newQuery().with(relations);
+    }
+
+    /**
+     * Remove eager loaded relations from the query.
+     *
+     * @param relations
+     */
+    public without(relations: string[]): this {
+        // todo - validate the relations as if it isn't defined I can't use it on response
+        this.withouts.push(...relations.flat());
+
+        return this;
+    }
+
+    /**
+     * The static version of the with method.
+     *
+     * @param {string[]} relations
+     *
+     * @return {BuildsQuery}
+     *
+     * @see BuildsQuery.prototype.without
+     */
+    public static without(relations: string[]): BuildsQuery {
+        return BuildsQuery.newQuery().without(relations);
     }
 
     /**

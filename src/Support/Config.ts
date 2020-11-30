@@ -7,6 +7,7 @@ interface Configuration extends Record<string, unknown> {
     API: ApiCaller;
     ApiResponseHandler: HandlesApiResponse;
     baseEndPoint: string;
+    headers: HeadersInit|Record<string, string|string[]>|string[][];
     [key: string]: any;
     // DateTime: AbstractDateTime;
 }

@@ -160,6 +160,23 @@ describe('callsApi', () => {
             expect(caller.newInstanceFromResponseData([userData]))
                 .toStrictEqual(new ModelCollection([new User(userData)]));
         });
+
+        it('force fills the models from the response', () => {
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+            const userData = User.factory().raw() as Attributes;
+            const expectedUser = new User(userData);
+
+            // eslint-disable-next-line @typescript-eslint/unbound-method
+            const originalFillableReturn =  User.prototype.getFillable;
+
+            User.prototype.getFillable = () => [];
+
+            //@ts-expect-error
+            expect(caller.newInstanceFromResponseData(userData).getAttributes())
+                .toStrictEqual(expectedUser.getAttributes());
+
+            User.prototype.getFillable = originalFillableReturn;
+        });
     });
 
     describe('setEndpoint()', () => {
@@ -223,17 +240,6 @@ describe('callsApi', () => {
 
             const data = await caller.get();
             expect(data).toStrictEqual(user);
-        });
-
-        it('force fills the models from the response', async () => {
-            const user = User.factory().create() as User;
-            mockUserModelResponse(user);
-            // @ts-expect-error
-            User.prototype.fillable = [];
-
-            const data = await caller.get();
-            // @ts-expect-error
-            expect(data.name).toStrictEqual(user.name);
         });
 
         it('resets the endpoint', async () => {

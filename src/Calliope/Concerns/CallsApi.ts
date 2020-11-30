@@ -216,7 +216,7 @@ export default class CallsApi extends BuildsQuery {
     ): Model|ModelCollection<Model> {
         if (data === null
             || typeof data !== 'object'
-            || Array.isArray(data) && data.some(entry => typeof entry !== 'object' || entry === null)
+            || Array.isArray(data) && data.some(entry => !isObject(entry))
         ) {
             throw new TypeError(
                 'Unexpected response type. Ensure that the endpoint returns model data only.'
@@ -255,8 +255,8 @@ export default class CallsApi extends BuildsQuery {
      */
     private forceFilledModel(data: Attributes): Model {
         const instance = new (<typeof Model> this.constructor)(data);
-        const keysToSearch = instance.getAttributeKeys().concat(instance.loadedRelationKeys());
-        const missingAttributeKeys = Object.keys(data).filter(key => !keysToSearch.includes(key));
+        const keysToIgnore = instance.getAttributeKeys().concat(instance.loadedRelationKeys());
+        const missingAttributeKeys = Object.keys(data).filter(key => !keysToIgnore.includes(key));
 
         if (missingAttributeKeys.length) {
             // treat response data as a source of truth and

@@ -1,3 +1,4 @@
+import cloneDeep from 'lodash/cloneDeep';
 import CastsAttributes from './CastsAttributes';
 import type { Attributes } from './HasAttributes';
 
@@ -151,16 +152,17 @@ export default class GuardsAttributes extends CastsAttributes {
      * @return {object}
      */
     protected getFillableFromObject(attributes: Attributes): Partial<Attributes> {
+        const fillable: Attributes = {};
         if (this.getFillable().includes('*')) {
-            return attributes;
+            return cloneDeep(attributes);
         }
 
         Object.keys(attributes).forEach(name => {
-            if (this.isGuarded(name)) {
-                delete attributes[name];
+            if (!this.isGuarded(name)) {
+                fillable[name] = cloneDeep(attributes[name]);
             }
         });
 
-        return attributes;
+        return fillable;
     }
 }

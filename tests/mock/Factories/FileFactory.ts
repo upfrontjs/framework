@@ -1,10 +1,11 @@
 import Factory from '../../../src/Calliope/Factory/Factory';
 import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 
-export default class TeamFactory extends Factory {
-    public definition(): Attributes {
+export default class FileFactory extends Factory {
+    definition(): Attributes {
         return {
-            name: 'Main'
+            name: 'image.jpg',
+            url: 'https://picsum.photos/200'
         };
     }
 }

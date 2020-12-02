@@ -1,9 +1,10 @@
 import SoftDeletes from './Concerns/SoftDeletes';
 import FactoryBuilder from './Factory/FactoryBuilder';
+import type HasFactory from '../Contracts/HasFactory';
 
 // todo - https://www.npmjs.com/package/@qiwi/mixin
 
-export default class Model extends SoftDeletes {
+export default class Model extends SoftDeletes implements HasFactory {
     /**
      * The primary key for the model.
      *

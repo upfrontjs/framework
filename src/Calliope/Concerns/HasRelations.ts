@@ -4,6 +4,9 @@ import LogicException from '../../Exceptions/LogicException';
 import CallsApi from './CallsApi';
 import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
 import type { Attributes } from './HasAttributes';
+import type Collection from '../../Support/Collection';
+
+type Relation = 'belongsTo'|'belongsToMany'|'hasOne'|'hasMany'|'morphs';
 
 export default class HasRelations extends CallsApi {
     /**
@@ -56,10 +59,10 @@ export default class HasRelations extends CallsApi {
     /**
      * Determine if the given relation is loaded.
      *
-     * @param {string} key
+     * @param {string} name
      */
-    public relationLoaded(key: string): boolean {
-        return this.loadedRelationKeys().includes(key);
+    public relationLoaded(name: string): boolean {
+        return this.loadedRelationKeys().includes(this.removeRelationPrefix(name));
     }
 
     /**
@@ -79,6 +82,8 @@ export default class HasRelations extends CallsApi {
      * @return {Model|ModelCollection}
      */
     public getRelation(name: string): Model | ModelCollection<Model> {
+        name = this.removeRelationPrefix(name);
+
         if (this.relationDefined(name)) {
             if (!this.relations[name]) {
                 throw new LogicException(
@@ -100,21 +105,61 @@ export default class HasRelations extends CallsApi {
      *
      * @return {boolean}
      */
-    // todo - update to protected
-    public relationDefined(name: string): boolean {
+    protected relationDefined(name: string): boolean {
         name = name.start(this.relationMethodPrefix);
+
         if (this[name] instanceof Function) {
             const value = (this[name] as CallableFunction)();
-            const methodDefinition = (this[name] as CallableFunction).toString();
 
-            if (value instanceof HasRelations && methodDefinition) {
-                const regex = RegExp(/return this.(belongsTo|belongsToMany|hasOne|hasMany|morphs)\(/, 'g');
-
-                return !!regex.exec(methodDefinition)?.length;
-            }
+            return value instanceof HasRelations && !!this.getRelationType(name);
         }
 
         return false;
+    }
+
+    /**
+     * Get the name of the relation type for the given relation.
+     *
+     * @param {string} name
+     *
+     * @protected
+     *
+     * @return {'belongsTo'|'belongsToMany'|'hasOne'|'hasMany'|'morphs'}
+     */
+    private getRelationType(name: string): Relation {
+        name = name.start(this.relationMethodPrefix);
+        const methodDefinition = (this[name] as CallableFunction).toString();
+        // todo-what about method/variable,early,ternary,null-coalescence,etc or any combination of those as a returns?
+
+        // TODO - ON MODEL SET A TEMPORARY ATTRIBUTE WHEN CALLING A RELATION WHICH HAS THE STRING OF WHAT TYPE OF RELATION IT IS (in relation add -> in constructor remove)
+        const regex = RegExp(/^(?!\/\/) *return *this\.(belongsTo|belongsToMany|hasOne|hasMany|morphs)/, 'gm');
+
+        const result = regex.exec(methodDefinition);
+
+        if (!result?.length) {
+            throw new LogicException('\'' + name + '\' relation is not using any of the expected relation types.');
+        }
+
+        return result[result.length - 1] as Relation;
+    }
+
+    /**
+     * Determine whether the relation is expected to return a model or model collection.
+     *
+     * @param {string} name
+     *
+     * @private
+     *
+     * @return {boolean}
+     */
+    private isSingularRelation(name: string): boolean {
+        name = name.start(this.relationMethodPrefix);
+
+        if (!this.relationDefined(name)) {
+            throw new InvalidOffsetException('\'' + name + '\' relationship is not defined.');
+        }
+
+        return ['belongsTo', 'hasOne'].includes(this.getRelationType(name));
     }
 
     /**
@@ -128,22 +173,30 @@ export default class HasRelations extends CallsApi {
      */
     public addRelation(
         name: string,
-        value: Attributes|Attributes[]|Model|ModelCollection<Model>
+        value: Attributes|Attributes[]|Collection<Attributes>|Model|ModelCollection<Model>
     ): this {
+        name = this.removeRelationPrefix(name);
+
         if (!this.relationDefined(name)) {
             throw new LogicException(
-                'Attempted to add an undefined relation: \'' + name.start(this.relationMethodPrefix) + '\'.'
+                'Attempted to add an undefined relation: \'' + name + '\'.'
             );
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-member-access
-        const modelCollectionConstructor: new() => ModelCollection<Model> = require('../ModelCollection').default;
+        const modelCollectionConstructor: new(models?: Model[]) => ModelCollection<Model>
+            // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-member-access
+            = require('../ModelCollection').default;
 
         // todo - automagically set the relation id on this if possible?
+        //    if its a belongsto or belongstomany
 
         if (value instanceof HasRelations
             || (<typeof ModelCollection> modelCollectionConstructor).isModelCollection(value)
         ) {
+            if (value instanceof HasRelations && !this.isSingularRelation(name)) {
+                value = new modelCollectionConstructor([value]);
+            }
+
             this.relations[name] = value;
             this.createDescriptors(name);
 
@@ -160,7 +213,8 @@ export default class HasRelations extends CallsApi {
             value.forEach(modelData => collection.push(new (<typeof Model> relatedModel.constructor)(modelData)));
             relation = collection;
         } else {
-            relation = new (<typeof Model> relatedModel.constructor)(value as Attributes);
+            const model = new (<typeof Model> relatedModel.constructor)(value as Attributes);
+            relation = this.isSingularRelation(name) ? model : new modelCollectionConstructor([model]);
         }
 
         this.relations[name] = relation;
@@ -177,6 +231,7 @@ export default class HasRelations extends CallsApi {
      * @return {this}
      */
     public removeRelation(name: string): this {
+        name = this.removeRelationPrefix(name);
         delete this.relations[name];
 
         if (Object.getOwnPropertyDescriptor(this, name)
@@ -207,6 +262,19 @@ export default class HasRelations extends CallsApi {
         return ((this as unknown as Model).getName().snake().toLowerCase()
             + '_'
             + (this as unknown as Model).getKeyName())[this.attributeCasing]();
+    }
+
+    /**
+     * Remove the prefix from the given string if set.
+     *
+     * @param {string} name
+     *
+     * @private
+     *
+     * @return {string}
+     */
+    private removeRelationPrefix(name: string): string {
+        return name.startsWith(this.relationMethodPrefix) ? name.slice(this.relationMethodPrefix.length) : name;
     }
 
     /**
@@ -248,12 +316,8 @@ export default class HasRelations extends CallsApi {
 
         if (!foreignKeyValue) {
             throw new LogicException(
-                (this as unknown as Model).getName() + ' doesn\'t have \'' + foreignKey + '\' defined.'
+                '\'' + (this as unknown as Model).getName() + '\' doesn\'t have \'' + foreignKey + '\' defined.'
             );
-        }
-
-        if (relatedModel.relationDefined((this as unknown as Model).getName().toLowerCase())) {
-            relatedModel.addRelation((this as unknown as Model).getName().toLowerCase(), this);
         }
 
         return relatedModel.setEndpoint(relatedModel.getEndpoint().finish('/') + String(foreignKeyValue));
@@ -272,13 +336,9 @@ export default class HasRelations extends CallsApi {
         foreignKey = foreignKey ?? relatedModel.getForeignKeyName();
         const foreignKeyValue = this.getAttribute(this.foreignKey);
 
-        if (relatedModel.relationDefined((this as unknown as Model).getName().toLowerCase().plural())) {
-            relatedModel.addRelation((this as unknown as Model).getName().toLowerCase().plural(), this);
-        }
-
         if (!foreignKeyValue) {
             throw new LogicException(
-                (this as unknown as Model).getName() + ' doesn\'t have ' + foreignKey + ' defined.'
+                '\'' + (this as unknown as Model).getName() + '\' doesn\'t have ' + foreignKey + ' defined.'
             );
         }
 
@@ -296,10 +356,6 @@ export default class HasRelations extends CallsApi {
     public hasOne<T extends Model>(related: new() => T, foreignKey?: string): T {
         const relatedModel = new related();
 
-        if (relatedModel.relationDefined((this as unknown as Model).getName().toLowerCase())) {
-            relatedModel.addRelation((this as unknown as Model).getName().toLowerCase(), this);
-        }
-
         return relatedModel.where(foreignKey ?? this.getForeignKeyName(), '=', (this as unknown as Model).getKey());
     }
 
@@ -314,10 +370,6 @@ export default class HasRelations extends CallsApi {
     public hasMany<T extends Model>(related: new() => T, foreignKey?: string): T {
         const relatedModel = new related();
 
-        if (relatedModel.relationDefined((this as unknown as Model).getName().toLowerCase().plural())) {
-            relatedModel.addRelation((this as unknown as Model).getName().toLowerCase().plural(), this);
-        }
-
         return relatedModel.where(foreignKey ?? this.getForeignKeyName(), '=', (this as unknown as Model).getKey());
     }
 
@@ -331,11 +383,6 @@ export default class HasRelations extends CallsApi {
      */
     public morphs<T extends Model>(related: new() => T, morphName?: string): T {
         const relatedModel = new related();
-
-        if (relatedModel.relationDefined((this as unknown as Model).getName().toLowerCase().plural())) {
-            relatedModel.addRelation((this as unknown as Model).getName().toLowerCase().plural(), this);
-        }
-
         const morphs = relatedModel.getMorphs();
 
         return relatedModel

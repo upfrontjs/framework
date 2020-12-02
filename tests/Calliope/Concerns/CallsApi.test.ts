@@ -157,7 +157,7 @@ describe('callsApi', () => {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
             const userData = User.factory().raw() as Attributes;
             //@ts-expect-error
-            expect(caller.newInstanceFromResponseData([userData]))
+            expect(caller.newInstanceFromResponseData([userData]) as ModelCollection<User>)
                 .toStrictEqual(new ModelCollection([new User(userData)]));
         });
 
@@ -312,6 +312,7 @@ describe('callsApi', () => {
             let returnModel = await callerUser.post(responseUser.getRawOriginal());
 
             // a new model will be returned using the response data
+            // @ts-expect-error
             expect(callerUser).not.toStrictEqual(returnModel);
 
             // if response isn't model data
@@ -319,6 +320,7 @@ describe('callsApi', () => {
             returnModel = await callerUser.post({ key: 'value' });
 
             // the returned model is the calling model
+            // @ts-expect-error
             expect(callerUser).toStrictEqual(returnModel);
         });
 
@@ -379,6 +381,7 @@ describe('callsApi', () => {
             let returnModel = await callerUser.put(responseUser.getRawOriginal());
 
             // a new model will be returned using the response data
+            // @ts-expect-error
             expect(callerUser).not.toStrictEqual(returnModel);
 
             // if response isn't model data
@@ -386,6 +389,7 @@ describe('callsApi', () => {
             returnModel = await callerUser.put({ key: 'value' });
 
             // the returned model is the calling model
+            // @ts-expect-error
             expect(callerUser).toStrictEqual(returnModel);
         });
 
@@ -446,6 +450,7 @@ describe('callsApi', () => {
             let returnModel = await callerUser.patch(responseUser.getRawOriginal());
 
             // a new model will be returned using the response data
+            // @ts-expect-error
             expect(callerUser).not.toStrictEqual(returnModel);
 
             // if response isn't model data
@@ -453,6 +458,7 @@ describe('callsApi', () => {
             returnModel = await callerUser.patch({ key: 'value' });
 
             // the returned model is the calling model
+            // @ts-expect-error
             expect(callerUser).toStrictEqual(returnModel);
         });
 
@@ -520,6 +526,7 @@ describe('callsApi', () => {
             let returnModel = await callerUser.delete(responseUser.getRawOriginal());
 
             // a new model will be returned using the response data
+            // @ts-expect-error
             expect(callerUser).not.toStrictEqual(returnModel);
 
             // if response isn't model data
@@ -527,6 +534,7 @@ describe('callsApi', () => {
             returnModel = await callerUser.delete();
 
             // the returned model is the calling model
+            // @ts-expect-error
             expect(callerUser).toStrictEqual(returnModel);
         });
 

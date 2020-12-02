@@ -113,6 +113,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
         // If it's a method or otherwise attribute
         if (key in this) {
             // returning the relation here would be unexpected
+            // @ts-expect-error
             if ((this as unknown as HasRelations).relationDefined(key)) {
                 return defaultVal;
             }
@@ -164,6 +165,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
         }
 
         if ((isObject(value) || Array.isArray(value) && value.every(item => isObject(item)))
+            // @ts-expect-error
             && (this as unknown as HasRelations).relationDefined(key)
         ) {
             (this as unknown as HasRelations).addRelation(
@@ -217,6 +219,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
     deleteAttribute(key: string): this {
         delete this.attributes[key];
 
+        // @ts-expect-error
         if (Object.getOwnPropertyDescriptor(this, key) && !(this as unknown as HasRelations).relationDefined(key)) {
             delete this[key];
         }

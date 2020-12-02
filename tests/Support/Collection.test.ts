@@ -383,7 +383,8 @@ describe('when()', () => {
         collection = new Collection(elements);
 
         //quick fix for https://github.com/facebook/jest/issues/2549
-        const mock = jest.fn(() => false);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const mock = jest.fn((_collection: Collection<any>) => false);
         // @ts-expect-error
         const mockWrapper = ((...args: any[]) => mock(...args)) as unknown as () => boolean;
 
@@ -436,7 +437,8 @@ describe('unless()', () => {
         collection = new Collection(elements);
 
         // quick fix for https://github.com/facebook/jest/issues/2549
-        const mock = jest.fn(() => true);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const mock = jest.fn((_collection: Collection<any>) => true);
         // @ts-expect-error
         const mockWrapper = ((...args: any[]) => mock(...args)) as unknown as () => boolean;
 
@@ -834,7 +836,8 @@ describe('tap()', () => {
     });
 
     it('can execute a method with the collection passed to the closure', () => {
-        const func = jest.fn(() => {});
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const func = jest.fn((_collection: Collection<any>) => {});
         collection.tap(func);
         expect(func).toHaveBeenCalled();
         expect(func).toHaveBeenCalledWith(collection);

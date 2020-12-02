@@ -281,7 +281,7 @@ describe('factoryBuilder', () => {
                         updatedAt: null,
                         deletedAt: null
                     }
-                ]));
+                ] as Attributes[]));
         });
 
         it('merges in states', () => {

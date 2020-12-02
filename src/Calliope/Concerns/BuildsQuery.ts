@@ -2,6 +2,27 @@ import InvalidArgumentException from '../../Exceptions/InvalidArgumentException'
 import HasAttributes from './HasAttributes';
 import type Model from '../Model';
 
+type BooleanOperator = 'and'|'or';
+type Direction = 'asc'|'desc';
+type Operator = '='|'<'|'>'|'<='|'>='|'!='|'like'|'in'|'notIn'|'between'|'notBetween';
+type WhereDescription = {
+    column: string;
+    operator: Operator;
+    value: any;
+    boolean: BooleanOperator;
+};
+type QueryParams = Partial<{
+    wheres: WhereDescription[];
+    columns: string[];
+    withs: string[];
+    scopes: string[];
+    relationsExists: string[];
+    orders: { column: string; direction: Direction }[];
+    distinctOnly: boolean;
+    offset: number;
+    limit: number;
+}>;
+
 export default class BuildsQuery extends HasAttributes {
     /**
      * The where constraints for the query.
@@ -10,7 +31,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @type {object[]}
      */
-    protected wheres: Record<'column' | 'operator' | 'value' | 'boolean', any>[] = [];
+    protected wheres: WhereDescription[] = [];
 
     /**
      * The requested columns for the query.
@@ -73,7 +94,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @type {object}
      */
-    protected orders: Record<'column'|'direction', string|'asc'|'desc'>[] = [];
+    protected orders: { column: string; direction: Direction }[] = [];
 
     /**
      * Flag indicating that only distinct values should be returned
@@ -126,7 +147,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {object}
      */
-    protected compileQueryParameters(): Record<string, any> {
+    protected compileQueryParameters(): QueryParams {
         const params: Record<string, any> = {};
 
         if (this.wheres.length) {
@@ -204,7 +225,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    protected addWhereConstraint(column: string, operator: string, value: any, boolean: 'and' | 'or'): this {
+    protected addWhereConstraint(column: string, operator: Operator, value: any, boolean: BooleanOperator): this {
         if (!this.operators.includes(operator)) {
             throw new TypeError('\'' + operator + '\' is not an expected type of operator.');
         }
@@ -229,7 +250,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public where(column: string, operator: string, value?: any, boolean: 'and' | 'or' = 'and'): this {
+    public where(column: string, operator: Operator|any, value?: any, boolean: BooleanOperator = 'and'): this {
         return this.addWhereConstraint(
             column,
             value ? operator : '=',
@@ -250,7 +271,12 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.where
      */
-    public static where(column: string, operator: string, value?: any, boolean: 'and' | 'or' = 'and'): BuildsQuery {
+    public static where(
+        column: string,
+        operator: Operator|any,
+        value?: any,
+        boolean: BooleanOperator = 'and'
+    ): BuildsQuery {
         return BuildsQuery.newQuery().addWhereConstraint(
             column,
             value ? operator : '=',
@@ -268,7 +294,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public orWhere(column: string, operator: string, value?: any): this {
+    public orWhere(column: string, operator: Operator|any, value?: any): this {
         return this.where(column, value ? operator : '=', value ? value : operator, 'or');
     }
 
@@ -280,7 +306,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public whereKey(value: string|number|(string|number)[], boolean: 'and'|'or' = 'and'): this {
+    public whereKey(value: string|number|(string|number)[], boolean: BooleanOperator = 'and'): this {
         const column = (this as unknown as Model).getKeyName();
 
         if (Array.isArray(value)) {
@@ -298,7 +324,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereKey
      */
-    public static whereKey(value: string|number|(string|number)[], boolean: 'and'|'or' = 'and'): BuildsQuery {
+    public static whereKey(value: string|number|(string|number)[], boolean: BooleanOperator = 'and'): BuildsQuery {
         return BuildsQuery.newQuery().whereKey(value, boolean);
     }
 
@@ -321,7 +347,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public whereKeyNot(value: string|number|(string|number)[], boolean: 'and'|'or' = 'and'): this {
+    public whereKeyNot(value: string|number|(string|number)[], boolean: BooleanOperator = 'and'): this {
         const column = (this as unknown as Model).getKeyName();
 
         if (Array.isArray(value)) {
@@ -339,7 +365,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotIn
      */
-    public static whereKeyNot(value: string|number|(string|number)[], boolean: 'and'|'or' = 'and'): BuildsQuery {
+    public static whereKeyNot(value: string|number|(string|number)[], boolean: BooleanOperator = 'and'): BuildsQuery {
         return BuildsQuery.newQuery().whereKeyNot(value, boolean);
     }
 
@@ -362,7 +388,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public whereNull(columns: string | string[], boolean: 'and'|'or' = 'and'): this {
+    public whereNull(columns: string | string[], boolean: BooleanOperator = 'and'): this {
         if (!Array.isArray(columns)) {
             columns = [columns];
         }
@@ -404,7 +430,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public whereNotNull(columns: string | string[], boolean: 'and'|'or' = 'and'): this {
+    public whereNotNull(columns: string | string[], boolean: BooleanOperator = 'and'): this {
         if (!Array.isArray(columns)) {
             columns = [columns];
         }
@@ -447,7 +473,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public whereIn(column: string, values: any[], boolean: 'and'|'or' = 'and'): this {
+    public whereIn(column: string, values: any[], boolean: BooleanOperator = 'and'): this {
         return this.where(column, 'in', values, boolean);
     }
 
@@ -460,7 +486,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereIn
      */
-    public static whereIn(column: string, values: any[], boolean: 'and'|'or' = 'and'): BuildsQuery {
+    public static whereIn(column: string, values: any[], boolean: BooleanOperator = 'and'): BuildsQuery {
         return BuildsQuery.newQuery().whereIn(column, values, boolean);
     }
 
@@ -485,7 +511,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public whereNotIn(column: string, values: any[], boolean: 'and'|'or' = 'and'): this {
+    public whereNotIn(column: string, values: any[], boolean: BooleanOperator = 'and'): this {
         return this.where(column, 'notIn', values, boolean);
     }
 
@@ -498,7 +524,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotIn
      */
-    public static whereNotIn(column: string, values: any[], boolean: 'and'|'or' = 'and'): BuildsQuery {
+    public static whereNotIn(column: string, values: any[], boolean: BooleanOperator = 'and'): BuildsQuery {
         return BuildsQuery.newQuery().whereNotIn(column, values, boolean);
     }
 
@@ -523,7 +549,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public whereBetween(column: string, values: any[], boolean: 'and'|'or' = 'and'): this {
+    public whereBetween(column: string, values: any[], boolean: BooleanOperator = 'and'): this {
         if (!Array.isArray(values) || values.length !== 2) {
             throw new InvalidArgumentException('Expected an array with 2 values for \'whereBetween\'' +
                 ' got: \'' + JSON.stringify(values) + '\'.');
@@ -541,7 +567,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereBetween
      */
-    public static whereBetween(column: string, values: any[], boolean: 'and'|'or' = 'and'): BuildsQuery {
+    public static whereBetween(column: string, values: any[], boolean: BooleanOperator = 'and'): BuildsQuery {
         return BuildsQuery.newQuery().whereBetween(column, values, boolean);
     }
 
@@ -566,7 +592,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public whereNotBetween(column: string, values: any[], boolean: 'and'|'or' = 'and'): this {
+    public whereNotBetween(column: string, values: any[], boolean: BooleanOperator = 'and'): this {
         if (!Array.isArray(values) || values.length !== 2) {
             throw new InvalidArgumentException('Expected an array with 2 values for \'whereNotBetween\'' +
                 ' got: \'' + JSON.stringify(values) + '\'.');
@@ -584,7 +610,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotBetween
      */
-    public static whereNotBetween(column: string, values: any[], boolean: 'and'|'or' = 'and'): BuildsQuery {
+    public static whereNotBetween(column: string, values: any[], boolean: BooleanOperator = 'and'): BuildsQuery {
         return BuildsQuery.newQuery().whereNotBetween(column, values, boolean);
     }
 

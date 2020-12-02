@@ -1,4 +1,3 @@
-import type HasRelations from '../../../src/Calliope/Concerns/HasRelations';
 import User from '../../mock/Models/User';
 import Team from '../../mock/Models/Team';
 import LogicException from '../../../src/Exceptions/LogicException';
@@ -6,9 +5,9 @@ import InvalidOffsetException from '../../../src/Exceptions/InvalidOffsetExcepti
 import ModelCollection from '../../../src/Calliope/ModelCollection';
 import Shift from '../../mock/Models/Shift';
 import type Model from '../../../src/Calliope/Model';
-import File from '../../mock/Models/File';
+import Contract from '../../mock/Models/Contract';
 
-let hasRelations: HasRelations;
+let hasRelations: User;
 
 describe('hasRelations', () => {
     beforeEach(() => {
@@ -51,12 +50,14 @@ describe('hasRelations', () => {
         it('should be able to remove a relation from the model', () => {
             expect(hasRelations.relationLoaded('team')).toBe(true);
             expect(hasRelations.removeRelation('team').relationLoaded('team')).toBe(false);
+            // eslint-disable-next-line @typescript-eslint/unbound-method
             expect(hasRelations.$team).not.toBeUndefined();
         });
 
         it('should be able to remove with the defined prefix too', () => {
             expect(hasRelations.relationLoaded('$team')).toBe(true);
             expect(hasRelations.removeRelation('$team').relationLoaded('team')).toBe(false);
+            // eslint-disable-next-line @typescript-eslint/unbound-method
             expect(hasRelations.$team).not.toBeUndefined();
         });
     });
@@ -115,8 +116,6 @@ describe('hasRelations', () => {
 
         it('should create magic access to the relation when given models', () => {
             expect(hasRelations.addRelation('shifts', shifts).shifts).toBeInstanceOf(ModelCollection);
-
-            expect(hasRelations.addRelation('files', File.factory().create()).files).toBeInstanceOf(ModelCollection);
         });
 
         it('should be able to add a relation even if just the attributes or array of attributes are given', () => {
@@ -157,7 +156,7 @@ describe('hasRelations', () => {
             });
 
             it('should figure out the foreign key if not given', () => {
-                expect(hasRelations.$teamDefinedWithoutForeignKey()).toBeInstanceOf(Team);
+                expect(hasRelations.$teamWithoutForeignKey()).toBeInstanceOf(Team);
             });
 
             it('should throw an error if foreign key not set on the calling model', () => {
@@ -167,6 +166,106 @@ describe('hasRelations', () => {
                 expect(failingFunc).toThrow(new LogicException(
                     '\'User\' doesn\'t have \'teamId\' defined.'
                 ));
+            });
+        });
+
+        describe('belongsToMany()', () => {
+            beforeEach(() => {
+                hasRelations.setAttribute('shiftId', 1);
+            });
+
+            it('should return the related model', () => {
+                expect(hasRelations.$inverseShifts()).toBeInstanceOf(Shift);
+            });
+
+            it('should compile the url parameters correctly', () => {
+                const column = hasRelations.$inverseShifts().getKeyName();
+
+                // @ts-expect-error
+                expect(hasRelations.$inverseShifts().compileQueryParameters().wheres).toStrictEqual([{
+                    column: column,
+                    operator: '=',
+                    value: hasRelations.getAttribute('shiftId'),
+                    boolean: 'and'
+                }]);
+            });
+
+            it('should figure out the foreign key if not given', () => {
+                const column = hasRelations.$inverseShiftsWithoutForeignKey().getKeyName();
+
+                // @ts-expect-error
+                expect(hasRelations.$inverseShiftsWithoutForeignKey().compileQueryParameters().wheres).toStrictEqual([{
+                    column: column,
+                    operator: '=',
+                    value: hasRelations.getAttribute('shiftId'),
+                    boolean: 'and'
+                }]);
+            });
+
+            it('should throw an error if foreign key not set on the calling model', () => {
+                hasRelations.deleteAttribute('shiftId');
+                const failingFunc = jest.fn(() => hasRelations.$inverseShifts());
+
+                expect(failingFunc).toThrow(new LogicException(
+                    '\'User\' doesn\'t have \'shiftId\' defined.'
+                ));
+            });
+        });
+
+        describe('hasOne()', () => {
+            beforeEach(() => {
+                hasRelations.setAttribute('contractId', 1);
+            });
+
+            it('should return the related model', () => {
+                expect(hasRelations.$contract()).toBeInstanceOf(Contract);
+            });
+
+            it('should compile the url parameters correctly', () => {
+                // @ts-expect-error
+                expect(hasRelations.$contract().compileQueryParameters().wheres).toStrictEqual([{
+                    column: hasRelations.getForeignKeyName(),
+                    operator: '=',
+                    value: hasRelations.getAttribute('contractId'),
+                    boolean: 'and'
+                }]);
+            });
+
+            it('should figure out the foreign key if not given', () => {
+                // @ts-expect-error
+                expect(hasRelations.$contractWithoutForeignKey().compileQueryParameters().wheres)
+                    .toStrictEqual([{
+                        column: hasRelations.getForeignKeyName(),
+                        operator: '=',
+                        value: hasRelations.getAttribute('contractId'),
+                        boolean: 'and'
+                    }]);
+            });
+        });
+
+        describe('hasMany()', () => {
+            it('should return the related model', () => {
+                expect(hasRelations.$shifts()).toBeInstanceOf(Shift);
+            });
+
+            it('should compile the url parameters correctly', () => {
+                // @ts-expect-error
+                expect(hasRelations.$shifts().compileQueryParameters().wheres).toStrictEqual([{
+                    column: hasRelations.getForeignKeyName(),
+                    operator: '=',
+                    value: hasRelations.getKey(),
+                    boolean: 'and'
+                }]);
+            });
+
+            it('should figure out the foreign key if not given', () => {
+                // @ts-expect-error
+                expect(hasRelations.$shiftsWithoutForeignKey().compileQueryParameters().wheres).toStrictEqual([{
+                    column: hasRelations.getForeignKeyName(),
+                    operator: '=',
+                    value: hasRelations.getKey(),
+                    boolean: 'and'
+                }]);
             });
         });
     });

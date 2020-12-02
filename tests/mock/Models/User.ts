@@ -3,7 +3,6 @@ import Team from './Team';
 import type Factory from '../../../src/Calliope/Factory/Factory';
 import UserFactory from '../Factories/UserFactory';
 import Shift from './Shift';
-import File from './File';
 import Contract from './Contract';
 
 export default class User extends Model {
@@ -21,26 +20,39 @@ export default class User extends Model {
         return new UserFactory;
     }
 
-    $team(): Team {
-        return this.belongsTo(Team, 'teamId');
-    }
-
     $invalidRelationDefinition(): Team {
         return new Team();
     }
 
-    $teamDefinedWithoutForeignKey(): Team {
+    $team(): Team {
+        return this.belongsTo(Team, 'teamId');
+    }
+
+    $teamWithoutForeignKey(): Team {
         return this.belongsTo(Team);
     }
+
     $contract(): Contract {
-        return this.belongsTo(Contract);
+        return this.hasOne(Contract, 'userId');
+    }
+
+    $contractWithoutForeignKey(): Contract {
+        return this.hasOne(Contract);
     }
 
     $shifts(): Shift {
+        return this.hasMany(Shift, 'userId');
+    }
+
+    $shiftsWithoutForeignKey(): Shift {
         return this.hasMany(Shift);
     }
 
-    $files(): File {
-        return this.morphs(File);
+    $inverseShifts(): Shift {
+        return this.belongsToMany(Shift, 'shiftId');
+    }
+
+    $inverseShiftsWithoutForeignKey(): Shift {
+        return this.belongsToMany(Shift);
     }
 }

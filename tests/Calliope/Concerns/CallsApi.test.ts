@@ -1,4 +1,3 @@
-import type CallsApi from '../../../src/Calliope/Concerns/CallsApi';
 import LogicException from '../../../src/Exceptions/LogicException';
 import fetchMock from 'jest-fetch-mock';
 import Config from '../../../src/Support/Config';
@@ -9,7 +8,7 @@ import User from '../../mock/Models/User';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
 import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 
-let caller: CallsApi;
+let caller: User;
 
 const config = new Config();
 
@@ -206,7 +205,6 @@ describe('callsApi', () => {
         });
 
         it('can figure out an endpoint if endpoint is not defined on the model', () => {
-            // @ts-expect-error
             expect(caller.getEndpoint()).toBe(caller.endpoint);
             // @ts-expect-error
             delete caller.endpoint;
@@ -218,9 +216,7 @@ describe('callsApi', () => {
 
     describe('appendToEndpoint()', () => {
         it('can append a string to the endpoint', () => {
-            // @ts-expect-error
             expect(caller.getEndpoint()).toBe(caller.endpoint);
-            // @ts-expect-error
             expect(caller.appendToEndpoint('/1').getEndpoint()).toBe(caller.endpoint + '/1');
         });
     });
@@ -297,7 +293,7 @@ describe('callsApi', () => {
 
     describe('post()', () => {
         it('can send a POST request', async () => {
-            mockUserModelResponse(caller as User);
+            mockUserModelResponse(caller);
             await caller.post({ key: 'value' });
 
             expect(getLastFetchCall().method).toBe('post');
@@ -366,7 +362,7 @@ describe('callsApi', () => {
 
     describe('put()', () => {
         it('can send a PUT request', async () => {
-            mockUserModelResponse(caller as User);
+            mockUserModelResponse(caller);
             await caller.put({ key: 'value' });
 
             expect(getLastFetchCall().method).toBe('put');
@@ -435,7 +431,7 @@ describe('callsApi', () => {
 
     describe('patch()', () => {
         it('can send a PATCH request', async () => {
-            mockUserModelResponse(caller as User);
+            mockUserModelResponse(caller);
             await caller.patch({ key: 'value' });
 
             expect(getLastFetchCall().method).toBe('patch');
@@ -504,14 +500,14 @@ describe('callsApi', () => {
 
     describe('delete()', () => {
         it('can send a DELETE request', async () => {
-            mockUserModelResponse(caller as User);
+            mockUserModelResponse(caller);
             await caller.delete();
 
             expect(getLastFetchCall().method).toBe('delete');
         });
 
         it('can send information in the request body', async () => {
-            mockUserModelResponse(caller as User);
+            mockUserModelResponse(caller);
             await caller.delete({ key: 'value' });
 
             expect(getLastFetchCall()?.body).toStrictEqual({ key: 'value' });

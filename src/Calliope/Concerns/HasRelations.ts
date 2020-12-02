@@ -255,10 +255,14 @@ export default class HasRelations extends CallsApi {
     }
 
     /**
+     * Add the relation type onto the model.
      *
-     * @param model
-     * @param relationType
+     * @param {Model} model
+     * @param {'belongsTo'|'belongsToMany'|'hasOne'|'hasMany'|'morphs'} relationType
+     *
      * @private
+     *
+     * @return {void}
      */
     private static configureRelationType<T extends Model>(
         model: T,
@@ -270,8 +274,6 @@ export default class HasRelations extends CallsApi {
             writable: false,
             value: relationType
         });
-
-        // todo - seal too?
     }
 
     /**
@@ -333,17 +335,17 @@ export default class HasRelations extends CallsApi {
     public belongsToMany<T extends Model>(related: new() => T, foreignKey?: string): T {
         const relatedModel = new related();
         foreignKey = foreignKey ?? relatedModel.getForeignKeyName();
-        const foreignKeyValue = this.getAttribute(this.foreignKey);
+        const foreignKeyValue = this.getAttribute(foreignKey);
 
         if (!foreignKeyValue) {
             throw new LogicException(
-                '\'' + (this as unknown as Model).getName() + '\' doesn\'t have ' + foreignKey + ' defined.'
+                '\'' + (this as unknown as Model).getName() + '\' doesn\'t have \'' + foreignKey + '\' defined.'
             );
         }
 
         HasRelations.configureRelationType(relatedModel, 'belongsToMany');
 
-        return relatedModel.whereKey(String(foreignKeyValue));
+        return relatedModel.whereKey(foreignKeyValue);
     }
 
     /**
@@ -386,7 +388,7 @@ export default class HasRelations extends CallsApi {
      *
      * @return {Model}
      */
-    public morphs<T extends Model>(related: new() => T, morphName?: string): T {
+    public morphMany<T extends Model>(related: new() => T, morphName?: string): T {
         const relatedModel = new related();
         const morphs = relatedModel.getMorphs();
 
@@ -396,6 +398,12 @@ export default class HasRelations extends CallsApi {
             .where(morphs.type, '=', morphName ?? (this as unknown as Model).getName())
             .where(morphs.id, '=', (this as unknown as Model).getKey());
     }
+
+    // public morphTo
+    // public morphOne
+    // public morphMany
+    // public morphToMany
+    // public morphedByMany
 
     /**
      * Get the polymorphic column names.

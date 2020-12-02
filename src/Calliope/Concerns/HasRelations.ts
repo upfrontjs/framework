@@ -128,38 +128,13 @@ export default class HasRelations extends CallsApi {
      */
     private getRelationType(name: string): Relation {
         name = name.start(this.relationMethodPrefix);
-        const methodDefinition = (this[name] as CallableFunction).toString();
-        // todo-what about method/variable,early,ternary,null-coalescence,etc or any combination of those as a returns?
+        const model = (this[name] as CallableFunction)() as Model & { relationType: Relation };
 
-        // TODO - ON MODEL SET A TEMPORARY ATTRIBUTE WHEN CALLING A RELATION WHICH HAS THE STRING OF WHAT TYPE OF RELATION IT IS (in relation add -> in constructor remove)
-        const regex = RegExp(/^(?!\/\/) *return *this\.(belongsTo|belongsToMany|hasOne|hasMany|morphs)/, 'gm');
-
-        const result = regex.exec(methodDefinition);
-
-        if (!result?.length) {
+        if (!model.relationType) {
             throw new LogicException('\'' + name + '\' relation is not using any of the expected relation types.');
         }
 
-        return result[result.length - 1] as Relation;
-    }
-
-    /**
-     * Determine whether the relation is expected to return a model or model collection.
-     *
-     * @param {string} name
-     *
-     * @private
-     *
-     * @return {boolean}
-     */
-    private isSingularRelation(name: string): boolean {
-        name = name.start(this.relationMethodPrefix);
-
-        if (!this.relationDefined(name)) {
-            throw new InvalidOffsetException('\'' + name + '\' relationship is not defined.');
-        }
-
-        return ['belongsTo', 'hasOne'].includes(this.getRelationType(name));
+        return model.relationType;
     }
 
     /**
@@ -193,7 +168,7 @@ export default class HasRelations extends CallsApi {
         if (value instanceof HasRelations
             || (<typeof ModelCollection> modelCollectionConstructor).isModelCollection(value)
         ) {
-            if (value instanceof HasRelations && !this.isSingularRelation(name)) {
+            if (value instanceof HasRelations && !['belongsTo', 'hasOne'].includes(this.getRelationType(name))) {
                 value = new modelCollectionConstructor([value]);
             }
 
@@ -214,7 +189,9 @@ export default class HasRelations extends CallsApi {
             relation = collection;
         } else {
             const model = new (<typeof Model> relatedModel.constructor)(value as Attributes);
-            relation = this.isSingularRelation(name) ? model : new modelCollectionConstructor([model]);
+            relation = ['belongsTo', 'hasOne'].includes(this.getRelationType(name))
+                ? model
+                : new modelCollectionConstructor([model]);
         }
 
         this.relations[name] = relation;
@@ -278,6 +255,26 @@ export default class HasRelations extends CallsApi {
     }
 
     /**
+     *
+     * @param model
+     * @param relationType
+     * @private
+     */
+    private static configureRelationType<T extends Model>(
+        model: T,
+        relationType: Relation
+    ): asserts model is T & { relationType: Relation } {
+        Object.defineProperty(model, 'relationType', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: relationType
+        });
+
+        // todo - seal too?
+    }
+
+    /**
      * Set the endpoint to a nested url structure.
      *
      * @param {Model|Model[]} models
@@ -320,6 +317,8 @@ export default class HasRelations extends CallsApi {
             );
         }
 
+        HasRelations.configureRelationType(relatedModel, 'belongsTo');
+
         return relatedModel.setEndpoint(relatedModel.getEndpoint().finish('/') + String(foreignKeyValue));
     }
 
@@ -342,6 +341,8 @@ export default class HasRelations extends CallsApi {
             );
         }
 
+        HasRelations.configureRelationType(relatedModel, 'belongsToMany');
+
         return relatedModel.whereKey(String(foreignKeyValue));
     }
 
@@ -355,6 +356,8 @@ export default class HasRelations extends CallsApi {
      */
     public hasOne<T extends Model>(related: new() => T, foreignKey?: string): T {
         const relatedModel = new related();
+
+        HasRelations.configureRelationType(relatedModel, 'hasOne');
 
         return relatedModel.where(foreignKey ?? this.getForeignKeyName(), '=', (this as unknown as Model).getKey());
     }
@@ -370,6 +373,8 @@ export default class HasRelations extends CallsApi {
     public hasMany<T extends Model>(related: new() => T, foreignKey?: string): T {
         const relatedModel = new related();
 
+        HasRelations.configureRelationType(relatedModel, 'hasMany');
+
         return relatedModel.where(foreignKey ?? this.getForeignKeyName(), '=', (this as unknown as Model).getKey());
     }
 
@@ -384,6 +389,8 @@ export default class HasRelations extends CallsApi {
     public morphs<T extends Model>(related: new() => T, morphName?: string): T {
         const relatedModel = new related();
         const morphs = relatedModel.getMorphs();
+
+        HasRelations.configureRelationType(relatedModel, 'morphs');
 
         return relatedModel
             .where(morphs.type, '=', morphName ?? (this as unknown as Model).getName())

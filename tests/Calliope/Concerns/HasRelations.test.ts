@@ -130,16 +130,6 @@ describe('hasRelations', () => {
         });
     });
 
-    describe('isSingularRelation()', () => {
-        it('should throw an error if the given relation has not been defined', () => {
-            // @ts-expect-error
-            const failingFunc = jest.fn(() => hasRelations.isSingularRelation('undefinedRelation'));
-
-            expect(failingFunc)
-                .toThrow(new InvalidOffsetException('\'$undefinedRelation\' relationship is not defined.'));
-        });
-    });
-
     describe('getRelationType()', () => {
         it('should return the relation type', () => {
             // @ts-expect-error

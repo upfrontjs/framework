@@ -21,15 +21,12 @@ export default class User extends Model {
         return new UserFactory;
     }
 
-    // @ts-ignore
     $team(): Team {
-        // below comment is used in testing
-        // return this.hasOne(Team, 'teamId');
         return this.belongsTo(Team, 'teamId');
     }
 
-    $invalidRelationDefinition() {
-        return this.BelongsTo(Team);
+    $invalidRelationDefinition(): Team {
+        return new Team();
     }
 
     $teamDefinedWithoutForeignKey(): Team {

@@ -30,7 +30,7 @@ declare global {
      *
      * @return {Paginator}
      */
-    function factory(modelConstructor: new () => Model, amount?: number): FactoryBuilder;
+    function factory<T extends Model>(modelConstructor: new () => T, amount?: number): FactoryBuilder<T>;
 }
 
 if (!!window && !('collect' in window)) {
@@ -51,7 +51,7 @@ if (!!window && !('paginate' in window)) {
 
 if (!!window && !('factory' in window)) {
     Object.defineProperty(window, 'factory', {
-        value: function (modelConstructor: new () => Model, amount = 1): FactoryBuilder {
+        value: function<T extends Model>(modelConstructor: new () => T, amount = 1): FactoryBuilder<T> {
             return new FactoryBuilder(modelConstructor).times(amount);
         }
     });

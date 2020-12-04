@@ -17,7 +17,7 @@ export default class User extends Model {
         };
     }
 
-    factory(): Factory {
+    factory(): Factory<this> {
         return new UserFactory;
     }
 

@@ -6,8 +6,7 @@ import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
 import Config from '../../Support/Config';
 import Collection from '../../Support/Collection';
 
-// todo improve return typing
-export default class FactoryBuilder {
+export default class FactoryBuilder<T extends Model> {
     /**
      * The number of models to create.
      *
@@ -24,14 +23,14 @@ export default class FactoryBuilder {
      *
      * @type {Model}
      */
-    protected model: Model;
+    protected model: T;
 
     /**
      * The memoized factory instance.
      *
      * @protected
      */
-    protected factory: Factory | undefined;
+    protected factory: Factory<T> | undefined;
 
     /**
      * The states to be called when constructing the attributes.
@@ -40,9 +39,10 @@ export default class FactoryBuilder {
      */
     protected states: string[] | undefined;
 
-    constructor(modelConstructor: new (attributes?: Attributes) => Model) {
+    constructor(modelConstructor: new (attributes?: Attributes) => T) {
         this.model = new modelConstructor;
     }
+
     // todo - chancejs
 
     /**
@@ -78,7 +78,7 @@ export default class FactoryBuilder {
      *
      * @return {Model|ModelCollection<Model>}
      */
-    public make(attributes?: Attributes): Model|ModelCollection<Model> {
+    public make(attributes?: Attributes): T|ModelCollection<T> {
         const modelOrCollection = this.compileRaw(attributes);
 
         const factory = this.getFactory();
@@ -97,10 +97,10 @@ export default class FactoryBuilder {
      *
      * @return {Model|ModelCollection<Model>}
      */
-    public create(attributes?: Attributes): Model|ModelCollection<Model> {
+    public create(attributes?: Attributes): T|ModelCollection<T> {
         const modelOrCollection = this.compileRaw(attributes);
 
-        const addAttributes = (model: Model) => {
+        const addAttributes = (model: T) => {
             if (model.usesTimestamps()) {
                 if (!model.getAttribute(model.getCreatedAtColumn()[model.attributeCasing]())) {
                     model.setAttribute(model.getCreatedAtColumn()[model.attributeCasing](), new Date().toISOString());
@@ -119,12 +119,12 @@ export default class FactoryBuilder {
         };
 
         if (ModelCollection.isModelCollection(modelOrCollection)) {
-            modelOrCollection.forEach((model: Model) => addAttributes(model));
+            modelOrCollection.forEach((model: T) => addAttributes(model));
 
             return modelOrCollection;
         }
 
-        addAttributes(modelOrCollection as Model);
+        addAttributes(modelOrCollection as T);
 
         const factory = this.getFactory();
 
@@ -144,19 +144,19 @@ export default class FactoryBuilder {
      *
      * @return {Model|ModelCollection<Model>}
      */
-    protected compileRaw(attributes?: Attributes): Model|ModelCollection<Model> {
+    protected compileRaw(attributes?: Attributes): T|ModelCollection<T> {
         const compiledAttributes = this.raw(attributes);
 
         if (Collection.isCollection(compiledAttributes)) {
-            const models: Model[] = [];
+            const models: T[] = [];
 
             compiledAttributes.forEach(attributes => {
-                models.push(new (<typeof Model> this.model.constructor)(attributes as Attributes));
+                models.push(new (<typeof Model> this.model.constructor)(attributes as Attributes) as T);
             });
 
             return new ModelCollection(models);
         } else {
-            return new (<typeof Model> this.model.constructor)(compiledAttributes as Attributes);
+            return new (<typeof Model> this.model.constructor)(compiledAttributes as Attributes) as T;
         }
     }
 
@@ -238,7 +238,7 @@ export default class FactoryBuilder {
      *
      * @return {Factory}
      */
-    protected getFactory(): Factory {
+    protected getFactory(): Factory<T> {
         if (this.factory) {
             return this.factory;
         }

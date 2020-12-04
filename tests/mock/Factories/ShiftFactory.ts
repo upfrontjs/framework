@@ -1,7 +1,8 @@
 import Factory from '../../../src/Calliope/Factory/Factory';
 import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
+import type Shift from '../Models/Shift';
 
-export default class ShiftFactory extends Factory {
+export default class ShiftFactory extends Factory<Shift> {
     definition(): Attributes {
         return {
             startTime: new Date().toISOString(),

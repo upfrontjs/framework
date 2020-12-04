@@ -3,7 +3,7 @@ import type Factory from '../../../src/Calliope/Factory/Factory';
 import FileFactory from '../Factories/FileFactory';
 
 export default class File extends Model {
-    factory(): Factory {
+    factory(): Factory<this> {
         return new FileFactory;
     }
 

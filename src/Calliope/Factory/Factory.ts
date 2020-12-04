@@ -2,20 +2,20 @@ import type { Attributes } from '../Concerns/HasAttributes';
 import type Model from '../Model';
 import type ModelCollection from '../ModelCollection';
 
-interface FactoryHooks {
+interface FactoryHooks<T extends Model> {
     /**
      * The factory hook to be called where the value might be changed.
      *
      * @param {Model|ModelCollection<Model>} modelOrCollection
      */
-    afterMaking?(modelOrCollection: Model|ModelCollection<Model>): void;
+    afterMaking?(modelOrCollection: T|ModelCollection<T>): void;
 
     /**
      * The factory hook to be called where the value might be changed.
      *
      * @param {Model|ModelCollection<Model>} modelOrCollection
      */
-    afterCreating?(modelOrCollection: Model|ModelCollection<Model>): void;
+    afterCreating?(modelOrCollection: T|ModelCollection<T>): void;
 
     /**
      * The class can be indexed by strings
@@ -23,7 +23,7 @@ interface FactoryHooks {
     [method: string]: CallableFunction | undefined;
 }
 
-export default abstract class Factory implements FactoryHooks {
+export default abstract class Factory<T extends Model> implements FactoryHooks<T> {
     [method: string]: CallableFunction;
 
     /**
@@ -32,7 +32,7 @@ export default abstract class Factory implements FactoryHooks {
      * @return {object}
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public definition(_emptyModel: Model): Attributes {
+    public definition(_emptyModel: T): Attributes {
         return {};
     }
 

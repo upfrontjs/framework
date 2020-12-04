@@ -16,7 +16,7 @@ export default class Team extends Model {
         return this.hasMany(User);
     }
 
-    factory(): Factory {
+    factory(): Factory<this> {
         return new TeamFactory;
     }
 }

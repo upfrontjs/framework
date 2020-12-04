@@ -9,7 +9,7 @@ import Collection from '../../../src/Support/Collection';
 import UserFactory from '../../mock/Factories/UserFactory';
 import type Model from '../../../src/Calliope/Model';
 
-class FakeFactory extends Factory {
+class FakeFactory extends Factory<User> {
     // @ts-expect-error
     scopeAsProperty = 0;
 
@@ -18,7 +18,7 @@ class FakeFactory extends Factory {
     }
 }
 
-let factoryBuilder: FactoryBuilder;
+let factoryBuilder: FactoryBuilder<User>;
 
 describe('factoryBuilder', () => {
     beforeEach(() => {
@@ -29,7 +29,7 @@ describe('factoryBuilder', () => {
         const factoryName: string = new User().factory().constructor.name;
 
         it('should return the model with the states applied', () => {
-            const user: User = factoryBuilder.state('withTeam').create() as User;
+            const user = factoryBuilder.state('withTeam').create() as User;
             expect(user.team).toBeInstanceOf(Team);
 
             const newUser = factoryBuilder.state('nameOverridden').create() as User;
@@ -37,7 +37,7 @@ describe('factoryBuilder', () => {
         });
 
         it('should take multiple arguments', () => {
-            const user: User = factoryBuilder.create() as User;
+            const user = factoryBuilder.create() as User;
             const newUser = factoryBuilder.state(['withTeam', 'nameOverridden']).create() as User;
 
             expect(newUser.team).toBeInstanceOf(Team);
@@ -219,9 +219,9 @@ describe('factoryBuilder', () => {
         });
 
         it('shouldn\'t set the dates if they\'re disabled', () => {
-            factoryBuilder = new FactoryBuilder(Team);
+            const factoryBuilder = new FactoryBuilder(Team);
 
-            const team = factoryBuilder.create() as User;
+            const team = factoryBuilder.create() as Team;
 
             expect(team.createdAt).toBeUndefined();
             expect(team.updatedAt).toBeUndefined();

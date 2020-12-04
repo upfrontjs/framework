@@ -1,7 +1,8 @@
 import Factory from '../../../src/Calliope/Factory/Factory';
 import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
+import type Contract from '../Models/Contract';
 
-export default class ContractFactory extends Factory {
+export default class ContractFactory extends Factory<Contract> {
     definition(): Attributes {
         return {
             startDate: new Date().toISOString(),

@@ -1,6 +1,7 @@
 import SoftDeletes from './Concerns/SoftDeletes';
 import FactoryBuilder from './Factory/FactoryBuilder';
 import type HasFactory from '../Contracts/HasFactory';
+import {Attributes} from "./Concerns/HasAttributes";
 
 // todo - https://www.npmjs.com/package/@qiwi/mixin
 
@@ -109,8 +110,8 @@ export default class Model extends SoftDeletes implements HasFactory {
     /**
      * Call the factory fluently from the model.
      */
-    public static factory(): FactoryBuilder {
-        return new FactoryBuilder(this);
+    public static factory<T extends Model>(): FactoryBuilder<T> {
+        return new FactoryBuilder(this as unknown as new (attributes?: Attributes) => T);
     }
 
     // static async all(): Promise<ModelCollection<Model<Record<string, unknown>>>> {

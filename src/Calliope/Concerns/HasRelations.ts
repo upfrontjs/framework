@@ -300,11 +300,11 @@ export default class HasRelations extends CallsApi {
     public for(models: Model[]|Model): this {
         models = Array.isArray(models) ? models : [models];
 
+        this.resetEndpoint();
         let endpoint = '';
 
-        // todo - what if morphs relation?
         models.forEach((model: Model) => {
-            endpoint += model.getEndpoint() + '/' + String(model.getKey()) + '/';
+            endpoint += model.getEndpoint() + '/' + (model.getKey() ? String(model.getKey()) + '/' : '');
         });
 
         this.setEndpoint(endpoint + this.getEndpoint());

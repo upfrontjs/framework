@@ -9,7 +9,7 @@ import Contract from '../../mock/Models/Contract';
 import File from '../../mock/Models/File';
 import fetchMock from 'jest-fetch-mock';
 import { buildResponse, getLastFetchCall } from '../../test-helpers';
-import Config from "../../../src/Support/Config";
+import Config from '../../../src/Support/Config';
 import cloneDeep from 'lodash/cloneDeep';
 
 let hasRelations: User;
@@ -109,6 +109,10 @@ describe('hasRelations', () => {
 
             hasRelations.removeRelation('shifts');
             expect(hasRelations.addRelation('$shifts', shifts).relationLoaded('shifts')).toBe(true);
+        });
+
+        it('should set relation as model collection even if the given data is a single model', () => {
+            expect(hasRelations.addRelation('shifts', Shift.factory().create()).shifts).toBeInstanceOf(ModelCollection);
         });
 
         it('should throw an error if trying to add undefined relation', () => {
@@ -239,6 +243,37 @@ describe('hasRelations', () => {
             expect(failingFunc).toThrow(new LogicException(
                 '\'$invalidRelationDefinition\' relation is not using any of the expected relation types.'
             ));
+        });
+    });
+
+    describe('for()', () => {
+        it('should set the endpoint for the given models', () => {
+            expect(hasRelations.for(hasRelations.team).getEndpoint())
+                .toBe(String(hasRelations.team.getEndpoint()) + '/' + String(hasRelations.team.getKey()) + '/users');
+
+            const contract = Contract.factory().create() as Contract;
+
+            expect(hasRelations.for([hasRelations.team, contract]).getEndpoint())
+                .toBe(
+                    String(hasRelations.team.getEndpoint())
+                    + '/' + String(hasRelations.team.getKey())
+                    + '/' + String(contract.getEndpoint())
+                    + '/' + String(contract.getKey())
+                    + '/users'
+                );
+
+        });
+
+        it('should omit the key if undefined from the endpoint', () => {
+            const contract = Contract.factory().make() as Contract;
+
+            expect(hasRelations.for([hasRelations.team, contract]).getEndpoint())
+                .toBe(
+                    String(hasRelations.team.getEndpoint())
+                    + '/' + String(hasRelations.team.getKey())
+                    + '/' + String(contract.getEndpoint())
+                    + '/users'
+                );
         });
     });
 

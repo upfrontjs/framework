@@ -128,7 +128,6 @@ export default class Model extends SoftDeletes implements HasFactory {
     // todo non-static version
     public async find(id: string|number): Promise<Model> {
         return this
-            .resetEndpoint()
             .setEndpoint(this.getEndpoint().finish('/') + String(id))
             .get() as Promise<Model>;
     }

@@ -56,7 +56,10 @@ export default class HasRelations extends CallsApi {
             return Promise.resolve(this);
         }
 
-        const returnedRelations = (await this.with(relations).get() as Model).getRelations();
+        const returnedRelations = (
+            await (this as unknown as Model).with(relations).find(((this as unknown as Model)).getKey())
+        )
+            .getRelations();
 
         Object.keys(returnedRelations).forEach(relation => {
             this.addRelation(relation, returnedRelations[relation] as Model | ModelCollection<Model>);
@@ -294,10 +297,8 @@ export default class HasRelations extends CallsApi {
      *
      * @return this
      */
-    public for(models: Model[]|Model): this {// todo - in the same breath set the relation ?
-        if (!Array.isArray(models)) {
-            models = [models];
-        }
+    public for(models: Model[]|Model): this {
+        models = Array.isArray(models) ? models : [models];
 
         let endpoint = '';
 

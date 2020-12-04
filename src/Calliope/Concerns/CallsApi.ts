@@ -65,7 +65,7 @@ export default class CallsApi extends BuildsQuery {
      */
     protected async call(
         method: 'get'|'post'|'delete'|'patch'|'put',
-        data?: Record<string, unknown>,
+        data?: Record<string, unknown> | FormData,
         customHeaders?: Record<string, string|string[]>
     ): Promise<any> {
         if (!this.getEndpoint().length) {
@@ -125,7 +125,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async post(data: Record<string, unknown>): Promise<this|Model> {
+    public async post(data: Record<string, unknown>|FormData): Promise<this|Model> {
         return this.call('post', Object.assign({}, data, this.compileQueryParameters()))
             .then(responseData => {
                 this.resetEndpoint();
@@ -142,7 +142,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async put(data: Record<string, unknown>): Promise<this|Model> {
+    public async put(data: Record<string, unknown>|FormData): Promise<this|Model> {
         return this.call('put', Object.assign({}, data, this.compileQueryParameters()))
             .then(responseData => {
                 this.resetEndpoint();
@@ -159,7 +159,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async patch(data: Record<string, unknown>): Promise<this|Model> {
+    public async patch(data: Record<string, unknown>|FormData): Promise<this|Model> {
         return this.call('patch', Object.assign({}, data, this.compileQueryParameters()))
             .then(responseData => {
                 this.resetEndpoint();
@@ -177,7 +177,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Promise<boolean>}
      */
-    public async delete(data?: Record<string, unknown>): Promise<this|Model> {
+    public async delete(data?: Record<string, unknown>|FormData): Promise<this|Model> {
         return this.call('delete', Object.assign({}, data, this.compileQueryParameters()))
             .then(responseData => {
                 this.resetEndpoint();

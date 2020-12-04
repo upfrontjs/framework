@@ -9,6 +9,8 @@ import Contract from '../../mock/Models/Contract';
 import File from '../../mock/Models/File';
 import fetchMock from 'jest-fetch-mock';
 import { buildResponse, getLastFetchCall } from '../../test-helpers';
+import Config from "../../../src/Support/Config";
+import cloneDeep from 'lodash/cloneDeep';
 
 let hasRelations: User;
 
@@ -134,7 +136,15 @@ describe('hasRelations', () => {
 
     describe('load()', () => {
         beforeEach(() => {
-            fetchMock.resetMocks();
+            fetchMock.mockResponseOnce(async () => Promise.resolve(
+                buildResponse({
+                    ...hasRelations.getRawOriginal(),
+                    file: (File.factory().create() as Model).getRawOriginal(),
+                    files: (File.factory().times(2).create() as unknown as ModelCollection<File>)
+                        .map(file => file.getRawOriginal())
+                        .toArray()
+                })
+            ));
         });
 
         it('should skip relations if already loaded', async () => {
@@ -156,16 +166,6 @@ describe('hasRelations', () => {
         });
 
         it('should load the relations onto the model', async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(
-                buildResponse({
-                    ...hasRelations.getRawOriginal(),
-                    file: (File.factory().create() as Model).getRawOriginal(),
-                    files: (File.factory().times(2).create() as unknown as ModelCollection<File>)
-                        .map(file => file.getRawOriginal())
-                        .toArray()
-                })
-            ));
-
             expect(hasRelations.file).toBeUndefined();
             expect(hasRelations.files).toBeUndefined();
 
@@ -175,22 +175,54 @@ describe('hasRelations', () => {
             expect(hasRelations.files).toBeInstanceOf(ModelCollection);
         });
 
-        it.todo('should query the related model if only 1 relation is required', async () => {
+        it('should query the related model if only 1 relation is required', async () => {
+            await hasRelations.load(['team'], true);
 
+            expect(getLastFetchCall()?.url).toBe(
+                String(new Config().get('baseEndPoint'))
+                + '/' + String(hasRelations.team.getEndpoint())
+                + '/' + String(hasRelations.team.getKey())
+            );
         });
 
-        it.todo('should query the current model with eager loaded relations if multiple relation required',
+        it('should query the current model with eager loaded relations if multiple relation required',
             async () => {
+                await hasRelations.load(['file', 'files']);
 
+                expect(getLastFetchCall()?.url).toBe(
+                    String(new Config().get('baseEndPoint'))
+                    + '/' + String(hasRelations.getEndpoint())
+                    + '/' + String(hasRelations.getKey())
+                    + '?' + 'with[]=file&with[]=files'
+                );
             }
         );
 
-        it.todo('should not update attributes on the current model on multiple loaded relations', async () => {
+        it('should not update attributes on the current model on multiple loaded relations', async () => {
+            const originalName = hasRelations.getAttribute('name');
+            hasRelations.setAttribute('name', 'updated name');
 
+            await hasRelations.load(['file', 'files']);
+
+            expect(hasRelations.getAttribute('name')).not.toBe(originalName);
         });
 
-        it.todo('should load all relations if forceReload is set to true', async () => {
+        it('should load all relations if forceReload is set to true', async () => {
+            fetchMock.resetMocks();
+            fetchMock.mockResponseOnce(async () => Promise.resolve(
+                buildResponse({
+                    ...hasRelations.getRawOriginal(),
+                    file: (File.factory().create() as Model).getRawOriginal(),
+                    team: cloneDeep(hasRelations.team.getRawOriginal())
+                })
+            ));
 
+            const originalTeamName = cloneDeep(hasRelations.team.name);
+            hasRelations.team.name = 'updated team name';
+
+            await hasRelations.load(['file', 'team'], true);
+
+            expect(hasRelations.team.name).toBe(originalTeamName);
         });
     });
 

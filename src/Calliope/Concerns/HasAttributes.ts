@@ -112,12 +112,13 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
 
         // If it's a method or otherwise attribute
         if (key in this) {
-            // returning the relation here would be unexpected
+            // returning the relation method here would be unexpected
             // @ts-expect-error
             if ((this as unknown as HasRelations).relationDefined(key)) {
                 return defaultVal;
             }
 
+            // todo calling the function is probably unexpected/bad practice also what if it required arguments
             return this[key] instanceof Function ? (this[key] as CallableFunction)() : this[key];
         }
 
@@ -158,7 +159,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      */
     public setAttribute(key: string, value: unknown): this {
         if (this.hasSetMutator(key)) {
-            (this[`set${key.pascal()}Attribute`] as CallableFunction)(value);
+            (this[`set${key.pascal()}Attribute`] as CallableFunction)(cloneDeep(value));
 
             this.createDescriptors(key);
             return this;
@@ -176,7 +177,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
             return this;
         }
 
-        this.attributes[key] = value;
+        this.attributes[key] = cloneDeep(value);
         this.createDescriptors(key);
 
         return this;

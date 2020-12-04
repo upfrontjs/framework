@@ -1,4 +1,5 @@
 import type { MockResponseInit } from 'jest-fetch-mock';
+import cloneDeep from 'lodash/cloneDeep';
 import { isObject } from '../src/Support/function';
 
 export const buildResponse = (response?: string|Record<string, any>): MockResponseInit => {
@@ -7,18 +8,26 @@ export const buildResponse = (response?: string|Record<string, any>): MockRespon
         body: JSON.stringify({ data: 'value' })
     };
 
+    response = cloneDeep(response);
+
     if (response && typeof response === 'string') {
-        responseObject.body = response;
+        let value = response;
+
+        try {
+            value = JSON.parse(value);
+            // eslint-disable-next-line no-empty
+        } catch (e) {}
+
+        responseObject.body = JSON.stringify(value);
     }
 
     if (isObject(response)) {
         if (!response.body) {
-            response.body = JSON.stringify(response);
+            responseObject.body = JSON.stringify(response);
         } else {
             response.body = JSON.stringify(response.body);
+            responseObject = Object.assign(responseObject, response);
         }
-
-        responseObject = Object.assign(responseObject, response);
     }
 
     return responseObject;
@@ -43,8 +52,13 @@ export const getFetchCalls = (): FetchCall[] => {
     });
 };
 
-export const getLastFetchCall = (): FetchCall => {
+export const getLastFetchCall = (): FetchCall|undefined => {
     const calls = getFetchCalls();
+
+    if (!calls.length) {
+        return;
+    }
+
     const lastCall: NonNullable<any> = calls[calls.length - 1];
 
     if ('body' in lastCall && typeof lastCall.body === 'string') {

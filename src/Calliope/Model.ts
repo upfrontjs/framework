@@ -12,7 +12,9 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @protected
      */
-    protected primaryKey: 'id' | 'uuid' = 'id';
+    protected get primaryKey(): 'id' | 'uuid' {
+        return 'id';
+    }
 
     /**
      * Indicates if the model exists.
@@ -40,17 +42,6 @@ export default class Model extends SoftDeletes implements HasFactory {
      */
     public getKeyName(): string {
         return this.primaryKey;
-    }
-
-    /**
-     * Set the primary key for the model
-     *
-     * @param {string} key
-     */
-    public setKeyName(key: 'id' | 'uuid'): this {
-        this.primaryKey = key;
-
-        return this;
     }
 
     /**
@@ -135,13 +126,13 @@ export default class Model extends SoftDeletes implements HasFactory {
     // }
 
     // todo non-static version
-    // public static async find(id: string|number): Promise<undefined|Model> {
-    //     return new this()
-    //         .resetEndpoint()
-    //         .setEndpoint(this.getEndpoint().finis('/') + id.toString())
-    //         .get();
-    // }
-    //
+    public async find(id: string|number): Promise<Model> {
+        return this
+            .resetEndpoint()
+            .setEndpoint(this.getEndpoint().finish('/') + String(id))
+            .get() as Promise<Model>;
+    }
+
     // //
     // public async refresh(): Model {
     //     if (!(this as unknown as Model).exists) {

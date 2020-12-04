@@ -39,6 +39,7 @@ module.exports = {
         "indent": "off",
         "comma-dangle": ["warn", "never"],
         "max-len": ["warn", 120],
+        "eqeqeq": "error",
 
         // https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin#supported-rules
         "@typescript-eslint/indent": ["warn", 4],

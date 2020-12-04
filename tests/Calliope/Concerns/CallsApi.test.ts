@@ -67,8 +67,8 @@ describe('callsApi', () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse()));
             // @ts-expect-error
             await caller.call('get');
-            expect(getLastFetchCall().headers.has('custom')).toBe(true);
-            expect(getLastFetchCall().headers.get('custom')).toBe('header');
+            expect(getLastFetchCall()?.headers.has('custom')).toBe(true);
+            expect(getLastFetchCall()?.headers.get('custom')).toBe('header');
         });
 
         it('gets the HandlesApiResponse from the config if set',  async () => {
@@ -227,7 +227,7 @@ describe('callsApi', () => {
             mockUserModelResponse(user);
 
             await caller.get();
-            expect(getLastFetchCall().method).toBe('get');
+            expect(getLastFetchCall()?.method).toBe('get');
         });
 
         it('returns a promise with new model or model collection', async () => {
@@ -262,7 +262,7 @@ describe('callsApi', () => {
             mockUserModelResponse(User.factory().create() as User);
             await caller.get({ myParam: 1 });
 
-            expect(getLastFetchCall().url).toBe(
+            expect(getLastFetchCall()?.url).toBe(
                 String(config.get('baseEndPoint')) + '/'
                 + caller.getEndpoint() + '?myParam=1'
             );
@@ -274,7 +274,7 @@ describe('callsApi', () => {
             mockUserModelResponse(User.factory().create() as User);
             await caller.get();
 
-            expect(getLastFetchCall().url).toBe(
+            expect(getLastFetchCall()?.url).toBe(
                 String(config.get('baseEndPoint')) + '/'
                 + caller.getEndpoint()
                 + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=43&wheres[][boolean]=and'
@@ -296,7 +296,7 @@ describe('callsApi', () => {
             mockUserModelResponse(caller);
             await caller.post({ key: 'value' });
 
-            expect(getLastFetchCall().method).toBe('post');
+            expect(getLastFetchCall()?.method).toBe('post');
         });
 
         it('returns this or new model depending on the response', async () => {
@@ -365,7 +365,7 @@ describe('callsApi', () => {
             mockUserModelResponse(caller);
             await caller.put({ key: 'value' });
 
-            expect(getLastFetchCall().method).toBe('put');
+            expect(getLastFetchCall()?.method).toBe('put');
         });
 
         it('returns this or new model depending on the response', async () => {
@@ -434,7 +434,7 @@ describe('callsApi', () => {
             mockUserModelResponse(caller);
             await caller.patch({ key: 'value' });
 
-            expect(getLastFetchCall().method).toBe('patch');
+            expect(getLastFetchCall()?.method).toBe('patch');
         });
 
         it('returns this or new model depending on the response', async () => {
@@ -503,7 +503,7 @@ describe('callsApi', () => {
             mockUserModelResponse(caller);
             await caller.delete();
 
-            expect(getLastFetchCall().method).toBe('delete');
+            expect(getLastFetchCall()?.method).toBe('delete');
         });
 
         it('can send information in the request body', async () => {

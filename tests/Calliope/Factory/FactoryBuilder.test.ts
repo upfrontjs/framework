@@ -327,13 +327,22 @@ describe('factoryBuilder', () => {
     describe('getId()', () => {
         it('can return uuid if primaryKey is uuid', () => {
             // @ts-expect-error
-            factoryBuilder.model.primaryKey = 'uuid';
+            Object.defineProperty(factoryBuilder.model, 'primaryKey', {
+                configurable: true,
+                get(): string {
+                    return 'uuid';
+                }
+            });
 
             // @ts-expect-error
             expect((factoryBuilder.getKey() as string).isUuid()).toBe(true);
 
             // @ts-expect-error
-            factoryBuilder.model.primaryKey = 'id';
+            Object.defineProperty(factoryBuilder.model, 'primaryKey', {
+                get(): string {
+                    return 'id';
+                }
+            });
         });
 
         it('returns unique sequential ids', () => {

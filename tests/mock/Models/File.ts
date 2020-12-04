@@ -6,4 +6,8 @@ export default class File extends Model {
     factory(): Factory {
         return new FileFactory;
     }
+
+    public $fileable(): File {
+        return this.morphTo();
+    }
 }

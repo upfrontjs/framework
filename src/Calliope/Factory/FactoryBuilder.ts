@@ -6,6 +6,7 @@ import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
 import Config from '../../Support/Config';
 import Collection from '../../Support/Collection';
 
+// todo improve return typing
 export default class FactoryBuilder {
     /**
      * The number of models to create.

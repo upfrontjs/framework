@@ -12,7 +12,7 @@ module.exports = {
     ],
     coverageDirectory: "<rootDir>/tests/coverage",
     coverageProvider: "babel",
-    coverageReporters: ["json", "text"],
+    coverageReporters: ["json", "text-summary"],
     testMatch: [
         "<rootDir>tests/**/*(*.)@(test).[tj]s?(x)"
     ],
@@ -25,7 +25,7 @@ module.exports = {
     testPathIgnorePatterns: [
         '/node_modules/'
     ],
-    bail: false,
+    bail: true,
     notify: true,
     notifyMode: 'failure-change',
     globals: {

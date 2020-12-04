@@ -254,18 +254,18 @@ export default class CallsApi extends BuildsQuery {
      * @return {Model}
      */
     private forceFilledModel(data: Attributes): Model {
-        const instance = new (<typeof Model> this.constructor)(data);
-        const keysToIgnore = instance.getAttributeKeys().concat(instance.loadedRelationKeys());
+        const model = new (<typeof Model> this.constructor)(data);
+        const keysToIgnore = model.getAttributeKeys().concat(model.loadedRelationKeys());
         const missingAttributeKeys = Object.keys(data).filter(key => !keysToIgnore.includes(key));
 
         if (missingAttributeKeys.length) {
             // treat response data as a source of truth and
             // set properties regardless of guarding
-            missingAttributeKeys.forEach(key => instance.setAttribute(key, data[key]));
+            missingAttributeKeys.forEach(key => model.setAttribute(key, data[key]));
         }
 
         // todo - set a last synced attribute to tell when the model was last fetched from remote?
-        return instance;
+        return model;
     }
 
     /**

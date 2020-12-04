@@ -31,7 +31,7 @@ export default class API implements ApiCaller {
     public async call(
         url: string,
         method: 'get' | 'post' | 'delete' | 'patch' | 'put',
-        data?: Record<string, any>,
+        data?: Record<string, any> | FormData,
         customHeaders?: Record<string, string | string[]>
     ): Promise<Response> {
         const config = this.initConfig(url, method, data, customHeaders);
@@ -54,7 +54,7 @@ export default class API implements ApiCaller {
     protected initConfig(
         url: string,
         method: 'get' | 'post' | 'delete' | 'patch' | 'put',
-        data?: Record<string, any>,
+        data?: Record<string, any> | FormData,
         customHeaders?: Record<string, string | string[]>
     ): { url: string; requestInit: RequestInit } {
         const initOptions: RequestInit = { method };
@@ -86,7 +86,7 @@ export default class API implements ApiCaller {
             delete initOptions.body;
         }
 
-        if (data) {
+        if (isObject(data) && Object.keys(data).length || data instanceof FormData) {
             // if not a GET method
             if (initOptions.method && initOptions.method.toLowerCase() !== 'get') {
                 if (data instanceof FormData) {

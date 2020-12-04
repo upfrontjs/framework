@@ -6,6 +6,9 @@ import ModelCollection from '../../../src/Calliope/ModelCollection';
 import Shift from '../../mock/Models/Shift';
 import type Model from '../../../src/Calliope/Model';
 import Contract from '../../mock/Models/Contract';
+import File from '../../mock/Models/File';
+import fetchMock from 'jest-fetch-mock';
+import { buildResponse, getLastFetchCall } from '../../test-helpers';
 
 let hasRelations: User;
 
@@ -126,6 +129,68 @@ describe('hasRelations', () => {
             expect(hasRelations.addRelation('shifts', Shift.factory().times(1).raw()).shifts)
                 .toBeInstanceOf(ModelCollection);
             expect(hasRelations.addRelation('team', team.getRawOriginal()).team).toBeInstanceOf(Team);
+        });
+    });
+
+    describe('load()', () => {
+        beforeEach(() => {
+            fetchMock.resetMocks();
+        });
+
+        it('should skip relations if already loaded', async () => {
+            const file = File.factory().create() as File;
+            hasRelations.addRelation('file', file);
+
+            await hasRelations.load('file').then(model => {
+                expect(model).toBeInstanceOf(hasRelations.constructor);
+            });
+
+            expect(getLastFetchCall()).toBeUndefined();
+        });
+
+        it('should throw an error if any of the relations are not defined',  async () => {
+            const failingFunc = jest.fn(async () => hasRelations.load('undefinedRelation'));
+
+            await expect(failingFunc).rejects
+                .toStrictEqual(new InvalidOffsetException('\'undefinedRelation\' relationship is not defined.'));
+        });
+
+        it('should load the relations onto the model', async () => {
+            fetchMock.mockResponseOnce(async () => Promise.resolve(
+                buildResponse({
+                    ...hasRelations.getRawOriginal(),
+                    file: (File.factory().create() as Model).getRawOriginal(),
+                    files: (File.factory().times(2).create() as unknown as ModelCollection<File>)
+                        .map(file => file.getRawOriginal())
+                        .toArray()
+                })
+            ));
+
+            expect(hasRelations.file).toBeUndefined();
+            expect(hasRelations.files).toBeUndefined();
+
+            await hasRelations.load(['file', 'files']);
+
+            expect(hasRelations.file).toBeInstanceOf(File);
+            expect(hasRelations.files).toBeInstanceOf(ModelCollection);
+        });
+
+        it.todo('should query the related model if only 1 relation is required', async () => {
+
+        });
+
+        it.todo('should query the current model with eager loaded relations if multiple relation required',
+            async () => {
+
+            }
+        );
+
+        it.todo('should not update attributes on the current model on multiple loaded relations', async () => {
+
+        });
+
+        it.todo('should load all relations if forceReload is set to true', async () => {
+
         });
     });
 
@@ -266,6 +331,119 @@ describe('hasRelations', () => {
                     value: hasRelations.getKey(),
                     boolean: 'and'
                 }]);
+            });
+        });
+
+        describe('morphTo()', () => {
+            let morphModel: File;
+
+            beforeEach(() => {
+                morphModel = new File();
+            });
+
+            it('should return an instance of the same morph model', () => {
+                expect(morphModel.$fileable()).toBeInstanceOf(File);
+            });
+
+            it('should set the withs for the next query', () => {
+                // @ts-expect-error
+                expect(morphModel.$fileable().compileQueryParameters().with).toStrictEqual(['*']);
+            });
+        });
+
+        describe('morphMany()', () => {
+            it('should return an instance of the morph model', () => {
+                expect(hasRelations.$files()).toBeInstanceOf(File);
+            });
+
+            it('should set the query parameters correctly', () => {
+                // @ts-expect-error
+                const morphs = hasRelations.$files().getMorphs();
+
+                // @ts-expect-error
+                expect(hasRelations.$files().compileQueryParameters().wheres).toStrictEqual([
+                    {
+                        column: morphs.type,
+                        operator: '=',
+                        value: hasRelations.getName(),
+                        boolean: 'and'
+                    },
+                    {
+                        column: morphs.id,
+                        operator: '=',
+                        value: hasRelations.getKey(),
+                        boolean: 'and'
+                    }
+                ]);
+            });
+
+            it('should figure out the morph name if not given', () => {
+                // @ts-expect-error
+                const morphs = hasRelations.$filesWithoutMorphName().getMorphs();
+
+                // @ts-expect-error
+                expect(hasRelations.$filesWithoutMorphName().compileQueryParameters().wheres).toStrictEqual([
+                    {
+                        column: morphs.type,
+                        operator: '=',
+                        value: hasRelations.getName(),
+                        boolean: 'and'
+                    },
+                    {
+                        column: morphs.id,
+                        operator: '=',
+                        value: hasRelations.getKey(),
+                        boolean: 'and'
+                    }
+                ]);
+            });
+        });
+
+        describe('morphOne()', () => {
+            it('should return an instance of the morph model', () => {
+                expect(hasRelations.$file()).toBeInstanceOf(File);
+            });
+
+            it('should set the query parameters correctly', () => {
+                // @ts-expect-error
+                const morphs = hasRelations.$file().getMorphs();
+
+                // @ts-expect-error
+                expect(hasRelations.$file().compileQueryParameters().wheres).toStrictEqual([
+                    {
+                        column: morphs.type,
+                        operator: '=',
+                        value: hasRelations.getName(),
+                        boolean: 'and'
+                    },
+                    {
+                        column: morphs.id,
+                        operator: '=',
+                        value: hasRelations.getKey(),
+                        boolean: 'and'
+                    }
+                ]);
+            });
+
+            it('should figure out the morph name if not given', () => {
+                // @ts-expect-error
+                const morphs = hasRelations.$fileWithoutMorphName().getMorphs();
+
+                // @ts-expect-error
+                expect(hasRelations.$fileWithoutMorphName().compileQueryParameters().wheres).toStrictEqual([
+                    {
+                        column: morphs.type,
+                        operator: '=',
+                        value: hasRelations.getName(),
+                        boolean: 'and'
+                    },
+                    {
+                        column: morphs.id,
+                        operator: '=',
+                        value: hasRelations.getKey(),
+                        boolean: 'and'
+                    }
+                ]);
             });
         });
     });

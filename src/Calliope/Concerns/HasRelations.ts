@@ -6,7 +6,7 @@ import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
 import type { Attributes } from './HasAttributes';
 import type Collection from '../../Support/Collection';
 
-type Relation = 'belongsTo'|'belongsToMany'|'hasOne'|'hasMany'|'morphs';
+type Relation = 'belongsTo'|'belongsToMany'|'hasOne'|'hasMany'|'morphTo'|'morphMany'|'morphOne';
 
 export default class HasRelations extends CallsApi {
     /**
@@ -34,24 +34,33 @@ export default class HasRelations extends CallsApi {
             relations = [relations];
         }
 
-        const promises: any[] = [];
+        relations = relations.filter(relation => forceReload || !this.relationLoaded(relation));
 
-        for (const relation of relations) {
-            if (!forceReload && this.relationLoaded(relation)) {
-                continue;
-            }
-
+        relations.forEach(relation => {
             if (!this.relationDefined(relation)) {
                 throw new InvalidOffsetException('\'' + relation + '\' relationship is not defined.');
             }
+        });
 
-            promises.push(
-                ((this[relation.start(this.relationMethodPrefix)] as CallableFunction)() as Model).get()
-                    .then((data: Model|ModelCollection<Model>) => this.addRelation(relation, data))
-            );
+        if (!relations.length) {
+            return Promise.resolve(this);
         }
 
-        await Promise.all(promises);
+        if (relations.length === 1) {
+            const relation = await
+            ((this[(relations[0] as string).start(this.relationMethodPrefix)] as CallableFunction)() as Model)
+                .get() as Model;
+
+            this.addRelation(relations[0] as string, relation);
+
+            return Promise.resolve(this);
+        }
+
+        const returnedRelations = (await this.with(relations).get() as Model).getRelations();
+
+        Object.keys(returnedRelations).forEach(relation => {
+            this.addRelation(relation, returnedRelations[relation] as Model | ModelCollection<Model>);
+        });
 
         return Promise.resolve(this);
     }
@@ -124,7 +133,7 @@ export default class HasRelations extends CallsApi {
      *
      * @protected
      *
-     * @return {'belongsTo'|'belongsToMany'|'hasOne'|'hasMany'|'morphs'}
+     * @return {'belongsTo'|'belongsToMany'|'hasOne'|'hasMany'|'morphs'|'morphTo'|'morphMany'|'morphOne'}
      */
     private getRelationType(name: string): Relation {
         name = name.start(this.relationMethodPrefix);
@@ -168,7 +177,9 @@ export default class HasRelations extends CallsApi {
         if (value instanceof HasRelations
             || (<typeof ModelCollection> modelCollectionConstructor).isModelCollection(value)
         ) {
-            if (value instanceof HasRelations && !['belongsTo', 'hasOne'].includes(this.getRelationType(name))) {
+            if (value instanceof HasRelations
+                && !['belongsTo', 'hasOne', 'morphOne'].includes(this.getRelationType(name))
+            ) {
                 value = new modelCollectionConstructor([value]);
             }
 
@@ -189,7 +200,7 @@ export default class HasRelations extends CallsApi {
             relation = collection;
         } else {
             const model = new (<typeof Model> relatedModel.constructor)(value as Attributes);
-            relation = ['belongsTo', 'hasOne'].includes(this.getRelationType(name))
+            relation = ['belongsTo', 'hasOne', 'morphOne'].includes(this.getRelationType(name))
                 ? model
                 : new modelCollectionConstructor([model]);
         }
@@ -258,7 +269,7 @@ export default class HasRelations extends CallsApi {
      * Add the relation type onto the model.
      *
      * @param {Model} model
-     * @param {'belongsTo'|'belongsToMany'|'hasOne'|'hasMany'|'morphs'} relationType
+     * @param {'belongsTo'|'belongsToMany'|'hasOne'|'hasMany'|'morphTo'|'morphMany'|'morphOne'} relationType
      *
      * @private
      *
@@ -392,18 +403,44 @@ export default class HasRelations extends CallsApi {
         const relatedModel = new related();
         const morphs = relatedModel.getMorphs();
 
-        HasRelations.configureRelationType(relatedModel, 'morphs');
+        HasRelations.configureRelationType(relatedModel, 'morphMany');
 
         return relatedModel
             .where(morphs.type, '=', morphName ?? (this as unknown as Model).getName())
             .where(morphs.id, '=', (this as unknown as Model).getKey());
     }
 
-    // public morphTo
-    // public morphOne
-    // public morphMany
-    // public morphToMany
-    // public morphedByMany
+    /**
+     * Set the endpoint on the correct model for querying.
+     *
+     * @param {Model} related
+     * @param {string=} morphName
+     *
+     * @return {Model}
+     */
+    public morphOne<T extends Model>(related: new() => T, morphName?: string): T {
+        const relatedModel = new related();
+        const morphs = relatedModel.getMorphs();
+
+        HasRelations.configureRelationType(relatedModel, 'morphOne');
+
+        return relatedModel
+            .where(morphs.type, '=', morphName ?? (this as unknown as Model).getName())
+            .where(morphs.id, '=', (this as unknown as Model).getKey());
+    }
+
+    /**
+     * Add a constraint for the next query to return all relation.
+     *
+     * @return {Model}
+     */
+    public morphTo<T extends Model>(): T {
+        const relatedModel = new (<typeof Model> this.constructor)().with(['*']) as T;
+
+        HasRelations.configureRelationType(relatedModel, 'morphTo');
+
+        return relatedModel;
+    }
 
     /**
      * Get the polymorphic column names.
@@ -411,7 +448,7 @@ export default class HasRelations extends CallsApi {
      * @param {string=} name
      */
     protected getMorphs(name?: string): Record<'id'|'type', string> {
-        name = name ?? (this as unknown as Model).getName().toLowerCase() + 'able';
+        name = name ?? (this as unknown as Model).getName().toLowerCase().finish('able');
 
         return { id: name + '_id', type: name + '_type' };
     }

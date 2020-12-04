@@ -4,6 +4,7 @@ import type Factory from '../../../src/Calliope/Factory/Factory';
 import UserFactory from '../Factories/UserFactory';
 import Shift from './Shift';
 import Contract from './Contract';
+import File from './File';
 
 export default class User extends Model {
     public get endpoint(): string {
@@ -54,5 +55,21 @@ export default class User extends Model {
 
     $inverseShiftsWithoutForeignKey(): Shift {
         return this.belongsToMany(Shift);
+    }
+
+    $files(): File {
+        return this.morphMany(File, 'User');
+    }
+
+    $filesWithoutMorphName(): File {
+        return this.morphMany(File);
+    }
+
+    $file(): File {
+        return this.morphOne(File, 'User');
+    }
+
+    $fileWithoutMorphName(): File {
+        return this.morphOne(File);
     }
 }

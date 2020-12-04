@@ -16,21 +16,14 @@ describe('model', () => {
 
     describe('getKeyName()', () => {
         it('can return the primary key\'s name',  () => {
-            expect(user.setKeyName('uuid').getKeyName()).toBe('uuid');
-        });
-    });
-
-    describe('setKeyName()', () => {
-        it('can set the key name for the model',  () => {
             expect(user.getKeyName()).toBe('id');
-            expect(user.setKeyName('uuid').getKeyName()).toBe('uuid');
         });
     });
 
     describe('getKey()', () => {
         it('can return the primary key for the model',  () => {
             expect(user.getKey()).toBe(1);
-            expect(user.setKeyName('uuid').setAttribute('uuid', 'value').getKey()).toBe('value');
+            expect(user.setAttribute('id', 'value').getKey()).toBe('value');
         });
     });
 

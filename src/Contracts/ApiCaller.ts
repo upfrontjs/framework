@@ -18,7 +18,7 @@ export default interface ApiCaller {
     initRequest?(
         url: string,
         method: 'get'|'post'|'delete'|'patch'|'put',
-        data?: Record<string, unknown>
+        data?: Record<string, unknown> | FormData
     ): Partial<RequestInit>;
 
     /**
@@ -34,7 +34,7 @@ export default interface ApiCaller {
     call(
         url: string,
         method: 'get'|'post'|'delete'|'patch'|'put',
-        data?: Record<string, unknown>,
+        data?: Record<string, unknown> | FormData,
         customHeaders?: Record<string, string|string[]>
     ): Promise<Response>;
 }

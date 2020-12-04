@@ -19,7 +19,7 @@ describe('castsAttributes', () => {
     });
 
     describe('mergeCasts()', () => {
-        it('can merge the casts property with existing casts', () => {
+        it('should merge the casts property with existing casts', () => {
             expect(caster.getCasts()).toStrictEqual({});
 
             caster.mergeCasts({ 'test': 'boolean' });
@@ -31,7 +31,7 @@ describe('castsAttributes', () => {
     });
 
     describe('hasCast()', () => {
-        it('can merge the casts property with existing casts', () => {
+        it('should merge the casts property with existing casts', () => {
             expect(caster.hasCast('test')).toBe(false);
 
             caster.mergeCasts({ 'test': 'boolean' });
@@ -41,11 +41,11 @@ describe('castsAttributes', () => {
     });
 
     describe('castAttribute()', () => {
-        it('returns the original value if no cast is defined', () => {
+        it('should return the original value if no cast is defined', () => {
             expect(caster.getValue('test', '1')).toBe('1');
         });
 
-        it('can cast to a boolean', () => {
+        it('should cast to a boolean', () => {
             caster.mergeCasts({ 'test': 'boolean' });
 
             expect(caster.getValue('test', '1')).toBe(true);
@@ -60,7 +60,7 @@ describe('castsAttributes', () => {
             expect(func).toThrow('\'test\' is not castable to a boolean type in \'' + caster.constructor.name + '\'.');
         });
 
-        it('can cast to a string', () => {
+        it('should cast to a string', () => {
             caster.mergeCasts({ 'test': 'string' });
 
             expect(caster.getValue('test', 1)).toBe('1');
@@ -69,7 +69,7 @@ describe('castsAttributes', () => {
             expect(caster.getValue('test', caster)).toBe('[object Object]'); //calls the to primitive string method
         });
 
-        it('can cast to a number', () => {
+        it('should cast to a number', () => {
             caster.mergeCasts({ 'test': 'number' });
 
             expect(caster.getValue('test', '1')).toBe(1);
@@ -80,7 +80,7 @@ describe('castsAttributes', () => {
             expect(func).toThrow('\'test\' is not castable to a number type in \'' + caster.constructor.name + '\'.');
         });
 
-        it('can cast to a collection', () => {
+        it('should cast to a collection', () => {
             caster.mergeCasts({ 'test': 'collection' });
 
             expect(caster.getValue('test', ['1'])).toStrictEqual(new Collection(['1']));
@@ -90,9 +90,9 @@ describe('castsAttributes', () => {
                 .toThrow('\'test\' is not castable to a collection type in \'' + caster.constructor.name + '\'.');
         });
 
-        it.todo('can cast to a dateTime');
+        it.todo('should cast to a dateTime');
 
-        it('can cast using a custom object', () => {
+        it('should cast using a custom object', () => {
             caster.mergeCasts({
                 'test': {
                     get() {
@@ -107,7 +107,7 @@ describe('castsAttributes', () => {
             expect(caster.getValue('test', '1')).toBe('get value');
         });
 
-        it('hits error if hasCast() and this.getCastType() are not in sync', () => {
+        it('should hit error if hasCast() and this.getCastType() are not in sync', () => {
             // @ts-expect-error
             caster.hasCast = () => true;
             const failingCall = () => caster.getValue('test', '1');

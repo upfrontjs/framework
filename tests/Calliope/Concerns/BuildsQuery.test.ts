@@ -23,13 +23,13 @@ describe('buildsQuery', () => {
     });
 
     describe('newQuery()', () => {
-        it('returns an instantiated builder', () => {
+        it('should returns an instantiated builder', () => {
             expect(BuildsQuery.newQuery()).toBeInstanceOf(BuildsQuery);
         });
     });
 
     describe('resetQueryParameters()', () => {
-        it('can reset the params to the default values', () => {
+        it('should reset the params to the default values', () => {
             expect(builder.offset(10).compiledParams().offset).toBe(10);
             // @ts-expect-error
             expect(builder.resetQueryParameters().compiledParams().offset).toBeUndefined();
@@ -37,7 +37,7 @@ describe('buildsQuery', () => {
     });
 
     describe('addWhereConstraint()', () => {
-        it('throws error if improper operator is used', () => {
+        it('should throw an error if improper operator is used', () => {
             // @ts-expect-error
             const failingCall = () => builder.addWhereConstraint('column', 'operator', 'or');
 
@@ -46,7 +46,7 @@ describe('buildsQuery', () => {
     });
 
     describe('where()', () => {
-        it('adds a constraint to the params', () => {
+        it('should add a constraint to the params', () => {
             builder.where('column', '=', '1');
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -59,7 +59,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can be called with 2 arguments only', () => {
+        it('should be able to take two arguments only', () => {
             builder.where('column', '1');
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -72,13 +72,13 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             expect(BuildsQuery.where('column', 'value')).toBeInstanceOf(BuildsQuery);
         });
     });
 
     describe('orWhere()', () => {
-        it('adds a constraint to the params', () => {
+        it('should add a constraint to the params', () => {
             builder.orWhere('column', '=', '1');
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -91,7 +91,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can be called with 2 arguments only', () => {
+        it('should be able to called with 2 arguments only', () => {
             builder.orWhere('column', '1');
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -106,7 +106,7 @@ describe('buildsQuery', () => {
     });
 
     describe('whereKey()', () => {
-        it('adds a constraint to the params', () => {
+        it('should add a constraint to the params', () => {
             builder.whereKey('1');
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -119,7 +119,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can add constraint for multiple keys', () => {
+        it('should add constraint for multiple keys', () => {
             builder.whereKey(['1', '2']);
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -132,7 +132,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             // this method will be available when its called from the Model
             BuildsQuery.prototype.getKeyName = () => 'id';
             expect(BuildsQuery.whereKey('1')).toBeInstanceOf(BuildsQuery);
@@ -140,7 +140,7 @@ describe('buildsQuery', () => {
     });
 
     describe('orWhereKey()', () => {
-        it('adds a constraint to the params', () => {
+        it('should add a constraint to the params', () => {
             builder.orWhereKey('1');
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -153,7 +153,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can add constraint for multiple keys', () => {
+        it('should add constraint for multiple keys', () => {
             builder.orWhereKey(['1', '2']);
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -168,7 +168,7 @@ describe('buildsQuery', () => {
     });
 
     describe('whereKeyNot()', () => {
-        it('adds a constraint to the params', () => {
+        it('should add a constraint to the params', () => {
             builder.whereKeyNot('1');
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -181,7 +181,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can add constraint for multiple keys', () => {
+        it('should add constraint for multiple keys', () => {
             builder.whereKeyNot(['1', '2']);
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -194,7 +194,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             // this method will be available when its called from the Model
             BuildsQuery.prototype.getKeyName = () => 'id';
             expect(BuildsQuery.whereKeyNot('1')).toBeInstanceOf(BuildsQuery);
@@ -202,7 +202,7 @@ describe('buildsQuery', () => {
     });
 
     describe('orWhereKeyNot()', () => {
-        it('adds a constraint to the params', () => {
+        it('should add a constraint to the params', () => {
             builder.orWhereKeyNot('1');
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -215,7 +215,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can add constraint for multiple keys', () => {
+        it('should add constraint for multiple keys', () => {
             builder.orWhereKeyNot(['1', '2']);
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -230,7 +230,7 @@ describe('buildsQuery', () => {
     });
 
     describe('whereNull()', () => {
-        it('adds a constraint to the params', () => {
+        it('should add a constraint to the params', () => {
             builder.whereNull('column');
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -243,7 +243,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can add constraint for multiple keys', () => {
+        it('should add constraint for multiple keys', () => {
             builder.whereNull(['column1', 'column2']);
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -262,13 +262,13 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             expect(BuildsQuery.whereNull('1')).toBeInstanceOf(BuildsQuery);
         });
     });
 
     describe('orWhereNull()', () => {
-        it('adds a constraint to the params', () => {
+        it('should add a constraint to the params', () => {
             builder.orWhereNull('column');
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -281,7 +281,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can add constraint for multiple keys', () => {
+        it('should add constraint for multiple keys', () => {
             builder.orWhereNull(['column1', 'column2']);
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -302,7 +302,7 @@ describe('buildsQuery', () => {
     });
 
     describe('whereNotNull()', () => {
-        it('adds a constraint to the params', () => {
+        it('should add a constraint to the params', () => {
             builder.whereNotNull('column');
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -315,7 +315,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can add constraint for multiple keys', () => {
+        it('should add constraint for multiple keys', () => {
             builder.whereNotNull(['column1', 'column2']);
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -334,13 +334,13 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             expect(BuildsQuery.whereNotNull('column')).toBeInstanceOf(BuildsQuery);
         });
     });
 
     describe('orWhereNotNull()', () => {
-        it('adds a constraint to the params', () => {
+        it('should add a constraint to the params', () => {
             builder.orWhereNotNull('column');
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -353,7 +353,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can add constraint for multiple keys', () => {
+        it('should add constraint for multiple keys', () => {
             builder.orWhereNotNull(['column1', 'column2']);
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -374,7 +374,7 @@ describe('buildsQuery', () => {
     });
 
     describe('whereIn()', () => {
-        it('adds a constraint to the params', () => {
+        it('should add a constraint to the params', () => {
             builder.whereIn('column', [1, 2]);
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -387,13 +387,13 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             expect(BuildsQuery.whereIn('column', ['1'])).toBeInstanceOf(BuildsQuery);
         });
     });
 
     describe('orWhereIn()', () => {
-        it('adds a constraint to the params', () => {
+        it('should add a constraint to the params', () => {
             builder.orWhereIn('column', [1, 2]);
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -408,7 +408,7 @@ describe('buildsQuery', () => {
     });
 
     describe('whereNotIn()', () => {
-        it('adds a constraint to the params', () => {
+        it('should add a constraint to the params', () => {
             builder.whereNotIn('column', [1, 2]);
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -421,13 +421,13 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             expect(BuildsQuery.whereNotIn('column', ['1'])).toBeInstanceOf(BuildsQuery);
         });
     });
 
     describe('orWhereNotIn()', () => {
-        it('adds a constraint to the params', () => {
+        it('should add a constraint to the params', () => {
             builder.orWhereNotIn('column', [1, 2]);
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -442,7 +442,7 @@ describe('buildsQuery', () => {
     });
 
     describe('whereBetween()', () => {
-        it('adds a constraint to the params', () => {
+        it('should add a constraint to the params', () => {
             builder.whereBetween('column', [1, 2]);
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -455,7 +455,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('throws error if the second argument is not an array with the length of 2', () => {
+        it('should throw an error if the second argument is not an array with the length of 2', () => {
             // @ts-expect-error
             const failingCall = () => builder.whereBetween('column', { 'something': 1 });
 
@@ -465,13 +465,13 @@ describe('buildsQuery', () => {
             );
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             expect(BuildsQuery.whereBetween('column', ['1', '2'])).toBeInstanceOf(BuildsQuery);
         });
     });
 
     describe('orWhereBetween()', () => {
-        it('adds a constraint to the params', () => {
+        it('should add a constraint to the params', () => {
             builder.orWhereBetween('column', [1, 2]);
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -486,7 +486,7 @@ describe('buildsQuery', () => {
     });
 
     describe('whereNotBetween()', () => {
-        it('adds a constraint to the params', () => {
+        it('should add a constraint to the params', () => {
             builder.whereNotBetween('column', [1, 2]);
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -499,7 +499,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('throws error if the second argument is not an array with the length of 2', () => {
+        it('should throw an error if the second argument is not an array with the length of 2', () => {
             // @ts-expect-error
             const failingCall = () => builder.whereNotBetween('column', { 'something': 1 });
 
@@ -509,13 +509,13 @@ describe('buildsQuery', () => {
             );
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             expect(BuildsQuery.whereNotBetween('column', ['1', '2'])).toBeInstanceOf(BuildsQuery);
         });
     });
 
     describe('orWhereNotBetween()', () => {
-        it('adds a constraint to the params', () => {
+        it('should add a constraint to the params', () => {
             builder.orWhereNotBetween('column', [1, 2]);
 
             expect(builder.compiledParams().wheres).toStrictEqual([
@@ -528,7 +528,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('throws error if the second argument is not an array with the length of 2', () => {
+        it('should throw an error if the second argument is not an array with the length of 2', () => {
             // @ts-expect-error
             const failingCall = () => builder.orWhereNotBetween('column', { 'something': 1 });
 
@@ -540,13 +540,13 @@ describe('buildsQuery', () => {
     });
 
     describe('limit()', () => {
-        it('adds a limit to the params', () => {
+        it('should add a limit to the params', () => {
             builder.limit(10);
 
             expect(builder.compiledParams().limit).toBe(10);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             builder = BuildsQuery.limit(10);
 
             // @ts-expect-error
@@ -555,7 +555,7 @@ describe('buildsQuery', () => {
     });
 
     describe('when()', () => {
-        it('calls the given closure depending on the truthiness if the first argument', () => {
+        it('should call the given closure depending on the truthiness if the first argument', () => {
             builder.when(false, builderInstance => builderInstance.limit(10));
 
             expect(builder.compiledParams().limit).toBeUndefined();
@@ -565,7 +565,7 @@ describe('buildsQuery', () => {
             expect(builder.compiledParams().limit).toBe(10);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             builder = BuildsQuery.when(false, builderInstance => builderInstance.limit(10));
 
             // @ts-expect-error
@@ -579,7 +579,7 @@ describe('buildsQuery', () => {
     });
 
     describe('unless()', () => {
-        it('calls the given closure depending on the falsiness if the first argument', () => {
+        it('should call the given closure depending on the falsiness if the first argument', () => {
             builder.unless(true, builderInstance => builderInstance.limit(10));
 
             expect(builder.compiledParams().limit).toBeUndefined();
@@ -589,7 +589,7 @@ describe('buildsQuery', () => {
             expect(builder.compiledParams().limit).toBe(10);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             builder = BuildsQuery.unless(false, builderInstance => builderInstance.limit(10));
 
             // @ts-expect-error
@@ -603,7 +603,7 @@ describe('buildsQuery', () => {
     });
 
     describe('distinct()', () => {
-        it('sets the distinct value', () => {
+        it('should set the distinct value', () => {
             builder.distinct();
 
             expect(builder.compiledParams().distinct).toBe(true);
@@ -613,7 +613,7 @@ describe('buildsQuery', () => {
             expect(builder.compiledParams().distinct).toBeUndefined();
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             builder = BuildsQuery.distinct();
             // @ts-expect-error
             expect(builder.compileQueryParameters().distinct).toBe(true);
@@ -621,12 +621,12 @@ describe('buildsQuery', () => {
     });
 
     describe('select()', () => {
-        it('can set the selected columns', () => {
+        it('should set the selected columns', () => {
             expect(builder.select(['id'])).toBeInstanceOf(BuildsQuery);
             expect(builder.compiledParams().columns).toStrictEqual(['id']);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             builder = BuildsQuery.select(['id']);
             // @ts-expect-error
             expect(builder.compileQueryParameters().columns).toStrictEqual(['id']);
@@ -634,12 +634,12 @@ describe('buildsQuery', () => {
     });
 
     describe('has()', () => {
-        it('can set relation existence check', () => {
+        it('should set relation existence check', () => {
             expect(builder.has(['relation'])).toBeInstanceOf(BuildsQuery);
             expect(builder.compiledParams().relationsExists).toStrictEqual(['relation']);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             builder = BuildsQuery.has(['relation']);
             // @ts-expect-error
             expect(builder.compileQueryParameters().relationsExists).toStrictEqual(['relation']);
@@ -647,12 +647,12 @@ describe('buildsQuery', () => {
     });
 
     describe('with()', () => {
-        it('can set required relations', () => {
+        it('should set required relations', () => {
             expect(builder.with(['relation'])).toBeInstanceOf(BuildsQuery);
             expect(builder.compiledParams().with).toStrictEqual(['relation']);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             builder = BuildsQuery.with(['relation']);
             // @ts-expect-error
             expect(builder.compileQueryParameters().with).toStrictEqual(['relation']);
@@ -660,13 +660,13 @@ describe('buildsQuery', () => {
     });
 
     describe('without()', () => {
-        it('can unset required relations', () => {
+        it('should unset required relations', () => {
             expect(builder.without(['relation'])).toBeInstanceOf(BuildsQuery);
             expect(builder.with(['relation1', 'relation2']).without(['relation1']).compiledParams().with)
                 .toStrictEqual(['relation2']);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             // @ts-expect-error
             const originalWithRelations = TestClass.prototype.withRelations;
             // @ts-expect-error
@@ -682,12 +682,12 @@ describe('buildsQuery', () => {
     });
 
     describe('scope()', () => {
-        it('can set required scopes', () => {
+        it('should set required scopes', () => {
             expect(builder.scope(['testScope'])).toBeInstanceOf(BuildsQuery);
             expect(builder.compiledParams().scopes).toStrictEqual(['testScope']);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             builder = BuildsQuery.scope(['testScope']);
             // @ts-expect-error
             expect(builder.compileQueryParameters().scopes).toStrictEqual(['testScope']);
@@ -695,7 +695,7 @@ describe('buildsQuery', () => {
     });
 
     describe('orderBy()', () => {
-        it('can define what should be ordered and how', () => {
+        it('should define what should be ordered and how', () => {
             expect(builder.orderBy('column').compiledParams().orders).toStrictEqual([
                 {
                     column: 'column',
@@ -704,7 +704,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             builder = BuildsQuery.orderBy('column');
             // @ts-expect-error
             expect(builder.compileQueryParameters().orders).toStrictEqual([
@@ -718,7 +718,7 @@ describe('buildsQuery', () => {
     });
 
     describe('orderByDesc()', () => {
-        it('can define what should be ordered by descending', () => {
+        it('should define what should be ordered by descending', () => {
             expect(builder.orderByDesc('column').compiledParams().orders).toStrictEqual([
                 {
                     column: 'column',
@@ -727,7 +727,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             builder = BuildsQuery.orderByDesc('column');
             // @ts-expect-error
             expect(builder.compileQueryParameters().orders).toStrictEqual([
@@ -741,7 +741,7 @@ describe('buildsQuery', () => {
     });
 
     describe('latest()', () => {
-        it('can order by the given column or the default on descending', () => {
+        it('should order by the given column or the default on descending', () => {
             expect(builder.latest().compiledParams().orders).toStrictEqual([
                 {
                     column: 'created_at',
@@ -750,7 +750,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             // it will be present when used from the model
             BuildsQuery.prototype.getCreatedAtColumn = builder.getCreatedAtColumn;
 
@@ -767,7 +767,7 @@ describe('buildsQuery', () => {
     });
 
     describe('oldest()', () => {
-        it('an order by the given column or the default on ascending', () => {
+        it('should order by the given column or the default on ascending', () => {
             expect(builder.oldest().compiledParams().orders).toStrictEqual([
                 {
                     column: 'created_at',
@@ -776,7 +776,7 @@ describe('buildsQuery', () => {
             ]);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             // it will be present when used from the model
             BuildsQuery.prototype.getCreatedAtColumn = builder.getCreatedAtColumn;
 
@@ -793,11 +793,11 @@ describe('buildsQuery', () => {
     });
 
     describe('offset()', () => {
-        it('can set the offset of the required records', () => {
+        it('should set the offset of the required records', () => {
             expect(builder.offset(10).compiledParams().offset).toStrictEqual(10);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             builder = BuildsQuery.offset(10);
             // @ts-expect-error
             expect(builder.compileQueryParameters().offset).toStrictEqual(10);
@@ -806,11 +806,11 @@ describe('buildsQuery', () => {
     });
 
     describe('skip()', () => {
-        it('can set the offset of the required records', () => {
+        it('should set the offset of the required records', () => {
             expect(builder.skip(10).compiledParams().offset).toStrictEqual(10);
         });
 
-        it('can be called statically', () => {
+        it('should be able to be called statically', () => {
             builder = BuildsQuery.skip(10);
             // @ts-expect-error
             expect(builder.compileQueryParameters().offset).toStrictEqual(10);

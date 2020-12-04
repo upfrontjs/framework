@@ -4,26 +4,26 @@ const sentence = 'The quick brown fox jumps over the lazy dog.';
 
 describe('string helpers', () => {
     describe('ucFirst()', () => {
-        it('can capitalise the first letter', () => {
+        it('should capitalise the first letter', () => {
             expect('string'.ucFirst()).toBe('String');
         });
     });
 
     describe('isUuid()', () => {
-        it('can determine whether the given string is uuid', () => {
+        it('should determine whether the given string is uuid', () => {
             expect(String.uuid().isUuid()).toBe(true);
         });
     });
 
     describe('includesAll()', () => {
-        it('can determine whether the given string is uuid', () => {
+        it('should determine whether the given string is uuid', () => {
             expect(sentence.includesAll(['brown', 'fox', 'the'])).toBe(true);
             expect(sentence.includesAll(['purple', 'fox', 'the'])).toBe(false);
         });
     });
 
     describe('title()', () => {
-        it('can convert to title case', () => {
+        it('should convert to title case', () => {
             const expected = 'A Sample String';
 
             expect('_aSample-string-'.title()).toBe(expected);
@@ -31,7 +31,7 @@ describe('string helpers', () => {
     });
 
     describe('snake()', () => {
-        it('can convert to snake case', () => {
+        it('should convert to snake case', () => {
             const expected = 'a_sample_string';
 
             expect('aSample-string'.snake()).toBe(expected);
@@ -39,21 +39,21 @@ describe('string helpers', () => {
     });
 
     describe('finish()', () => {
-        it('adds the given token if it is not already set', () => {
+        it('should add the given token if it is not already set', () => {
             expect('strin'.finish('g')).toBe('string');
             expect('string'.finish('g')).toBe('string');
         });
     });
 
     describe('start()', () => {
-        it('adds the given token if it is not already set', () => {
+        it('should add the given token if it is not already set', () => {
             expect('tring'.start('s')).toBe('string');
             expect('string'.start('s')).toBe('string');
         });
     });
 
     describe('camel()', () => {
-        it('can convert to camel case', () => {
+        it('should convert to camel case', () => {
             const expected = 'aSampleString';
 
             expect('_a-sample string'.camel()).toBe(expected);
@@ -61,7 +61,7 @@ describe('string helpers', () => {
     });
 
     describe('pascal()', () => {
-        it('can convert to pascal case', () => {
+        it('should convert to pascal case', () => {
             const expected = 'ASampleString';
 
             expect('_a-sample string'.pascal()).toBe(expected);
@@ -69,7 +69,7 @@ describe('string helpers', () => {
     });
 
     describe('kebab()', () => {
-        it('can convert to pascal case', () => {
+        it('should convert to pascal case', () => {
             const expected = 'a-sample-string';
 
             expect('_A-sample string'.kebab()).toBe(expected);
@@ -77,21 +77,21 @@ describe('string helpers', () => {
     });
 
     describe('plural()', () => {
-        it('can pluralise strings', () => {
+        it('should pluralise strings', () => {
             expect('car'.plural()).toBe('cars');
             expect('goose'.plural()).toBe('geese');
         });
     });
 
     describe('singular()', () => {
-        it('can get the singular for of strings', () => {
+        it('should get the singular for of strings', () => {
             expect('cars'.singular()).toBe('car');
             expect('geese'.singular()).toBe('goose');
         });
     });
 
     describe('before()', () => {
-        it('can get the string before the given token', () => {
+        it('should get the string before the given token', () => {
             expect(sentence.before('fox')).toBe('The quick brown ');
         });
 
@@ -101,7 +101,7 @@ describe('string helpers', () => {
     });
 
     describe('beforeLast()', () => {
-        it('can get the string before thr given token', () => {
+        it('should get the string before thr given token', () => {
             expect(sentence.beforeLast('o')).toBe('The quick brown fox jumps over the lazy d');
         });
 
@@ -111,7 +111,7 @@ describe('string helpers', () => {
     });
 
     describe('after()', () => {
-        it('can get the string after the given token', () => {
+        it('should get the string after the given token', () => {
             expect(sentence.after('lazy')).toBe(' dog.');
         });
 
@@ -121,7 +121,7 @@ describe('string helpers', () => {
     });
 
     describe('afterLast()', () => {
-        it('can get the string after thr given token', () => {
+        it('should get the string after thr given token', () => {
             expect(sentence.afterLast('h')).toBe('e lazy dog.');
         });
 
@@ -131,7 +131,7 @@ describe('string helpers', () => {
     });
 
     describe('limit()', () => {
-        it('can limit the length of the string', () => {
+        it('should limit the length of the string', () => {
             // the string length + the default appended value
             expect(sentence.limit(10)).toHaveLength(13);
             expect(sentence.limit(10)).toBe('The quick ...');
@@ -144,7 +144,7 @@ describe('string helpers', () => {
     });
 
     describe('words()', () => {
-        it('can limit the number of words in the string', () => {
+        it('should limit the number of words in the string', () => {
             expect(sentence.words(3)).toBe('The quick brown...');
         });
 
@@ -160,7 +160,7 @@ describe('string helpers', () => {
             expect(sentence.is('The * dog.')).toBe(true);
         });
 
-        it('can ignore the case if the boolean set', () => {
+        it('should ignore the case if the boolean set', () => {
             expect(sentence.is('the * dog.', true)).toBe(true);
         });
     });

@@ -26,13 +26,13 @@ describe('callsApi', () => {
     });
 
     describe('constructor()', () => {
-        it('resets the mutated endpoint to the set endpoint', () => {
+        it('should reset the mutated endpoint to the set endpoint', () => {
             expect(caller.getEndpoint()).toBe('users');
         });
     });
 
     describe('call()', () => {
-        it('throws error if no endpoint is defined',  async () => {
+        it('should throw an error if no endpoint is defined',  async () => {
             caller.setEndpoint('');
 
             // awkward syntax comes from https://github.com/facebook/jest/issues/1700
@@ -44,7 +44,7 @@ describe('callsApi', () => {
             );
         });
 
-        it('returns a promise with the response',  async () => {
+        it('should return a promise with the response',  async () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
             // @ts-expect-error
             const responseData = await caller.call('get');
@@ -52,7 +52,7 @@ describe('callsApi', () => {
             expect(responseData).toStrictEqual(User.factory().raw());
         });
 
-        it('gets the ApiCaller from the config if set',  async () => {
+        it('should get the ApiCaller from the config if set',  async () => {
             const api = new class customAPICallerImplementation extends API {
                 initRequest(): Partial<RequestInit> {
                     const headers = new Headers();
@@ -71,7 +71,7 @@ describe('callsApi', () => {
             expect(getLastFetchCall()?.headers.get('custom')).toBe('header');
         });
 
-        it('gets the HandlesApiResponse from the config if set',  async () => {
+        it('should get the HandlesApiResponse from the config if set',  async () => {
             const mockFn = jest.fn();
             const handler = new class customApiResponseHandlerImplementation extends ApiResponseHandler {
                 handleFinally() {
@@ -87,7 +87,7 @@ describe('callsApi', () => {
             expect(mockFn).toHaveBeenCalled();
         });
 
-        it('internally counts the number of ongoing requests', async () => {
+        it('should internally count the number of ongoing requests', async () => {
             jest.useFakeTimers();
             fetchMock.mockResponse(async () => new Promise( resolve =>
                 setTimeout(
@@ -114,7 +114,7 @@ describe('callsApi', () => {
             jest.useRealTimers();
         });
 
-        it('can determine whether there is an ongoing request or not', async () => {
+        it('should determine whether there is an ongoing request or not', async () => {
             jest.useFakeTimers();
             fetchMock.mockResponseOnce(async () => new Promise( resolve =>
                 setTimeout(
@@ -139,20 +139,20 @@ describe('callsApi', () => {
     });
 
     describe('newInstanceFromResponseData()', () => {
-        it('throws error if unexpected data given', () => {
+        it('should throw an error if unexpected data given', () => {
             //@ts-expect-error
             expect(() => caller.newInstanceFromResponseData(null)).toThrow(new TypeError(
                 'Unexpected response type. Ensure that the endpoint returns model data only.'
             ));
         });
 
-        it('can construct a single instance of a model', () => {
+        it('should construct a single instance of a model', () => {
             const userData = User.factory().raw();
             //@ts-expect-error
             expect(caller.newInstanceFromResponseData(userData)).toStrictEqual(new User(userData));
         });
 
-        it('can construct a model collection on array argument', () => {
+        it('should construct a model collection on array argument', () => {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
             const userData = User.factory().raw() as Attributes;
             //@ts-expect-error
@@ -160,7 +160,7 @@ describe('callsApi', () => {
                 .toStrictEqual(new ModelCollection([new User(userData)]));
         });
 
-        it('force fills the models from the response', () => {
+        it('should force fill the models from the response', () => {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
             const userData = User.factory().raw() as Attributes;
             const expectedUser = new User(userData);
@@ -179,32 +179,32 @@ describe('callsApi', () => {
     });
 
     describe('setEndpoint()', () => {
-        it('can set the endpoint for the model', () => {
+        it('should set the endpoint for the model', () => {
             caller.setEndpoint('endpoint');
             expect(caller.getEndpoint()).toBe('endpoint');
         });
 
-        it('can returns model', () => {
+        it('should returns model', () => {
             expect(caller.setEndpoint('endpoint').getEndpoint()).toBe('endpoint');
         });
     });
 
     describe('getEndpoint()', () => {
-        it('can get the endpoint for the model', () => {
+        it('should get the endpoint for the model', () => {
             caller.setEndpoint('endpoint');
             expect(caller.getEndpoint()).toBe('endpoint');
         });
     });
 
     describe('resetEndpoint()', () => {
-        it('can reset the endpoint', () => {
+        it('should reset the endpoint', () => {
             caller.setEndpoint('endpoint');
             expect(caller.getEndpoint()).toBe('endpoint');
             caller.resetEndpoint();
             expect(caller.getEndpoint()).toBe('users');
         });
 
-        it('can figure out an endpoint if endpoint is not defined on the model', () => {
+        it('should figure out an endpoint if endpoint is not defined on the model', () => {
             expect(caller.getEndpoint()).toBe(caller.endpoint);
             // @ts-expect-error
             delete caller.endpoint;
@@ -215,14 +215,14 @@ describe('callsApi', () => {
     });
 
     describe('appendToEndpoint()', () => {
-        it('can append a string to the endpoint', () => {
+        it('should append a string to the endpoint', () => {
             expect(caller.getEndpoint()).toBe(caller.endpoint);
             expect(caller.appendToEndpoint('/1').getEndpoint()).toBe(caller.endpoint + '/1');
         });
     });
 
     describe('get()', () => {
-        it('sends a GET request', async () => {
+        it('should send a GET request', async () => {
             const user = User.factory().create() as User;
             mockUserModelResponse(user);
 
@@ -230,7 +230,7 @@ describe('callsApi', () => {
             expect(getLastFetchCall()?.method).toBe('get');
         });
 
-        it('returns a promise with new model or model collection', async () => {
+        it('should return a promise with new model or model collection', async () => {
             const user = User.factory().create() as User;
             mockUserModelResponse(user);
 
@@ -238,7 +238,7 @@ describe('callsApi', () => {
             expect(data).toStrictEqual(user);
         });
 
-        it('resets the endpoint', async () => {
+        it('should reset the endpoint', async () => {
             mockUserModelResponse(User.factory().create() as User);
 
             caller.setEndpoint('endpoint');
@@ -246,7 +246,7 @@ describe('callsApi', () => {
             expect(caller.getEndpoint()).toBe('users');
         });
 
-        it('resets the query parameters', async () => {
+        it('should reset the query parameters', async () => {
             caller.whereKey(43);
             // @ts-expect-error
             expect(caller.compileQueryParameters().wheres).toHaveLength(1);
@@ -258,7 +258,7 @@ describe('callsApi', () => {
             expect(caller.compileQueryParameters().wheres).toBeUndefined();
         });
 
-        it('can take parameters for the request', async () => {
+        it('should take parameters for the request', async () => {
             mockUserModelResponse(User.factory().create() as User);
             await caller.get({ myParam: 1 });
 
@@ -268,7 +268,7 @@ describe('callsApi', () => {
             );
         });
 
-        it('can send query parameters in the request', async () => {
+        it('should send query parameters in the request', async () => {
             caller.whereKey(43);
 
             mockUserModelResponse(User.factory().create() as User);
@@ -281,7 +281,7 @@ describe('callsApi', () => {
             );
         });
 
-        it('works statically', async () => {
+        it('should works statically', async () => {
             const user = User.factory().create() as User;
             mockUserModelResponse(user);
 
@@ -292,14 +292,14 @@ describe('callsApi', () => {
     });
 
     describe('post()', () => {
-        it('can send a POST request', async () => {
+        it('should send a POST request', async () => {
             mockUserModelResponse(caller);
             await caller.post({ key: 'value' });
 
             expect(getLastFetchCall()?.method).toBe('post');
         });
 
-        it('returns this or new model depending on the response', async () => {
+        it('should return this or new model depending on the response', async () => {
             const responseUser = User.factory().create() as User;
             const callerUser = User.factory().create() as User;
 
@@ -320,7 +320,7 @@ describe('callsApi', () => {
             expect(callerUser).toStrictEqual(returnModel);
         });
 
-        it('resets the endpoint', async () => {
+        it('should reset the endpoint', async () => {
             mockUserModelResponse(User.factory().create() as User);
 
             caller.setEndpoint('endpoint');
@@ -328,7 +328,7 @@ describe('callsApi', () => {
             expect(caller.getEndpoint()).toBe('users');
         });
 
-        it('resets the query parameters', async () => {
+        it('should reset the query parameters', async () => {
             caller.whereKey(43);
             // @ts-expect-error
             expect(caller.compileQueryParameters().wheres).toHaveLength(1);
@@ -340,7 +340,7 @@ describe('callsApi', () => {
             expect(caller.compileQueryParameters().wheres).toBeUndefined();
         });
 
-        it('can send query parameters in the request', async () => {
+        it('should send query parameters in the request', async () => {
             caller.whereKey(43);
 
             mockUserModelResponse(User.factory().create() as User);
@@ -361,14 +361,14 @@ describe('callsApi', () => {
     });
 
     describe('put()', () => {
-        it('can send a PUT request', async () => {
+        it('should send a PUT request', async () => {
             mockUserModelResponse(caller);
             await caller.put({ key: 'value' });
 
             expect(getLastFetchCall()?.method).toBe('put');
         });
 
-        it('returns this or new model depending on the response', async () => {
+        it('should return this or new model depending on the response', async () => {
             const responseUser = User.factory().create() as User;
             const callerUser = User.factory().create() as User;
 
@@ -389,7 +389,7 @@ describe('callsApi', () => {
             expect(callerUser).toStrictEqual(returnModel);
         });
 
-        it('resets the endpoint', async () => {
+        it('should reset the endpoint', async () => {
             mockUserModelResponse(User.factory().create() as User);
 
             caller.setEndpoint('endpoint');
@@ -397,7 +397,7 @@ describe('callsApi', () => {
             expect(caller.getEndpoint()).toBe('users');
         });
 
-        it('resets the query parameters', async () => {
+        it('should reset the query parameters', async () => {
             caller.whereKey(43);
             // @ts-expect-error
             expect(caller.compileQueryParameters().wheres).toHaveLength(1);
@@ -409,7 +409,7 @@ describe('callsApi', () => {
             expect(caller.compileQueryParameters().wheres).toBeUndefined();
         });
 
-        it('can send query parameters in the request', async () => {
+        it('should send query parameters in the request', async () => {
             caller.whereKey(43);
 
             mockUserModelResponse(User.factory().create() as User);
@@ -430,14 +430,14 @@ describe('callsApi', () => {
     });
 
     describe('patch()', () => {
-        it('can send a PATCH request', async () => {
+        it('should send a PATCH request', async () => {
             mockUserModelResponse(caller);
             await caller.patch({ key: 'value' });
 
             expect(getLastFetchCall()?.method).toBe('patch');
         });
 
-        it('returns this or new model depending on the response', async () => {
+        it('should return this or new model depending on the response', async () => {
             const responseUser = User.factory().create() as User;
             const callerUser = User.factory().create() as User;
 
@@ -458,7 +458,7 @@ describe('callsApi', () => {
             expect(callerUser).toStrictEqual(returnModel);
         });
 
-        it('resets the endpoint', async () => {
+        it('should reset the endpoint', async () => {
             mockUserModelResponse(User.factory().create() as User);
 
             caller.setEndpoint('endpoint');
@@ -466,7 +466,7 @@ describe('callsApi', () => {
             expect(caller.getEndpoint()).toBe('users');
         });
 
-        it('resets the query parameters', async () => {
+        it('should reset the query parameters', async () => {
             caller.whereKey(43);
             // @ts-expect-error
             expect(caller.compileQueryParameters().wheres).toHaveLength(1);
@@ -478,7 +478,7 @@ describe('callsApi', () => {
             expect(caller.compileQueryParameters().wheres).toBeUndefined();
         });
 
-        it('can send query parameters in the request', async () => {
+        it('should send query parameters in the request', async () => {
             caller.whereKey(43);
 
             mockUserModelResponse(User.factory().create() as User);
@@ -499,21 +499,21 @@ describe('callsApi', () => {
     });
 
     describe('delete()', () => {
-        it('can send a DELETE request', async () => {
+        it('should send a DELETE request', async () => {
             mockUserModelResponse(caller);
             await caller.delete();
 
             expect(getLastFetchCall()?.method).toBe('delete');
         });
 
-        it('can send information in the request body', async () => {
+        it('should send information in the request body', async () => {
             mockUserModelResponse(caller);
             await caller.delete({ key: 'value' });
 
             expect(getLastFetchCall()?.body).toStrictEqual({ key: 'value' });
         });
 
-        it('returns this or new model depending on the response', async () => {
+        it('should return this or new model depending on the response', async () => {
             const responseUser = User.factory().create() as User;
             const callerUser = User.factory().create() as User;
 
@@ -534,7 +534,7 @@ describe('callsApi', () => {
             expect(callerUser).toStrictEqual(returnModel);
         });
 
-        it('resets the endpoint', async () => {
+        it('should reset the endpoint', async () => {
             mockUserModelResponse(User.factory().create() as User);
 
             caller.setEndpoint('endpoint');
@@ -542,7 +542,7 @@ describe('callsApi', () => {
             expect(caller.getEndpoint()).toBe('users');
         });
 
-        it('resets the query parameters', async () => {
+        it('should reset the query parameters', async () => {
             caller.whereKey(43);
             // @ts-expect-error
             expect(caller.compileQueryParameters().wheres).toHaveLength(1);
@@ -554,7 +554,7 @@ describe('callsApi', () => {
             expect(caller.compileQueryParameters().wheres).toBeUndefined();
         });
 
-        it('can send query parameters in the request', async () => {
+        it('should send query parameters in the request', async () => {
             caller.whereKey(43);
 
             mockUserModelResponse(User.factory().create() as User);

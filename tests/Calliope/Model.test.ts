@@ -9,26 +9,26 @@ describe('model', () => {
     });
 
     describe('construct()', () => {
-        it('can instantiate a model',  () => {
+        it('should instantiate a model',  () => {
             expect(user).toBeInstanceOf(Model);
         });
     });
 
     describe('getKeyName()', () => {
-        it('can return the primary key\'s name',  () => {
+        it('should return the primary key\'s name',  () => {
             expect(user.getKeyName()).toBe('id');
         });
     });
 
     describe('getKey()', () => {
-        it('can return the primary key for the model',  () => {
+        it('should return the primary key for the model',  () => {
             expect(user.getKey()).toBe(1);
             expect(user.setAttribute('id', 'value').getKey()).toBe('value');
         });
     });
 
     describe('is()', () => {
-        it('can determine whether two models are the same',  () => {
+        it('should determine whether two models are the same',  () => {
             expect(user.is(1)).toBe(false);
             expect(user.is({})).toBe(false);
             expect(user.is({ id: user.getKey() })).toBe(false);
@@ -39,7 +39,7 @@ describe('model', () => {
     });
 
     describe('isNot()', () => {
-        it('can determine whether two models are not the same',  () => {
+        it('should determine whether two models are not the same',  () => {
             expect(user.isNot(1)).toBe(true);
             expect(user.isNot({})).toBe(true);
             expect(user.isNot({ id: user.getKey() })).toBe(true);

@@ -23,7 +23,7 @@ describe('hasAttributes', () => {
             attributable = new AttributableClass({ test: 1 });
         });
 
-        it('sets up mutators', () => {
+        it('should set up mutators', () => {
             // when it has a mutator defined
             Object.defineProperty(attributable, 'setTestAttribute', {
                 value: function (value: number): void {
@@ -35,7 +35,7 @@ describe('hasAttributes', () => {
             expect(attributable.test).toBe(2);
         });
 
-        it('sets up accessors', () => {
+        it('should set up accessors', () => {
             // when it has a accessor defined
             Object.defineProperty(attributable, 'getTestAttribute', {
                 value: function (): number {
@@ -46,14 +46,14 @@ describe('hasAttributes', () => {
             expect(attributable.test).toBe(2);
         });
 
-        it('sets attributes with given argument', () => {
+        it('should set attributes with given argument', () => {
             expect(attributable.getAttributes()).toStrictEqual({ 'test': 1 });
         });
     });
 
     describe('getAttribute()', () => {
         // test are in order of priority of how the value is determined
-        it('returns value from accessor', () => {
+        it('should return value from accessor', () => {
             attributable = new AttributableClass({ test: 1 });
 
             Object.defineProperty(attributable, 'getTestAttribute', {
@@ -65,13 +65,13 @@ describe('hasAttributes', () => {
             expect(attributable.getAttribute('test')).toBe(2);
         });
 
-        it('returns value from the attributes', () => {
+        it('should return value from the attributes', () => {
             attributable = new AttributableClass({ test: 1 });
 
             expect(attributable.getAttribute('test')).toBe(1);
         });
 
-        it('returns value by calling the method on the class', () => {
+        it('should return value by calling the method on the class', () => {
             attributable = new AttributableClass();
 
             Object.defineProperty(attributable, 'test', {
@@ -83,7 +83,7 @@ describe('hasAttributes', () => {
             expect(attributable.getAttribute('test')).toBe('custom value');
         });
 
-        it('returns value from the class', () => {
+        it('should return value from the class', () => {
             attributable = new AttributableClass();
 
             Object.defineProperty(attributable, 'test', {
@@ -93,7 +93,7 @@ describe('hasAttributes', () => {
             expect(attributable.getAttribute('test')).toBe('custom value');
         });
 
-        it('returns the the second argument, default value if given otherwise undefined', () => {
+        it('should return the the second argument, default value if given otherwise undefined', () => {
             attributable = new AttributableClass();
 
             expect(attributable.getAttribute('test', 'default value')).toBe('default value');
@@ -103,7 +103,7 @@ describe('hasAttributes', () => {
     });
 
     describe('getAttributes()', () => {
-        it('returns the class attributes in a resolved format', () => {
+        it('should return the class attributes in a resolved format', () => {
             attributable = new AttributableClass({ test1: 1, test2: 2 });
 
             Object.defineProperty(attributable, 'getTest1Attribute', {
@@ -117,7 +117,7 @@ describe('hasAttributes', () => {
     });
 
     describe('getAttributeKeys()', () => {
-        it('returns an array of strings that are the keys in the attributes', () =>{
+        it('should return an array of strings that are the keys in the attributes', () =>{
             attributable = new AttributableClass({ test1: 1, test2: 2 });
 
             expect(attributable.getAttributeKeys()).toStrictEqual(['test1', 'test2']);
@@ -125,7 +125,7 @@ describe('hasAttributes', () => {
     });
 
     describe('setAttribute()', () => {
-        it('call the mutator if exists', () => {
+        it('should call the mutator if exists', () => {
             attributable = new AttributableClass({ test: 1 });
 
             Object.defineProperty(attributable, 'setTestAttribute', {
@@ -137,13 +137,13 @@ describe('hasAttributes', () => {
             expect(attributable.setAttribute('test', 1).test).toBe(2);
         });
 
-        it('sets the attribute value', () => {
+        it('should set the attribute value', () => {
             attributable = new AttributableClass();
 
             expect(attributable.setAttribute('test', 1).getAttribute('test')).toBe(1);
         });
 
-        it('cast the attribute if cast is defined', () => {
+        it('should cast the attribute if cast is defined', () => {
             attributable = new AttributableClass();
 
             attributable.mergeCasts({ test: 'boolean' });
@@ -151,7 +151,7 @@ describe('hasAttributes', () => {
             expect(attributable.setAttribute('test', 1).getAttribute('test')).toBe(true);
         });
 
-        it('returns the class', () => {
+        it('should return the class', () => {
             attributable = new AttributableClass();
 
             expect(attributable.setAttribute('test', 1)).toBeInstanceOf(AttributableClass);
@@ -166,7 +166,7 @@ describe('hasAttributes', () => {
     });
 
     describe('createDescriptors()', () => {
-        it('can create accessors and getters for the given key', () => {
+        it('should create accessors and getters for the given key', () => {
             attributable = new AttributableClass();
 
             attributable.createDescriptors('test');
@@ -179,7 +179,7 @@ describe('hasAttributes', () => {
             expect(descriptor?.set).not.toBeUndefined();
         });
 
-        it('can create accessors and getters for multiple keys', () => {
+        it('should create accessors and getters for multiple keys', () => {
             attributable = new AttributableClass();
 
             const keys = ['multiple', 'keys'];
@@ -197,7 +197,7 @@ describe('hasAttributes', () => {
     });
 
     describe('deleteAttribute()', () => {
-        it('deletes the attribute and class property if defined', () => {
+        it('should delete the attribute and class property if defined', () => {
             attributable = new AttributableClass({ test: 1 });
 
             expect(attributable.test).toBe(1);
@@ -211,7 +211,7 @@ describe('hasAttributes', () => {
     });
 
     describe('hasSetMutator()', () => {
-        it('can determine whether a mutator exists for a given key', () => {
+        it('should determine whether a mutator exists for a given key', () => {
             attributable = new AttributableClass({ test: 1 });
 
             expect(attributable.hasSetMutator('test')).toBe(false);
@@ -227,7 +227,7 @@ describe('hasAttributes', () => {
     });
 
     describe('hasGetAccessor()', () => {
-        it('can determine whether an accessor exists for a given key', () => {
+        it('should determine whether an accessor exists for a given key', () => {
             attributable = new AttributableClass({ test: 1 });
 
             expect(attributable.hasGetAccessor('test')).toBe(false);
@@ -243,7 +243,7 @@ describe('hasAttributes', () => {
     });
 
     describe('fill()', () => {
-        it('can add the attributes that are allowed to be added', () => {
+        it('should add the attributes that are allowed to be added', () => {
             attributable = new AttributableClass();
 
             attributable.setFillable(['test']);
@@ -256,7 +256,7 @@ describe('hasAttributes', () => {
     });
 
     describe('forceFill()', () => {
-        it('can add attributes regardless of guarding', () => {
+        it('should add attributes regardless of guarding', () => {
             attributable = new AttributableClass();
 
             attributable.setFillable([]);
@@ -269,7 +269,7 @@ describe('hasAttributes', () => {
     });
 
     describe('syncOriginal()', () => {
-        it('sets the original to the values from the attributes', () => {
+        it('should set the original to the values from the attributes', () => {
             attributable = new AttributableClass();
 
             attributable.fill({ test: 1 });
@@ -281,7 +281,7 @@ describe('hasAttributes', () => {
     });
 
     describe('reset()', () => {
-        it('sets the original to the values from the attributes', () => {
+        it('should set the original to the values from the attributes', () => {
             attributable = new AttributableClass();
 
             attributable.fill({ test: 1 });
@@ -293,7 +293,7 @@ describe('hasAttributes', () => {
     });
 
     describe('getOriginal()', () =>  {
-        it('gets the original values from the attributes in a resolved format', () => {
+        it('should get the original values from the attributes in a resolved format', () => {
             attributable = new AttributableClass({ test: 1 });
 
             attributable.mergeCasts({ test: 'boolean' });
@@ -301,7 +301,7 @@ describe('hasAttributes', () => {
             expect(attributable.getOriginal()).toStrictEqual({ test: true });
         });
 
-        it('can get a single original value from the attributes in a resolved format', () => {
+        it('should get a single original value from the attributes in a resolved format', () => {
             attributable = new AttributableClass({ test: 1 });
 
             attributable.mergeCasts({ test: 'boolean' });
@@ -309,7 +309,7 @@ describe('hasAttributes', () => {
             expect(attributable.getOriginal('test')).toBe(true);
         });
 
-        it('can return a default value if given and value not set', () => {
+        it('should return a default value if given and value not set', () => {
             attributable = new AttributableClass({ test: 1 });
 
             expect(attributable.getOriginal('some key', 'default value')).toBe('default value');
@@ -317,19 +317,19 @@ describe('hasAttributes', () => {
     });
 
     describe('getRawOriginal()', () => {
-        it('gets the original values from the attributes', () => {
+        it('should get the original values from the attributes', () => {
             attributable = new AttributableClass({ test: 1 });
 
             expect(attributable.getRawOriginal()).toStrictEqual({ test: 1 });
         });
 
-        it('can get a single original value from the attributes', () => {
+        it('should get a single original value from the attributes', () => {
             attributable = new AttributableClass({ test: 1 });
 
             expect(attributable.getRawOriginal('test')).toBe(1);
         });
 
-        it('can return a default value if given and value not set', () => {
+        it('should return a default value if given and value not set', () => {
             attributable = new AttributableClass({ test: 1 });
 
             expect(attributable.getRawOriginal('some key', 'default value')).toBe('default value');
@@ -337,19 +337,19 @@ describe('hasAttributes', () => {
     });
 
     describe('getChanges()', () => {
-        it('gets the changes since last sync with original', () => {
+        it('should get the changes since last sync with original', () => {
             attributable = new AttributableClass({ test: 1 });
 
             expect(attributable.setAttribute('test', 2).getChanges()).toStrictEqual({ test: 2 });
         });
 
-        it('gets the changes for a single key', () => {
+        it('should get the changes for a single key', () => {
             attributable = new AttributableClass({ test: 1 });
 
             expect(attributable.setAttribute('test', 2).getChanges('test')).toStrictEqual({ test: 2 });
         });
 
-        it('can return null if no changes detected', () => {
+        it('should return null if no changes detected', () => {
             attributable = new AttributableClass({ test: 2 });
 
             expect(attributable.setAttribute('test', 2).getChanges('test')).toBeNull();
@@ -357,13 +357,13 @@ describe('hasAttributes', () => {
     });
 
     describe('hasChanges()', () => {
-        it('can determine if any changes has been made', () => {
+        it('should determine if any changes has been made', () => {
             attributable = new AttributableClass({ test: 1, value: 2 });
 
             expect(attributable.setAttribute('test', 2).hasChanges()).toBe(true);
         });
 
-        it('can determine if a given key has changed', () => {
+        it('should determine if a given key has changed', () => {
             attributable = new AttributableClass({ test: 1, value: 2 });
 
             expect(attributable.setAttribute('test', 2).hasChanges('test')).toBe(true);
@@ -373,13 +373,13 @@ describe('hasAttributes', () => {
 
     describe('isDirty()', () => {
         // isDirty an alias of hasChanges
-        it('can determine if any changes has been made', () => {
+        it('should determine if any changes has been made', () => {
             attributable = new AttributableClass({ test: 1, value: 2 });
 
             expect(attributable.setAttribute('test', 2).isDirty()).toBe(true);
         });
 
-        it('can determine if a given key has changed', () => {
+        it('should determine if a given key has changed', () => {
             attributable = new AttributableClass({ test: 1, value: 2 });
 
             expect(attributable.setAttribute('test', 2).isDirty('test')).toBe(true);
@@ -388,13 +388,13 @@ describe('hasAttributes', () => {
     });
 
     describe('isClean()', () => {
-        it('can determine if any changes has been made', () => {
+        it('should determine if any changes has been made', () => {
             attributable = new AttributableClass({ test: 1, value: 2 });
 
             expect(attributable.setAttribute('test', 2).isClean()).toBe(false);
         });
 
-        it('can determine if a given key has changed', () => {
+        it('should determine if a given key has changed', () => {
             attributable = new AttributableClass({ test: 1, value: 2 });
 
             expect(attributable.setAttribute('test', 2).isClean('test')).toBe(false);
@@ -403,7 +403,7 @@ describe('hasAttributes', () => {
     });
 
     describe('only()', () => {
-        it('can return only the specified attributes', () => {
+        it('should return only the specified attributes', () => {
             attributable = new AttributableClass({ test: 1, value: 2 });
 
             expect(attributable.only(['test'])).toStrictEqual({ test: 1 });
@@ -411,7 +411,7 @@ describe('hasAttributes', () => {
     });
 
     describe('except()', () => {
-        it('can return all the attributes except the specified ones', () => {
+        it('should return all the attributes except the specified ones', () => {
             attributable = new AttributableClass({ test: 1, value: 2 });
 
             expect(attributable.except(['test'])).toStrictEqual({ value: 2 });

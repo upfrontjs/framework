@@ -28,7 +28,7 @@ describe('factoryBuilder', () => {
     describe('states()', () => {
         const factoryName: string = new User().factory().constructor.name;
 
-        it('can return the model with the states applied', () => {
+        it('should return the model with the states applied', () => {
             const user: User = factoryBuilder.state('withTeam').create() as User;
             expect(user.team).toBeInstanceOf(Team);
 
@@ -36,7 +36,7 @@ describe('factoryBuilder', () => {
             expect(newUser.name).not.toBe(user.name);
         });
 
-        it('can take multiple arguments', () => {
+        it('should take multiple arguments', () => {
             const user: User = factoryBuilder.create() as User;
             const newUser = factoryBuilder.state(['withTeam', 'nameOverridden']).create() as User;
 
@@ -44,7 +44,7 @@ describe('factoryBuilder', () => {
             expect(newUser.name).not.toBe(user.name);
         });
 
-        it('throws error if the given state is not defined', () => {
+        it('should throw an error if the given state is not defined', () => {
             const failingFunc = jest.fn(
                 () => factoryBuilder.state('undefinedScope').create()
             );
@@ -56,7 +56,7 @@ describe('factoryBuilder', () => {
             );
         });
 
-        it('throws error if the given state is not a function', () => {
+        it('should throw an error if the given state is not a function', () => {
             User.prototype.factory = () => new FakeFactory();
 
             const failingFunc = jest.fn(
@@ -70,7 +70,7 @@ describe('factoryBuilder', () => {
             );
         });
 
-        it('throws error if the given state is not a returning an object', () => {
+        it('should throw an error if the given state is not a returning an object', () => {
             User.prototype.factory = () => new FakeFactory();
 
             const failingFunc = jest.fn(
@@ -93,7 +93,7 @@ describe('factoryBuilder', () => {
             User.prototype.factory = userFactory;
         });
 
-        it('throws error if the factory resolved isn\'t an instanceof Factory', () => {
+        it('should throw an error if the factory resolved isn\'t an instanceof Factory', () => {
             // @ts-expect-error
             User.prototype.factory = () => ({});
 
@@ -107,7 +107,7 @@ describe('factoryBuilder', () => {
             );
         });
 
-        it('throws error if factory is not defined on the model or isn\'t a function', () => {
+        it('should throw an error if factory is not defined on the model or isn\'t a function', () => {
             // @ts-expect-error
             User.prototype.factory = 1;
 
@@ -137,20 +137,20 @@ describe('factoryBuilder', () => {
     });
 
     describe('times()', () => {
-        it('can return a collection on amount higher than 1', () => {
+        it('should return a collection on amount higher than 1', () => {
             const collection = factoryBuilder.times(2).create();
             expect(collection).toBeInstanceOf(ModelCollection);
             expect(collection).toHaveLength(2);
         });
 
-        it('can return a model when the amount is <= 1 or by default', () => {
+        it('should return a model when the amount is <= 1 or by default', () => {
             expect(factoryBuilder.times(1).create()).toBeInstanceOf(User);
             expect(factoryBuilder.create()).toBeInstanceOf(User);
         });
     });
 
     describe('make()', () => {
-        it('doesn\'t set the id and timestamps', () => {
+        it('shouldn\'t set the id and timestamps', () => {
             const model = factoryBuilder.make() as User;
 
             expect(model[model.getUpdatedAtColumn()]).toBeNull();
@@ -159,17 +159,17 @@ describe('factoryBuilder', () => {
             expect(model.getKey()).toBeUndefined();
         });
 
-        it('can return a model', () => {
+        it('should return a model', () => {
             expect(factoryBuilder.make()).toBeInstanceOf(User);
         });
 
-        it('can return a model collection', () => {
+        it('should return a model collection', () => {
             expect(factoryBuilder.times(2).make()).toBeInstanceOf(ModelCollection);
         });
     });
 
     describe('afterMaking()', () => {
-        it('calls the afterCreating with the created model or collection', () => {
+        it('should call the afterCreating with the created model or collection', () => {
             const mockFn = jest.fn();
             const unCalledMockFn = jest.fn();
             // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -196,21 +196,21 @@ describe('factoryBuilder', () => {
     });
 
     describe('create()', () => {
-        it('can create independent models', () => {
+        it('should create independent models', () => {
             const userOne = factoryBuilder.create() as User;
             const userTwo = factoryBuilder.create() as User;
 
             expect(userOne).not.toStrictEqual(userTwo);
         });
 
-        it('sets unique ids', () => {
+        it('should set unique ids', () => {
             const userOne = factoryBuilder.create() as User;
             const userTwo = factoryBuilder.create() as User;
 
             expect(userOne.getKey()).not.toBe(userTwo.getKey());
         });
 
-        it('sets the dates', () => {
+        it('should set the dates', () => {
             const userOne = factoryBuilder.create() as User;
 
             expect(userOne.createdAt).not.toBeUndefined();
@@ -218,7 +218,7 @@ describe('factoryBuilder', () => {
             expect(userOne.deletedAt).toBeNull();
         });
 
-        it('doesn\'t set the dates if they\'re disabled', () => {
+        it('shouldn\'t set the dates if they\'re disabled', () => {
             factoryBuilder = new FactoryBuilder(Team);
 
             const team = factoryBuilder.create() as User;
@@ -230,7 +230,7 @@ describe('factoryBuilder', () => {
     });
 
     describe('afterCreating()', () => {
-        it('calls the afterCreating with the created model or collection', () => {
+        it('should call the afterCreating with the created model or collection', () => {
             const mockFn = jest.fn();
             const unCalledMockFn = jest.fn();
             // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -257,7 +257,7 @@ describe('factoryBuilder', () => {
     });
 
     describe('raw()', () => {
-        it('returns raw attributes', () => {
+        it('should return raw attributes', () => {
             expect(factoryBuilder.raw()).toStrictEqual({
                 name: 'username 1',
                 createdAt: null,
@@ -266,7 +266,7 @@ describe('factoryBuilder', () => {
             });
         });
 
-        it('returns multiple raw attributes', () => {
+        it('should return multiple raw attributes', () => {
             expect(factoryBuilder.times(2).raw())
                 .toStrictEqual(new Collection([
                     {
@@ -284,7 +284,7 @@ describe('factoryBuilder', () => {
                 ] as Attributes[]));
         });
 
-        it('merges in states', () => {
+        it('should merge in states', () => {
             expect(factoryBuilder.state('nameOverridden').raw()).toStrictEqual({
                 name: 'overridden name',
                 createdAt: null,
@@ -293,7 +293,7 @@ describe('factoryBuilder', () => {
             });
         });
 
-        it('merges in argument', () => {
+        it('should merge in argument', () => {
             expect(factoryBuilder.raw({ createdAt: 'value' })).toStrictEqual({
                 name: 'username 1',
                 createdAt: 'value',
@@ -302,7 +302,7 @@ describe('factoryBuilder', () => {
             });
         });
 
-        it('resolves methods when merging', () => {
+        it('should resolve methods when merging', () => {
             // the resolving happens in the following order:
             // 1 - definition
             // 2 - states
@@ -325,7 +325,7 @@ describe('factoryBuilder', () => {
     });
 
     describe('getId()', () => {
-        it('can return uuid if primaryKey is uuid', () => {
+        it('should return uuid if primaryKey is uuid', () => {
             // @ts-expect-error
             Object.defineProperty(factoryBuilder.model, 'primaryKey', {
                 configurable: true,
@@ -345,7 +345,7 @@ describe('factoryBuilder', () => {
             });
         });
 
-        it('returns unique sequential ids', () => {
+        it('should return unique sequential ids', () => {
             // @ts-expect-error
             const id1 = factoryBuilder.getKey();
             // @ts-expect-error
@@ -354,7 +354,7 @@ describe('factoryBuilder', () => {
             expect(id1).not.toBe(id2);
         });
 
-        it('returns unique sequential ids without interference from other models', () => {
+        it('should return unique sequential ids without interference from other models', () => {
             // @ts-expect-error
             const userId1 = factoryBuilder.getKey();
             // @ts-expect-error

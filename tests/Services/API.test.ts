@@ -23,7 +23,7 @@ describe('api', () => {
     });
 
     describe('initConfig()', () => {
-        it('can encode get parameters', () => {
+        it('should encode get parameters', () => {
             const config = api.getConfig(url, 'get', {
                 nested: {
                     objects: [
@@ -45,7 +45,7 @@ describe('api', () => {
                 .toBe('application/x-www-form-urlencoded; charset=utf-8');
         });
 
-        it('can merge in config into the RequestInit from requestOptions', () => {
+        it('should merge in config into the RequestInit from requestOptions', () => {
             Object.defineProperty(api, 'requestOptions', {
                 value: {
                     body: 'merged value'
@@ -57,7 +57,7 @@ describe('api', () => {
             expect(config.body).toBe('merged value');
         });
 
-        it('overrides requestOptions.body if data is given', () => {
+        it('should override requestOptions.body if data is given', () => {
             Object.defineProperty(api, 'requestOptions', {
                 value: {
                     body: 'merged value'
@@ -69,7 +69,7 @@ describe('api', () => {
             expect(config.body).toStrictEqual(JSON.stringify({ someAttribute: 'original value' }));
         });
 
-        it('merges the initRequest method return value if defined', () => {
+        it('should merge the initRequest method return value if defined', () => {
             Object.defineProperty(api, 'initRequest', {
                 value: {
                     body: 'merged value'
@@ -89,7 +89,7 @@ describe('api', () => {
             expect(config.body).toBe('merged value');
         });
 
-        it('can parse out the headers if previously merged in', () => {
+        it('should parse out the headers if previously merged in', () => {
             Object.defineProperty(api, 'requestOptions', {
                 value: {
                     headers: { custom: ['header'] }
@@ -102,7 +102,7 @@ describe('api', () => {
             expect(config.headers.has('custom')).toBe(true);
         });
 
-        it('removes the merged in body if it is a get method', () => {
+        it('should remove the merged in body if it is a get method', () => {
             Object.defineProperty(api, 'requestOptions', {
                 value: {
                     body: 'value'
@@ -114,7 +114,7 @@ describe('api', () => {
             expect(config.body).toBeUndefined();
         });
 
-        it('can prepare FormData', () => {
+        it('should prepare FormData', () => {
             const form = new FormData();
             form.append('key', 'value');
 
@@ -125,7 +125,7 @@ describe('api', () => {
             expect(config.headers.get('Content-Type')).toBe('multipart/form-data');
         });
 
-        it('stringifies the given data', () => {
+        it('should stringify the given data', () => {
             const data = { custom: 'value' };
             const config = api.getConfig(url, 'post', data).requestInit;
 
@@ -134,7 +134,7 @@ describe('api', () => {
             expect(config.headers.get('Content-Type')).toBe('application/json; charset=UTF-8');
         });
 
-        it('processes the given custom headers', () => {
+        it('should process the given custom headers', () => {
             const header: Record<string, string|string[]> = { custom: 'header' };
             const config = api.getConfig(url, 'post', undefined, header).requestInit;
 
@@ -149,7 +149,7 @@ describe('api', () => {
             expect(newConfig.headers.get('custom')).toBe(header.custom.join(', '));
         });
 
-        it('only merges custom headers if their value is a string or string[]', () => {
+        it('should only merge custom headers if their value is a string or string[]', () => {
             const header: Record<string, null|null[]> = { custom: null };
             // @ts-expect-error
             const config = api.getConfig(url, 'post', undefined, header).requestInit;
@@ -182,7 +182,7 @@ describe('api', () => {
     });
 
     describe('call()', () => {
-        it('returns a promise', () => {
+        it('should return a promise', () => {
             expect(api.call(url, 'get')).toBeInstanceOf(Promise);
         });
     });

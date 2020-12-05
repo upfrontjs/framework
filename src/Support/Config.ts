@@ -4,8 +4,8 @@ import type HandlesApiResponse from '../Contracts/HandlesApiResponse';
 // import type AbstractDateTime from './DateTime/Abstracts/AbstractDateTime';
 
 interface Configuration extends Record<string, unknown> {
-    API: ApiCaller;
-    ApiResponseHandler: HandlesApiResponse;
+    api: ApiCaller;
+    apiResponseHandler: HandlesApiResponse;
     baseEndPoint: string;
     headers: HeadersInit|Record<string, string|string[]>|string[][];
     [key: string]: any;

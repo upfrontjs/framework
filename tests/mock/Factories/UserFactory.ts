@@ -14,7 +14,7 @@ export default class UserFactory extends Factory<User> {
         const team = Team.factory().create() as Team;
 
         return {
-            team_id: team.getKey(),
+            teamId: team.getKey(),
             team: team // both model and model attributes are acceptable
         };
     }

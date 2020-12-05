@@ -53,7 +53,7 @@ describe('callsApi', () => {
         });
 
         it('should get the ApiCaller from the config if set',  async () => {
-            const api = new class customAPICallerImplementation extends API {
+            const api = new class CustomAPICallerImplementation extends API {
                 initRequest(): Partial<RequestInit> {
                     const headers = new Headers();
                     headers.set('custom', 'header');
@@ -62,7 +62,7 @@ describe('callsApi', () => {
                 }
             };
 
-            new Config({ API: api });
+            new Config({ api });
 
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse()));
             // @ts-expect-error
@@ -73,13 +73,13 @@ describe('callsApi', () => {
 
         it('should get the HandlesApiResponse from the config if set',  async () => {
             const mockFn = jest.fn();
-            const handler = new class customApiResponseHandlerImplementation extends ApiResponseHandler {
+            const apiResponseHandler = new class CustomApiResponseHandlerImplementation extends ApiResponseHandler {
                 handleFinally() {
                     mockFn();
                 }
             };
 
-            new Config({ ApiResponseHandler: handler });
+            new Config({ apiResponseHandler });
 
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse()));
             // @ts-expect-error

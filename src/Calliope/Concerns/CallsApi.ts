@@ -76,11 +76,11 @@ export default class CallsApi extends BuildsQuery {
 
         this.requestCount++;
         const config = new Config();
-        const ApiCaller = config.get('API', new API) as ApiCaller;
-        const HandlesApiResponse = config.get('ApiResponseHandler', new ApiResponseHandler) as HandlesApiResponse;
+        const apiCaller = config.get('api', new API) as ApiCaller;
+        const handlesApiResponse = config.get('apiResponseHandler', new ApiResponseHandler) as HandlesApiResponse;
 
-        return HandlesApiResponse.handle(
-            ApiCaller.call(
+        return handlesApiResponse.handle(
+            apiCaller.call(
                 String(config.get('baseEndPoint', '')) + this.getEndpoint().start('/'),
                 method,
                 data,

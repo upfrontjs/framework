@@ -63,7 +63,7 @@ module.exports = {
         "@typescript-eslint/consistent-indexed-object-style": ["error", "record"],
         "@typescript-eslint/consistent-type-imports": ["error", { prefer: 'type-imports' }],
         "@typescript-eslint/member-delimiter-style": "warn",
-        "@typescript-eslint/type-annotation-spacing": "warn"
-        //todo - "@typescript-eslint/naming-convention"
+        "@typescript-eslint/type-annotation-spacing": "warn",
+        "@typescript-eslint/naming-convention": "error"
     }
 }

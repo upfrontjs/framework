@@ -169,44 +169,58 @@ export default class FactoryBuilder<T extends Model> {
      */
     public raw(attributes: Attributes = {}): Attributes | Collection<Attributes> {
         const factory = this.getFactory();
-        let compiledAttributes = this.resolveAttributes(factory.definition(this.model));
 
-        this.states?.forEach(state => {
-            if (!(state in factory)) {
-                throw new InvalidOffsetException(
-                    '\'' + state + '\' is not defined on the \'' + factory.getClassName() + '\' class.'
-                );
+        const compiledAttributeArray: Attributes[] = [];
+        let times = 0;
+
+        while (times !== this.amount) {
+            times++;
+
+            let compiledAttributes = this.resolveAttributes(factory.definition(this.model, times));
+
+            this.states?.forEach(state => {
+                if (!(state in factory)) {
+                    throw new InvalidOffsetException(
+                        '\'' + state + '\' is not defined on the \'' + factory.getClassName() + '\' class.'
+                    );
+                }
+
+                if (!(factory[state] instanceof Function)) {
+                    throw new InvalidOffsetException(
+                        '\'' + state + '\' is not a method on the \'' + factory.getClassName() + '\' class.'
+                    );
+                }
+
+                const attributesFromState = (factory[state] as CallableFunction)(this.model, times);
+
+                if (!attributesFromState || typeof attributesFromState !== 'object') {
+                    throw new TypeError(
+                        '\'' + state + '\' is not returning an object on \'' + factory.getClassName() + '\' class.'
+                    );
+                }
+
+                compiledAttributes = this.resolveAttributes(attributesFromState, compiledAttributes);
+            });
+
+            if (this.model.usesTimestamps()) {
+                attributes[this.model.getCreatedAtColumn()] = attributes[this.model.getCreatedAtColumn()] ?? null;
+                attributes[this.model.getUpdatedAtColumn()] = attributes[this.model.getUpdatedAtColumn()] ?? null;
             }
 
-            if (!(factory[state] instanceof Function)) {
-                throw new InvalidOffsetException(
-                    '\'' + state + '\' is not a method on the \'' + factory.getClassName() + '\' class.'
-                );
+            if (this.model.usesSoftDeletes()) {
+                attributes[this.model.getDeletedAtColumn()] = attributes[this.model.getDeletedAtColumn()] ?? null;
             }
 
-            const attributesFromState = (factory[state] as CallableFunction)(attributes);
-
-            if (!attributesFromState || typeof attributesFromState !== 'object') {
-                throw new TypeError(
-                    '\'' + state + '\' is not returning an object on \'' + factory.getClassName() + '\' class.'
-                );
-            }
-
-            compiledAttributes = this.resolveAttributes(attributesFromState, compiledAttributes);
-        });
-
-        if (this.model.usesTimestamps()) {
-            attributes[this.model.getCreatedAtColumn()] = attributes[this.model.getCreatedAtColumn()] ?? null;
-            attributes[this.model.getUpdatedAtColumn()] = attributes[this.model.getUpdatedAtColumn()] ?? null;
+            compiledAttributeArray.push(this.resolveAttributes(attributes, compiledAttributes));
         }
 
-        if (this.model.usesSoftDeletes()) {
-            attributes[this.model.getDeletedAtColumn()] = attributes[this.model.getDeletedAtColumn()] ?? null;
+        if (!compiledAttributeArray.length) {
+            return {};
         }
 
-        compiledAttributes = this.resolveAttributes(attributes, compiledAttributes);
-
-        return this.amount > 1 ? Collection.times(this.amount, compiledAttributes) : compiledAttributes;
+        return compiledAttributeArray.length === 1
+            ? compiledAttributeArray[0] as Attributes
+            : new Collection(compiledAttributeArray);
     }
 
     /**

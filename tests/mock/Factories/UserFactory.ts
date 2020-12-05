@@ -4,9 +4,9 @@ import Team from '../Models/Team';
 import type User from '../Models/User';
 
 export default class UserFactory extends Factory<User> {
-    public definition(): Attributes {
+    public definition(_model: User, index: number): Attributes {
         return {
-            name: 'username 1'
+            name: 'username ' + String(index)
         };
     }
 
@@ -22,6 +22,13 @@ export default class UserFactory extends Factory<User> {
     public nameOverridden(): Attributes {
         return {
             name: 'overridden name'
+        };
+    }
+
+    public calledWithArguments(model: User, index: number): Attributes {
+        return {
+            modelAttribute: model.getName(),
+            index
         };
     }
 

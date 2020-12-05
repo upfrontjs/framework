@@ -44,6 +44,13 @@ describe('factoryBuilder', () => {
             expect(newUser.name).not.toBe(user.name);
         });
 
+        it('should call the states with an empty target model and the current index', () => {
+            const user = factoryBuilder.state(['calledWithArguments']).create() as User;
+
+            expect(user.modelAttribute).toBe(User.name);
+            expect(user.index).toBe(1);
+        });
+
         it('should throw an error if the given state is not defined', () => {
             const failingFunc = jest.fn(
                 () => factoryBuilder.state('undefinedScope').create()
@@ -276,7 +283,7 @@ describe('factoryBuilder', () => {
                         deletedAt: null
                     },
                     {
-                        name: 'username 1',
+                        name: 'username 2',
                         createdAt: null,
                         updatedAt: null,
                         deletedAt: null

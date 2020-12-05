@@ -1,4 +1,4 @@
-// todo - figure out dependencies (lodash, pluralize, uuid) - likely to delivery with the package
+// todo - figure out dependencies (lodash, pluralize, uuid) - likely to delivery with the package?
 // todo - make sure to test file uploads
 // todo - review circular dependency fix (require() within the function)
 // todo - improve typings (eg.: collection pluck K extends keyof T, better user guards)

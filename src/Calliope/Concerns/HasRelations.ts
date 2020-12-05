@@ -28,7 +28,6 @@ export default class HasRelations extends CallsApi {
      *
      * @return {Promise<this>}
      */
-    // todo - in tests mock the response from the fakeDB implemented by the config
     public async load(relations: string|string[], forceReload = false): Promise<this> {
         if (!Array.isArray(relations)) {
             relations = [relations];
@@ -225,9 +224,9 @@ export default class HasRelations extends CallsApi {
         name = this.removeRelationPrefix(name);
         delete this.relations[name];
 
-        if (Object.getOwnPropertyDescriptor(this, name)
-            && this.relationDefined(name)
-            && !(this[name] instanceof Function)
+        if (Object.getOwnPropertyDescriptor(this, name) // it is on this object
+            && !(this[name] instanceof Function) // it isn't a function
+            && this.relationDefined(name) // it has the corresponding relation method definition
         ) {
             delete this[name];
         }

@@ -48,7 +48,7 @@ export default class CallsApi extends BuildsQuery {
      * Reset the endpoint.
      */
     constructor(attributes?: Attributes) {
-        super(attributes); // todo try to move it down the chain to omit the argument
+        super(attributes);
         this.resetEndpoint();
     }
 

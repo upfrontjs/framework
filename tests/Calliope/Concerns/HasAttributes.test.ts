@@ -71,7 +71,7 @@ describe('hasAttributes', () => {
             expect(attributable.getAttribute('test')).toBe(1);
         });
 
-        it('should return value by calling the method on the class', () => {
+        it('should return the default value if the attribute is a method', () => {
             attributable = new AttributableClass();
 
             Object.defineProperty(attributable, 'test', {
@@ -80,20 +80,17 @@ describe('hasAttributes', () => {
                 }
             });
 
-            expect(attributable.getAttribute('test')).toBe('custom value');
+            expect(attributable.getAttribute('test', 'default value')).toBe('default value');
         });
 
         it('should return value from the class', () => {
             attributable = new AttributableClass();
-
-            Object.defineProperty(attributable, 'test', {
-                value: 'custom value'
-            });
+            attributable.test = 'custom value';
 
             expect(attributable.getAttribute('test')).toBe('custom value');
         });
 
-        it('should return the the second argument, default value if given otherwise undefined', () => {
+        it('should return the second argument if key not found otherwise undefined', () => {
             attributable = new AttributableClass();
 
             expect(attributable.getAttribute('test', 'default value')).toBe('default value');
@@ -169,6 +166,7 @@ describe('hasAttributes', () => {
         it('should create accessors and getters for the given key', () => {
             attributable = new AttributableClass();
 
+            // @ts-expect-error
             attributable.createDescriptors('test');
 
             const descriptor = Object.getOwnPropertyDescriptor(attributable, 'test');
@@ -183,6 +181,7 @@ describe('hasAttributes', () => {
             attributable = new AttributableClass();
 
             const keys = ['multiple', 'keys'];
+            // @ts-expect-error
             attributable.createDescriptors(keys);
 
             keys.forEach(key => {

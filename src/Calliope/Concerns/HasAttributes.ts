@@ -112,14 +112,14 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
 
         // If it's a method or otherwise attribute
         if (key in this) {
-            // returning the relation method here would be unexpected
-            // @ts-expect-error
-            if ((this as unknown as HasRelations).relationDefined(key)) {
+            const value = Reflect.getOwnPropertyDescriptor(this, key)?.value;
+
+            // returning the method or the result of the method would be unexpected
+            if (value === undefined || value instanceof Function) {
                 return defaultVal;
             }
 
-            // todo calling the function is probably unexpected/bad practice also what if it required arguments
-            return this[key] instanceof Function ? (this[key] as CallableFunction)() : this[key];
+            return value;
         }
 
         return defaultVal;
@@ -190,7 +190,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @return {this}
      */
-    createDescriptors(keys: string|string[]): this {
+    protected createDescriptors(keys: string|string[]): this {
         keys = Array.isArray(keys) ? keys : [keys];
 
         keys.forEach(key => {

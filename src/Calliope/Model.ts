@@ -1,7 +1,7 @@
 import SoftDeletes from './Concerns/SoftDeletes';
 import FactoryBuilder from './Factory/FactoryBuilder';
 import type HasFactory from '../Contracts/HasFactory';
-import {Attributes} from "./Concerns/HasAttributes";
+import type { Attributes } from './Concerns/HasAttributes';
 
 // todo - https://www.npmjs.com/package/@qiwi/mixin
 

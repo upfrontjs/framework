@@ -999,9 +999,39 @@ describe('collection', () => {
                 expect(collection.first()).toStrictEqual(elements[0]);
             });
 
-            it('should filter undefined and null without arguments', () => {
-                collection.push(null, undefined);
-                expect(collection.filter()).toHaveLength(elements.length);
+            it('should flatten a collection of collections', () => {
+                collection = new Collection([collection, collection]);
+
+                // @ts-expect-error
+                expect(collection.flat()).toStrictEqual(new Collection([1, 2, 3, 4, 5, 1, 2, 3, 4, 5]));
+            });
+
+            it('should flatten to 1 depth by default', () => {
+                collection = new Collection([collection, collection]);
+
+                // @ts-expect-error
+                expect(collection.flat()).toStrictEqual(new Collection([1, 2, 3, 4, 5, 1, 2, 3, 4, 5]));
+
+                collection = new Collection([
+                    new Collection([new Collection(elements)]),
+                    new Collection([new Collection(elements)])
+                ]);
+
+                expect(collection.flat())
+                    // @ts-expect-error
+                    .toStrictEqual(new Collection([
+                        new Collection(elements),
+                        new Collection(elements)
+                    ]));
+            });
+
+            it('should be able to flatten to Infinity', () => {
+                collection = new Collection([collection, collection]);
+                collection = new Collection([collection, collection]);
+
+                expect(collection.flat(Infinity))
+                    // @ts-expect-error
+                    .toStrictEqual(new Collection([...elements, ...elements, ...elements, ...elements]));
             });
         });
 
@@ -1126,6 +1156,11 @@ describe('collection', () => {
         describe('filter()', () => {
             it('can be chained', () => {
                 expect(collection.filter(e => e > 2).nth(1)).toHaveLength(3);
+            });
+
+            it('should filter undefined and null without arguments', () => {
+                collection.push(null, undefined);
+                expect(collection.filter()).toHaveLength(elements.length);
             });
 
             it('should return a new collection', () => {

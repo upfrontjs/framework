@@ -870,20 +870,37 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      */
     public filter(predicate?: (value: T, index: number, array: T[]) => boolean, thisArg?: any): Collection<T> {
         predicate = predicate ?? function (value: T) {
-            return value != null;
+            return value !== null && value !== undefined;
         };
 
         return this._newInstance(this.toArray().filter(predicate, thisArg));
     }
 
     /**
-     * @inheritDoc
+     * @see {Array.prototype.flat}
      *
      * @return {Collection}
      */
-    // todo - what happens to a collection of collections? ¯\_(ツ)_/¯ (eg.: after chunk)
-    public flat<D extends number = 1>(depth?: D): Collection<unknown> {
-        return new Collection(this.toArray().flat(depth) as unknown[]);
+    public flat(depth = 1): Collection<unknown> {
+        const collection = new Collection();
+
+        if (this.isEmpty()) {
+            return collection;
+        }
+
+        if (depth > 0) {
+            this.forEach(item => {
+                if (Collection.isCollection(item)) {
+                    collection.push(...item.flat(depth - 1));
+                } else {
+                    collection.push(item);
+                }
+            });
+        } else {
+            collection.push(...this.toArray());
+        }
+
+        return collection;
     }
 
     /**

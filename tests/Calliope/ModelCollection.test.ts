@@ -1,13 +1,16 @@
 import Collection from '../../src/Support/Collection';
 import ModelCollection from '../../src/Calliope/ModelCollection';
-import data from '../mock/Models/data';
 import User from '../mock/Models/User';
 
 let collection: ModelCollection<User>;
 const incompatibleElementsError = new TypeError(ModelCollection.name + ' can only handle Model values.');
 
+const user1 = User.factory().create() as User;
+const user2 = User.factory().create() as User;
+const user3 = User.factory().create() as User;
+
 describe('modelCollection', () => {
-    const elements: [User, User, User] = [new User(data.UserOne), new User(data.UserTwo), new User(data.UserThree)];
+    const elements = [user1, user2, user3];
 
     beforeEach(() => {
         collection = new ModelCollection(elements);
@@ -49,8 +52,8 @@ describe('modelCollection', () => {
 
         it('should return a collection of strings', () => {
         //@ts-expect-error
-            expect(collection._getArgumentKeys(new ModelCollection(new User(data.UserOne))))
-                .toStrictEqual(new Collection([String(data.UserOne.id)]));
+            expect(collection._getArgumentKeys(new ModelCollection(user1)))
+                .toStrictEqual(new Collection([user1.getKey().toString()]));
         });
 
         it('should discard non string/number arguments', () => {
@@ -60,14 +63,14 @@ describe('modelCollection', () => {
 
         it('should accept an array of strings/numbers/Models', () => {
         //@ts-expect-error
-            expect(collection._getArgumentKeys([new User(data.UserOne), '2', 3]))
+            expect(collection._getArgumentKeys([user1, '2', 3]))
                 .toStrictEqual(new Collection(['1', '2', '3']));
         });
     });
 
     describe('modelKeys()', () => {
         it('should return the correct values', () => {
-            expect(collection.modelKeys()).toContain(elements[0].getKey());
+            expect(collection.modelKeys()).toContain(user1.getKey());
         });
 
         it('should return a collection', () => {
@@ -87,7 +90,7 @@ describe('modelCollection', () => {
     });
 
     describe('unique()', () => {
-        const elements = [new User(data.UserOne), new User(data.UserTwo), new User(data.UserOne)];
+        const elements = [user1, user2, user1];
 
         beforeEach(() => {
             collection = new ModelCollection(elements);
@@ -95,12 +98,11 @@ describe('modelCollection', () => {
 
         it('should de-duplicate the collection', () => {
             expect(collection.unique()).toHaveLength(2);
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-            expect(collection.includes(elements[0] as User) && collection.includes(elements[1] as User)).toBe(true);
+            expect(collection.includes(user1) && collection.includes(user2)).toBe(true);
         });
 
         it('should de-duplicate the collection by the given key', () => {
-            const items = [new User(data.UserOne), new User({ ...data.UserTwo, name: data.UserOne.name })];
+            const items = [user1, new User({ ...user1.getRawOriginal(), name: user1.name })];
             collection = new ModelCollection(items);
 
             expect(collection.unique('name')).toHaveLength(1);
@@ -109,12 +111,12 @@ describe('modelCollection', () => {
 
         it('should de-duplicate the collection by the given function', () => {
             expect(collection.unique(model => model.getName())).toHaveLength(1);
-            expect(collection.first()).toStrictEqual(elements[0]);
+            expect(collection.first()).toStrictEqual(user1);
         });
 
         it('should de-duplicate the collection by passing a function name that is called on the model', () => {
             expect(collection.unique('getName')).toHaveLength(1);
-            expect(collection.first()).toStrictEqual(elements[0]);
+            expect(collection.first()).toStrictEqual(user1);
         });
 
         it('should check the collection\'s integrity before the method', () => {
@@ -125,12 +127,12 @@ describe('modelCollection', () => {
         });
 
         it('can be chained', () => {
-            expect(collection.unique().first()).toStrictEqual(elements[0]);
+            expect(collection.unique().first()).toStrictEqual(user1);
         });
     });
 
     describe('hasDuplicates()', () => {
-        const elements = [new User(data.UserOne), new User(data.UserTwo), new User(data.UserOne)];
+        const elements = [user1, user2, user1];
 
         beforeEach(() => {
             collection = new ModelCollection(elements);
@@ -154,7 +156,7 @@ describe('modelCollection', () => {
     });
 
     describe('duplicates()', () => {
-        const elements = [new User(data.UserOne), new User(data.UserTwo), new User(data.UserOne)];
+        const elements = [user1, user2, user1];
 
         beforeEach(() => {
             collection = new ModelCollection(elements);
@@ -165,31 +167,29 @@ describe('modelCollection', () => {
 
             expect(duplicateOnlyCollection).toHaveLength(1);
             expect(
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-                duplicateOnlyCollection.includes(elements[0] as User)
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-                && !duplicateOnlyCollection.includes(elements[1] as User)
+                duplicateOnlyCollection.includes(user1)
+                && !duplicateOnlyCollection.includes(user2)
             )
                 .toBe(true);
         });
 
         it('should check for duplicates by key', () => {
-            const items = [new User(data.UserOne), new User({ ...data.UserTwo, name: data.UserOne.name })];
+            const items = [user1, new User({ ...user2.getRawOriginal(), name: user1.name })];
             collection = new ModelCollection(items);
 
             expect(collection.duplicates('name')).toHaveLength(1);
-            expect(collection.first()?.name).toStrictEqual(data.UserOne.name);
+            expect(collection.first()?.name).toStrictEqual(user1.name);
         });
 
         it('should check for duplicates by passing a function name that is called on the model', () => {
-            const items = [new User(data.UserOne), new User({ ...data.UserTwo, name: data.UserOne.name })];
+            const items = [user1, new User({ ...user2.getRawOriginal(), name: user1.name })];
             collection = new ModelCollection(items);
 
             expect(collection.duplicates('getName')).toHaveLength(1);
         });
 
         it('should check for duplicates by calling a method with the model', () => {
-            const items = [new User(data.UserOne), new User({ ...data.UserTwo, name: data.UserOne.name })];
+            const items = [user1, new User({ ...user2.getRawOriginal(), name: user1.name })];
             collection = new ModelCollection(items);
 
             expect(collection.duplicates(model => model.getName())).toHaveLength(1);
@@ -208,69 +208,64 @@ describe('modelCollection', () => {
     });
 
     describe('delete()', () => {
-        const elements = [new User(data.UserOne), new User(data.UserTwo), new User(data.UserOne)];
+        const elements = [user1, user2, user1];
 
         beforeEach(() => {
             collection = new ModelCollection(elements);
         });
 
         it('should delete items', () => {
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-            expect(collection.delete(elements[1] as User)).toHaveLength(2);
-            expect(elements[0]?.is(collection.first())).toBe(true);
+            expect(collection.delete(user2)).toHaveLength(2);
+            expect(user1?.is(collection.first())).toBe(true);
         });
 
         it('should delete multiple items', () => {
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-            expect(collection.delete(elements[0] as User)).toHaveLength(1);
+            expect(collection.delete(user1)).toHaveLength(1);
         });
 
         it('should check the collection\'s integrity before the method', () => {
         // @ts-expect-error
             collection[0] = 1;
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-            const func = () => collection.delete(collection[1] as User);
+            const func = () => collection.delete(user2);
             expect(func).toThrow(incompatibleElementsError);
         });
 
         it('can be chained', () => {
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-            expect(collection.delete(elements[0] as User).toArray()).toHaveLength(1);
+            expect(collection.delete(user1).toArray()).toHaveLength(1);
         });
     });
 
     describe('includes()', () => {
     /* eslint-disable jest/prefer-to-contain */
         it('should assert whether the given model is in the collection', () => {
-            expect(collection.includes(elements[0])).toBe(true);
+            expect(collection.includes(user1)).toBe(true);
         });
 
         it('should check the collection\'s integrity before the method', () => {
         // @ts-expect-error
             collection[0] = 1;
-            const func = () => collection.includes(new User(data.UserOne));
+            const func = () => collection.includes(user1);
             expect(func).toThrow(incompatibleElementsError);
         });
     /* eslint-enable jest/prefer-to-contain */
     });
 
     describe('diff()', () => {
-        const elements = [new User(data.UserOne), new User(data.UserTwo), new User({ ...data.UserTwo, id: 3 })];
+        const elements = [user1, user2, new User({ ...user2.getRawOriginal(), id: user3.getKey() })];
 
         beforeEach(() => {
             collection = new ModelCollection(elements);
         });
 
         it('should return models that are in either not in the arguments or collection', () => {
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-            expect(collection.diff(elements[0] as User)).toHaveLength(2);
+            expect(collection.diff(user1)).toHaveLength(2);
         });
 
         it('should accept number of arguments', () => {
-            const diffCollection = collection.diff(collection.first() as User, collection.last() as User);
+            const diffCollection = collection.diff(user1, user3);
 
             expect(diffCollection).toHaveLength(1);
-            expect(diffCollection.first()).toBe(elements[1]);
+            expect(diffCollection.first()).toBe(user2);
         });
 
         it('should check the collection\'s integrity before the method', () => {
@@ -287,57 +282,56 @@ describe('modelCollection', () => {
         });
 
         it('can be chained', () => {
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-            expect(collection.diff(elements[0] as User).nth(1)).toHaveLength(2);
+            expect(collection.diff(user1).nth(1)).toHaveLength(2);
         });
     });
 
     describe('union()', () => {
-        const elements = [new User(data.UserOne), new User(data.UserTwo), new User({ ...data.UserTwo, id: 3 })];
+        const elements = [user1, user2, new User({ ...user2.getRawOriginal(), id: 3 })];
 
         beforeEach(() => {
             collection = new ModelCollection(elements);
         });
         it('should join two arrays without duplicates', () => {
-            expect(collection.union([new User(data.UserTwo), new User({ ...data.UserTwo, id: 4 })])).toHaveLength(
+            expect(collection.union([user2, new User({ ...user2.getRawOriginal(), id: 4 })])).toHaveLength(
                 elements.length + 1
             );
         });
 
         it('should add the remaining models to the end of the array', () => {
-            expect(collection.union([new User(data.UserTwo), new User({ ...data.UserTwo, id: 4 })]).last())
-                .toStrictEqual(new User({ ...data.UserTwo, id: 4 }));
+            expect(collection.union([user2, new User({ ...user2.getRawOriginal(), id: 4 })]).last())
+                .toStrictEqual(new User({ ...user2.getRawOriginal(), id: 4 }));
         });
 
         it('can be chained', () => {
             expect(
-                collection.union([new User(data.UserTwo), new User({ ...data.UserTwo, id: 4 })]).nth(1)
+                collection.union([user2, new User({ ...user2.getRawOriginal(), id: 4 })]).nth(1)
             ).toHaveLength(elements.length + 1);
         });
 
         it('should check the collection\'s integrity before the method', () => {
         // @ts-expect-error
             collection[0] = 1;
-            const func = () => collection.union([new User(data.UserTwo), new User({ ...data.UserTwo, id: 3 })]);
+            const func = () => collection.union([user2, new User({ ...user2.getRawOriginal(), id: user3.getKey() })]);
             expect(func).toThrow(incompatibleElementsError);
         });
     });
 
     describe('only()', () => {
         it('should return only the specified models', () => {
-            expect(collection.only(elements[0])).toHaveLength(1);
-            expect(collection.first()).toBe(elements[0]);
+            expect(collection.only(user1)).toHaveLength(1);
+            expect(collection.first()).toBe(user1);
         });
 
         it('should take arguments in a various format', () => {
-            expect(collection.only(elements[1], '1')).toHaveLength(2);
+            expect(collection.only(user2, '1')).toHaveLength(2);
         });
 
         it('should take ids as an argument', () => {
-            const filteredCollection = collection.only(elements[0]);
+            const filteredCollection = collection.only(user1);
 
             expect(filteredCollection).toHaveLength(1);
-            expect(filteredCollection.first()).toStrictEqual(elements[0]);
+            expect(filteredCollection.first()).toStrictEqual(user1);
         });
 
         it('should check the collection\'s integrity before the method', () => {
@@ -353,19 +347,19 @@ describe('modelCollection', () => {
     });
 
     describe('except()', () => {
-        const elements = [new User(data.UserOne), new User(data.UserTwo), new User({ ...data.UserTwo, id: 3 })];
+        const elements = [user1, user2, new User({ ...user2.getRawOriginal(), id: user3.getKey() })];
 
         beforeEach(() => {
             collection = new ModelCollection(elements);
         });
 
         it('should return all the models except the specified ones', () => {
-            expect(collection.except(elements[0])).toHaveLength(elements.length - 1);
+            expect(collection.except(user1)).toHaveLength(elements.length - 1);
             expect(collection.last()).toBe(elements[elements.length - 1]);
         });
 
         it('should take arguments in a various format', () => {
-            expect(collection.except(new Collection([elements[1], '1']))).toHaveLength(1);
+            expect(collection.except(new Collection([user2, '1']))).toHaveLength(1);
         });
 
         it('should take ids as an argument', () => {
@@ -390,7 +384,7 @@ describe('modelCollection', () => {
         it('should only push model values', () => {
         // @ts-expect-error
             const failingFunc = () => collection.push(3);
-            const passingFunc = () => collection.push(elements[0]);
+            const passingFunc = () => collection.push(user1);
 
             expect(failingFunc).toThrow(incompatibleElementsError);
             expect(passingFunc).not.toThrow();
@@ -399,23 +393,23 @@ describe('modelCollection', () => {
         it('should update length', () => {
             expect(collection).toHaveLength(elements.length);
 
-            collection.push(elements[0]);
+            collection.push(user1);
 
             expect(collection).toHaveLength(elements.length + 1);
         });
 
         it('should update adds value to the end of the collection', () => {
-            collection.push(elements[0]);
+            collection.push(user1);
 
-            expect(collection.last()).toBe(elements[0]);
+            expect(collection.last()).toBe(user1);
         });
     });
 
     describe('findByKey()', () => {
         it('should find the correct model', () => {
-            const result = collection.findByKey(data.UserOne.id);
-            expect(collection.findByKey(data.UserOne.id)).toBeInstanceOf(User);
-            expect(result).toStrictEqual(elements[0]);
+            const result = collection.findByKey(user1.getKey());
+            expect(collection.findByKey(user1.getKey())).toBeInstanceOf(User);
+            expect(result).toStrictEqual(user1);
         });
 
         it('should return undefined if nothing found', () => {
@@ -450,12 +444,12 @@ describe('modelCollection', () => {
 
         it('should return an array of values for a single key', () => {
             expect(collection.pluck('name').toArray())
-                .toStrictEqual([data.UserOne.name, data.UserTwo.name, data.UserThree.name]);
+                .toStrictEqual([user1.name, user2.name, user3.name]);
         });
 
         it('should return an array of object on multiple keys', () => {
             expect(collection.pluck(['name', 'id']).first())
-                .toStrictEqual({ id: data.UserOne.id, name: data.UserOne.name });
+                .toStrictEqual({ id: user1.id, name: user1.name });
         });
 
         it('should take arguments in multiple formats', () => {
@@ -483,15 +477,15 @@ describe('modelCollection', () => {
 
     describe('intersect()', () => {
         it('should get the intersection of the collection and the arguments', () => {
-            const intersectedCollection = collection.intersect(elements[0]);
+            const intersectedCollection = collection.intersect(user1);
             expect(intersectedCollection).toHaveLength(1);
-            expect(intersectedCollection).not.toContain(elements[1]);
+            expect(intersectedCollection).not.toContain(user2);
         });
 
         it('should check the collection\'s integrity before the method', () => {
         // @ts-expect-error
             collection[0] = 1;
-            const func = () => collection.intersect(elements[0]);
+            const func = () => collection.intersect(user1);
             expect(func).toThrow(incompatibleElementsError);
         });
 
@@ -504,17 +498,17 @@ describe('modelCollection', () => {
         });
 
         it('can be chained', () => {
-            expect(collection.intersect(elements[0]).toArray()).toHaveLength(1);
+            expect(collection.intersect(user1).toArray()).toHaveLength(1);
         });
     });
 
     describe('pad()', () => {
         it('should return a collection', () => {
-            expect(ModelCollection.times(5, () => new User(data.UserOne))).toBeInstanceOf(ModelCollection);
+            expect(ModelCollection.times(5, user1)).toBeInstanceOf(ModelCollection);
         });
 
         it('should pad the collection', () => {
-            expect(collection.pad(-5, elements[1]).first()?.getKey()).toBe(elements[1].getKey());
+            expect(collection.pad(-5, user2).first()?.getKey()).toBe(user2.getKey());
         });
 
         it('should check the argument\'s integrity before the method', () => {
@@ -524,13 +518,13 @@ describe('modelCollection', () => {
         });
 
         it('can be chained', () => {
-            expect(collection.pad(7, elements[1]).toArray()).toHaveLength(7);
+            expect(collection.pad(7, user2).toArray()).toHaveLength(7);
         });
     });
 
     describe('times()', () => {
         it('should return a collection', () => {
-            expect(ModelCollection.times(5, () => new User(data.UserOne))).toBeInstanceOf(ModelCollection);
+            expect(ModelCollection.times(5, user1)).toBeInstanceOf(ModelCollection);
         });
 
         it('should check the collection\'s integrity before constructing', () => {
@@ -539,7 +533,7 @@ describe('modelCollection', () => {
         });
 
         it('can be chained', () => {
-            expect(ModelCollection.times(5, () => new User(data.UserOne)).toArray()).toHaveLength(5);
+            expect(ModelCollection.times(5, () => user1).toArray()).toHaveLength(5);
         });
     });
 });

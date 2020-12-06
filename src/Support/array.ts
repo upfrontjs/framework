@@ -28,7 +28,7 @@ declare global {
          *
          * @return {Collection}
          */
-        collect(...items: any[]): Collection<any>;
+        collect(items?: any[]): Collection<any>;
 
         /**
          * Ensure the given value is an array.
@@ -42,11 +42,11 @@ declare global {
         /**
          * Construct a paginator instance.
          *
-         * @param {...any} items
+         * @param {any} items
          *
          * @return {Paginator}
          */
-        paginate(...items: any[]): Paginator<any>;
+        paginate(items: any[]): Paginator<any>;
     }
 }
 
@@ -60,8 +60,8 @@ if (!('collect' in Array.prototype)) {
 
 if (!('collect' in Array)) {
     Object.defineProperty(Array, 'collect', {
-        value: function (...items: any[]): Collection<any> {
-            return new Collection(...items);
+        value: function (items?: any[]): Collection<any> {
+            return new Collection(items);
         }
     });
 }
@@ -76,8 +76,8 @@ if (!('paginate' in Array.prototype)) {
 
 if (!('paginate' in Array)) {
     Object.defineProperty(Array, 'paginate', {
-        value: function (...items: any[]) {
-            return new Paginator(items.flat());
+        value: function (items: any[]) {
+            return new Paginator(items);
         }
     });
 }

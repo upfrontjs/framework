@@ -1,6 +1,7 @@
 import type { Attributes } from '../Concerns/HasAttributes';
 import type Model from '../Model';
 import type ModelCollection from '../ModelCollection';
+import Config from "../../Support/Config";
 
 interface FactoryHooks<T extends Model> {
     /**
@@ -25,6 +26,11 @@ interface FactoryHooks<T extends Model> {
 
 export default class Factory<T extends Model> implements FactoryHooks<T> {
     [method: string]: CallableFunction;
+
+    /**
+     * The instance of the randomisation library if set.
+     */
+    random?: any = new Config().get('randomDataGenerator');
 
     /**
      * Define the model's default attributes.

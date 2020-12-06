@@ -8,6 +8,7 @@ interface Configuration extends Record<string, unknown> {
     apiResponseHandler: HandlesApiResponse;
     baseEndPoint: string;
     headers: HeadersInit|Record<string, string|string[]>|string[][];
+    randomDataGenerator: any;
     [key: string]: any;
     // DateTime: AbstractDateTime;
 }

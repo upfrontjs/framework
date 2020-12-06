@@ -43,8 +43,6 @@ export default class FactoryBuilder<T extends Model> {
         this.model = new modelConstructor;
     }
 
-    // todo - chancejs
-
     /**
      * Set the states to be applied.
      *

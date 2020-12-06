@@ -45,7 +45,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      * in array format. All other values are discarded.
      * Return a array of ids in a string format.
      *
-     * @param {...any} values
+     * @param {any} values
      *
      * @return {string[]}
      *
@@ -216,13 +216,15 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      * Return only the models that are not in
      * both the argument and in the collection.
      *
-     * @param {...Model|ModelCollection|Model[]} models
+     * @param {Model|ModelCollection|Model[]} models
      *
      * @return {this}
      */
-    public diff(...models: T[]): this {
+    public diff(models: T|T[]): this {
         this._throwIfNotModels();
-        const modelCollection = new ModelCollection(models.flat() as T[]);
+        const modelCollection = ModelCollection.isModelCollection(models)
+            ? models
+            : new ModelCollection(Array.isArray(models) ? models : [models]);
 
         const result = this.toArray().filter((item) => {
             return !modelCollection.includes(item);
@@ -236,11 +238,11 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
     /**
      * Only return the models with ids from the arguments.
      *
-     * @param {...any} values
+     * @param {any} values
      *
      * @return {this}
      */
-    public only(...values: (string|number|Model)[]): this {
+    public only(values: any|any[]): this {
         this._throwIfNotModels();
         const modelKeys = this._getArgumentKeys(values);
 
@@ -250,7 +252,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
     /**
      * Return all models except models with ids from the arguments.
      *
-     * @param {...any} values
+     * @param {any} values
      *
      * @return {this}
      */
@@ -281,15 +283,19 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      * Return only models that are both in
      * the arguments and the collection.
      *
-     * @param {...Model|ModelCollection|Model[]} models
+     * @param {Model|ModelCollection|Model[]} models
      *
      * @return {this}
      */
-    public intersect(...models: T[]): this {
+    public intersect(models: T|T[]): this {
+        models = ModelCollection.isModelCollection(models)
+            ? models.toArray()
+            : Array.isArray(models) ? models : [models];
+
         this._throwIfNotModels();
         this._throwIfNotModels(models);
 
-        return super.intersect(...Array.of(models).flat());
+        return super.intersect(models);
     }
 
     /**

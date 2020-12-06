@@ -4,7 +4,6 @@ import type Arrayable from '../Contracts/Arrayable';
 import type Jsonable from '../Contracts/Jsonable';
 import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
 
-// todo - remove rest parameters, friendship ended with rest parameters now arg|arg[] is my best friend
 export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, ArrayLike<T> {
     /**
      * Allow indexing by number
@@ -375,12 +374,14 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     /**
      * Diff the collection with the given items.
      *
-     * @param {...any|any[]} values
+     * @param {any|any[]} values
      *
      * @return {this}
      */
-    public diff(...values: T[]): this {
-        const argCollection = new Collection(values.flat());
+    public diff(values: T|T[]): this {
+        const argCollection = Collection.isCollection(values)
+            ? values
+            : new Collection(Array.isArray(values) ? values : [values]);
 
         const result: any[] = this.toArray().filter(item => {
             return !argCollection.includes(item);
@@ -394,12 +395,14 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     /**
      * Intersect the collection with the given values.
      *
-     * @param {...any|any[]} values
+     * @param {any|any[]} values
      *
      * @return {this}
      */
-    public intersect(...values: T[]): this {
-        const argCollection = new Collection(values.flat());
+    public intersect(values: T|T[]): this {
+        const argCollection = Collection.isCollection(values)
+            ? values
+            : new Collection(Array.isArray(values) ? values : [values]);
 
         return this._newInstance(this.toArray().filter(item => argCollection.includes(item)));
     }

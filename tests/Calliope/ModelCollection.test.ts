@@ -261,8 +261,8 @@ describe('modelCollection', () => {
             expect(collection.diff(user1)).toHaveLength(2);
         });
 
-        it('should accept number of arguments', () => {
-            const diffCollection = collection.diff(user1, user3);
+        it('should accept an array of arguments', () => {
+            const diffCollection = collection.diff([user1, user3]);
 
             expect(diffCollection).toHaveLength(1);
             expect(diffCollection.first()).toBe(user2);
@@ -271,7 +271,7 @@ describe('modelCollection', () => {
         it('should check the collection\'s integrity before the method', () => {
             // @ts-expect-error
             collection[0] = 1;
-            const func = () => collection.diff();
+            const func = () => collection.diff(user1);
             expect(func).toThrow(incompatibleElementsError);
         });
 
@@ -323,8 +323,8 @@ describe('modelCollection', () => {
             expect(collection.first()).toBe(user1);
         });
 
-        it('should take arguments in a various format', () => {
-            expect(collection.only(user2, '1')).toHaveLength(2);
+        it('should take arguments in an array format', () => {
+            expect(collection.only([user2, '1'])).toHaveLength(2);
         });
 
         it('should take ids as an argument', () => {

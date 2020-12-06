@@ -6,10 +6,8 @@ import FactoryBuilder from '../../src/Calliope/Factory/FactoryBuilder';
 
 describe('function helpers', () => {
     it('should create a collection by calling the collect() helper method', () => {
-        expect(window.collect(1, 2)).toBeInstanceOf(Collection);
+        expect(collect([1, 2])).toBeInstanceOf(Collection);
         expect(window.collect([1, 2]).first()).toBe(1);
-
-        expect(collect(1, 2)).toBeInstanceOf(Collection);
         expect(collect([1, 2]).first()).toBe(1);
     });
 

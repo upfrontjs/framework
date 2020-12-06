@@ -11,7 +11,7 @@ declare global {
      *
      * @return {Collection}
      */
-    function collect<T>(...items: T[]): Collection<T>;
+    function collect<T extends any>(items?: T[]): Collection<T>;
 
     /**
      * Construct a paginator instance.
@@ -20,7 +20,7 @@ declare global {
      *
      * @return {Paginator}
      */
-    function paginate<T>(items: T[]): Paginator<T>;
+    function paginate<T extends any>(items: T[]): Paginator<T>;
 
     /**
      * Return the Factory builder.
@@ -35,16 +35,16 @@ declare global {
 
 if (!!window && !('collect' in window)) {
     Object.defineProperty(window, 'collect', {
-        value: function (...items: any[]): Collection<any> {
-            return new Collection(...items);
+        value: function (items?: any[]): Collection<any> {
+            return new Collection(items);
         }
     });
 }
 
 if (!!window && !('paginate' in window)) {
     Object.defineProperty(window, 'paginate', {
-        value: function (...items: any[]) {
-            return new Paginator(items.flat());
+        value: function (items: any[]) {
+            return new Paginator(items);
         }
     });
 }

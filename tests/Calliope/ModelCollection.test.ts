@@ -53,7 +53,7 @@ describe('modelCollection', () => {
         it('should return a collection of strings', () => {
         //@ts-expect-error
             expect(collection._getArgumentKeys(new ModelCollection(user1)))
-                .toStrictEqual(new Collection([user1.getKey().toString()]));
+                .toStrictEqual(new Collection([String(user1.getKey())]));
         });
 
         it('should discard non string/number arguments', () => {
@@ -407,8 +407,8 @@ describe('modelCollection', () => {
 
     describe('findByKey()', () => {
         it('should find the correct model', () => {
-            const result = collection.findByKey(user1.getKey());
-            expect(collection.findByKey(user1.getKey())).toBeInstanceOf(User);
+            const result = collection.findByKey(String(user1.getKey()));
+            expect(collection.findByKey(String(user1.getKey()))).toBeInstanceOf(User);
             expect(result).toStrictEqual(user1);
         });
 

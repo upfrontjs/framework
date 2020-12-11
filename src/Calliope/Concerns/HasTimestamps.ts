@@ -8,7 +8,7 @@ export default class HasTimestamps extends HasRelations {
      *
      * @protected
      */
-    protected static readonly CREATED_AT = 'created_at';
+    protected static readonly createdAt = 'created_at';
 
     /**
      * The name of the updated at attribute.
@@ -17,7 +17,7 @@ export default class HasTimestamps extends HasRelations {
      *
      * @protected
      */
-    protected static readonly UPDATED_AT = 'updated_at';
+    protected static readonly updatedAt = 'updated_at';
 
     /**
      * Indicates if the model should expect timestamps.
@@ -32,7 +32,7 @@ export default class HasTimestamps extends HasRelations {
      * @return {string}
      */
     public getCreatedAtColumn(): string {
-        return HasTimestamps.CREATED_AT[this.attributeCasing]();
+        return HasTimestamps.createdAt[this.attributeCasing]();
     }
 
     /**
@@ -41,7 +41,7 @@ export default class HasTimestamps extends HasRelations {
      * @return {string}
      */
     public getUpdatedAtColumn(): string {
-        return HasTimestamps.UPDATED_AT[this.attributeCasing]();
+        return HasTimestamps.updatedAt[this.attributeCasing]();
     }
 
     // public touch() {

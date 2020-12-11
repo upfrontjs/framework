@@ -7,7 +7,7 @@ export default class SoftDeletes extends HasTimestamps {
      *
      * @protected
      */
-    protected static readonly DELETED_AT = 'deleted_at';
+    protected static readonly deletedAt = 'deleted_at';
 
     /**
      * Indicates if the model should expect timestamps.
@@ -31,7 +31,7 @@ export default class SoftDeletes extends HasTimestamps {
      * @return {string}
      */
     getDeletedAtColumn(): string {
-        return SoftDeletes.DELETED_AT[this.attributeCasing]();
+        return SoftDeletes.deletedAt[this.attributeCasing]();
     }
 
     /**

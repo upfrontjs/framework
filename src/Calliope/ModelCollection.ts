@@ -75,7 +75,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {Collection<number|string>}
      */
-    modelKeys(): Collection<number|string> {
+    modelKeys(): Collection<number|string|undefined> {
         this._throwIfNotModels();
         const ids = this.map(model => model.getKey());
 

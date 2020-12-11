@@ -57,7 +57,9 @@ export default class HasRelations extends CallsApi {
         }
 
         const returnedRelations = (
-            await (this as unknown as Model).with(relations).find(((this as unknown as Model)).getKey())
+            await (this as unknown as Model)
+                .with(relations)
+                .find(((this as unknown as Model)).getKey() as number|string)
         )
             .getRelations();
 

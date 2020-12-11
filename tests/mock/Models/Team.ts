@@ -11,6 +11,7 @@ export default class Team extends Model {
     }
 
     protected readonly timestamps = false;
+    protected readonly softDeletes = false;
 
     $users(): User {
         return this.hasMany(User);

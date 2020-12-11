@@ -11,6 +11,9 @@ import fetchMock from 'jest-fetch-mock';
 import { buildResponse, getLastFetchCall } from '../../test-helpers';
 import Config from '../../../src/Support/Config';
 import cloneDeep from 'lodash/cloneDeep';
+import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
+import Collection from '../../../src/Support/Collection';
+import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 
 let hasRelations: User;
 
@@ -120,6 +123,30 @@ describe('hasRelations', () => {
 
             expect(failingFunc).toThrow(
                 new LogicException('Attempted to add an undefined relation: \'undefinedRelation\'.')
+            );
+        });
+
+        it('should throw an error if value is collection or array but the relation is of singular type', () => {
+            let failingFunc = jest.fn(() => hasRelations.addRelation(
+                'contract',
+                Contract.factory().times(2).raw()
+            ));
+
+            expect(failingFunc).toThrow(
+                new InvalidArgumentException(
+                    '\'contract\' is a singular relation, received type: \'' + Collection.name + '\'.'
+                )
+            );
+
+            failingFunc = jest.fn(() => hasRelations.addRelation(
+                'contract',
+                (Contract.factory().times(2).raw() as Collection<Attributes>).toArray()
+            ));
+
+            expect(failingFunc).toThrow(
+                new InvalidArgumentException(
+                    '\'contract\' is a singular relation, received type: \'' + Array.name + '\'.'
+                )
             );
         });
 

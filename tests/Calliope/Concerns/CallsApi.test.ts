@@ -171,8 +171,10 @@ describe('callsApi', () => {
             User.prototype.getFillable = () => [];
 
             //@ts-expect-error
-            expect(caller.newInstanceFromResponseData(userData).getAttributes())
-                .toStrictEqual(expectedUser.getAttributes());
+            const callerModel = caller.newInstanceFromResponseData(userData) as caller;
+
+            expect(callerModel.getAttributes()).toStrictEqual(expectedUser.getAttributes());
+            expect(callerModel.getRawOriginal()).toStrictEqual(expectedUser.getRawOriginal());
 
             User.prototype.getFillable = originalFillableReturn;
         });

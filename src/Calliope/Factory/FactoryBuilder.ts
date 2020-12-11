@@ -1,10 +1,11 @@
-import type Model from '../Model';
+import Model from '../Model';
 import type { Attributes } from '../Concerns/HasAttributes';
 import ModelCollection from '../ModelCollection';
 import Factory from './Factory';
 import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
 import Config from '../../Support/Config';
 import Collection from '../../Support/Collection';
+import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 
 export default class FactoryBuilder<T extends Model> {
     /**
@@ -23,7 +24,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @type {Model}
      */
-    protected model: T;
+    public readonly model: T;
 
     /**
      * The memoized factory instance.
@@ -38,6 +39,13 @@ export default class FactoryBuilder<T extends Model> {
      * @protected
      */
     protected states: string[] | undefined;
+
+    /**
+     * The relation factories set by the with() method.
+     *
+     * @protected
+     */
+    protected relations: Record<string, FactoryBuilder<Model>> = {};
 
     constructor(modelConstructor: new (attributes?: Attributes) => T) {
         this.model = new modelConstructor;
@@ -70,6 +78,15 @@ export default class FactoryBuilder<T extends Model> {
     }
 
     /**
+     * Get all the attributes in an object format.
+     *
+     * @param {object} attributes
+     */
+    public raw(attributes: Attributes = {}): Attributes | Collection<Attributes> {
+        return this.addRelations(this.rawAttributes(attributes), 'raw') as Attributes | Collection<Attributes>;
+    }
+
+    /**
      * Create a model or model collection.
      *
      * @param {object=} attributes
@@ -85,7 +102,7 @@ export default class FactoryBuilder<T extends Model> {
             factory.afterMaking(modelOrCollection);
         }
 
-        return modelOrCollection;
+        return this.addRelations(modelOrCollection, 'make') as T|ModelCollection<T>;
     }
 
     /**
@@ -98,31 +115,21 @@ export default class FactoryBuilder<T extends Model> {
     public create(attributes?: Attributes): T|ModelCollection<T> {
         const modelOrCollection = this.compileRaw(attributes);
 
-        const addAttributes = (model: T) => {
-            if (model.usesTimestamps()) {
-                if (!model.getAttribute(model.getCreatedAtColumn()[model.attributeCasing]())) {
-                    model.setAttribute(model.getCreatedAtColumn()[model.attributeCasing](), new Date().toISOString());
-                }
-
-                if (!model.getAttribute(model.getUpdatedAtColumn()[model.attributeCasing]())) {
-                    model.setAttribute(model.getUpdatedAtColumn()[model.attributeCasing](), new Date().toISOString());
-                }
-            }
-
-            if (!model.getKey()) {
-                model.setAttribute(model.getKeyName(), this.getKey());
-            }
-
-            model.syncOriginal();
-        };
-
         if (ModelCollection.isModelCollection(modelOrCollection)) {
-            modelOrCollection.forEach((model: T) => addAttributes(model));
-
-            return modelOrCollection;
+            modelOrCollection.forEach(model => {
+                if (model.getKey()) {
+                    model
+                        .setAttribute(model.getKeyName(), this.getKey())
+                        .syncOriginal();
+                }
+            });
+        } else {
+            if (!(modelOrCollection as T).getKey()) {
+                (modelOrCollection as T)
+                    .setAttribute((modelOrCollection as T).getKeyName(), this.getKey())
+                    .syncOriginal();
+            }
         }
-
-        addAttributes(modelOrCollection as T);
 
         const factory = this.getFactory();
 
@@ -130,7 +137,75 @@ export default class FactoryBuilder<T extends Model> {
             factory.afterCreating(modelOrCollection);
         }
 
-        return modelOrCollection;
+        return this.addRelations(modelOrCollection, 'create') as T|ModelCollection<T>;
+    }
+
+    /**
+     * Add the relation to the builder fluently.
+     *
+     * @param {FactoryBuilder} factoryBuilder - The builder instance to be called.
+     * @param {string=} relation - The optional relation name.
+     *
+     * @return {this}
+     */
+    public with(factoryBuilder: FactoryBuilder<Model>, relation?: string): this {
+        relation = relation ?? factoryBuilder.model.getName().toLowerCase();
+
+        // @ts-expect-error
+        if (!this.model.relationDefined(relation)) {
+            relation = relation.plural();
+
+            // @ts-expect-error
+            if (!this.model.relationDefined(relation)) {
+                throw new InvalidArgumentException(
+                    '\'' + this.model.getName()
+                    + '\' doesn\'t have the \''
+                    + relation.singular() + '\' or \'' + relation +
+                    '\' relationship defined.'
+                );
+            }
+        }
+
+        this.relations[relation] = factoryBuilder;
+
+        return this;
+    }
+
+    /**
+     * Add the relations if any onto the given data.
+     *
+     * @param {object|Model|Collection|ModelCollection} data
+     * @param {'raw'|'make'|'create'} method
+     *
+     * @protected
+     *
+     * @return {object|Model|Collection|ModelCollection}
+     */
+    protected addRelations(
+        data: Attributes|Collection<Attributes>|T|ModelCollection<T>,
+        method: 'raw'|'make'|'create'
+    ): Attributes|Collection<Attributes>|T|ModelCollection<T> {
+        if (Object.keys(this.relations).length) {
+            // if collection, be it attributes or model collection
+            if (Collection.isCollection<T|Attributes>(data)) {
+                // for each recursively call this method
+                data = data.map(
+                    (entry: Attributes|T) => this.addRelations(entry, method)
+                ) as Collection<Attributes>|ModelCollection<T>;
+            } else {
+                Object.keys(this.relations).forEach(relation => {
+                    const relationValue = (this.relations[relation] as FactoryBuilder<Model>)[method]();
+
+                    if (data instanceof Model) {
+                        data.addRelation(relation, relationValue);
+                    } else {
+                        (data as Attributes)[relation] = relationValue;
+                    }
+                });
+            }
+        }
+
+        return data;
     }
 
     /**
@@ -143,18 +218,20 @@ export default class FactoryBuilder<T extends Model> {
      * @return {Model|ModelCollection<Model>}
      */
     protected compileRaw(attributes?: Attributes): T|ModelCollection<T> {
-        const compiledAttributes = this.raw(attributes);
+        const compiledAttributes = this.rawAttributes(attributes);
 
-        if (Collection.isCollection(compiledAttributes)) {
+        if (Collection.isCollection<Attributes>(compiledAttributes)) {
             const models: T[] = [];
 
             compiledAttributes.forEach(attributes => {
-                models.push(new (<typeof Model> this.model.constructor)(attributes as Attributes) as T);
+                const model = new (<typeof Model> this.model.constructor) as T;
+                models.push(model.forceFill(attributes).syncOriginal());
             });
 
             return new ModelCollection(models);
         } else {
-            return new (<typeof Model> this.model.constructor)(compiledAttributes as Attributes) as T;
+            const model = new (<typeof Model> this.model.constructor) as T;
+            return model.forceFill(compiledAttributes).syncOriginal();
         }
     }
 
@@ -165,7 +242,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {object|object[]}
      */
-    public raw(attributes: Attributes = {}): Attributes | Collection<Attributes> {
+    protected rawAttributes(attributes: Attributes = {}): Attributes | Collection<Attributes> {
         const factory = this.getFactory();
 
         const compiledAttributeArray: Attributes[] = [];
@@ -231,17 +308,17 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {object}
      */
+    // todo - to functions pass in the partially done data from this iteration
+    //  not just the previously resolved attributes
     private resolveAttributes(attributes: Attributes, previouslyResolvedAttributes = {}): Attributes {
         Object.keys(attributes).forEach(key => {
-            if (attributes[key] instanceof Function) {
+            if (attributes[key] instanceof Function) { // todo - if factory, resolve?
                 attributes[key] = (attributes[key] as CallableFunction)(previouslyResolvedAttributes);
             }
         });
 
         return Object.assign(previouslyResolvedAttributes, attributes);
     }
-
-    // todo has/for (polymorphic too)
 
     /**
      * Get the factory instance from the model.

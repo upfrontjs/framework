@@ -230,42 +230,21 @@ export default class CallsApi extends BuildsQuery {
             const modelCollectionConstructor: new() => ModelCollection<Model> = require('../ModelCollection').default;
             const collection = new modelCollectionConstructor();
 
-            data.forEach(modelData => {
-                if (isObject(modelData)) {
-                    collection.push(this.forceFilledModel(modelData));
+            data.forEach(attributes => {
+                if (isObject(attributes)) {
+                    const model = new (<typeof Model> this.constructor)();
+                    collection.push(model.forceFill(attributes).syncOriginal());
                 }
             });
 
             result = collection;
         } else  {
-            result = this.forceFilledModel(data);
+            const model = new (<typeof Model> this.constructor)();
+            result = model.forceFill(data).syncOriginal();
         }
 
+        // todo - set a last synced attribute to indicate when the model was last fetched from remote?
         return result;
-    }
-
-    /**
-     * Create a model and ensure that all data given has been set on the model.
-     *
-     * @param {object} data
-     *
-     * @private
-     *
-     * @return {Model}
-     */
-    private forceFilledModel(data: Attributes): Model {
-        const model = new (<typeof Model> this.constructor)(data);
-        const keysToIgnore = model.getAttributeKeys().concat(model.loadedRelationKeys());
-        const missingAttributeKeys = Object.keys(data).filter(key => !keysToIgnore.includes(key));
-
-        if (missingAttributeKeys.length) {
-            // treat response data as a source of truth and
-            // set properties regardless of guarding
-            missingAttributeKeys.forEach(key => model.setAttribute(key, data[key]));
-        }
-
-        // todo - set a last synced attribute to tell when the model was last fetched from remote?
-        return model;
     }
 
     /**

@@ -36,7 +36,7 @@ export default class Config {
      * Get a value from the config.
      *
      * @param {string} key
-     * @param {any?}   defaultVal
+     * @param {any=}   defaultVal
      */
     public get<T>(key: keyof Configuration|string, defaultVal?: T): unknown|T {
         return Config.configuration[key] ?? defaultVal;

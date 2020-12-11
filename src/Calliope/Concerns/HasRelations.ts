@@ -4,7 +4,8 @@ import LogicException from '../../Exceptions/LogicException';
 import CallsApi from './CallsApi';
 import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
 import type { Attributes } from './HasAttributes';
-import type Collection from '../../Support/Collection';
+import Collection from '../../Support/Collection';
+import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 
 type Relation = 'belongsTo'|'belongsToMany'|'hasOne'|'hasMany'|'morphTo'|'morphMany'|'morphOne';
 
@@ -137,7 +138,7 @@ export default class HasRelations extends CallsApi {
      *
      * @return {'belongsTo'|'belongsToMany'|'hasOne'|'hasMany'|'morphs'|'morphTo'|'morphMany'|'morphOne'}
      */
-    private getRelationType(name: string): Relation {
+    protected getRelationType(name: string): Relation {
         name = name.start(this.relationMethodPrefix);
         const model = (this[name] as CallableFunction)() as Model & { relationType: Relation };
 
@@ -169,20 +170,23 @@ export default class HasRelations extends CallsApi {
             );
         }
 
+        const relationType = this.getRelationType(name);
+        const isSingularRelationType = ['belongsTo', 'hasOne', 'morphOne'].includes(relationType);
         const modelCollectionConstructor: new(models?: Model[]) => ModelCollection<Model>
             // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-member-access
             = require('../ModelCollection').default;
 
-        // todo - automagically set the relation id on this if possible?
-        //    if its a belongsto or belongstomany
-
         if (value instanceof HasRelations
             || (<typeof ModelCollection> modelCollectionConstructor).isModelCollection(value)
         ) {
-            if (value instanceof HasRelations
-                && !['belongsTo', 'hasOne', 'morphOne'].includes(this.getRelationType(name))
-            ) {
-                value = new modelCollectionConstructor([value]);
+            if (value instanceof HasRelations) {
+                if (!isSingularRelationType) {
+                    value = new modelCollectionConstructor([value]);
+                } else {
+                    if (relationType === 'belongsTo') {
+                        this.setAttribute(value.getForeignKeyName(), value.getKey());
+                    }
+                }
             }
 
             this.relations[name] = value;
@@ -195,14 +199,26 @@ export default class HasRelations extends CallsApi {
         let relation: ModelCollection<Model>|Model;
 
         // set up the relations by calling the constructor of the related models
-        if (Array.isArray(value)) {
+        if (Array.isArray(value) || Collection.isCollection<Attributes>(value)) {
+            if (isSingularRelationType) {
+                throw new InvalidArgumentException(
+                    '\'' + name + '\' is a singular relation, received type: \''
+                    + (Array.isArray(value) ? Array.name : Collection.name) + '\'.'
+                );
+            }
+
             const collection = new modelCollectionConstructor();
 
             value.forEach(modelData => collection.push(new (<typeof Model> relatedModel.constructor)(modelData)));
             relation = collection;
         } else {
-            const model = new (<typeof Model> relatedModel.constructor)(value as Attributes);
-            relation = ['belongsTo', 'hasOne', 'morphOne'].includes(this.getRelationType(name))
+            const model = new (<typeof Model> relatedModel.constructor)(value);
+
+            if (relationType === 'belongsTo') {
+                this.setAttribute(model.getForeignKeyName(), model.getKey());
+            }
+
+            relation = isSingularRelationType
                 ? model
                 : new modelCollectionConstructor([model]);
         }

@@ -14,7 +14,7 @@ export default class SoftDeletes extends HasTimestamps {
      *
      * @type {boolean}
      */
-    protected readonly softDeletes = true;
+    protected readonly softDeletes: boolean = true;
 
     /**
      * Determine if the model instance has been soft-deleted.
@@ -46,7 +46,7 @@ export default class SoftDeletes extends HasTimestamps {
     /**
      * Delete the model.
      *
-     * @param {object?} data
+     * @param {object=} data
      *
      * @return {Promise<boolean>}
      */

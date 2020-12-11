@@ -6,6 +6,7 @@ import type HasRelations from './HasRelations';
 import type Model from '../Model';
 import type ModelCollection from '../ModelCollection';
 import { isObject } from '../../Support/function';
+import Collection from '../../Support/Collection';
 
 export type Attributes = Record<string, unknown>;
 
@@ -165,13 +166,15 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
             return this;
         }
 
-        if ((isObject(value) || Array.isArray(value) && value.every(item => isObject(item)))
+        if (
+            (isObject(value) && !Collection.isCollection(value)
+            || (Array.isArray(value) || Collection.isCollection(value)) && value.every(item => isObject(item)))
             // @ts-expect-error
             && (this as unknown as HasRelations).relationDefined(key)
         ) {
             (this as unknown as HasRelations).addRelation(
                 key,
-                value as Attributes|Attributes[]|Model|ModelCollection<Model>
+                value as Attributes|Attributes[]|Collection<Attributes>|Model|ModelCollection<Model>
             );
 
             return this;
@@ -281,7 +284,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
     /**
      * Sync the original attributes with the current.
      *
-     * @param {...string?} keys
+     * @param {...string=} keys
      *
      * @return {this}
      */

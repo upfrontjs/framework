@@ -1,7 +1,8 @@
 # compiled output
 lib
 
-# coverage data
+# testing
+tests/cache/
 /tests/coverage
 
 # IDEs and editors

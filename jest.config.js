@@ -10,6 +10,7 @@ module.exports = {
         '<rootDir>/src/**/*.ts',
         '!<rootDir>/src/index.ts'
     ],
+    cacheDirectory: "<rootDir>/tests/cache",
     coverageDirectory: "<rootDir>/tests/coverage",
     coverageProvider: "babel",
     coverageReporters: ["json", "text-summary"],

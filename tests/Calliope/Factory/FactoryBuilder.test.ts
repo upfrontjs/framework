@@ -8,6 +8,9 @@ import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 import Collection from '../../../src/Support/Collection';
 import UserFactory from '../../mock/Factories/UserFactory';
 import type Model from '../../../src/Calliope/Model';
+import Shift from '../../mock/Models/Shift';
+import Contract from '../../mock/Models/Contract';
+import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 
 class FakeFactory extends Factory<User> {
     // @ts-expect-error
@@ -263,6 +266,36 @@ describe('factoryBuilder', () => {
         });
     });
 
+    describe('with()', () => {
+        it('should add the relation data to the result', () => {
+            expect((factoryBuilder.with(Contract.factory()).raw() as Attributes).contract).not.toBeUndefined();
+            expect((factoryBuilder.with(Contract.factory()).make() as User).contract).toBeInstanceOf(Contract);
+
+            factoryBuilder.with(Shift.factory()).times(2).make().forEach((user: User) => {
+                expect(user.shifts).toBeInstanceOf(ModelCollection);
+            });
+        });
+
+        it('should throw an error if the relation given is not defined', () => {
+            const failingFunc = jest.fn(() => factoryBuilder.with(Contract.factory(), 'undefinedRelationship').make());
+
+            expect(failingFunc).toThrow(new InvalidArgumentException(
+                '\'' + factoryBuilder.model.getName()
+                + '\' doesn\'t have the \'undefinedRelationship\' or \'undefinedRelationships\' relationship defined.'
+            ));
+        });
+
+        it('should throw an error if the guessed relation is not defined', () => {
+            const contractFactoryBuilder = new FactoryBuilder<Contract>(Contract);
+            const failingFunc = jest.fn(() => contractFactoryBuilder.with(Shift.factory()).make());
+
+            expect(failingFunc).toThrow(new InvalidArgumentException(
+                '\'' + contractFactoryBuilder.model.getName()
+                + '\' doesn\'t have the \'shift\' or \'shifts\' relationship defined.'
+            ));
+        });
+    });
+
     describe('raw()', () => {
         it('should return raw attributes', () => {
             expect(factoryBuilder.raw()).toStrictEqual({
@@ -271,6 +304,19 @@ describe('factoryBuilder', () => {
                 updatedAt: null,
                 deletedAt: null
             });
+        });
+
+        it('should return an empty object if no attributes has been defined or 0 models requested', () => {
+            class TestFactory extends Factory<any> {}
+            // eslint-disable-next-line @typescript-eslint/unbound-method
+            const originalValue = Team.prototype.factory;
+
+            Team.prototype.factory = () => new TestFactory;
+
+            expect(new FactoryBuilder(Team).raw()).toStrictEqual({});
+            expect(new FactoryBuilder(Team).times(0).raw()).toStrictEqual({});
+
+            Team.prototype.factory = originalValue;
         });
 
         it('should return multiple raw attributes', () => {
@@ -333,7 +379,6 @@ describe('factoryBuilder', () => {
 
     describe('getId()', () => {
         it('should return uuid if primaryKey is uuid', () => {
-            // @ts-expect-error
             Object.defineProperty(factoryBuilder.model, 'primaryKey', {
                 configurable: true,
                 get(): string {
@@ -344,7 +389,6 @@ describe('factoryBuilder', () => {
             // @ts-expect-error
             expect((factoryBuilder.getKey() as string).isUuid()).toBe(true);
 
-            // @ts-expect-error
             Object.defineProperty(factoryBuilder.model, 'primaryKey', {
                 get(): string {
                     return 'id';

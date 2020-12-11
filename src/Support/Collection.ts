@@ -757,7 +757,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {boolean}
      */
-    public static isCollection(value: unknown): value is Collection<unknown> {
+    public static isCollection<V>(value: unknown): value is Collection<V> {
         return value instanceof Collection;
     }
 

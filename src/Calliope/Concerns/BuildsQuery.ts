@@ -245,7 +245,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @param {string} column
      * @param {any} operator
-     * @param {any?} value
+     * @param {any=} value
      * @param {'and'|'or'} boolean
      *
      * @return {this}
@@ -264,7 +264,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @param {string} column
      * @param {string} operator
-     * @param {any?} value
+     * @param {any=} value
      * @param {'and'|'or'} boolean
      *
      * @return {BuildsQuery}

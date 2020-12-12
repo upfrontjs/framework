@@ -10,7 +10,6 @@ import BuildsQuery from './BuildsQuery';
 import type { Attributes } from './HasAttributes';
 import { isObject } from '../../Support/function';
 
-// todo - improve return types (from model to this?)
 export default class CallsApi extends BuildsQuery {
     /**
      * The basic endpoint that model queries.
@@ -125,7 +124,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async post(data: Record<string, unknown>|FormData): Promise<this|Model> {
+    public async post(data: Record<string, unknown>|FormData): Promise<Model> {
         return this.call('post', Object.assign({}, data, this.compileQueryParameters()))
             .then(responseData => {
                 this.resetEndpoint();
@@ -142,7 +141,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async put(data: Record<string, unknown>|FormData): Promise<this|Model> {
+    public async put(data: Record<string, unknown>|FormData): Promise<Model> {
         return this.call('put', Object.assign({}, data, this.compileQueryParameters()))
             .then(responseData => {
                 this.resetEndpoint();
@@ -159,7 +158,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async patch(data: Record<string, unknown>|FormData): Promise<this|Model> {
+    public async patch(data: Record<string, unknown>|FormData): Promise<Model> {
         return this.call('patch', Object.assign({}, data, this.compileQueryParameters()))
             .then(responseData => {
                 this.resetEndpoint();
@@ -177,7 +176,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Promise<boolean>}
      */
-    public async delete(data?: Record<string, unknown>|FormData): Promise<this|Model> {
+    public async delete(data?: Record<string, unknown>|FormData): Promise<Model> {
         return this.call('delete', Object.assign({}, data, this.compileQueryParameters()))
             .then(responseData => {
                 this.resetEndpoint();
@@ -197,7 +196,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Model|this}
      */
-    private getResponseModel(defaultVal: Model, responseData?: Attributes): this|Model {
+    private getResponseModel(defaultVal: Model, responseData?: Attributes): Model {
         // returning a collection outside of GET is unexpected.
         return isObject(responseData) ? this.newInstanceFromResponseData(responseData) as Model : defaultVal;
     }

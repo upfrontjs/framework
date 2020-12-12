@@ -277,6 +277,26 @@ describe('hasAttributes', () => {
 
             expect(attributable.syncOriginal().getRawOriginal()).toStrictEqual({ test: 1 });
         });
+
+        it('should sync specified key only if defined', () => {
+            attributable = new AttributableClass();
+
+            attributable.fill({ test: 1, test1: 2 });
+
+            expect(attributable.getRawOriginal()).toBeUndefined();
+
+            expect(attributable.syncOriginal('test').getRawOriginal()).toStrictEqual({ test: 1 });
+        });
+
+        it('should sync specified keys only if defined', () => {
+            attributable = new AttributableClass();
+
+            attributable.fill({ test: 1, test1: 2 });
+
+            expect(attributable.getRawOriginal()).toBeUndefined();
+
+            expect(attributable.syncOriginal(['test', 'test1']).getRawOriginal()).toStrictEqual({ test: 1, test1: 2 });
+        });
     });
 
     describe('reset()', () => {

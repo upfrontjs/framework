@@ -2,7 +2,7 @@ const path = require('path');
 const packageJson = require('./package.json');
 const vendorDependencies = Object.keys(packageJson['dependencies']);
 
-// todo - https://github.com/TypeStrong/ts-loader#babel
+// todo - https://github.com/TypeStrong/ts-loader#babel - probably move to rollup
 module.exports = {
     entry: {
         main: './src/index.ts',

@@ -284,16 +284,16 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
     /**
      * Sync the original attributes with the current.
      *
-     * @param {...string=} keys
+     * @param {string=} keys
      *
      * @return {this}
      */
-    public syncOriginal(...keys: string[]): this {
-        if (keys.length) {
+    public syncOriginal(keys?: string|string[]): this {
+        if (keys) {
+            keys = Array.isArray(keys) ? keys : [keys];
+
             keys.flat().forEach(key => {
-                if (key in this.original) {
-                    this.original[key] = cloneDeep(this.attributes[key]);
-                }
+                this.original[key] = cloneDeep(this.attributes[key]);
             });
 
             return this;

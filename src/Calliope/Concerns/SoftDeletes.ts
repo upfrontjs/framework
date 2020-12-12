@@ -1,4 +1,5 @@
 import HasTimestamps from './HasTimestamps';
+import type Model from '../Model';
 
 export default class SoftDeletes extends HasTimestamps {
     /**
@@ -50,9 +51,39 @@ export default class SoftDeletes extends HasTimestamps {
      *
      * @return {Promise<boolean>}
      */
-    // async delete(data?: Record<string, unknown>): Promise<boolean> {
-    //     if (!this.usesSoftDeletes()) {
-    //         super.delete(data);
-    //     }
-    // }
+    public async delete(data?: Record<string, unknown>): Promise<Model> {
+        if (!this.usesSoftDeletes()) {
+            return super.delete(data);
+        }
+
+        if (!data) {
+            data = {};
+        }
+
+        return super.delete({
+            ...data,
+            [this.getDeletedAtColumn()]: new Date().toISOString()
+        }).then(data => {
+            if (!data.getAttribute(this.getDeletedAtColumn())) {
+                data.setAttribute(this.getDeletedAtColumn(), new Date().toISOString());
+            }
+
+            return data;
+        });
+    }
+
+    /**
+     * Set the deleted at column to null on remote.
+     *
+     * @return {Promise<this>}
+     */
+    public async restore(): Promise<Model> {
+        if (!this.usesSoftDeletes()) {
+            return Promise.resolve(this as unknown as Model);
+        }
+
+        return this.patch({
+            [this.getDeletedAtColumn()]: null
+        });
+    }
 }

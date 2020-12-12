@@ -1,4 +1,7 @@
 import HasRelations from './HasRelations';
+import type Model from '../Model';
+import type { Attributes } from './HasAttributes';
+import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 
 export default class HasTimestamps extends HasRelations {
     /**
@@ -44,12 +47,6 @@ export default class HasTimestamps extends HasRelations {
         return HasTimestamps.updatedAt[this.attributeCasing]();
     }
 
-    // public touch() {
-    //     if (!this.usesTimestamps()) {
-    //         return;
-    //     }
-    // }
-
     /**
      * Determine if the model uses timestamps.
      *
@@ -59,6 +56,75 @@ export default class HasTimestamps extends HasRelations {
         return this.timestamps;
     }
 
-    // public freshTimestamps()
-    // public touch
+    /**
+     * Update the timestamps on remote.
+     *
+     * @return {Promise<this>}
+     */
+    public async touch(): Promise<Model> {
+        if (!this.usesTimestamps()) {
+            return Promise.resolve(this as unknown as Model);
+        }
+
+        return this.call('patch', {
+            [this.getCreatedAtColumn()]: new Date().toISOString(),
+            [this.getUpdatedAtColumn()]: new Date().toISOString()
+        })
+            .then((data: Attributes) => {
+                return this.updateTimestampsFromResponse(data)
+                    .syncOriginal([this.getCreatedAtColumn(), this.getUpdatedAtColumn()]) as unknown as Model;
+            });
+    }
+
+    /**
+     * Refresh the timestamps only on the
+     *
+     * @return {Promise<this>}
+     */
+    public async freshTimestamps(): Promise<Model> {
+        if (!this.usesTimestamps()) {
+            return Promise.resolve(this as unknown as Model);
+        }
+
+        return this.select([this.getCreatedAtColumn(), this.getUpdatedAtColumn()])
+            .call('get').then((data: Attributes) => {
+                return this.updateTimestampsFromResponse(data)
+                    .syncOriginal([this.getCreatedAtColumn(), this.getUpdatedAtColumn()]) as unknown as Model;
+            });
+    }
+
+    /**
+     * Update this timestamps based on the response.
+     *
+     * @param {object} data
+     *
+     * @private
+     *
+     * @return {this}
+     */
+    private updateTimestampsFromResponse(data: Attributes): this {
+        if (HasTimestamps.createdAt in data) {
+            this.setAttribute(this.getCreatedAtColumn(), data[HasTimestamps.createdAt]);
+        } else if (this.getCreatedAtColumn() in data) {
+            this.setAttribute(this.getCreatedAtColumn(), data[this.getCreatedAtColumn()]);
+        } else {
+            throw new InvalidArgumentException(
+                'No \'' + this.getCreatedAtColumn() + '\' or '
+                + '\'' + HasTimestamps.createdAt +'\' attribute found on the response data.'
+            );
+        }
+
+        if (HasTimestamps.updatedAt in data) {
+            this.setAttribute(this.getUpdatedAtColumn(), data[HasTimestamps.updatedAt]);
+        } else if (this.getUpdatedAtColumn() in data) {
+            this.setAttribute(this.getUpdatedAtColumn(), data[this.getUpdatedAtColumn()]);
+        } else {
+            throw new InvalidArgumentException(
+                'No \'' + this.getUpdatedAtColumn() + '\' or '
+                + '\'' + HasTimestamps.updatedAt +'\' attribute found on the response data.'
+            );
+        }
+
+        return this;
+    }
 }

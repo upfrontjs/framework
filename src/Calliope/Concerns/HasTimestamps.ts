@@ -66,12 +66,12 @@ export default class HasTimestamps extends HasRelations {
             return Promise.resolve(this as unknown as Model);
         }
 
-        return this.call('patch', {
+        return this.patch({
             [this.getCreatedAtColumn()]: new Date().toISOString(),
             [this.getUpdatedAtColumn()]: new Date().toISOString()
         })
-            .then((data: Attributes) => {
-                return this.updateTimestampsFromResponse(data)
+            .then(model => {
+                return this.updateTimestampsFromResponse(model.getRawOriginal())
                     .syncOriginal([this.getCreatedAtColumn(), this.getUpdatedAtColumn()]) as unknown as Model;
             });
     }
@@ -87,8 +87,10 @@ export default class HasTimestamps extends HasRelations {
         }
 
         return this.select([this.getCreatedAtColumn(), this.getUpdatedAtColumn()])
-            .call('get').then((data: Attributes) => {
-                return this.updateTimestampsFromResponse(data)
+            .whereKey((this as unknown as Model).getKey() as string|number)
+            .get()
+            .then(model => {
+                return this.updateTimestampsFromResponse((model as Model).getRawOriginal())
                     .syncOriginal([this.getCreatedAtColumn(), this.getUpdatedAtColumn()]) as unknown as Model;
             });
     }
@@ -103,9 +105,7 @@ export default class HasTimestamps extends HasRelations {
      * @return {this}
      */
     private updateTimestampsFromResponse(data: Attributes): this {
-        if (HasTimestamps.createdAt in data) {
-            this.setAttribute(this.getCreatedAtColumn(), data[HasTimestamps.createdAt]);
-        } else if (this.getCreatedAtColumn() in data) {
+        if (this.getCreatedAtColumn() in data) {
             this.setAttribute(this.getCreatedAtColumn(), data[this.getCreatedAtColumn()]);
         } else {
             throw new InvalidArgumentException(
@@ -114,9 +114,7 @@ export default class HasTimestamps extends HasRelations {
             );
         }
 
-        if (HasTimestamps.updatedAt in data) {
-            this.setAttribute(this.getUpdatedAtColumn(), data[HasTimestamps.updatedAt]);
-        } else if (this.getUpdatedAtColumn() in data) {
+        if (this.getUpdatedAtColumn() in data) {
             this.setAttribute(this.getUpdatedAtColumn(), data[this.getUpdatedAtColumn()]);
         } else {
             throw new InvalidArgumentException(

@@ -3,7 +3,7 @@ import fetchMock from 'jest-fetch-mock';
 import Config from '../../../src/Support/Config';
 import API from '../../../src/Services/API';
 import ApiResponseHandler from '../../../src/Services/ApiResponseHandler';
-import { buildResponse, getLastFetchCall } from '../../test-helpers';
+import { buildResponse, getLastFetchCall, mockUserModelResponse } from '../../test-helpers';
 import User from '../../mock/Models/User';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
 import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
@@ -11,10 +11,6 @@ import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 let caller: User;
 
 const config = new Config();
-
-const mockUserModelResponse = (user: User): void => {
-    fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(user.getRawOriginal())));
-};
 
 describe('callsApi', () => {
     beforeEach(() => {

@@ -1,6 +1,7 @@
 import '../src/Support/string';
 import '../src/Support/array';
 import '../src/Support/function';
+import 'jest-date-mock';
 import fetchMock from 'jest-fetch-mock';
 import Config from '../src/Support/Config';
 

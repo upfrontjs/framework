@@ -115,20 +115,14 @@ export default class FactoryBuilder<T extends Model> {
     public create(attributes?: Attributes): T|ModelCollection<T> {
         const modelOrCollection = this.compileRaw(attributes);
 
-        if (ModelCollection.isModelCollection(modelOrCollection)) {
+
+
+        if (ModelCollection.isModelCollection<T>(modelOrCollection)) {
             modelOrCollection.forEach(model => {
-                if (model.getKey()) {
-                    model
-                        .setAttribute(model.getKeyName(), this.getKey())
-                        .syncOriginal();
-                }
+                this.addPersistenceAttributes(model);
             });
         } else {
-            if (!(modelOrCollection as T).getKey()) {
-                (modelOrCollection as T)
-                    .setAttribute((modelOrCollection as T).getKeyName(), this.getKey())
-                    .syncOriginal();
-            }
+            this.addPersistenceAttributes(modelOrCollection);
         }
 
         const factory = this.getFactory();
@@ -206,6 +200,31 @@ export default class FactoryBuilder<T extends Model> {
         }
 
         return data;
+    }
+
+    /**
+     * Add the attributes that indicate that the model exists.
+     *
+     * @param {Model} model
+     *
+     * @private
+     *
+     * @return {Model}
+     */
+    private addPersistenceAttributes(model: T): T {
+        if (!model.getKey()) {
+            model.setAttribute(model.getKeyName(), this.getKey());
+        }
+
+        if (!model.getAttribute(model.getCreatedAtColumn())) {
+            model.setAttribute(model.getCreatedAtColumn(), new Date().toISOString());
+        }
+
+        if (!model.getAttribute(model.getUpdatedAtColumn())) {
+            model.setAttribute(model.getUpdatedAtColumn(), new Date().toISOString());
+        }
+
+        return model.syncOriginal();
     }
 
     /**

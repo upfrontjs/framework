@@ -1,7 +1,7 @@
 import type { Attributes } from '../Concerns/HasAttributes';
 import type Model from '../Model';
 import type ModelCollection from '../ModelCollection';
-import Config from "../../Support/Config";
+import Config from '../../Support/Config';
 
 interface FactoryHooks<T extends Model> {
     /**

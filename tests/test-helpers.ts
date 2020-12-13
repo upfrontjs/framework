@@ -1,6 +1,8 @@
 import type { MockResponseInit } from 'jest-fetch-mock';
 import cloneDeep from 'lodash/cloneDeep';
 import { isObject } from '../src/Support/function';
+import type User from './mock/Models/User';
+import fetchMock from 'jest-fetch-mock';
 
 export const buildResponse = (response?: string|Record<string, any>): MockResponseInit => {
     let responseObject: MockResponseInit = {
@@ -31,6 +33,10 @@ export const buildResponse = (response?: string|Record<string, any>): MockRespon
     }
 
     return responseObject;
+};
+
+export const mockUserModelResponse = (user: User): void => {
+    fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(user.getRawOriginal())));
 };
 
 type FetchCall = {

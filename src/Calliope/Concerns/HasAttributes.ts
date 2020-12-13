@@ -430,7 +430,8 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @return {object}
      */
-    public only(attributes: string[]): Attributes {
+    public only(attributes: string|string[]): Attributes {
+        attributes = Array.isArray(attributes) ? attributes : [attributes];
         const result: Attributes = {};
 
         attributes.forEach((name: string) => {

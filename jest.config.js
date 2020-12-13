@@ -42,5 +42,4 @@ module.exports = {
 
 // todo - review these:
 //  - https://github.com/marchaos/jest-mock-extended
-//  - https://github.com/hustcc/jest-date-mock
 //  - https://github.com/capricorn86/happy-dom

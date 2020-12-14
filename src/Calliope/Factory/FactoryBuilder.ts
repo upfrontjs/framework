@@ -216,12 +216,14 @@ export default class FactoryBuilder<T extends Model> {
             model.setAttribute(model.getKeyName(), this.getKey());
         }
 
-        if (!model.getAttribute(model.getCreatedAtColumn())) {
-            model.setAttribute(model.getCreatedAtColumn(), new Date().toISOString());
-        }
+        if (model.usesTimestamps()) {
+            if (!model.getAttribute(model.getCreatedAtColumn())) {
+                model.setAttribute(model.getCreatedAtColumn(), new Date().toISOString());
+            }
 
-        if (!model.getAttribute(model.getUpdatedAtColumn())) {
-            model.setAttribute(model.getUpdatedAtColumn(), new Date().toISOString());
+            if (!model.getAttribute(model.getUpdatedAtColumn())) {
+                model.setAttribute(model.getUpdatedAtColumn(), new Date().toISOString());
+            }
         }
 
         return model.syncOriginal();

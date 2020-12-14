@@ -77,7 +77,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
                 Object.assign(allProperties, attributes.relations);
             }
 
-            return this.constructor(allProperties);
+            attributes = allProperties;
         }
 
         if (isObject(attributes) && Object.keys(attributes).length) {
@@ -222,6 +222,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      */
     deleteAttribute(key: string): this {
         delete this.attributes[key];
+        delete this.original[key];
 
         // @ts-expect-error
         if (Object.getOwnPropertyDescriptor(this, key) && !(this as unknown as HasRelations).relationDefined(key)) {
@@ -333,10 +334,6 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
         Object.keys(this.original).forEach(name => {
             result[name] = this.castAttribute(name, this.original[name]);
         });
-
-        if (!Object.keys(this.original).length) {
-            return defaultValue;
-        }
 
         return result;
     }

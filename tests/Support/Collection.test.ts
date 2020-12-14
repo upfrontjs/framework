@@ -999,17 +999,21 @@ describe('collection', () => {
                 expect(collection.first()).toStrictEqual(elements[0]);
             });
 
+            it('should return itself if the collection is empty', () => {
+                collection = new Collection();
+
+                expect(collection.flat()).toStrictEqual(collection);
+            });
+
             it('should flatten a collection of collections', () => {
                 collection = new Collection([collection, collection]);
 
-                // @ts-expect-error
                 expect(collection.flat()).toStrictEqual(new Collection([1, 2, 3, 4, 5, 1, 2, 3, 4, 5]));
             });
 
             it('should flatten to 1 depth by default', () => {
                 collection = new Collection([collection, collection]);
 
-                // @ts-expect-error
                 expect(collection.flat()).toStrictEqual(new Collection([1, 2, 3, 4, 5, 1, 2, 3, 4, 5]));
 
                 collection = new Collection([
@@ -1017,9 +1021,7 @@ describe('collection', () => {
                     new Collection([new Collection(elements)])
                 ]);
 
-                expect(collection.flat())
-                    // @ts-expect-error
-                    .toStrictEqual(new Collection([
+                expect(collection.flat()).toStrictEqual(new Collection([
                         new Collection(elements),
                         new Collection(elements)
                     ]));
@@ -1030,7 +1032,6 @@ describe('collection', () => {
                 collection = new Collection([collection, collection]);
 
                 expect(collection.flat(Infinity))
-                    // @ts-expect-error
                     .toStrictEqual(new Collection([...elements, ...elements, ...elements, ...elements]));
             });
         });

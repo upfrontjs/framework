@@ -11,7 +11,7 @@ export default class HasTimestamps extends HasRelations {
      *
      * @protected
      */
-    protected static readonly createdAt = 'created_at';
+    protected static readonly createdAt: string = 'created_at';
 
     /**
      * The name of the updated at attribute.
@@ -20,7 +20,7 @@ export default class HasTimestamps extends HasRelations {
      *
      * @protected
      */
-    protected static readonly updatedAt = 'updated_at';
+    protected static readonly updatedAt: string = 'updated_at';
 
     /**
      * Indicates if the model should expect timestamps.

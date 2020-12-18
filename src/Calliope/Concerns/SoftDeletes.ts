@@ -4,11 +4,12 @@ import type Model from '../Model';
 export default class SoftDeletes extends HasTimestamps {
     /**
      * The name of the deleted at attribute.
+     *
      * @type {string}
      *
      * @protected
      */
-    protected static readonly deletedAt = 'deleted_at';
+    protected static readonly deletedAt: string = 'deleted_at';
 
     /**
      * Indicates if the model should expect timestamps.
@@ -41,7 +42,7 @@ export default class SoftDeletes extends HasTimestamps {
      * @return {boolean}
      */
     public usesSoftDeletes(): boolean {
-        return this.timestamps;
+        return this.softDeletes;
     }
 
     /**
@@ -82,8 +83,18 @@ export default class SoftDeletes extends HasTimestamps {
             return Promise.resolve(this as unknown as Model);
         }
 
+        if (!this.getAttribute(this.getDeletedAtColumn())) {
+            return Promise.resolve(this as unknown as Model);
+        }
+
         return this.patch({
             [this.getDeletedAtColumn()]: null
+        }).then(data => {
+            if (!data.getAttribute(this.getDeletedAtColumn())) {
+                data.setAttribute(this.getDeletedAtColumn(), undefined);
+            }
+
+            return data;
         });
     }
 }

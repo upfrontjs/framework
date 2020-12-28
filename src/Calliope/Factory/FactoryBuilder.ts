@@ -115,8 +115,6 @@ export default class FactoryBuilder<T extends Model> {
     public create(attributes?: Attributes): T|ModelCollection<T> {
         const modelOrCollection = this.compileRaw(attributes);
 
-
-
         if (ModelCollection.isModelCollection<T>(modelOrCollection)) {
             modelOrCollection.forEach(model => {
                 this.addPersistenceAttributes(model);

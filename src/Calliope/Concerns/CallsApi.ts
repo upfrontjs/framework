@@ -1,4 +1,4 @@
-import type ModelCollection from '../ModelCollection';
+import ModelCollection from '../ModelCollection';
 import LogicException from '../../Exceptions/LogicException';
 import type ApiCaller from '../../Contracts/ApiCaller';
 import Config from '../../Support/Config';
@@ -75,12 +75,15 @@ export default class CallsApi extends BuildsQuery {
 
         this.requestCount++;
         const config = new Config();
+        const url = String(config.get('baseEndPoint', '')).finish('/')
+            + (this.getEndpoint().startsWith('/') ? this.getEndpoint().slice(1) : this.getEndpoint());
         const apiCaller = config.get('api', new API) as ApiCaller;
         const handlesApiResponse = config.get('apiResponseHandler', new ApiResponseHandler) as HandlesApiResponse;
 
+
         return handlesApiResponse.handle(
             apiCaller.call(
-                String(config.get('baseEndPoint', '')) + this.getEndpoint().start('/'),
+                url,
                 method,
                 data,
                 customHeaders
@@ -158,7 +161,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async patch(data: Record<string, unknown>|FormData): Promise<Model> {
+    public async patch(data: Record<string, unknown>|FormData): Promise<Model|ModelCollection<Model>> {
         return this.call('patch', Object.assign({}, data, this.compileQueryParameters()))
             .then(responseData => {
                 this.resetEndpoint();
@@ -184,6 +187,15 @@ export default class CallsApi extends BuildsQuery {
 
                 return this.getResponseModel(this as unknown as Model, responseData);
             });
+    }
+
+    /**
+     * Alias for the patch method.
+     *
+     * @param {object} data
+     */
+    public async update(data: Attributes): Promise<Model|ModelCollection<Model>> {
+        return this.patch(data);
     }
 
     /**
@@ -225,9 +237,7 @@ export default class CallsApi extends BuildsQuery {
         let result: Model|ModelCollection<Model>;
 
         if (Array.isArray(data)) {
-            // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-member-access
-            const modelCollectionConstructor: new() => ModelCollection<Model> = require('../ModelCollection').default;
-            const collection = new modelCollectionConstructor();
+            const collection = new ModelCollection();
 
             data.forEach(attributes => {
                 if (isObject(attributes)) {

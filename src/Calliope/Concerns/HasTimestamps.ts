@@ -71,7 +71,7 @@ export default class HasTimestamps extends HasRelations {
             [this.getUpdatedAtColumn()]: new Date().toISOString()
         })
             .then(model => {
-                return this.updateTimestampsFromResponse(model.getRawOriginal())
+                return this.updateTimestampsFromResponse((model as Model).getRawOriginal())
                     .syncOriginal([this.getCreatedAtColumn(), this.getUpdatedAtColumn()]) as unknown as Model;
             });
     }

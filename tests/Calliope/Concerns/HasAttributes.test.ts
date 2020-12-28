@@ -337,6 +337,7 @@ describe('hasAttributes', () => {
 
     describe('getChanges()', () => {
         it('should get the changes since last sync with original', () => {
+            expect(hasAttributes.getChanges()).toBeNull();
             expect(hasAttributes.setAttribute('test', 2).getChanges()).toStrictEqual({ test: 2 });
         });
 

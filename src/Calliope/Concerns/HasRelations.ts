@@ -1,4 +1,4 @@
-import type ModelCollection from '../ModelCollection';
+import ModelCollection from '../ModelCollection';
 import type Model from '../Model';
 import LogicException from '../../Exceptions/LogicException';
 import CallsApi from './CallsApi';
@@ -174,16 +174,11 @@ export default class HasRelations extends CallsApi {
 
         const relationType = this.getRelationType(name);
         const isSingularRelationType = ['belongsTo', 'hasOne', 'morphOne'].includes(relationType);
-        const modelCollectionConstructor: new(models?: Model[]) => ModelCollection<Model>
-            // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-member-access
-            = require('../ModelCollection').default;
 
-        if (value instanceof HasRelations
-            || (<typeof ModelCollection> modelCollectionConstructor).isModelCollection(value)
-        ) {
+        if (value instanceof HasRelations || ModelCollection.isModelCollection(value)) {
             if (value instanceof HasRelations) {
                 if (!isSingularRelationType) {
-                    value = new modelCollectionConstructor([value]);
+                    value = new ModelCollection([value]);
                 } else {
                     if (relationType === 'belongsTo') {
                         this.setAttribute(value.getForeignKeyName(), value.getKey());
@@ -209,7 +204,7 @@ export default class HasRelations extends CallsApi {
                 );
             }
 
-            const collection = new modelCollectionConstructor();
+            const collection = new ModelCollection;
 
             value.forEach(modelData => collection.push(new (<typeof Model> relatedModel.constructor)(modelData)));
             relation = collection;
@@ -222,7 +217,7 @@ export default class HasRelations extends CallsApi {
 
             relation = isSingularRelationType
                 ? model
-                : new modelCollectionConstructor([model]);
+                : new ModelCollection([model]);
         }
 
         this.relations[name] = relation;

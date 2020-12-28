@@ -2,8 +2,8 @@ import SoftDeletes from './Concerns/SoftDeletes';
 import FactoryBuilder from './Factory/FactoryBuilder';
 import type HasFactory from '../Contracts/HasFactory';
 import type { Attributes } from './Concerns/HasAttributes';
-
-// todo - https://www.npmjs.com/package/@qiwi/mixin
+import ModelCollection from './ModelCollection';
+import LogicException from '../Exceptions/LogicException';
 
 export default class Model extends SoftDeletes implements HasFactory {
     /**
@@ -30,7 +30,7 @@ export default class Model extends SoftDeletes implements HasFactory {
         }
 
         if (boolean && this.usesSoftDeletes()) {
-            boolean = !!this.getAttribute(this.getDeletedAtColumn(), false);
+            boolean = !this.getAttribute(this.getDeletedAtColumn(), false);
         }
 
         return boolean;
@@ -114,33 +114,104 @@ export default class Model extends SoftDeletes implements HasFactory {
         return new FactoryBuilder(this as unknown as new (attributes?: Attributes) => T);
     }
 
-    // static async all(): Promise<ModelCollection<Model<Record<string, unknown>>>> {
-    //     await new this().get();
-    // }
+    /**
+     * Get all the models.
+     *
+     * @return {Promise<Model|ModelCollection<Model>>}
+     */
+    static async all(): Promise<ModelCollection<Model>> {
+        let response = await new this().get();
 
-    // public save() {
-    //
-    // }
+        if (response instanceof Model) {
+            response = new ModelCollection([response]);
+        }
 
-    // public function update() {
-    //
-    // }
-
-    // todo non-static version
-    public async find(id: string|number): Promise<Model> {
-        return this
-            .setEndpoint(this.getEndpoint().finish('/') + String(id))
-            .get() as Promise<Model>;
+        return Promise.resolve(response);
     }
 
-    // //
-    // public async refresh(): Model {
-    //     if (!(this as unknown as Model).exists) {
-    //         throw new LogicException('Attempted to refresh \'' + (this as unknown as Model).getName() + '\' when it has not been persisted yet');
-    //     }
-    //
-    //     this.select(this.getAttributeKeys()).find(this.getKey());
-    // }
+    /**
+     * Save or update the model.
+     *
+     * @param data
+     */
+    public async save(data?: Attributes): Promise<this> {
+        const dataToSave = Object.assign({}, this.getChanges(), data);
 
-    // todo - findMany all, update, save to implement
+        if (!Object.keys(dataToSave).length) {
+            return Promise.resolve(this);
+        }
+
+        const model = await (this.exists ? this.patch(dataToSave) : this.post(dataToSave)) as Model;
+        this.forceFill(Object.assign({}, model.getRawOriginal(), model.getRelations()));
+
+        return Promise.resolve(this);
+    }
+
+    /**
+     * Find the model based on the given id.
+     *
+     * @param {string|number} id
+     *
+     * @return
+     */
+    public async find(id: string|number): Promise<Model> {
+        const model = await this
+            .setEndpoint(this.getEndpoint().finish('/') + String(id))
+            .get() as Model;
+
+        return Promise.resolve(model);
+    }
+
+    /**
+     * The static version of the find method.
+     *
+     * @see {Model.prototype.find}
+     */
+    public static async find(id: string|number): Promise<Model> {
+        return new this().find(id);
+    }
+
+    /**
+     * Return multiple models based on the given ids.
+     *
+     * @param {string[]|number[]} ids
+     */
+    public async findMany(ids: (number|string)[]): Promise<ModelCollection<Model>> {
+        let response = await this
+            .resetQueryParameters()
+            .whereKey(ids)
+            .get();
+
+        if (response instanceof Model) {
+            response = new ModelCollection([response]);
+        }
+
+        return Promise.resolve(response);
+    }
+
+    /**
+     * The static version of the findMany method.
+     *
+     * @see {Model.prototype.findMany}
+     */
+    public static async findMany(ids: (number|string)[]): Promise<ModelCollection<Model>> {
+        return new this().findMany(ids);
+    }
+
+
+    /**
+     * Refresh the attributes from the backend.
+     *
+     * @return {Promise<Model>}
+     */
+    public async refresh(): Promise<Model> {
+        if (!this.exists) {
+            throw new LogicException(
+                'Attempted to refresh \'' + this.getName()
+                + '\' when it has not been persisted yet.'
+            );
+        }
+
+        return this.select(this.getAttributeKeys()).find(String(this.getKey()));
+    }
 }

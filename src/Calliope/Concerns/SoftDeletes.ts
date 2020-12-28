@@ -87,14 +87,13 @@ export default class SoftDeletes extends HasTimestamps {
             return Promise.resolve(this as unknown as Model);
         }
 
-        return this.patch({
-            [this.getDeletedAtColumn()]: null
-        }).then(data => {
-            if (!data.getAttribute(this.getDeletedAtColumn())) {
-                data.setAttribute(this.getDeletedAtColumn(), undefined);
-            }
+        return (this.patch({ [this.getDeletedAtColumn()]: null }) as Promise<Model>)
+            .then(data => {
+                if (!data.getAttribute(this.getDeletedAtColumn())) {
+                    data.setAttribute(this.getDeletedAtColumn(), undefined);
+                }
 
-            return data;
-        });
+                return data;
+            });
     }
 }

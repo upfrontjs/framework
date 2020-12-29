@@ -1,7 +1,7 @@
 export {};
-// import AbstractDateTime from '../Support/DateTime/Abstracts/AbstractDateTime';
+// import DateTime from '../Support/DateTime/Abstracts/DateTime';
 //
-// export default class DateTime extends AbstractDateTime {
+// export default class DateTime extends DateTime {
 //     static parse(...value: any[]): DateTime {
 //         const date = new Date(...value);
 //         const dateTime = new DateTime();

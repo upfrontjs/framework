@@ -1,8 +1,10 @@
 import LogicException from '../../Exceptions/LogicException';
 import Collection from '../../Support/Collection';
 import cloneDeep from 'lodash/cloneDeep';
+import type DateTimeInterface from '../../Contracts/DateTimeInterface';
+import type AttributeCaster from '../../Contracts/AttributeCaster';
 
-export type CastType = 'boolean' | 'string' | 'dateTime' | 'number' | 'collection' | 'class';
+type CastType = 'boolean' | 'string' | 'dateTime' | 'number' | 'collection' | 'class';
 
 export default class CastsAttributes {
     /**
@@ -12,7 +14,7 @@ export default class CastsAttributes {
      *
      * @type {object}
      */
-    protected casts: Record<string, CastType|AttributeCasting>= {};
+    protected casts: Record<string, CastType | AttributeCaster | DateTimeInterface> = {};
 
     /**
      * Merge new casts with existing casts on the model.
@@ -21,14 +23,14 @@ export default class CastsAttributes {
      *
      * @return {this}
      */
-    public mergeCasts(casts: Record<string, CastType|AttributeCasting>): this {
+    public mergeCasts(casts: Record<string, CastType | AttributeCaster | DateTimeInterface>): this {
         this.casts = cloneDeep(casts);
 
         return this;
     }
 
     /**
-     * Determine whether an attribute should be cast to a native type.
+     * Determine whether an attribute should be cast to a determined type.
      *
      * @param {string} key
      *
@@ -53,7 +55,7 @@ export default class CastsAttributes {
      *
      * @return {string|undefined}
      */
-    protected getCastType(key: string): string|undefined {
+    protected getCastType(key: string): string | undefined {
         const caster = this.casts[key];
 
         if (!caster) {
@@ -62,6 +64,10 @@ export default class CastsAttributes {
 
         if (this.implementsCaster(caster)) {
             return 'class';
+        }
+
+        if (this.implementsDateTime(caster)) {
+            return 'dateTime';
         }
 
         return caster.toLowerCase().trim();
@@ -102,8 +108,7 @@ export default class CastsAttributes {
                 }
 
                 result = boolean;
-            }
-            else if (cast === 'number') {
+            } else if (cast === 'number') {
                 const number = Number(value);
 
                 if (isNaN(number)) {
@@ -113,11 +118,9 @@ export default class CastsAttributes {
                 }
 
                 result = number;
-            }
-            else if (cast === 'string') {
+            } else if (cast === 'string') {
                 result = String(value);
-            }
-            else if (cast === 'collection') {
+            } else if (cast === 'collection') {
                 if (!Array.isArray(value)) {
                     throw new LogicException(
                         '\'' + key + '\' is not castable to a collection type in \'' + this.constructor.name + '\'.'
@@ -125,14 +128,11 @@ export default class CastsAttributes {
                 }
 
                 result = new Collection(cloneDeep(value));
-            }
-            else if (cast === 'dateTime') {
-                //todo - DateTime
-            }
-            else if (cast === 'class') {
-                result = (this.casts[key] as AttributeCasting).get(key, value);
-            }
-            else {
+            } else if (cast === 'dateTime') {
+                result = (this.casts[key] as DateTimeInterface).parse(value);
+            } else if (cast === 'class') {
+                result = (this.casts[key] as AttributeCaster).get(key, value);
+            } else {
                 // either or both hasCast() and getCastType() has been overridden and hasCast()
                 // returns true while getCastType() cannot determine the cast type
                 throw new LogicException(
@@ -155,7 +155,7 @@ export default class CastsAttributes {
      *
      * @return {boolean}
      */
-    protected implementsCaster(value: any): value is AttributeCasting {
+    protected implementsCaster(value: any): value is AttributeCaster {
         if (!value || value !== Object(value)) {
             return false;
         }
@@ -163,30 +163,25 @@ export default class CastsAttributes {
         const object = value as Record<string, unknown>;
 
         return 'set' in object
-            && object['set'] instanceof Function
+            && object.set instanceof Function
             && 'get' in object
-            && object['get'] instanceof Function;
+            && object.get instanceof Function;
     }
-}
-
-export interface AttributeCasting {
-    /**
-     * Transform the attribute from the underlying model value.
-     *
-     * @param {string} key
-     * @param {any} value
-     *
-     * @return {any}
-     */
-    get(key: string, value: unknown): unknown;
 
     /**
-     * Transform the attribute to its underlying model values.
+     * Determine whether the given value implements the date time interface
      *
-     * @param {string} key
      * @param {any} value
      *
-     * @return {void}
+     * @protected
      */
-    set(key: string, value: unknown): void;
+    protected implementsDateTime(value: any): value is DateTimeInterface {
+        if (!value || value !== Object(value)) {
+            return false;
+        }
+
+        const object = value as Record<string, unknown>;
+
+        return 'parse' in object && object.parse instanceof Function;
+    }
 }

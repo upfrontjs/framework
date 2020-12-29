@@ -1,5 +1,6 @@
 import CastsAttributes from '../../../src/Calliope/Concerns/CastsAttributes';
 import Collection from '../../../src/Support/Collection';
+import type DateTimeInterface from '../../../src/Contracts/DateTimeInterface';
 
 class CastingClass extends CastsAttributes {
     public getCasts() {
@@ -90,7 +91,18 @@ describe('castsAttributes', () => {
                 .toThrow('\'test\' is not castable to a collection type in \'' + caster.constructor.name + '\'.');
         });
 
-        it.todo('should cast to a dateTime');
+        it('should cast to a dateTime', () => {
+            class DateTime implements DateTimeInterface {
+                parse(..._value: any[]): DateTimeInterface {
+                    return this;
+                }
+                value = 'object value';
+            }
+
+            caster.mergeCasts({ test: new DateTime() });
+
+            expect((caster.getValue('test', 1) as DateTime).value).toBe('object value');
+        });
 
         it('should cast using a custom object', () => {
             caster.mergeCasts({

@@ -1,5 +1,5 @@
 import Collection from '../Support/Collection';
-import Model from './Model';
+import type Model from './Model';
 
 export default class ModelCollection<T extends Model> extends Collection<T> {
     constructor(models?: T[]) {
@@ -32,12 +32,27 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      */
     protected _isModelArray(iterable: any = null): iterable is Model[] {
         if (iterable && Array.isArray(iterable)) {
-            return !!iterable.length && iterable.every((item) => item instanceof Model);
+            return !!iterable.length && iterable.every(item => ModelCollection._isModel(item));
         }
 
         // the below instanceof check is not redundant
         // once this is transformed into javascript
-        return this.every(item => item instanceof Model);
+        return this.every(item => ModelCollection._isModel(item));
+    }
+
+    /**
+     * Check whether the given argument is (probably) model or not.
+     *
+     * @param {any} arg
+     *
+     * @private
+     *
+     * @return {boolean}
+     */
+    private static _isModel(arg: any): arg is Model {
+        return typeof arg === 'object'
+            && arg !== null
+            && (arg as Record<string, any>).getKey instanceof Function;
     }
 
     /**
@@ -65,8 +80,8 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
         return new Collection(
             args
                 .flat()
-                .filter(arg => typeof arg === 'string' || typeof arg === 'number' || arg instanceof Model)
-                .map(arg => String(arg instanceof Model ? arg.getKey() : arg))
+                .filter(arg => typeof arg === 'string' || typeof arg === 'number' || ModelCollection._isModel(arg))
+                .map(arg => String(ModelCollection._isModel(arg) ? arg.getKey() : arg))
         );
     }
 

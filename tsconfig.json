@@ -23,7 +23,8 @@
     "incremental": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "removeComments": true,
+    "removeComments": false,
+    "pretty": true,
 
     // code quality
     "noImplicitReturns": true,

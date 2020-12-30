@@ -1,4 +1,4 @@
-import Model from '../Model';
+import type Model from '../Model';
 import type { Attributes } from '../Concerns/HasAttributes';
 import ModelCollection from '../ModelCollection';
 import Factory from './Factory';
@@ -188,10 +188,10 @@ export default class FactoryBuilder<T extends Model> {
                 Object.keys(this.relations).forEach(relation => {
                     const relationValue = (this.relations[relation] as FactoryBuilder<Model>)[method]();
 
-                    if (data instanceof Model) {
-                        data.addRelation(relation, relationValue);
-                    } else {
+                    if (method === 'raw') {
                         (data as Attributes)[relation] = relationValue;
+                    } else {
+                        (data as Model).addRelation(relation, relationValue);
                     }
                 });
             }

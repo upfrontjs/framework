@@ -1,5 +1,4 @@
-import isEqual from 'lodash/isEqual';
-import uniq from 'lodash/uniq';
+import { isEqual, uniq } from 'lodash';
 import type Arrayable from '../Contracts/Arrayable';
 import type Jsonable from '../Contracts/Jsonable';
 import InvalidArgumentException from '../Exceptions/InvalidArgumentException';

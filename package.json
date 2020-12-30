@@ -2,46 +2,46 @@
   "name": "upfront",
   "version": "0.1.0",
   "description": "Data handling framework complementary to backend model systems.",
-  "main": "lib/index",
-  "types": "lib/index",
+  "main": "lib/index.js",
+  "module": "lib/index.es.js",
+  "types": "lib/src/index.d.ts",
   "scripts": {
     "test": "jest",
     "test-with-coverage": "npm run test -- --coverage",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "compile": "tsc --project tsconfig.json --pretty --extendedDiagnostics --listFiles"
+    "compile": "rollup -c"
   },
   "author": "Nandor Kraszlan",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nandi95/Velaral"
+    "url": "https://github.com/nandi95/upfront"
   },
   "license": "MIT",
-  "devDependencies": {
-    "@babel/core": "^7.12.10",
-    "@babel/preset-env": "^7.12.11",
-    "@babel/preset-typescript": "^7.12.7",
-    "@types/jest": "^26.0.19",
+  "dependencies": {
     "@types/lodash": "^4.14.166",
     "@types/pluralize": "0.0.29",
     "@types/qs": "^6.9.5",
     "@types/uuid": "^8.3.0",
+    "lodash": "^4.17.20",
+    "pluralize": "^8.0.0",
+    "qs": "^6.9.4",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.19",
     "@typescript-eslint/eslint-plugin": "^4.11.0",
     "@typescript-eslint/parser": "^4.11.0",
-    "babel-eslint": "^10.1.0",
-    "babel-jest": "^26.6.3",
     "eslint": "^7.16.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^24.1.3",
     "jest": "^26.6.3",
     "jest-date-mock": "^1.0.8",
     "jest-fetch-mock": "^3.0.3",
-    "lodash": "^4.17.20",
-    "pluralize": "^8.0.0",
-    "qs": "^6.9.4",
+    "rollup": "^2.35.1",
+    "rollup-plugin-bundle-size": "^1.0.3",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.29.0",
     "ts-jest": "^26.4.4",
-    "ts-loader": "^8.0.12",
-    "typescript": "^4.1.3",
-    "uuid": "^8.3.2",
-    "webpack": "^5.11.0"
+    "typescript": "^4.1.3"
   }
 }

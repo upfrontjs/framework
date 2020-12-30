@@ -1,4 +1,4 @@
-import cloneDeep from 'lodash/cloneDeep';
+import { cloneDeep } from 'lodash';
 import CastsAttributes from './CastsAttributes';
 import type { Attributes } from './HasAttributes';
 

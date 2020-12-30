@@ -1,6 +1,6 @@
 import LogicException from '../../Exceptions/LogicException';
 import Collection from '../../Support/Collection';
-import cloneDeep from 'lodash/cloneDeep';
+import { cloneDeep } from 'lodash';
 import type DateTimeInterface from '../../Contracts/DateTimeInterface';
 import type AttributeCaster from '../../Contracts/AttributeCaster';
 

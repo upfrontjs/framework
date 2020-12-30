@@ -1,6 +1,5 @@
 import type Jsonable from '../../Contracts/Jsonable';
-import isEqual from 'lodash/isEqual';
-import cloneDeep from 'lodash/cloneDeep';
+import { isEqual, cloneDeep } from 'lodash';
 import GuardsAttributes from './GuardsAttributes';
 import type HasRelations from './HasRelations';
 import type Model from '../Model';

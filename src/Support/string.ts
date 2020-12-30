@@ -4,7 +4,7 @@
 
 import pluralize from 'pluralize';
 import * as uuid from 'uuid';
-import snakeCase from 'lodash/snakeCase';
+import { snakeCase } from 'lodash';
 
 export {}; // this file needs to be a module
 

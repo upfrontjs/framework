@@ -1,4 +1,4 @@
-import merge from 'lodash/merge';
+import { merge } from 'lodash';
 import type ApiCaller from '../Contracts/ApiCaller';
 import type HandlesApiResponse from '../Contracts/HandlesApiResponse';
 // import type DateTime from './DateTime/Abstracts/DateTime';

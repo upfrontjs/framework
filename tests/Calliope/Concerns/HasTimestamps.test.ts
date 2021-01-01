@@ -64,7 +64,7 @@ describe('hasTimestamps', () => {
             fetchMock.mockResponseOnce(async () =>
                 Promise.resolve(buildResponse({ updatedAt: new Date().toISOString() })));
 
-            const failingFunc = jest.fn(() => hasTimestamps.touch());
+            const failingFunc = jest.fn(async () => hasTimestamps.touch());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
                 'No \'' + hasTimestamps.getCreatedAtColumn().camel() + '\' or '
@@ -77,7 +77,7 @@ describe('hasTimestamps', () => {
             fetchMock.mockResponseOnce(async () =>
                 Promise.resolve(buildResponse({ createdAt: new Date().toISOString() })));
 
-            const failingFunc = jest.fn(() => hasTimestamps.touch());
+            const failingFunc = jest.fn(async () => hasTimestamps.touch());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
                 'No \'' + hasTimestamps.getUpdatedAtColumn().camel() + '\' or '
@@ -135,7 +135,7 @@ describe('hasTimestamps', () => {
             fetchMock.mockResponseOnce(async () =>
                 Promise.resolve(buildResponse({ updatedAt: new Date().toISOString() })));
 
-            const failingFunc = jest.fn(() => hasTimestamps.freshTimestamps());
+            const failingFunc = jest.fn(async () => hasTimestamps.freshTimestamps());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
                 'No \'' + hasTimestamps.getCreatedAtColumn().camel() + '\' or '
@@ -148,7 +148,7 @@ describe('hasTimestamps', () => {
             fetchMock.mockResponseOnce(async () =>
                 Promise.resolve(buildResponse({ createdAt: new Date().toISOString() })));
 
-            const failingFunc = jest.fn(() => hasTimestamps.freshTimestamps());
+            const failingFunc = jest.fn(async () => hasTimestamps.freshTimestamps());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
                 'No \'' + hasTimestamps.getUpdatedAtColumn().camel() + '\' or '

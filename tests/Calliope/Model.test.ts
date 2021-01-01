@@ -152,7 +152,7 @@ describe('model', () => {
     describe('refresh()', () => {
         it('should throw an error if the model doesn\'t exists', async () => {
             user.deleteAttribute(user.getKeyName());
-            const failingFunc = jest.fn(() => user.refresh());
+            const failingFunc = jest.fn(async () => user.refresh());
 
             await expect(failingFunc).rejects.toThrow(new LogicException(
                 'Attempted to refresh \'' + user.getName()
@@ -200,12 +200,7 @@ describe('model', () => {
     });
 
     describe('save()', () => {
-        it('should return itself if there\'s nothing to save', async () => {
-            // const model = await user.save();
-            //
-            // expect(model).toBeInstanceOf(User);
-            // expect(getLastFetchCall()).toBeUndefined();
-        });
+        it.todo('should return itself if there\'s nothing to save');
 
         it('should save the given attributes', async () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({ name: 'new name' })));

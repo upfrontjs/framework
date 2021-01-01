@@ -14,7 +14,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @private
      */
-    protected _throwIfNotModels(iterable: any = null): void {
+    protected _throwIfNotModels(iterable?: any): void {
         if (!this._isModelArray(iterable)) {
             throw new TypeError(this.constructor.name + ' can only handle Model values.');
         }
@@ -30,7 +30,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @private
      */
-    protected _isModelArray(iterable: any = null): iterable is Model[] {
+    protected _isModelArray(iterable?: any): iterable is Model[] {
         if (iterable && Array.isArray(iterable)) {
             return !!iterable.length && iterable.every(item => ModelCollection._isModel(item));
         }

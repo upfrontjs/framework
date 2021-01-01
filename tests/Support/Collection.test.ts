@@ -396,7 +396,9 @@ describe('collection', () => {
         it('should throws an error if the fist argument isn\'t boolean or function', () => {
             // @ts-expect-error
             const func = () => collection.when(null, () => {});
-            expect(func).toThrow('when\' expect the first argument to be a type of boolean or function, \'object\' given.');
+            expect(func).toThrow(
+                'when\' expect the first argument to be a type of boolean or function, \'object\' given.'
+            );
         });
 
         it('can be chained', () => {
@@ -1022,9 +1024,9 @@ describe('collection', () => {
                 ]);
 
                 expect(collection.flat()).toStrictEqual(new Collection([
-                        new Collection(elements),
-                        new Collection(elements)
-                    ]));
+                    new Collection(elements),
+                    new Collection(elements)
+                ]));
             });
 
             it('should be able to flatten to Infinity', () => {

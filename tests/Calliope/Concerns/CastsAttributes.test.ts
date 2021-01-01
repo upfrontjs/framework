@@ -93,7 +93,7 @@ describe('castsAttributes', () => {
 
         it('should cast to a dateTime', () => {
             class DateTime implements DateTimeInterface {
-                parse(..._value: any[]): DateTimeInterface {
+                parse(): DateTimeInterface {
                     return this;
                 }
                 value = 'object value';

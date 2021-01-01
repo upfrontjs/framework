@@ -39,7 +39,3 @@ module.exports = {
         "Math"
     ]
 };
-
-// todo - review these:
-//  - https://github.com/marchaos/jest-mock-extended
-//  - https://github.com/capricorn86/happy-dom

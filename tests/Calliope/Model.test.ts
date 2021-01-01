@@ -200,7 +200,12 @@ describe('model', () => {
     });
 
     describe('save()', () => {
-        it.todo('should return itself if there\'s nothing to save');
+        it('should return itself if there\'s nothing to save', async () => {
+            const model = await user.save();
+
+            expect(model).toBeInstanceOf(User);
+            expect(getLastFetchCall()).toBeUndefined();
+        });
 
         it('should save the given attributes', async () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({ name: 'new name' })));

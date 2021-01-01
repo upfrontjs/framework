@@ -347,7 +347,8 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      */
     public getRawOriginal(key?: string, defaultValue?: any): Attributes | any {
         if (key) {
-            return this.original[key] ? cloneDeep(this.original[key]) : defaultValue;
+            // apart from undefined all other types are legible
+            return typeof this.original[key] !== 'undefined' ? cloneDeep(this.original[key]) : defaultValue;
         }
 
         if (!Object.keys(this.original).length) {

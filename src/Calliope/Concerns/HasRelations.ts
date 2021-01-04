@@ -108,7 +108,7 @@ export default class HasRelations extends CallsApi {
             return this.relations[name] as Model | ModelCollection<Model>;
         }
 
-        throw new InvalidOffsetException('\'' + name + '\' relationship is not defined.');
+        throw new InvalidArgumentException('\'' + name + '\' relationship is not defined.');
     }
 
     /**

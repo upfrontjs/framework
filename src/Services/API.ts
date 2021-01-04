@@ -81,8 +81,8 @@ export default class API implements ApiCaller {
 
         // if explicitly or implicitly a GET method
         if (!initOptions.method || initOptions.method.toLowerCase() === 'get') {
-            // if it was merged in above, we delete it to avoid:
-            // TypeError: Request with GET/HEAD method cannot have body
+            // given if there was any body it was merged in above,
+            // we delete it as GET cannot have a body
             delete initOptions.body;
         }
 

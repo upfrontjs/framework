@@ -89,7 +89,7 @@ describe('hasRelations', () => {
             const failingFunc = jest.fn(() => hasRelations.getRelation('undefinedRelation'));
 
             expect(failingFunc).toThrow(
-                new InvalidOffsetException('\'undefinedRelation\' relationship is not defined.')
+                new InvalidArgumentException('\'undefinedRelation\' relationship is not defined.')
             );
         });
 

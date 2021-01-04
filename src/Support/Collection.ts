@@ -711,10 +711,10 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     /**
      * Print the collection values to the console.
      *
-     * @param {string} message
+     * @param {string=} message
      * @return {this}
      */
-    public dump(message = ''): this {
+    public dump(message?: string): this {
         const items = !window || !global ? JSON.stringify(this) : this;
 
         console.info(

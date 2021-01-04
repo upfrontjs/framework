@@ -1,7 +1,7 @@
 import { merge } from 'lodash';
 import type ApiCaller from '../Contracts/ApiCaller';
 import type HandlesApiResponse from '../Contracts/HandlesApiResponse';
-// import type DateTime from './DateTime/Abstracts/DateTime';
+import type DateTimeInterface from '../Contracts/DateTimeInterface';
 
 interface Configuration extends Record<string, unknown> {
     api: ApiCaller;
@@ -10,7 +10,7 @@ interface Configuration extends Record<string, unknown> {
     headers: HeadersInit|Record<string, string|string[]>|string[][];
     randomDataGenerator: any;
     [key: string]: any;
-    // DateTime: DateTime;
+    dateTime: DateTimeInterface;
 }
 
 export default class Config {

@@ -227,7 +227,7 @@ class Paginator<T> implements ArrayLike<T>, Iterable<T> {
         return !!this.elements.slice(start, start + this.itemsPerPage).length;
     }
 
-    // jumpToItem(item): this {
+    // todo ? - jumpToItem(item): this {
     //
     // }
 

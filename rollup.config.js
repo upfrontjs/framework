@@ -26,6 +26,6 @@ export default {
         }),
         terser(),
         bundleSize()
-        // copy license and readme (and interfaces?)
+        // todo - copy license and readme (and interfaces?)
     ]
 }

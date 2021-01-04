@@ -794,7 +794,6 @@ export default class BuildsQuery extends HasAttributes {
      * @return {this}
      */
     public with(relations: string[]): this {
-        // todo - validate the relations as if it isn't defined I can't use it on response
         this.withs.push(...relations.flat());
 
         return this;
@@ -819,7 +818,6 @@ export default class BuildsQuery extends HasAttributes {
      * @param relations
      */
     public without(relations: string[]): this {
-        // todo - validate the relations as if it isn't defined I can't use it on response
         this.withouts.push(...relations.flat());
 
         return this;

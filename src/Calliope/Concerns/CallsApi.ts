@@ -80,15 +80,10 @@ export default class CallsApi extends BuildsQuery {
         const apiCaller = config.get('api', new API) as ApiCaller;
         const handlesApiResponse = config.get('apiResponseHandler', new ApiResponseHandler) as HandlesApiResponse;
 
-
-        return handlesApiResponse.handle(
-            apiCaller.call(
-                url,
-                method,
-                data,
-                customHeaders
+        return handlesApiResponse
+            .handle(
+                apiCaller.call(url, method, data, customHeaders)
             )
-        )
             .finally(() => this.requestCount--);
     }
 

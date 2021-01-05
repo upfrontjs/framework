@@ -3,8 +3,7 @@ module.exports = {
     testEnvironment: 'jsdom',
     rootDir: './',
     transform: {
-        "^.+\\.[t]sx?$": "ts-jest",
-        "^.+\\.[j]sx?$": "babel-jest",
+        "^.+\\.[t]sx?$": "ts-jest"
     },
     collectCoverageFrom: [
         '<rootDir>/src/**/*.ts',

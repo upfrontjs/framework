@@ -1,6 +1,7 @@
 // todo - make sure to test file uploads
 // todo - improve typings (eg.: collection pluck K extends keyof T, better user guards)
 // todo - add built-in graphql support (single endpoint, query/body encoding/parsing)
+// todo - tinker with node support (take callsApi out)
 
 // todo - will also need a cookbook to show the cool shit one might not think of straight away eg.: also in vue-press
     - local scope building

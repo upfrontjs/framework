@@ -199,6 +199,13 @@ describe('hasAttributes', () => {
             expect(hasAttributes.test).toBeUndefined();
             expect(Object.getOwnPropertyDescriptor(hasAttributes, 'test')).toBeUndefined();
         });
+
+        it('should not remove the original value', () => {
+            hasAttributes.deleteAttribute('test');
+
+            expect(hasAttributes.test).toBeUndefined();
+            expect(hasAttributes.getOriginal('test')).not.toBeUndefined();
+        });
     });
 
     describe('hasSetMutator()', () => {
@@ -281,6 +288,36 @@ describe('hasAttributes', () => {
 
             expect(hasAttributes.syncOriginal(['test', 'test1']).getRawOriginal()).toStrictEqual({ test: 1, test1: 2 });
         });
+
+        it('should delete attributes that has been removed', () => {
+            hasAttributes.deleteAttribute('test').syncOriginal();
+
+            expect(hasAttributes.getOriginal('test')).toBeUndefined();
+        });
+
+        it('should not delete null and undefined', () => {
+            hasAttributes.test = null;
+            hasAttributes.syncOriginal();
+
+            expect(hasAttributes.getOriginal('test')).toBeNull();
+
+            hasAttributes.test = undefined;
+            hasAttributes.syncOriginal();
+
+            expect(hasAttributes.getOriginal('test')).toBeUndefined();
+        });
+
+        it('should not delete null and undefined when using an argument', () => {
+            hasAttributes.test = null;
+            hasAttributes.syncOriginal('test');
+
+            expect(hasAttributes.getOriginal('test')).toBeNull();
+
+            hasAttributes.test = undefined;
+            hasAttributes.syncOriginal('test');
+
+            expect(hasAttributes.getOriginal('test')).toBeUndefined();
+        });
     });
 
     describe('reset()', () => {
@@ -312,12 +349,12 @@ describe('hasAttributes', () => {
             expect(hasAttributes.getOriginal('some key', 'default value')).toBe('default value');
         });
 
-        it('should return the default value if original is empty', () => {
+        it('should return the default value if original value doesn\'t exits', () => {
             hasAttributes.getAttributeKeys().forEach(key => {
                 hasAttributes.deleteAttribute(key);
             });
 
-            expect(hasAttributes.getOriginal('test', 'default value')).toBe('default value');
+            expect(hasAttributes.syncOriginal().getOriginal('test', 'default value')).toBe('default value');
         });
     });
 

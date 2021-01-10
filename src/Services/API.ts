@@ -4,6 +4,11 @@ import type { IStringifyOptions } from 'qs';
 import { isObject } from '../Support/function';
 import Config from '../Support/Config';
 
+/**
+ * The default ApiCaller class used by the package.
+ *
+ * @link {ApiCaller}
+ */
 export default class API implements ApiCaller {
     /**
      * Enable indexing object by strings.

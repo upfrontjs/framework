@@ -9,29 +9,134 @@ import { snakeCase } from 'lodash';
 export {}; // this file needs to be a module
 
 declare global {
+    /**
+     * Globally available methods on String.prototype.
+     */
     interface String {
+        /**
+         * Uppercase the first letter.
+         */
         ucFirst(): string;
+
+        /**
+         * Determine whether the given string is a uuid of version 4.
+         */
         isUuid(): boolean;
+
+        /**
+         * Transform the string to Title Case.
+         */
         title(): string;
+
+        /**
+         * Ensure the string ends with the given string.
+         *
+         * @param {string} token.
+         */
         finish(token: string): string;
+
+        /**
+         * Ensure the string starts with the given string.
+         *
+         * @param {string} token.
+         */
         start(token: string): string;
+
+        /**
+         * Transform the string to camelCase.
+         */
         camel(): string;
+
+        /**
+         * Transform the string to snake_case.
+         */
         snake(): string;
+
+        /**
+         * Transform the string to camelCase.
+         */
         kebab(): string;
+
+        /**
+         * Get the plural form of the string.
+         */
         plural(): string;
+
+        /**
+         * Get the singular form of the string.
+         */
         singular(): string;
+
+        /**
+         * Get the string up to and not including the given token.
+         *
+         * @param {string} token - The string to search for.
+         */
         before(token: string): string;
+
+        /**
+         * Get the string before the last instance of the found token.
+         *
+         * @param {string} token - The string to search for.
+         */
         beforeLast(token: string): string;
+
+        /**
+         * Get part of the string after the given token.
+         *
+         * @param {string} token - The string to search for.
+         */
         after(token: string): string;
+
+        /**
+         * Get part of the string after the last found instance of the given token.
+         *
+         * @param {string} token - The string to search for.
+         */
         afterLast(token: string): string;
+
+        /**
+         * Transform the string to PascalCase.
+         */
         pascal(): string;
+
+        /**
+         * Limit the number of characters on the string.
+         *
+         * @param {number} count - The number of characters to keep.
+         * @param {string} limiter - The string to be appended at the end after the limit.
+         */
         limit(count: number, limiter?: string): string;
+
+        /**
+         * Limit the number of words on the string.
+         *
+         * @param {number} count - The number of words to keep.
+         * @param {string} limiter - The string to be appended at the end after the limit.
+         */
         words(count: number, limiter?: string): string;
+
+        /**
+         * Check whether the string matches the given string.
+         *
+         * @param {string|RegExp} compareValue - The Regexp or the string to test for. "*" functions as a wildcard.
+         * @param {string} ignoreCase - Flag indicating whether the casing should be ignored or not.
+         */
         is(compareValue: string | RegExp, ignoreCase?: boolean): boolean;
+
+        /**
+         * Test whether all the tokens included in the string.
+         */
         includesAll(tokens: string[]): boolean;
     }
 
+    /**
+     * Globally available methods on String.
+     */
     interface StringConstructor {
+        /**
+         * Generate a uuid or version 4.
+         */
         uuid(): string;
     }
 }

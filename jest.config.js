@@ -29,7 +29,10 @@ module.exports = {
     notify: true,
     notifyMode: 'failure-change',
     globals: {
-        window: {}
+        window: {},
+        'ts-jest': {
+            tsconfig: 'tests/tsconfig.json'
+        }
     },
     extraGlobals: [
         "Function",

@@ -1,0 +1,10 @@
+{
+  "entryPoints": [
+    "lib/src/index.d.ts"
+  ],
+  "tsconfig": "api-docs.tsconfig.json",
+  "out": "api-docs",
+  "name": "Upfront",
+  "readme": "docs/README.MD",
+  "hideGenerator": true
+}

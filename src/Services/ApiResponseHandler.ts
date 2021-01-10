@@ -1,6 +1,11 @@
 import type HandlesApiResponse from '../Contracts/HandlesApiResponse';
 import { isObject } from '../Support/function';
 
+/**
+ * The default HandlesApiResponse class used by the package.
+ *
+ * @link {HandlesApiResponse}
+ */
 export default class ApiResponseHandler implements HandlesApiResponse {
     /**
      * @inheritDoc

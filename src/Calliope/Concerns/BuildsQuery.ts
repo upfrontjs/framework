@@ -999,6 +999,8 @@ export default class BuildsQuery extends HasAttributes {
      * @param {number} count
      *
      * @return {this}
+     *
+     * @see {BuildsQuery.prototype.offset}
      */
     public skip(count: number): this {
         return this.offset(count);

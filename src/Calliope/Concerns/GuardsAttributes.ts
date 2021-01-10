@@ -27,7 +27,7 @@ export default class GuardsAttributes extends CastsAttributes {
     }
 
     /**
-     * Set member variables from object context.
+     * Set attribute guarding for the model.
      *
      * @return {{guarded?: string[], fillable?: string[]}}
      */

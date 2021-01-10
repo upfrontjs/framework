@@ -3,6 +3,9 @@ import Paginator from '../Pagination/Paginator';
 import type Model from '../Calliope/Model';
 import FactoryBuilder from '../Calliope/Factory/FactoryBuilder';
 
+/**
+ * Globally available methods on the window.
+ */
 declare global {
     /**
      * Create a collection from the array.
@@ -57,7 +60,15 @@ if (!!window && !('factory' in window)) {
     });
 }
 
-
+/**
+ * Determine whether the given value is an object not including the type array.
+ *
+ * @internal
+ *
+ * @param {any} value
+ *
+ * @return {boolean}
+ */
 export const isObject = (value: any): value is NonNullable<Record<any, any>> => {
     return value !== null && typeof value === 'object' && !Array.isArray(value);
 };

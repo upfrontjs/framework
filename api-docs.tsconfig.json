@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "lib/src/*.d.ts"
+  ],
+  "$schema": "https://json.schemastore.org/tsconfig"
+}

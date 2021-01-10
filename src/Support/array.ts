@@ -4,6 +4,9 @@ import Paginator from '../Pagination/Paginator';
 export {}; // this file needs to be a module
 
 declare global {
+    /**
+     * Globally available methods on Array.prototype.
+     */
     interface Array<T> {
         /**
          * Create a collection from the array.
@@ -20,6 +23,9 @@ declare global {
         paginate(): Paginator<T>;
     }
 
+    /**
+     * Globally available methods on Array.
+     */
     interface ArrayConstructor {
         /**
          * Create a collection from the array.

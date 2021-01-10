@@ -1,33 +1,33 @@
 {
   "compilerOptions": {
-    // declarations
     "declaration": true,
-    "declarationDir": "/",
+    "declarationDir": "lib/types",
     "declarationMap": true,
 
-    // compilation result
     "module": "ESNext",
     "outDir": "lib",
-    "rootDir": "./",
+    "rootDir": "./src",
     "preserveConstEnums": false,
     "sourceMap": true,
+    "sourceRoot": "../src",
     "downlevelIteration": true,
     "isolatedModules": true,
+    "esModuleInterop": true,
+    "importHelpers": true,
     "lib": [
       "ESNext",
       "DOM"
     ],
     "target": "ESNext",
 
-    // compilation process
-    "incremental": true,
+    "incremental": false,
+    "noEmitOnError": true,
     "moduleResolution": "node",
-    "esModuleInterop": true,
     "removeComments": false,
     "pretty": true,
 
-    // code quality
     "noImplicitReturns": true,
+    "allowSyntheticDefaultImports": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "forceConsistentCasingInFileNames": true,
@@ -37,7 +37,8 @@
     "allowUnreachableCode": false
   },
   "include": [
-    "src/index.ts"
+    "src/index.ts",
+    "lib/src/index.d.ts"
   ],
   "exclude": [
     "**/node_modules/",

@@ -1,3 +1,10 @@
+/**
+ * Interface prescribes what's expected to be implemented
+ * by an object that initiates api requests.
+ *
+ * @link {API.prototype.call}
+ * @link {CallsApi.prototype.call}
+ */
 export default interface ApiCaller {
     /**
      * Optional property containing request configuration object.

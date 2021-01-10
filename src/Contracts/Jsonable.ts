@@ -1,6 +1,6 @@
 export default interface Jsonable {
     /**
-     * Convert object to it a JSON string.
+     * Convert object into JSON string.
      */
     toJson(): string;
 }

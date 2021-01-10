@@ -1,17 +1,5 @@
 import { merge } from 'lodash';
-import type ApiCaller from '../Contracts/ApiCaller';
-import type HandlesApiResponse from '../Contracts/HandlesApiResponse';
-import type DateTimeInterface from '../Contracts/DateTimeInterface';
-
-interface Configuration extends Record<string, unknown> {
-    api: ApiCaller;
-    apiResponseHandler: HandlesApiResponse;
-    baseEndPoint: string;
-    headers: HeadersInit|Record<string, string|string[]>|string[][];
-    randomDataGenerator: any;
-    [key: string]: any;
-    dateTime: DateTimeInterface;
-}
+import type Configuration from '../Contracts/Configuration';
 
 export default class Config {
     /**
@@ -19,14 +7,14 @@ export default class Config {
      *
      * @protected
      */
-    protected static configuration: Partial<Configuration> = {};
+    protected static configuration: Configuration = {};
 
     /**
      * The config constructor.
      *
      * @param {object} configuration
      */
-    constructor(configuration?: Partial<Configuration>) {
+    constructor(configuration?: Configuration) {
         if (configuration) {
             merge(Config.configuration, configuration);
         }
@@ -48,7 +36,7 @@ export default class Config {
      * @param {string} key
      */
     public has(key: keyof Configuration|string): boolean {
-        return !!Config.configuration[key] || typeof Config.configuration[key] === 'boolean';
+        return Config.configuration.hasOwnProperty(key);
     }
 
     /**
@@ -73,9 +61,7 @@ export default class Config {
      * @return {this}
      */
     public unset(key: keyof Configuration|string): this {
-        if (this.has(key)) {
-            delete Config.configuration[key];
-        }
+        delete Config.configuration[key];
 
         return this;
     }

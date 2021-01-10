@@ -1,3 +1,9 @@
+/**
+ * Interface prescribes what's expected to be implemented
+ * by an object that is tasked with value casting.
+ *
+ * @see {CastsAttributes.prototype.implementsCaster}
+ */
 export default interface AttributeCaster {
     /**
      * Transform the attribute from the underlying model value.
@@ -7,7 +13,7 @@ export default interface AttributeCaster {
      *
      * @return {any}
      */
-    get(key: string, value: unknown): unknown;
+    get<T extends unknown>(key: string, value: unknown): T;
 
     /**
      * Transform the attribute to its underlying model values.

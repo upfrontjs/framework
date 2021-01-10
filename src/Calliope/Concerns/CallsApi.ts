@@ -43,9 +43,6 @@ export default class CallsApi extends BuildsQuery {
      */
     private requestCount = 0;
 
-    /**
-     * Reset the endpoint.
-     */
     constructor(attributes?: Attributes) {
         super(attributes);
         this.resetEndpoint();

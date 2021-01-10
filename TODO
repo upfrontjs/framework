@@ -3,7 +3,10 @@
 // todo - add built-in graphql support (single endpoint, query/body encoding/parsing)
 // todo - tinker with node support (take callsApi out)
 
-// todo - will also need a cookbook to show the cool shit one might not think of straight away eg.: also in vue-press
+// todo - will also need a cookbook to show the cool shit one might not think of straight away eg.:
     - local scope building
     - straight up send a form with the CallsApi methods
     - nested filters (given their api implements some parsing of Model.where('relation.column', 'value')
+
+// todo - make command to generate model + add man page for command
+// todo - confirm source maps are correct

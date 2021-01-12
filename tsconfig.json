@@ -6,10 +6,9 @@
 
     "module": "ESNext",
     "outDir": "lib",
-    "rootDir": "./src",
+    "rootDir": ".",
     "preserveConstEnums": false,
     "sourceMap": true,
-    "sourceRoot": "../src",
     "downlevelIteration": true,
     "isolatedModules": true,
     "esModuleInterop": true,

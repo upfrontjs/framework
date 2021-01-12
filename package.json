@@ -1,5 +1,5 @@
 {
-  "name": "upfront",
+  "name": "@nandi95/upfront",
   "version": "0.1.0",
   "description": "Data handling framework complementary to backend model systems.",
   "main": "lib/index.js",
@@ -17,6 +17,10 @@
   "keywords": [
     "model",
     "data handling",
+    "object oriented",
+    "orm",
+    "front end",
+    "browser",
     "api",
     "rest",
     "framework",
@@ -35,22 +39,25 @@
     "test-with-coverage": "npm run test -- --coverage",
     "lint": "eslint . --fix --ext .ts",
     "compile": "rollup -c",
-    "postcompile": "tsc --emitDeclarationOnly",
+    "postcompile": "tsc --emitDeclarationOnly --rootDir ./src --sourceRoot ../",
     "generate-api-docs": "npx typedoc"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.166",
-    "@types/pluralize": "0.0.29",
-    "@types/qs": "^6.9.5",
-    "@types/uuid": "^8.3.0",
     "lodash": "^4.17.20",
     "pluralize": "^8.0.0",
     "qs": "^6.9.4",
     "uuid": "^8.3.2"
   },
+  "optionalDependencies": {
+    "@types/qs": "^6.9.5"
+  },
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.1.0",
     "@types/jest": "^26.0.19",
+    "@types/lodash": "^4.14.167",
+    "@types/pluralize": "^0.0.29",
+    "@types/qs": "^6.9.5",
+    "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^4.11.0",
     "@typescript-eslint/parser": "^4.11.0",
     "eslint": "^7.16.0",
@@ -67,5 +74,10 @@
     "tslib": "^2.0.1",
     "typedoc": "^0.20.13",
     "typescript": "^4.1.3"
+  },
+  "directories": {
+    "lib": "./src",
+    "doc": "./docs",
+    "test": "./tests"
   }
 }

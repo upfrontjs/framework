@@ -30,8 +30,10 @@ export default class GuardsAttributes extends CastsAttributes {
      * Set attribute guarding for the model.
      *
      * @return {{guarded?: string[], fillable?: string[]}}
+     *
+     * @protected
      */
-    protected initialise(): {guarded?: string[]; fillable?: string[]} {
+    protected initialise(): { guarded?: string[]; fillable?: string[] } {
         return {
             fillable: [],
             guarded: ['*']

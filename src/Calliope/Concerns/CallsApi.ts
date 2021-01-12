@@ -13,6 +13,10 @@ import { isObject } from '../../Support/function';
 export default class CallsApi extends BuildsQuery {
     /**
      * The basic endpoint that model queries.
+     *
+     * @type {string}
+     *
+     * @protected
      */
     protected get endpoint(): string {
         return '';

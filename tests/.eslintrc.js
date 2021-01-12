@@ -1,14 +1,17 @@
 module.exports = {
-    parserOptions: {
-        "project": [__dirname + "/tsconfig.json"],
-    },
     extends: [
+        "../.eslintrc.js",
         "plugin:jest/all"
     ],
     env: {
+        browser: true,
+        es2020: true,
         "jest/globals": true
     },
-    plugins: ["jest"],
+    plugins: [
+        "@typescript-eslint",
+        "jest"
+    ],
     rules: {
         "@typescript-eslint/no-empty-function": "off",
         "@typescript-eslint/no-unsafe-call": "off",

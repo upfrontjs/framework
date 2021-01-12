@@ -9,6 +9,11 @@ tests/cache/
 # IDEs and editors
 .idea
 .vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # logs
 *.log

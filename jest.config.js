@@ -1,26 +1,28 @@
+/** @typedef {import('ts-jest/dist/types')} */
+/** @type {import('@jest/types').Config.InitialOptions} */
 module.exports = {
     preset: 'ts-jest',
     testEnvironment: 'jsdom',
     rootDir: './',
     transform: {
-        "^.+\\.[t]sx?$": "ts-jest"
+        '^.+\\.[t]sx?$': 'ts-jest'
     },
     collectCoverageFrom: [
         '<rootDir>/src/**/*.ts',
         '!<rootDir>/src/index.ts'
     ],
-    cacheDirectory: "<rootDir>/tests/cache",
-    coverageDirectory: "<rootDir>/tests/coverage",
-    coverageProvider: "babel",
-    coverageReporters: ["json", "text-summary"],
+    cacheDirectory: '<rootDir>/tests/cache',
+    coverageDirectory: '<rootDir>/tests/coverage',
+    coverageProvider: 'babel',
+    coverageReporters: ['json', 'text-summary'],
     testMatch: [
-        "<rootDir>tests/**/*(*.)@(test).[tj]s?(x)"
+        '<rootDir>tests/**/*(*.)@(test).[tj]s?(x)'
     ],
     automock: false,
     unmockedModulePathPatterns: [
-        "<rootDir>/node_modules/"
+        '<rootDir>/node_modules/'
     ],
-    setupFilesAfterEnv: ["<rootDir>tests/setupTests.ts"],
+    setupFilesAfterEnv: ['<rootDir>/tests/setupTests.ts'],
     errorOnDeprecated: true,
     testPathIgnorePatterns: [
         '/node_modules/'
@@ -31,13 +33,11 @@ module.exports = {
     globals: {
         window: {},
         'ts-jest': {
-            tsconfig: 'tests/tsconfig.json'
-        }
     },
     extraGlobals: [
-        "Function",
-        "Array",
-        "String",
-        "Math"
+        'Function',
+        'Array',
+        'String',
+        'Math'
     ]
 };

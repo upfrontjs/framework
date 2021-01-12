@@ -13,7 +13,7 @@ export default interface AttributeCaster {
      *
      * @return {any}
      */
-    get<T extends unknown>(key: string, value: unknown): T;
+    get(key: string, value: unknown): any;
 
     /**
      * Transform the attribute to its underlying model values.

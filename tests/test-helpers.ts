@@ -1,5 +1,5 @@
 import type { MockResponseInit } from 'jest-fetch-mock';
-import cloneDeep from 'lodash/cloneDeep';
+import { cloneDeep } from 'lodash';
 import { isObject } from '../src/Support/function';
 import type User from './mock/Models/User';
 import fetchMock from 'jest-fetch-mock';

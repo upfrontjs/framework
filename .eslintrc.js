@@ -2,8 +2,9 @@ module.exports = {
     parser: "@typescript-eslint/parser",
     parserOptions: {
         "tsconfigDir": __dirname,
-        "project": [__dirname + "/tsconfig.json"],
-        "debugLevel": true
+        "project": "./tsconfig.json",
+        "debugLevel": true,
+        "ecmaVersion": "es2020"
     },
     plugins: [
         "@typescript-eslint",
@@ -19,7 +20,6 @@ module.exports = {
     },
     ignorePatterns: [
         'node_modules',
-        'lib',
         '.eslintrc.js',
         '*config*.js'
     ],

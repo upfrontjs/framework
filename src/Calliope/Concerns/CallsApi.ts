@@ -1,10 +1,8 @@
 import ModelCollection from '../ModelCollection';
 import LogicException from '../../Exceptions/LogicException';
-import type ApiCaller from '../../Contracts/ApiCaller';
-import Config from '../../Support/Config';
+import GlobalConfig from '../../Support/GlobalConfig';
 import API from '../../Services/API';
 import ApiResponseHandler from '../../Services/ApiResponseHandler';
-import type HandlesApiResponse from '../../Contracts/HandlesApiResponse';
 import type Model from '../Model';
 import BuildsQuery from './BuildsQuery';
 import type { Attributes } from './HasAttributes';
@@ -75,11 +73,11 @@ export default class CallsApi extends BuildsQuery {
         }
 
         this.requestCount++;
-        const config = new Config();
+        const config = new GlobalConfig;
         const url = String(config.get('baseEndPoint', '')).finish('/')
             + (this.getEndpoint().startsWith('/') ? this.getEndpoint().slice(1) : this.getEndpoint());
-        const apiCaller = config.get('api', new API) as ApiCaller;
-        const handlesApiResponse = config.get('apiResponseHandler', new ApiResponseHandler) as HandlesApiResponse;
+        const apiCaller = config.get('api', new API)!;
+        const handlesApiResponse = config.get('apiResponseHandler', new ApiResponseHandler)!;
 
         return handlesApiResponse
             .handle(

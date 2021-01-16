@@ -1,0 +1,23 @@
+name: Lint
+
+on:
+  pull_request:
+    paths:
+      - '**/*.ts'
+    branches:
+      - main
+      - 'releases/*'
+
+jobs:
+  build:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 15
+          registry-url: https://npm.pkg.github.com/
+      - run: npm ci
+      - name: ESLint
+        run: node node_modules/.bin/eslint . --ext .ts

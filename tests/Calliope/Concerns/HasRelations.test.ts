@@ -9,11 +9,11 @@ import Contract from '../../mock/Models/Contract';
 import File from '../../mock/Models/File';
 import fetchMock from 'jest-fetch-mock';
 import { buildResponse, getLastFetchCall } from '../../test-helpers';
-import Config from '../../../src/Support/Config';
-import cloneDeep from 'lodash/cloneDeep';
+import { cloneDeep } from 'lodash';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import Collection from '../../../src/Support/Collection';
 import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
+import { config } from '../../setupTests';
 
 let hasRelations: User;
 
@@ -210,7 +210,7 @@ describe('hasRelations', () => {
             await hasRelations.load(['team'], true);
 
             expect(getLastFetchCall()?.url).toBe(
-                String(new Config().get('baseEndPoint'))
+                String(config.get('baseEndPoint'))
                 + '/' + String(hasRelations.team.getEndpoint())
                 + '/' + String(hasRelations.team.getKey())
             );
@@ -221,7 +221,7 @@ describe('hasRelations', () => {
                 await hasRelations.load(['file', 'files']);
 
                 expect(getLastFetchCall()?.url).toBe(
-                    String(new Config().get('baseEndPoint'))
+                    String(config.get('baseEndPoint'))
                     + '/' + String(hasRelations.getEndpoint())
                     + '/' + String(hasRelations.getKey())
                     + '?' + 'with[]=file&with[]=files'

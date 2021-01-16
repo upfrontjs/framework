@@ -3,10 +3,9 @@ import fetchMock from 'jest-fetch-mock';
 import { buildResponse, getLastFetchCall } from '../../test-helpers';
 import { advanceBy } from 'jest-date-mock';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
-import Config from '../../../src/Support/Config';
+import { config } from '../../setupTests';
 
 let hasTimestamps: User;
-const config = new Config();
 
 describe('hasTimestamps', () => {
     beforeEach(() => {

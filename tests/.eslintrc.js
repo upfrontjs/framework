@@ -1,4 +1,7 @@
 module.exports = {
+    parserOptions: {
+        "project": "./tests/tsconfig.json",
+    },
     extends: [
         "../.eslintrc.js",
         "plugin:jest/all"

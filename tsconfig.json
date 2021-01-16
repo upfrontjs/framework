@@ -1,15 +1,14 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "declarationDir": "lib/types",
+    "declarationDir": "types",
     "declarationMap": true,
 
     "module": "ESNext",
-    "outDir": "lib",
     "rootDir": ".",
     "preserveConstEnums": false,
     "sourceMap": true,
-    "downlevelIteration": true,
+    "downlevelIteration": false,
     "isolatedModules": true,
     "esModuleInterop": true,
     "importHelpers": true,
@@ -36,8 +35,7 @@
     "allowUnreachableCode": false
   },
   "include": [
-    "src/index.ts",
-    "lib/src/index.d.ts"
+    "src/index.ts"
   ],
   "exclude": [
     "**/node_modules/",

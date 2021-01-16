@@ -1,7 +1,6 @@
 import API from '../../src/Services/API';
-import Config from '../../src/Support/Config';
+import { config } from '../setupTests';
 
-const config = new Config();
 const url = String(config.get('baseEndPoint')).finish('/') + 'users';
 
 class APITester extends API {

@@ -1,16 +1,21 @@
-import Config from '../../src/Support/Config';
+import GlobalConfig from '../../src/Support/GlobalConfig';
 import API from '../../src/Services/API';
+import type Configuration from '../../src/Contracts/Configuration';
 
-let config = new Config();
+let config: GlobalConfig<Configuration> = new GlobalConfig();
 
 describe('config', () => {
     beforeEach(() => {
         config.unset('api');
     });
 
+    it('should have the baseEndpoint persisted from the setupTests.ts', () => {
+        expect(config.get('baseEndPoint')).toBe('https://test-api-endpoint.com');
+    });
+
     describe('construct()', () => {
         it('should be instantiated with some config values', function () {
-            config = new Config({ api: new API });
+            config = new GlobalConfig({ api: new API });
 
             expect(config.has('api')).toBe(true);
         });

@@ -2,13 +2,7 @@ import typescript from "@rollup/plugin-typescript";
 import pkg from './package.json';
 import { terser } from "rollup-plugin-terser";
 import bundleSize from 'rollup-plugin-bundle-size';
-import copy from 'rollup-plugin-copy'
 
-const sourcemapPathTransform = (relativeSourcePath, sourcemapPath) => {
-    // fix the relative path which was pointing to the original src,
-    // and point to the copied in src folder
-    return './' + relativeSourcePath.slice('../../'.length)
-}
 
 /**
  * @type {import('rollup/dist/rollup').RollupOptions}
@@ -18,30 +12,24 @@ const rollupConfig = {
     output: [
         {
             file: pkg.main,
-            format: 'cjs',
-            sourcemap: true,
-            sourcemapPathTransform,
+            format: 'iife',
+            name: 'Upfront',
+            sourcemap: true
         },
         {
             file: pkg.module,
             format: 'es',
-            sourcemap: true,
-            sourcemapPathTransform
+            sourcemap: true
         }
     ],
     external: [
-        ...Object.keys(pkg.dependencies)
+        ...Object.keys(pkg.dependencies),
+        ...Object.keys(pkg.optionalDependencies)
     ],
     plugins: [
         typescript(),
         terser(),
-        bundleSize(),
-        copy({
-            targets: [
-                {src: ['LICENSE.txt', 'docs/README.md', 'src'], dest: 'lib'},
-            ],
-            copyOnce: true
-        }),
+        bundleSize()
     ]
 };
 

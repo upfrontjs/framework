@@ -3,25 +3,16 @@ import '../src/Support/array';
 import '../src/Support/function';
 import 'jest-date-mock';
 import fetchMock from 'jest-fetch-mock';
-import Config from '../src/Support/Config';
+import GlobalConfig from '../src/Support/GlobalConfig';
+import type Configuration from '../src/Contracts/Configuration';
 
-const config = new Config();
+const config: GlobalConfig<Configuration> = new GlobalConfig;
 
 fetchMock.enableMocks();
-
-declare global {
-    interface Array<T> {
-        has(value: T): boolean;
-    }
-}
-
-Object.defineProperty(Array.prototype, 'has', {
-    value: function (value: any) {
-        return this.indexOf(value) !== -1;
-    }
-});
 
 global.beforeEach(() => {
     config.reset();
     config.set('baseEndPoint', 'https://test-api-endpoint.com');
 });
+
+export { config };

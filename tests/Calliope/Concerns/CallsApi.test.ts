@@ -1,16 +1,14 @@
 import LogicException from '../../../src/Exceptions/LogicException';
 import fetchMock from 'jest-fetch-mock';
-import Config from '../../../src/Support/Config';
 import API from '../../../src/Services/API';
 import ApiResponseHandler from '../../../src/Services/ApiResponseHandler';
 import { buildResponse, getLastFetchCall, mockUserModelResponse } from '../../test-helpers';
 import User from '../../mock/Models/User';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
 import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
+import { config } from '../../setupTests';
 
 let caller: User;
-
-const config = new Config();
 
 describe('callsApi', () => {
     beforeEach(() => {
@@ -58,7 +56,7 @@ describe('callsApi', () => {
                 }
             };
 
-            new Config({ api });
+            config.set('api', api);
 
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse()));
             // @ts-expect-error
@@ -75,7 +73,7 @@ describe('callsApi', () => {
                 }
             };
 
-            new Config({ apiResponseHandler });
+            config.set('apiResponseHandler', apiResponseHandler);
 
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse()));
             // @ts-expect-error

@@ -3,7 +3,7 @@ import type { Attributes } from '../Concerns/HasAttributes';
 import ModelCollection from '../ModelCollection';
 import Factory from './Factory';
 import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
-import Config from '../../Support/Config';
+import GlobalConfig from '../../Support/GlobalConfig';
 import Collection from '../../Support/Collection';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 
@@ -380,7 +380,7 @@ export default class FactoryBuilder<T extends Model> {
      * @return {string|number}
      */
     protected getKey(): string|number {
-        const config = new Config();
+        const config: GlobalConfig<Record<'lastIds', Record<string, number>>> = new GlobalConfig();
 
         if (this.model.getKeyName() === 'uuid') {
             return String.uuid();

@@ -1,18 +1,25 @@
 {
-  "name": "@nandi95/upfront",
+  "name": "@upfront/framework",
   "version": "0.1.0",
   "description": "Data handling framework complementary to backend model systems.",
-  "main": "lib/index.js",
-  "module": "lib/index.es.js",
-  "types": "lib/types/index.d.ts",
+  "main": "index.min.js",
+  "module": "index.es.min.js",
+  "types": "types/index.d.ts",
   "files": [
-    "lib/*"
+    "index*.js",
+    "src",
+    "types"
   ],
   "author": "Nandor Kraszlan",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/nandi95/upfront"
+  },
+  "directories": {
+    "lib": "./src",
+    "doc": "./docs",
+    "test": "./tests"
   },
   "keywords": [
     "model",
@@ -31,16 +38,15 @@
     "tested",
     "relations",
     "attributes",
-    "esm",
-    "cjs"
+    "esm"
   ],
   "scripts": {
     "test": "jest",
     "test-with-coverage": "npm run test -- --coverage",
     "lint": "eslint . --fix --ext .ts",
-    "compile": "rollup -c",
-    "postcompile": "tsc --emitDeclarationOnly --rootDir ./src --sourceRoot ../",
-    "generate-api-docs": "npx typedoc"
+    "build": "rollup -c",
+    "postbuild": "tsc --emitDeclarationOnly --rootDir ./src",
+    "generate-api-docs": "npm run postbuild && npx typedoc"
   },
   "dependencies": {
     "lodash": "^4.17.20",
@@ -48,15 +54,11 @@
     "qs": "^6.9.4",
     "uuid": "^8.3.2"
   },
-  "optionalDependencies": {
-    "@types/qs": "^6.9.5"
-  },
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.1.0",
     "@types/jest": "^26.0.19",
     "@types/lodash": "^4.14.167",
     "@types/pluralize": "^0.0.29",
-    "@types/qs": "^6.9.5",
     "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^4.11.0",
     "@typescript-eslint/parser": "^4.11.0",
@@ -68,16 +70,13 @@
     "jest-fetch-mock": "^3.0.3",
     "rollup": "^2.35.1",
     "rollup-plugin-bundle-size": "^1.0.3",
-    "rollup-plugin-copy": "^3.3.0",
     "rollup-plugin-terser": "^7.0.2",
     "ts-jest": "^26.4.4",
     "tslib": "^2.0.1",
     "typedoc": "^0.20.13",
     "typescript": "^4.1.3"
   },
-  "directories": {
-    "lib": "./src",
-    "doc": "./docs",
-    "test": "./tests"
+  "optionalDependencies": {
+    "@types/qs": "^6.9.5"
   }
 }

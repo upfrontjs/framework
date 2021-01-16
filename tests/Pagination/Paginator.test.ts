@@ -78,15 +78,14 @@ describe('paginator', () => {
             it('should set to last page', () => {
                 const lastItem = elements[elements.length - 1];
 
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-                expect(paginator.last().items.has(lastItem as number)).toBe(true);
+                expect(paginator.last().items).toContain(lastItem);
             });
         });
 
         describe('first()', () => {
             it('should set to first page', () => {
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-                expect(paginator.first().items.has(elements[0] as number)).toBe(true);
+                expect(paginator.first().items).toContain(elements[0]);
             });
         });
 
@@ -110,9 +109,7 @@ describe('paginator', () => {
                         .last()
                         .previous()
                         .items
-                        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-                        .has(elements[elements.length - 2] as number)
-                ).toBe(true);
+                ).toContain(elements[elements.length - 2]);
             });
 
             it('should do nothing if there isn\'t a next page', () => {
@@ -121,27 +118,25 @@ describe('paginator', () => {
                         .last()
                         .next()
                         .items
-                        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-                        .has(elements[elements.length - 1] as number)
-                ).toBe(true);
+                ).toContain(elements[elements.length - 1]);
             });
 
             it('should jump to first page if wrapping is enabled', () => {
                 paginator = new Paginator(paginator.getAll(), 1, true);
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-                expect(paginator.last().next().items.has(elements[0] as number)).toBe(true);
+                expect(paginator.last().next().items).toContain(elements[0]);
             });
         });
 
         describe('previous()', () => {
             it('should paginate to the previous page', () => {
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-                expect(paginator.next().previous().items.has(elements[0] as number)).toBe(true);
+                expect(paginator.next().previous().items).toContain(elements[0]);
             });
 
             it('should do nothing if there isn\'t a previous page', () => {
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-                expect(paginator.first().previous().items.has(elements[0] as number)).toBe(true);
+                expect(paginator.first().previous().items).toContain(elements[0]);
             });
 
             it('should jump to last page if wrapping is enabled', () => {
@@ -150,10 +145,8 @@ describe('paginator', () => {
                     paginator
                         .first()
                         .previous()
-                        .items
-                        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-                        .has(elements[elements.length - 1] as number)
-                ).toBe(true);
+                        .items)
+                    .toContain(elements[elements.length - 1]);
             });
         });
 
@@ -172,5 +165,3 @@ describe('paginator', () => {
         });
     });
 });
-
-

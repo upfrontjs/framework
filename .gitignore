@@ -1,6 +1,8 @@
 # compiled output
-lib
 api-docs
+index.*
+types
+.tgz
 
 # testing
 tests/cache/

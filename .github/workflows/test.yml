@@ -1,0 +1,29 @@
+name: Test
+
+on:
+  pull:
+    paths-ignore:
+      - 'docs/*'
+      - '**/*.md'
+      - '.editorconfig'
+      - '.eslintrc.js'
+      - 'LICENSE.txt'
+      - 'typedoc.json'
+      - 'api-docs.tsconfig.json'
+    branches:
+      - main
+      - 'releases/*'
+
+jobs:
+  build:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 15
+          registry-url: https://npm.pkg.github.com/
+      - run: npm ci
+      - name: Tests
+        run: npm run test

@@ -32,7 +32,7 @@ module.exports = {
     notifyMode: 'failure-change',
     globals: {
         window: {},
-        'ts-jest': {
+        global: {}
     },
     extraGlobals: [
         'Function',

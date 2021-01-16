@@ -1,8 +1,5 @@
 ## Contributing
 
-[fork]: https://github.com/nandi95/upfront/blob/dev/fork
-[pr]: https://github.com/nandi95/upfront/blob/dev/compare
-
 Hi there! We're thrilled that you'd like to contribute to this project. Your help is essential for keeping it great.
 
 ## Issues and PRs
@@ -11,15 +8,22 @@ If you have suggestions for how this project could be improved, or want to repor
 
 We'd also love PRs. If you're thinking of a large PR, we advise opening up an issue first to talk about it, though! Look at the links below if you're not sure how to open a PR.
 
+## Which branch
+
+**All** bug fixes should be sent to the latest stable branch. Bug fixes should never be sent to the master branch unless they fix features that exist only in the upcoming release.
+
+**Minor** features that are fully backward compatible with the current release may be sent to the latest stable branch.
+
+**Major** new features should always be sent to the main branch, which contains the upcoming release.
+
 ## Submitting a pull request
 
-1. [Fork][fork] and clone the repository.
-2. Configure and install the dependencies: `npm install`.
-3. Make sure the tests pass on your machine: `npm run test`.
-4. Create a new branch: `git checkout -b my-branch-name`.
-5. Make your change, add tests, and make sure the tests still pass.
-6. Push to your fork and [submit a pull request][pr].
-7. Pat your self on the back and wait for your pull request to be reviewed and merged.
+1. Fork and clone the repository.
+2. Run the provided setup script `sh ./scripts/setup.sh`.
+5. Create a new branch: `git checkout -b my-branch-name`.
+6. Make your change, add tests, and make sure the tests still pass.
+7. Push to your fork and submit a pull request to the [relevant brnach](#which-branch).
+8. Pat your self on the back and wait for your pull request to be reviewed and merged.
 
 Here are a few things you can do that will increase the likelihood of your pull request being accepted:
 

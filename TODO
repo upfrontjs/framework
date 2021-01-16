@@ -8,5 +8,11 @@
     - straight up send a form with the CallsApi methods
     - nested filters (given their api implements some parsing of Model.where('relation.column', 'value')
 
-// todo - make command to generate model + add man page for command
-// todo - confirm source maps are correct
+// todo - entertain the idea of using it in node
+// todo - get scripts to work on windows
+// todo - arrange api-docs to be live
+// todo - investigate lodash-es
+// todo - versioning:
+       enforce commit messages (+notes) -> enforce semantic versioning
+       breaking changes to go on the next dist tag for testing
+       set up automated change log

@@ -6,6 +6,5 @@
   "out": "api-docs",
   "name": "Upfront framework",
   "readme": "./README.md",
-  "hideGenerator": true,
   "plugin": []
 }

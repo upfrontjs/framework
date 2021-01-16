@@ -15,12 +15,12 @@ describe('array helpers', () => {
 
     it('should return a paginator by calling paginate() on an array', () => {
         expect([1, 2].paginate()).toBeInstanceOf(Paginator);
-        expect([1, 2].paginate().hasPages()).toBe(false);
+        expect([1, 2].paginate().hasPages).toBe(false);
     });
 
     it('should return a paginator by calling paginate() statically', () => {
         expect(Array.paginate([1, 2])).toBeInstanceOf(Paginator);
-        expect(Array.paginate([1, 2]).hasPages()).toBe(false);
+        expect(Array.paginate([1, 2]).hasPages).toBe(false);
     });
 
     describe('array.wrap()', () => {

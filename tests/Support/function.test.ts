@@ -12,7 +12,8 @@ describe('function helpers', () => {
 
     it('should create a paginator by calling the paginate() helper method', () => {
         expect(paginate([1, 2])).toBeInstanceOf(Paginator);
-        expect(paginate([1, 2]).hasPages()).toBe(false);
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        expect(paginate([1, 2]).hasPages).toBe(false);
     });
 
     it('should create a factory builder by calling the factory() helper method', () => {

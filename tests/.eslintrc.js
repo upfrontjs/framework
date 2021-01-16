@@ -1,6 +1,6 @@
 module.exports = {
     parserOptions: {
-        "project": "./tests/tsconfig.json",
+        "project": "./tsconfig.json",
     },
     extends: [
         "../.eslintrc.js",
@@ -24,5 +24,10 @@ module.exports = {
         "jest/prefer-expect-assertions": "off",
         "jest/no-hooks": "off",
         "jest/prefer-called-with": "off",
+        "jest/valid-title": ["error", {
+            mustMatch: {
+                it: '^should '
+            }
+        }]
     }
 }

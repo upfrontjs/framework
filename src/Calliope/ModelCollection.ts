@@ -237,9 +237,9 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      */
     public diff(models: T|T[]): this {
         this._throwIfNotModels();
-        const modelCollection = (ModelCollection.isModelCollection(models)
+        const modelCollection = ModelCollection.isModelCollection<T>(models)
             ? models
-            : new ModelCollection(Array.isArray(models) ? models : [models])) as ModelCollection<T>;
+            : new ModelCollection(Array.isArray(models) ? models : [models]);
 
         const result = this.toArray().filter((item) => {
             return !modelCollection.includes(item);
@@ -303,9 +303,9 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      * @return {this}
      */
     public intersect(models: T|T[]): this {
-        models = (ModelCollection.isModelCollection(models)
+        models = ModelCollection.isModelCollection<T>(models)
             ? models.toArray()
-            : Array.isArray(models) ? models : [models]) as T[];
+            : Array.isArray(models) ? models : [models];
 
         this._throwIfNotModels();
         this._throwIfNotModels(models);

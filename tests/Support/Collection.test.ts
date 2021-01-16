@@ -394,10 +394,14 @@ describe('collection', () => {
         });
 
         it('should throws an error if the fist argument isn\'t boolean or function', () => {
+            const type = null;
             // @ts-expect-error
-            const func = () => collection.when(null, () => {});
+            const func = () => collection.when(type, () => {});
             expect(func).toThrow(
-                'when\' expect the first argument to be a type of boolean or function, \'object\' given.'
+                new TypeError(
+                    '\'when\' expect the first argument to be a type of boolean or function, \''
+                    + typeof type + '\' given.'
+                )
             );
         });
 
@@ -450,9 +454,13 @@ describe('collection', () => {
         });
 
         it('should throw an error if the fist argument isn\'t boolean or function', () => {
+            const type = null;
             // @ts-expect-error
-            const func = () => collection.unless(null, () => {});
-            expect(func).toThrow('\'unless\' expect the first argument to be a boolean or function');
+            const func = () => collection.unless(type, () => {});
+            expect(func).toThrow(
+                new TypeError('\'unless\' expect the first argument to be a boolean or function, \''
+                    + typeof type + '\' given.')
+            );
         });
 
         it('can be chained', () => {

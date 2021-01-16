@@ -1,8 +1,11 @@
-'use strict';
-
 import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
+import { isEqual, cloneDeep } from 'lodash';
+import InvalidOffsetException from '../Exceptions/InvalidOffsetException';
 
-class Paginator<T> implements ArrayLike<T>, Iterable<T> {
+/**
+ * Utility to paginate data.
+ */
+class Paginator<T> implements Iterable<T> {
     /**
      * The current page.
      *
@@ -29,14 +32,14 @@ class Paginator<T> implements ArrayLike<T>, Iterable<T> {
      *
      * @type {any[]}
      */
-    readonly elements: T[];
+    protected readonly elements: T[];
 
     /**
      * Boolean indicating whether the paginator should repeat or not.
      *
      * @type {boolean}
      */
-    readonly wrapsAround: boolean;
+    public readonly wrapsAround: boolean;
 
     /**
      * Get the number of pages available.
@@ -50,8 +53,37 @@ class Paginator<T> implements ArrayLike<T>, Iterable<T> {
     /**
      * TGet the length of all the items within the paginator.
      */
-    get length(): number {
+    public get length(): number {
         return this.elements.length;
+    }
+
+    /**
+     * Determine whether the paginator has a previous page.
+     *
+     * @return {boolean}
+     */
+    public get hasPrevious(): boolean {
+        return this.currentPage > 1;
+    }
+
+    /**
+     * Determine whether the paginator has a next page.
+     *
+     * @return {boolean}
+     */
+    public get hasNext(): boolean {
+        const start = this.currentPage * this.itemsPerPage;
+
+        return !!this.elements.slice(start, start + this.itemsPerPage).length;
+    }
+
+    /**
+     * Determine whether the Paginator has pages or not.
+     *
+     * @return {boolean}
+     */
+    public get hasPages(): boolean {
+        return this.pageCount > 1;
     }
 
     /**
@@ -77,14 +109,14 @@ class Paginator<T> implements ArrayLike<T>, Iterable<T> {
      *
      * @return {this}
      */
-    constructor(elements: T[] = [], itemsPerPage = 10, wrapsAround = false) {
-        if (!elements.length) {
+    constructor(elements: T[], itemsPerPage = 10, wrapsAround = false) {
+        if (!elements?.length) {
             throw new InvalidArgumentException('Paginator expect at least one element in the constructor.');
         }
 
         this.wrapsAround = wrapsAround;
         this.itemsPerPage = itemsPerPage;
-        this.elements = Array.isArray(elements) ? elements : [elements];
+        this.elements = Array.isArray(elements) ? cloneDeep(elements) : [cloneDeep(elements)];
         this._setPageItems();
 
         return this;
@@ -106,22 +138,13 @@ class Paginator<T> implements ArrayLike<T>, Iterable<T> {
     }
 
     /**
-     * Determine whether the component has pages or not.
-     *
-     * @return {boolean}
-     */
-    hasPages(): boolean {
-        return this.pageCount > 1;
-    }
-
-    /**
      * The setter method for the itemsPerPage property.
      *
      * @param {number} count
      *
      * @return {this}
      */
-    setItemsPerPage(count: number): this {
+    public setItemsPerPage(count: number): this {
         this.itemsPerPage = Number(count);
         this._setPageItems();
 
@@ -133,7 +156,7 @@ class Paginator<T> implements ArrayLike<T>, Iterable<T> {
      *
      * @return {this}
      */
-    first(): this {
+    public first(): this {
         this.currentPage = 1;
         this._setPageItems();
 
@@ -145,7 +168,7 @@ class Paginator<T> implements ArrayLike<T>, Iterable<T> {
      *
      * @return {this}
      */
-    last(): this {
+    public last(): this {
         this.currentPage = this.pageCount;
         this._setPageItems();
 
@@ -159,7 +182,7 @@ class Paginator<T> implements ArrayLike<T>, Iterable<T> {
      *
      * @return {this}
      */
-    page(pageNum: number): this {
+    public page(pageNum: number): this {
         if (pageNum <= this.pageCount && pageNum >= 1) {
             this.currentPage = pageNum;
             this._setPageItems();
@@ -173,8 +196,8 @@ class Paginator<T> implements ArrayLike<T>, Iterable<T> {
      *
      * @return {this}
      */
-    previous(): this {
-        if (this.hasPrevious()) {
+    public previous(): this {
+        if (this.hasPrevious) {
             this.currentPage--;
             this._setPageItems();
 
@@ -193,8 +216,8 @@ class Paginator<T> implements ArrayLike<T>, Iterable<T> {
      *
      * @return {this}
      */
-    next(): this {
-        if (this.hasNext()) {
+    public next(): this {
+        if (this.hasNext) {
             this.currentPage++;
             this._setPageItems();
 
@@ -209,35 +232,119 @@ class Paginator<T> implements ArrayLike<T>, Iterable<T> {
     }
 
     /**
-     * Determine whether the paginator has a previous page.
-     * @return {boolean}
+     * Get the page number where the item first occurs.
+     * If not found return -1
+     *
+     * @param {any} item
+     *
+     * @private
      */
-    hasPrevious(): boolean {
-        return this.currentPage > 1;
+    public pageNumberOf(item: T): number {
+        const pageIndex = this.getPages().findIndex(element => element.findIndex(elem => isEqual(elem, item)) !== -1);
+
+        return pageIndex === -1 ? -1 : pageIndex + 1;
     }
 
     /**
-     * Determine whether the paginator has a next page.
+     * Determine whether the given item is on page based on deep equality.
      *
-     * @return {boolean}
+     * @param {any} item
      */
-    hasNext(): boolean {
-        const start = this.currentPage * this.itemsPerPage;
-
-        return !!this.elements.slice(start, start + this.itemsPerPage).length;
+    public isOnPage(item: T): boolean {
+        return !!this.items.filter(elem => isEqual(elem, item)).length;
     }
 
-    // todo ? - jumpToItem(item): this {
-    //
-    // }
+    /**
+     * Jump to the page where the item is based on deep equality.
+     *
+     * @param {any} item
+     */
+    public jumpToItem(item: T): this {
+        const pageNumber = this.pageNumberOf(item);
+
+        if (pageNumber === -1) {
+            throw new InvalidOffsetException('Given item does not exists on the paginator');
+        }
+
+        if (this.currentPage === pageNumber) {
+            return this;
+        }
+
+        this.page(pageNumber);
+        return this;
+    }
+
+    /**
+     * Determine whether the paginator has the given item.
+     */
+    public has(item: T): boolean {
+        return this.elements.findIndex(elem => isEqual(elem, item)) !== -1;
+    }
+
+    /**
+     * Add one or more items to the end of the paginator.
+     * Returns the new length of the paginator.
+     *
+     * @param {...any} items
+     */
+    public push(...items: T[]): number {
+        this.elements.push(...items);
+
+        return this.length;
+    }
+
+    /**
+     * Add one or more items to the beginning of the paginator.
+     * Returns the new length of the paginator.
+     *
+     * @param {...any} items
+     */
+    public unshift(...items: T[]): number {
+        this.elements.unshift(...items);
+
+        return this.length;
+    }
+
+    /**
+     * Remove and return the last element of the paginator.
+     *
+     * @return {any}
+     */
+    public pop(): T | undefined {
+        return this.elements.pop();
+    }
+
+    /**
+     * Remove and return the first element of the paginator.
+     *
+     * @return {any}
+     */
+    public shift(): T | undefined {
+        return this.elements.shift();
+    }
 
     /**
      * Get all the items passed to the paginator.
      *
      * @return {any[]}
      */
-    getAll(): T[] {
+    public getAll(): T[] {
         return this.elements;
+    }
+
+    /**
+     * Get the items in a matrix where one array is one page.
+     *
+     * @return {any[][]}
+     */
+    public getPages(): T[][] {
+        const elementMatrix: T[][] = [];
+
+        for (let i = 0; i <= this.pageCount - 1; i++) {
+            elementMatrix.push(this.elements.slice(i * this.itemsPerPage, (i + 1) * this.itemsPerPage));
+        }
+
+        return elementMatrix;
     }
 }
 

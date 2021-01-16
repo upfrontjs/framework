@@ -1,7 +1,6 @@
 import { isEqual, uniq } from 'lodash';
 import type Arrayable from '../Contracts/Arrayable';
 import type Jsonable from '../Contracts/Jsonable';
-import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
 
 export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, ArrayLike<T> {
     /**
@@ -450,7 +449,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
         } else if (boolean instanceof Function) {
             bool = !!boolean(this._newInstance(this.toArray()));
         } else {
-            throw new InvalidArgumentException(
+            throw new TypeError(
                 '\'when\' expect the first argument to be a type of boolean or function, \''
                 + typeof boolean + '\' given.'
             );
@@ -485,8 +484,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
         } else if (boolean instanceof Function) {
             bool = !!boolean(this._newInstance(this.toArray()));
         } else {
-            throw new InvalidArgumentException(
-                '\'unless\' expect the first argument to be a boolean or function \''
+            throw new TypeError(
+                '\'unless\' expect the first argument to be a boolean or function, \''
                 + typeof boolean + '\' given.'
             );
         }

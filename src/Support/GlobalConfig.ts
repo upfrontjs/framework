@@ -3,7 +3,7 @@ import type Configuration from '../Contracts/Configuration';
 
 type WithProperty<T, K extends PropertyKey> = T & {
     [P in K]: Exclude<P extends keyof T ? T[P] : unknown, undefined>
-}
+};
 
 export default class GlobalConfig<T extends Configuration> {
     /**
@@ -50,7 +50,10 @@ export default class GlobalConfig<T extends Configuration> {
      * @param {string} key
      * @param {any}    value
      */
-    public set<K extends keyof Configuration|string>(key: K, value: T[K]): asserts this is GlobalConfig<WithProperty<T, K>> {
+    public set<K extends keyof Configuration|string>(
+        key: K,
+        value: T[K]
+    ): asserts this is GlobalConfig<WithProperty<T, K>> {
         GlobalConfig.configuration[key] = value;
     }
 
@@ -59,6 +62,7 @@ export default class GlobalConfig<T extends Configuration> {
      *
      * @param {string} key
      */
+    // todo - omit doesn't seem to work
     public unset<K extends keyof Configuration|string>(key: K): asserts this is GlobalConfig<Omit<T, K>> {
         delete GlobalConfig.configuration[key];
     }

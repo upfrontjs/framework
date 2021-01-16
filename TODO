@@ -7,6 +7,7 @@
     - local scope building
     - straight up send a form with the CallsApi methods
     - nested filters (given their api implements some parsing of Model.where('relation.column', 'value')
+    - extend model collection and do some specific stuff
 
 // todo - entertain the idea of using it in node
 // todo - get scripts to work on windows

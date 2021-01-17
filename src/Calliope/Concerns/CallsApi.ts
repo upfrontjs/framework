@@ -236,6 +236,9 @@ export default class CallsApi extends BuildsQuery {
             data.forEach(attributes => {
                 if (isObject(attributes)) {
                     const model = new (<typeof Model> this.constructor)();
+                    Object.defineProperty(model, '_' + 'last_synced_at'[this.attributeCasing](), {
+                        get: () => new Date
+                    });
                     collection.push(model.forceFill(attributes).syncOriginal());
                 }
             });
@@ -243,10 +246,12 @@ export default class CallsApi extends BuildsQuery {
             result = collection;
         } else  {
             const model = new (<typeof Model> this.constructor)();
+            Object.defineProperty(model, '_' + 'last_synced_at'[this.attributeCasing](), {
+                get: () => new Date
+            });
             result = model.forceFill(data).syncOriginal();
         }
 
-        // todo - set a last synced attribute to indicate when the model was last fetched from remote?
         return result;
     }
 

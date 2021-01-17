@@ -87,6 +87,20 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
     }
 
     /**
+     * The iterator used for looping over the attributes and relations.
+     *
+     * @type {Symbol.iterator}
+     */
+    public *[Symbol.iterator](): Iterator<any> {
+        const properties = Object.assign({}, this.attributes, this.relations);
+        const keys = Object.keys(properties);
+
+        for (let i = 0; i < keys.length; i++) {
+            yield properties[keys[i] as string];
+        }
+    }
+
+    /**
      * Get an attribute from the model.
      *
      * @param {string} key

@@ -45,8 +45,8 @@
     "test-with-coverage": "npm run test -- --coverage",
     "lint": "eslint . --fix --ext .ts",
     "build": "rollup -c",
-    "postbuild": "tsc --emitDeclarationOnly --rootDir ./src",
-    "generate-api-docs": "npm run postbuild && npx typedoc"
+    "postbuild": "tsc --emitDeclarationOnly",
+    "generate-api-docs": "[ ! -d './types' ] && npm run postbuild || echo './types folder exists' && npx typedoc"
   },
   "dependencies": {
     "lodash": "^4.17.20",

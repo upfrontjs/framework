@@ -7,6 +7,9 @@ import User from '../../mock/Models/User';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
 import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 import { config } from '../../setupTests';
+import type Collection from '../../../src/Support/Collection';
+import type Model from '../../../src/Calliope/Model';
+import { advanceTo } from 'jest-date-mock';
 
 let caller: User;
 
@@ -171,6 +174,24 @@ describe('callsApi', () => {
             expect(callerModel.getRawOriginal()).toStrictEqual(expectedUser.getRawOriginal());
 
             User.prototype.getFillable = originalFillableReturn;
+        });
+
+        it('should set _lastSyncedAt or _last_synced_at getter on the model or model collection', () => {
+            advanceTo(new Date);
+            const userData = User.factory().raw() as Attributes;
+
+            //@ts-expect-error
+            const user = caller.newInstanceFromResponseData(userData) as User;
+            expect(user['_' + 'last_synced_at'[user.attributeCasing]()]).toStrictEqual(new Date);
+
+            const usersData = User.factory().times(2).raw() as Collection<Attributes>;
+
+            // @ts-expect-error
+            const users = caller.newInstanceFromResponseData(usersData.toArray()) as ModelCollection<Model>;
+
+            users.forEach(user => {
+                expect(user['_' + 'last_synced_at'[user.attributeCasing]()]).toStrictEqual(new Date);
+            });
         });
     });
 

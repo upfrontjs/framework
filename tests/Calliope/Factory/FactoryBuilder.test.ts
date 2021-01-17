@@ -160,7 +160,7 @@ describe('factoryBuilder', () => {
     });
 
     describe('make()', () => {
-        it('shouldn\'t set the id and timestamps', () => {
+        it('should not set the id and timestamps', () => {
             const model = factoryBuilder.make() as User;
 
             expect(model[model.getUpdatedAtColumn()]).toBeNull();
@@ -228,7 +228,7 @@ describe('factoryBuilder', () => {
             expect(userOne.deletedAt).toBeNull();
         });
 
-        it('shouldn\'t set the dates if they\'re disabled', () => {
+        it('should not set the dates if they\'re disabled', () => {
             const factoryBuilder = new FactoryBuilder(Team);
 
             const team = factoryBuilder.create() as Team;

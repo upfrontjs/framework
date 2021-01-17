@@ -77,7 +77,7 @@ describe('modelCollection', () => {
             expect(collection.modelKeys()).toBeInstanceOf(Collection);
         });
 
-        it('can be chained', () => {
+        it('should return a model collection ready for chaining', () => {
             expect(collection.modelKeys().toArray()).toHaveLength(elements.length);
         });
 
@@ -126,7 +126,7 @@ describe('modelCollection', () => {
             expect(func).toThrow(incompatibleElementsError);
         });
 
-        it('can be chained', () => {
+        it('should return a model collection ready for chaining', () => {
             expect(collection.unique().first()).toStrictEqual(user1);
         });
     });
@@ -202,7 +202,7 @@ describe('modelCollection', () => {
             expect(func).toThrow(incompatibleElementsError);
         });
 
-        it('can be chained', () => {
+        it('should return a model collection ready for chaining', () => {
             expect(collection.duplicates().toArray()).toHaveLength(1);
         });
     });
@@ -230,7 +230,7 @@ describe('modelCollection', () => {
             expect(func).toThrow(incompatibleElementsError);
         });
 
-        it('can be chained', () => {
+        it('should return a model collection ready for chaining', () => {
             expect(collection.delete(user1).toArray()).toHaveLength(1);
         });
     });
@@ -281,7 +281,7 @@ describe('modelCollection', () => {
             expect(func).toThrow(incompatibleElementsError);
         });
 
-        it('can be chained', () => {
+        it('should return a model collection ready for chaining', () => {
             expect(collection.diff(user1).nth(1)).toHaveLength(2);
         });
     });
@@ -303,7 +303,7 @@ describe('modelCollection', () => {
                 .toStrictEqual(new User({ ...user2.getRawOriginal(), id: 4 }));
         });
 
-        it('can be chained', () => {
+        it('should return a model collection ready for chaining', () => {
             expect(
                 collection.union([user2, new User({ ...user2.getRawOriginal(), id: 4 })]).nth(1)
             ).toHaveLength(elements.length + 1);
@@ -341,7 +341,7 @@ describe('modelCollection', () => {
             expect(func).toThrow(incompatibleElementsError);
         });
 
-        it('can be chained', () => {
+        it('should return a model collection ready for chaining', () => {
             expect(collection.only(1).nth(1)).toHaveLength(1);
         });
     });
@@ -375,7 +375,7 @@ describe('modelCollection', () => {
             expect(func).toThrow(incompatibleElementsError);
         });
 
-        it('can be chained', () => {
+        it('should return a model collection ready for chaining', () => {
             expect(collection.except(1).nth(1)).toHaveLength(elements.length - 1);
         });
     });
@@ -420,7 +420,7 @@ describe('modelCollection', () => {
             expect(collection.findByKey([1, 2])).toBeInstanceOf(ModelCollection);
         });
 
-        it('can be chained if has multiple results', () => {
+        it('should return a model collection ready for chaining if has multiple results', () => {
             expect(collection.findByKey([1, 2])?.nth(1)).toHaveLength(elements.length - 1);
         });
 
@@ -470,7 +470,7 @@ describe('modelCollection', () => {
             expect(collection.chunk(1)).toHaveLength(elements.length);
         });
 
-        it('can be chained', () => {
+        it('should return a model collection ready for chaining', () => {
             expect(collection.chunk(elements.length).toArray()).toHaveLength(1);
         });
     });
@@ -497,7 +497,7 @@ describe('modelCollection', () => {
             expect(func).toThrow(incompatibleElementsError);
         });
 
-        it('can be chained', () => {
+        it('should return a model collection ready for chaining', () => {
             expect(collection.intersect(user1).toArray()).toHaveLength(1);
         });
     });
@@ -517,7 +517,7 @@ describe('modelCollection', () => {
             expect(func).toThrow(incompatibleElementsError);
         });
 
-        it('can be chained', () => {
+        it('should return a model collection ready for chaining', () => {
             expect(collection.pad(7, user2).toArray()).toHaveLength(7);
         });
     });
@@ -532,7 +532,7 @@ describe('modelCollection', () => {
             expect(func).toThrow(incompatibleElementsError);
         });
 
-        it('can be chained', () => {
+        it('should return a model collection ready for chaining', () => {
             expect(ModelCollection.times(5, () => user1).toArray()).toHaveLength(5);
         });
     });

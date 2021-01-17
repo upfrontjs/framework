@@ -4,11 +4,11 @@ let collection: Collection<any>;
 
 describe('collection', () => {
     describe('construct()', () => {
-        it('can be instantiated with array', () => {
+        it('should be able to instantiated with an array', () => {
             expect(new Collection([1, 2])).toBeInstanceOf(Collection);
         });
 
-        it('should be instantiated with an item', () => {
+        it('should be able to instantiated with an item', () => {
             expect(new Collection('item')).toBeInstanceOf(Collection);
         });
 
@@ -16,12 +16,40 @@ describe('collection', () => {
             expect(new Collection([1, 2]).length).toBeTruthy();
         });
 
-        it('can be indexed by numbers', () => {
+        it('should be able to be indexed by numbers', () => {
             expect(new Collection([1, 2])[0]).toStrictEqual(1);
         });
 
-        it('can be instantiated without arguments', () => {
+        it('should be able to instantiated without arguments', () => {
             expect(new Collection()).toBeInstanceOf(Collection);
+        });
+    });
+
+    describe('[Symbol.iterator]()', () => {
+        const elements = [1, 2, 3, 4, 5];
+        beforeEach(() => {
+            collection = new Collection(elements);
+        });
+
+        it('should have the capability to be looped over', () => {
+            let count = 0;
+
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            for (const _item of collection) {
+                count++;
+            }
+
+            expect(count).toBe(elements.length);
+        });
+
+        it('should return the expected elements', () => {
+            let boolean = true;
+
+            for (const item of collection) {
+                boolean = elements.includes(item) && boolean;
+            }
+
+            expect(boolean).toBe(true);
         });
     });
 
@@ -213,7 +241,7 @@ describe('collection', () => {
             expect(collection.unique(elem => String(elem) === '1')).toHaveLength(1);
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(collection.unique().toArray()).toHaveLength(3);
         });
     });
@@ -234,7 +262,7 @@ describe('collection', () => {
             expect(collection.take(2).duplicates()).toHaveLength(0);
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(collection.duplicates().toArray()).toHaveLength(2);
         });
 
@@ -295,7 +323,7 @@ describe('collection', () => {
             expect(collection.delete(elements[0])).toHaveLength(elements.length - 1);
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(collection.delete(elements[0]).nth(1)).toHaveLength(elements.length - 1);
         });
     });
@@ -312,7 +340,7 @@ describe('collection', () => {
             expect(collection.includes(2) && collection.includes(4)).toBe(true);
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(collection.nth(2).toArray()).toHaveLength(2);
         });
     });
@@ -344,7 +372,7 @@ describe('collection', () => {
             expect(collection.pad(7).last()).toBeUndefined();
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(collection.pad(7).toArray()).toHaveLength(7);
         });
     });
@@ -405,7 +433,7 @@ describe('collection', () => {
             );
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(collection.when(true, collection => collection).toArray()).toHaveLength(elements.length);
         });
     });
@@ -463,7 +491,7 @@ describe('collection', () => {
             );
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(collection.unless(true, collection => collection).toArray()).toHaveLength(elements.length);
         });
     });
@@ -490,7 +518,7 @@ describe('collection', () => {
             expect(func).toHaveBeenCalledWith(collection);
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             collection = new Collection();
 
             expect(collection.whenEmpty((coll) => coll).toArray()).toHaveLength(0);
@@ -526,7 +554,7 @@ describe('collection', () => {
             expect(func).toHaveBeenCalledWith(collection);
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             collection = new Collection();
 
             expect(collection.whenNotEmpty((coll) => coll).toArray()).toHaveLength(0);
@@ -564,7 +592,7 @@ describe('collection', () => {
             expect(collection).toContain(collection.first());
         });
 
-        it('can be chained when multiple random elements returned', () => {
+        it('should return a collection ready for cheining when multiple random elements returned', () => {
             expect(collection.random(2).toArray()).toHaveLength(2);
         });
     });
@@ -584,7 +612,7 @@ describe('collection', () => {
             expect(collection.union([{ id: 5 }, { id: 6 }]).last()).toStrictEqual({ id: 6 });
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(collection.union([{ id: 5 }, { id: 6 }]).nth(1)).toHaveLength(elements.length + 1);
         });
     });
@@ -601,7 +629,7 @@ describe('collection', () => {
             expect(collection.diff(items)).toHaveLength(2);
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(collection.diff(items).toArray()).toHaveLength(2);
         });
     });
@@ -619,7 +647,7 @@ describe('collection', () => {
             expect(collection.intersect(items).indexOf(elements[0]) !== -1).toBe(false);
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(collection.intersect(items).toArray()).toHaveLength(2);
         });
     });
@@ -658,7 +686,7 @@ describe('collection', () => {
             console.info.mockRestore();
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             jest.spyOn(console, 'info');
             // @ts-expect-error
             console.info.mockImplementation(() => {});
@@ -683,7 +711,7 @@ describe('collection', () => {
             expect(Collection.isCollection(collection.chunk(2).first())).toBe(true);
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(collection.chunk(2).toArray()).toHaveLength(3);
         });
     });
@@ -712,7 +740,7 @@ describe('collection', () => {
             expect(collection.take(-2)).toStrictEqual(new Collection([4, 5]));
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(collection.take(2).nth(1).toArray()).toHaveLength(2);
         });
     });
@@ -728,7 +756,7 @@ describe('collection', () => {
             expect(collection.takeWhile(item => item < 4)).toHaveLength(3);
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(collection.takeWhile(item => item < 4).toArray()).toHaveLength(3);
         });
     });
@@ -744,7 +772,7 @@ describe('collection', () => {
             expect(collection.takeUntil(item => item >= 4)).toHaveLength(3);
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(collection.takeUntil(item => item >= 4).toArray()).toHaveLength(3);
         });
     });
@@ -776,7 +804,7 @@ describe('collection', () => {
             expect(collection.skip(-2)).toStrictEqual(collection.take(3));
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(collection.skip(2).nth(1).toArray()).toHaveLength(3);
         });
     });
@@ -799,7 +827,7 @@ describe('collection', () => {
             expect(collection.skipWhile(item => item <= 4)).toHaveLength(1);
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(
                 collection
                     .skipWhile(item => item <= 2)
@@ -829,7 +857,7 @@ describe('collection', () => {
             expect(collection.skipUntil(item => item >= (elements[elements.length - 1] as number))).toHaveLength(1);
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(
                 collection
                     .skipUntil(item => item >= 2)
@@ -854,13 +882,13 @@ describe('collection', () => {
             expect(func).toHaveBeenCalledWith(collection);
         });
 
-        it('shouldn\'t be able to mutate the collection', () => {
+        it('should not be able to mutate the collection', () => {
             const func = (collection: Collection<any>) => collection.pad(10);
             collection.tap(func);
             expect(collection.tap(func)).toHaveLength(elements.length);
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(collection.tap((coll) => coll).toArray()).toHaveLength(elements.length);
         });
     });
@@ -885,7 +913,7 @@ describe('collection', () => {
             expect(collection.pipe(func)).toHaveLength(10);
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(collection.pipe((coll) => coll).toArray()).toHaveLength(elements.length);
         });
     });
@@ -927,7 +955,7 @@ describe('collection', () => {
             expect(func).toThrow('Every item needs to be an object to be able to access its properties');
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             collection = new Collection(elements);
             expect(collection.pluck('id').toArray()).toHaveLength(elements.length);
         });
@@ -971,7 +999,7 @@ describe('collection', () => {
             expect(Collection.times(5, new test()).first()).toBeInstanceOf(test);
         });
 
-        it('can be chained', () => {
+        it('should return a collection ready for chaining', () => {
             expect(Collection.times(5, (i: number) => i).toArray()).toHaveLength(5);
         });
     });
@@ -984,7 +1012,7 @@ describe('collection', () => {
         });
 
         describe('map()', () => {
-            it('can be chained', () => {
+            it('should return a collection ready for chaining', () => {
                 expect(collection.map(e => e).nth(1)).toHaveLength(5);
             });
 
@@ -1000,7 +1028,7 @@ describe('collection', () => {
         });
 
         describe('flat()', () => {
-            it('can be chained', () => {
+            it('should return a collection ready for chaining', () => {
                 expect(collection.flat().nth(1)).toHaveLength(5);
             });
 
@@ -1047,7 +1075,7 @@ describe('collection', () => {
         });
 
         describe('flatMap()', () => {
-            it('can be chained', () => {
+            it('should return a collection ready for chaining', () => {
                 expect(collection.flatMap(elem => elem * 2).nth(1)).toHaveLength(5);
             });
 
@@ -1079,7 +1107,7 @@ describe('collection', () => {
         });
 
         describe('reverse()', () => {
-            it('can be chained', () => {
+            it('should return a collection ready for chaining', () => {
                 expect(collection.reverse().nth(1)).toHaveLength(5);
             });
 
@@ -1092,7 +1120,7 @@ describe('collection', () => {
         });
 
         describe('concat()', () => {
-            it('can be chained', () => {
+            it('should return a collection ready for chaining', () => {
                 expect(collection.concat([6, 7]).nth(1)).toHaveLength(7);
             });
 
@@ -1103,7 +1131,7 @@ describe('collection', () => {
         });
 
         describe('foreEach()', () => {
-            it('can be chained', () => {
+            it('should return a collection ready for chaining', () => {
                 expect(collection.forEach(e => e).nth(1)).toHaveLength(5);
             });
 
@@ -1124,7 +1152,7 @@ describe('collection', () => {
                 expect(collection).toHaveLength(elements.length - 2);
             });
 
-            it('can be chained', () => {
+            it('should return a collection ready for chaining', () => {
                 expect(collection.splice(0, 1, 1).nth(1)).toHaveLength(1);
                 expect(collection).toHaveLength(elements.length);
             });
@@ -1151,7 +1179,7 @@ describe('collection', () => {
         });
 
         describe('sort()', () => {
-            it('can be chained', () => {
+            it('should return a collection ready for chaining', () => {
                 collection = new Collection([1, 3, 5, 2, 4]);
                 expect(collection.sort().nth(1)).toHaveLength(5);
                 expect(collection.last()).toBe(4);
@@ -1159,13 +1187,13 @@ describe('collection', () => {
         });
 
         describe('slice()', () => {
-            it('can be chained', () => {
+            it('should return a collection ready for chaining', () => {
                 expect(collection.slice(0, 1).nth(1)).toHaveLength(1);
             });
         });
 
         describe('filter()', () => {
-            it('can be chained', () => {
+            it('should return a collection ready for chaining', () => {
                 expect(collection.filter(e => e > 2).nth(1)).toHaveLength(3);
             });
 

@@ -1,6 +1,7 @@
 import User from '../../mock/Models/User';
 import Shift from '../../mock/Models/Shift';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
+import { isEqual } from 'lodash';
 
 let hasAttributes: User;
 
@@ -47,6 +48,36 @@ describe('hasAttributes', () => {
 
             expect(new User(hasAttributes).getOriginal())
                 .toStrictEqual(hasAttributes.getAttributes());
+        });
+    });
+
+    describe('[Symbol.iterator]()', () => {
+        it('should have the capability to be looped over', () => {
+            let count = 0;
+
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            for (const _item of hasAttributes) {
+                count++;
+            }
+
+            expect(count).toBe(
+                hasAttributes.getAttributeKeys().length + Object.keys(hasAttributes.getRelations()).length
+            );
+        });
+
+        it('should return the expected elements', () => {
+            let boolean = true;
+            const values = Object.assign({}, hasAttributes.getAttributes(), hasAttributes.getRelations());
+            const hasValue = (value: any) => {
+                // flaky test given there could be multiple keys with the same value
+                return Object.keys(values).filter(key => isEqual(values[key], value)).length > 0;
+            };
+
+            for (const item of hasAttributes) {
+                boolean = boolean && hasValue(item);
+            }
+
+            expect(boolean).toBe(true);
         });
     });
 

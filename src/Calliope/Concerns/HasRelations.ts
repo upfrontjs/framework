@@ -290,6 +290,7 @@ export default class HasRelations extends CallsApi {
      *
      * @return {void}
      */
+    // todo revise this
     private static configureRelationType<T extends Model>(
         model: T,
         relationType: Relation

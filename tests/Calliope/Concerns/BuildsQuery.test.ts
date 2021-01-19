@@ -1,4 +1,5 @@
 import BuildsQuery from '../../../src/Calliope/Concerns/BuildsQuery';
+import InvalidArgumentException from "../../../src/Exceptions/InvalidArgumentException";
 
 class TestClass extends BuildsQuery {
     public compiledParams(): Record<string, unknown> {
@@ -40,7 +41,18 @@ describe('buildsQuery', () => {
             // @ts-expect-error
             const failingCall = () => builder.addWhereConstraint('column', 'operator', 'or');
 
-            expect(failingCall).toThrow('\'operator\' is not an expected type of operator.');
+            expect(failingCall).toThrow(
+                new InvalidArgumentException('\'operator\' is not an expected type of operator.')
+            );
+        });
+
+        it('should throw an error if improper boolean operator given', () => {
+            // @ts-expect-error
+            const failingCall = () => builder.addWhereConstraint('column', '=', 'value', 'boolean operator');
+
+            expect(failingCall).toThrow(
+                new InvalidArgumentException('\'boolean operator\' is not an expected type of operator.')
+            );
         });
     });
 

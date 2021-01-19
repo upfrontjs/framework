@@ -290,11 +290,10 @@ export default class HasRelations extends CallsApi {
      *
      * @return {void}
      */
-    // todo revise this
     private static configureRelationType<T extends Model>(
         model: T,
         relationType: Relation
-    ): asserts model is T & { relationType: Relation } {
+    ): asserts model is T & { relationType: Readonly<Relation> } {
         Object.defineProperty(model, 'relationType', {
             configurable: false,
             enumerable: false,

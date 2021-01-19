@@ -3,7 +3,6 @@ import pkg from './package.json';
 import { terser } from "rollup-plugin-terser";
 import bundleSize from 'rollup-plugin-bundle-size';
 
-
 /**
  * @type {import('rollup/dist/rollup').RollupOptions}
  */
@@ -27,7 +26,7 @@ const rollupConfig = {
         ...Object.keys(pkg.optionalDependencies)
     ],
     plugins: [
-        typescript(),
+        typescript({ tsconfig: './tsconfig.json' }),
         terser(),
         bundleSize()
     ]

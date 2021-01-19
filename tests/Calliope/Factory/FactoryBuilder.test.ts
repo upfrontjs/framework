@@ -113,6 +113,7 @@ describe('factoryBuilder', () => {
             expect(failingFunc).toThrow(
                 new TypeError(
                     'Invalid return type defined on the factory() method on the \'' + User.name + '\' class.'
+                    + 'Expected \'' + Factory.name + '\', got \'object\'.'
                 )
             );
         });
@@ -374,6 +375,33 @@ describe('factoryBuilder', () => {
                     updatedAt: null,
                     deletedAt: now
                 });
+        });
+
+        it('should pass the already resolved values to the attribute method', () => {
+            // attributes are resolved in order
+            /** @see {FactoryBuilder.prototype.resolveAttributes} */
+
+            factoryBuilder.raw({
+                a: true,
+                [Symbol()]: 1,
+                b: (attributes: Attributes) => {
+                    // check that this method call receives the resolved attributes
+                    // within this attribute resolving iteration as well as the
+                    // already resolved attributes
+                    expect(attributes).toStrictEqual({
+                        a: true,
+                        name: 'username 1'
+                    });
+
+                    return true;
+                },
+                c: () => true,
+                d: true
+            });
+
+            // fyi: checking a mock call kept being updated with the
+            // full set of attributes as the object is passed
+            // by reference, hence the inline expect
         });
     });
 

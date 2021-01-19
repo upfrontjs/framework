@@ -227,7 +227,11 @@ export default class BuildsQuery extends HasAttributes {
      */
     protected addWhereConstraint(column: string, operator: Operator, value: any, boolean: BooleanOperator): this {
         if (!this.operators.includes(operator)) {
-            throw new TypeError('\'' + operator + '\' is not an expected type of operator.');
+            throw new InvalidArgumentException('\'' + operator + '\' is not an expected type of operator.');
+        }
+
+        if (!['and', 'or'].includes(boolean.toLowerCase())) {
+            throw new InvalidArgumentException('\'' + boolean + '\' is not an expected type of operator.');
         }
 
         this.wheres.push({

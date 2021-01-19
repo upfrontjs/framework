@@ -135,7 +135,7 @@ declare global {
      */
     interface StringConstructor {
         /**
-         * Generate a uuid or version 4.
+         * Generate a uuid of version 4.
          */
         uuid(): string;
     }

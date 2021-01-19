@@ -58,7 +58,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {this}
      */
-    public state(states: string|string[]): this {
+    public state(states: string | string[]): this {
         this.states = Array.isArray(states) ? states : [states];
 
         return this;
@@ -93,7 +93,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {Model|ModelCollection<Model>}
      */
-    public make(attributes?: Attributes): T|ModelCollection<T> {
+    public make(attributes?: Attributes): T | ModelCollection<T> {
         const modelOrCollection = this.compileRaw(attributes);
 
         const factory = this.getFactory();
@@ -102,7 +102,7 @@ export default class FactoryBuilder<T extends Model> {
             factory.afterMaking(modelOrCollection);
         }
 
-        return this.addRelations(modelOrCollection, 'make') as T|ModelCollection<T>;
+        return this.addRelations(modelOrCollection, 'make') as T | ModelCollection<T>;
     }
 
     /**
@@ -112,7 +112,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {Model|ModelCollection<Model>}
      */
-    public create(attributes?: Attributes): T|ModelCollection<T> {
+    public create(attributes?: Attributes): T | ModelCollection<T> {
         const modelOrCollection = this.compileRaw(attributes);
 
         if (ModelCollection.isModelCollection<T>(modelOrCollection)) {
@@ -129,7 +129,7 @@ export default class FactoryBuilder<T extends Model> {
             factory.afterCreating(modelOrCollection);
         }
 
-        return this.addRelations(modelOrCollection, 'create') as T|ModelCollection<T>;
+        return this.addRelations(modelOrCollection, 'create') as T | ModelCollection<T>;
     }
 
     /**
@@ -174,16 +174,16 @@ export default class FactoryBuilder<T extends Model> {
      * @return {object|Model|Collection|ModelCollection}
      */
     protected addRelations(
-        data: Attributes|Collection<Attributes>|T|ModelCollection<T>,
-        method: 'raw'|'make'|'create'
-    ): Attributes|Collection<Attributes>|T|ModelCollection<T> {
+        data: Attributes | Collection<Attributes> | T | ModelCollection<T>,
+        method: 'raw' | 'make' | 'create'
+    ): Attributes | Collection<Attributes> | T | ModelCollection<T> {
         if (Object.keys(this.relations).length) {
             // if collection, be it attributes or model collection
-            if (Collection.isCollection<T|Attributes>(data)) {
+            if (Collection.isCollection<T | Attributes>(data)) {
                 // for each recursively call this method
                 data = data.map(
-                    (entry: Attributes|T) => this.addRelations(entry, method)
-                ) as Collection<Attributes>|ModelCollection<T>;
+                    (entry: Attributes | T) => this.addRelations(entry, method)
+                ) as Collection<Attributes> | ModelCollection<T>;
             } else {
                 Object.keys(this.relations).forEach(relation => {
                     const relationValue = (this.relations[relation] as FactoryBuilder<Model>)[method]();
@@ -236,20 +236,20 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {Model|ModelCollection<Model>}
      */
-    protected compileRaw(attributes?: Attributes): T|ModelCollection<T> {
+    protected compileRaw(attributes?: Attributes): T | ModelCollection<T> {
         const compiledAttributes = this.rawAttributes(attributes);
 
         if (Collection.isCollection<Attributes>(compiledAttributes)) {
             const models: T[] = [];
 
             compiledAttributes.forEach(attributes => {
-                const model = new (<typeof Model> this.model.constructor) as T;
+                const model = new (<typeof Model>this.model.constructor) as T;
                 models.push(model.forceFill(attributes).syncOriginal());
             });
 
             return new ModelCollection(models);
         } else {
-            const model = new (<typeof Model> this.model.constructor) as T;
+            const model = new (<typeof Model>this.model.constructor) as T;
             return model.forceFill(compiledAttributes).syncOriginal();
         }
     }
@@ -258,6 +258,8 @@ export default class FactoryBuilder<T extends Model> {
      * Compile and return all attributes.
      *
      * @param {object=} attributes
+     *
+     * @protected
      *
      * @return {object|object[]}
      */
@@ -320,6 +322,8 @@ export default class FactoryBuilder<T extends Model> {
     /**
      * Resolve the methods in the attributes.
      *
+     * @link {https://stackoverflow.com/a/5525820}
+     *
      * @param {object} attributes
      * @param {object} previouslyResolvedAttributes
      *
@@ -327,16 +331,15 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {object}
      */
-    // todo - to functions pass in the partially done data from this iteration
-    //  not just the previously resolved attributes
-    private resolveAttributes(attributes: Attributes, previouslyResolvedAttributes = {}): Attributes {
-        Object.keys(attributes).forEach(key => {
-            if (attributes[key] instanceof Function) { // todo - if factory, resolve?
-                attributes[key] = (attributes[key] as CallableFunction)(previouslyResolvedAttributes);
-            }
-        });
+    private resolveAttributes(attributes: Attributes, previouslyResolvedAttributes: Attributes = {}): Attributes {
+        Object.getOwnPropertyNames(attributes)
+            .forEach(key => {
+                previouslyResolvedAttributes[key] = attributes[key] instanceof Function
+                    ? (attributes[key] as CallableFunction)(previouslyResolvedAttributes)
+                    : attributes[key];
+            });
 
-        return Object.assign(previouslyResolvedAttributes, attributes);
+        return previouslyResolvedAttributes;
     }
 
     /**
@@ -364,6 +367,7 @@ export default class FactoryBuilder<T extends Model> {
         if (!(factory instanceof Factory)) {
             throw new TypeError(
                 'Invalid return type defined on the factory() method on the \'' + this.model.getName() + '\' class.'
+                + 'Expected \'' + Factory.name + '\', got \'' + typeof factory + '\'.'
             );
         }
 
@@ -379,14 +383,14 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {string|number}
      */
-    protected getKey(): string|number {
+    protected getKey(): string | number {
         const config: GlobalConfig<Record<'lastIds', Record<string, number>>> = new GlobalConfig();
 
         if (this.model.getKeyName() === 'uuid') {
             return String.uuid();
         }
 
-        const lastIds = config.get('lastIds', {}) as Record<string, number>;
+        const lastIds = config.get('lastIds', {});
 
         // update or create entry for the model.
         if (!lastIds[this.model.getName()]) {

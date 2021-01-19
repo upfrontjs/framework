@@ -7,6 +7,7 @@
   "types": "types/index.d.ts",
   "files": [
     "index*.js",
+    "*.js.map",
     "src",
     "types"
   ],
@@ -45,10 +46,10 @@
     "test-with-coverage": "npm run test -- --coverage",
     "lint": "eslint . --fix --ext .ts",
     "build": "rollup -c",
-    "postbuild": "tsc --emitDeclarationOnly",
-    "generate-api-docs": "[ ! -d './types' ] && npm run postbuild || echo './types folder exists' && npx typedoc"
+    "generate-api-docs": "[ ! -d './types' ] && tsc --emitDeclarationOnly || echo './types folder exists' && npx typedoc"
   },
   "dependencies": {
+    "@types/qs": "^6.9.5",
     "lodash": "^4.17.20",
     "pluralize": "^8.0.0",
     "qs": "^6.9.4",

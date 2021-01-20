@@ -20,7 +20,8 @@ module.exports = {
         'node_modules',
         '.eslintrc.js',
         '*config*.js',
-        'DateTime*'
+        'DateTime*',
+        '/types'
     ],
     rules: {
         // https://eslint.org/docs/rules/
@@ -41,6 +42,7 @@ module.exports = {
         "eqeqeq": "error",
 
         // https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin#supported-rules
+        '@typescript-eslint/object-curly-spacing': ['warn', 'always'],
         "@typescript-eslint/indent": ["warn", 4],
         "@typescript-eslint/quotes": ["warn", "single"],
         "@typescript-eslint/semi": "error",

@@ -1,6 +1,5 @@
 import type ApiCaller from '../Contracts/ApiCaller';
 import qs from 'qs';
-import type { IStringifyOptions } from 'qs';
 import { isObject } from '../Support/function';
 import GlobalConfig from '../Support/GlobalConfig';
 
@@ -13,14 +12,14 @@ export default class API implements ApiCaller {
     /**
      * Enable indexing object by strings.
      */
-    [index: string]: CallableFunction | IStringifyOptions | Record<string, unknown>
+    [index: string]: CallableFunction | qs.IStringifyOptions | Record<string, unknown>
 
     /**
      * The settings for the parsing of the get parameters.
      *
      * @protected
      */
-    protected readonly getParamEncodingOptions: IStringifyOptions = {
+    protected readonly getParamEncodingOptions: qs.IStringifyOptions = {
         arrayFormat: 'brackets',
         strictNullHandling: true,
         indices: true,

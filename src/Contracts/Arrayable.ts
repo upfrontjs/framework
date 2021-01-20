@@ -4,5 +4,5 @@ export default interface Arrayable {
      *
      * @return array
      */
-    toArray(): any[];
+    toArray: () => any[];
 }

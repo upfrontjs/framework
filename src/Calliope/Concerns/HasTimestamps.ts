@@ -87,7 +87,7 @@ export default class HasTimestamps extends HasRelations {
         }
 
         return this.select([this.getCreatedAtColumn(), this.getUpdatedAtColumn()])
-            .whereKey((this as unknown as Model).getKey() as string|number)
+            .whereKey((this as unknown as Model).getKey()!)
             .get()
             .then(model => {
                 return this.updateTimestampsFromResponse((model as Model).getRawOriginal())
@@ -110,7 +110,7 @@ export default class HasTimestamps extends HasRelations {
         } else {
             throw new InvalidArgumentException(
                 'No \'' + this.getCreatedAtColumn() + '\' or '
-                + '\'' + HasTimestamps.createdAt +'\' attribute found on the response data.'
+                + '\'' + HasTimestamps.createdAt + '\' attribute found on the response data.'
             );
         }
 
@@ -119,7 +119,7 @@ export default class HasTimestamps extends HasRelations {
         } else {
             throw new InvalidArgumentException(
                 'No \'' + this.getUpdatedAtColumn() + '\' or '
-                + '\'' + HasTimestamps.updatedAt +'\' attribute found on the response data.'
+                + '\'' + HasTimestamps.updatedAt + '\' attribute found on the response data.'
             );
         }
 

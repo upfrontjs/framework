@@ -95,7 +95,7 @@ describe('string helpers', () => {
             expect(sentence.before('fox')).toBe('The quick brown ');
         });
 
-        it('returns the whole string if token not found', () => {
+        it('should the whole string if token not found', () => {
             expect(sentence.before('4')).toBe(sentence);
         });
     });
@@ -105,7 +105,7 @@ describe('string helpers', () => {
             expect(sentence.beforeLast('o')).toBe('The quick brown fox jumps over the lazy d');
         });
 
-        it('returns the whole string if token not found', () => {
+        it('should the whole string if token not found', () => {
             expect(sentence.beforeLast('4')).toBe(sentence);
         });
     });
@@ -115,7 +115,7 @@ describe('string helpers', () => {
             expect(sentence.after('lazy')).toBe(' dog.');
         });
 
-        it('returns the whole string if token not found', () => {
+        it('should the whole string if token not found', () => {
             expect(sentence.after('4')).toBe(sentence);
         });
     });
@@ -125,7 +125,7 @@ describe('string helpers', () => {
             expect(sentence.afterLast('h')).toBe('e lazy dog.');
         });
 
-        it('returns the whole string if token not found', () => {
+        it('should the whole string if token not found', () => {
             expect(sentence.afterLast('4')).toBe(sentence);
         });
     });
@@ -137,7 +137,7 @@ describe('string helpers', () => {
             expect(sentence.limit(10)).toBe('The quick ...');
         });
 
-        it('can specify the appended value', () => {
+        it('should be able to take a custom string for appending at the end', () => {
             // the string length + the default appended value
             expect(sentence.limit(10, '(...)')).toBe('The quick (...)');
         });
@@ -148,13 +148,13 @@ describe('string helpers', () => {
             expect(sentence.words(3)).toBe('The quick brown...');
         });
 
-        it('can specify the appended value', () => {
+        it('should be able to take a custom string for appending at the end', () => {
             expect(sentence.words(3, '(...)')).toBe('The quick brown(...)');
         });
     });
 
     describe('is()', () => {
-        it('determine whether the given toke matches the string', () => {
+        it('should determine whether the given toke matches the string', () => {
             expect(sentence.is(sentence)).toBe(true);
             expect(sentence.is('The quick*')).toBe(true);
             expect(sentence.is('The * dog.')).toBe(true);

@@ -37,7 +37,7 @@ export default interface Configuration extends Record<string, unknown> {
     /**
      * The headers to be merged into request configuration.
      */
-    headers?: HeadersInit|Record<string, string|string[]>|string[][];
+    headers?: HeadersInit|Record<string, string[] | string>|string[][];
 
     /**
      * The randomisation library made available in the Factory classes if set.

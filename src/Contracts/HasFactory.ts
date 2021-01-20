@@ -7,10 +7,10 @@ export default interface HasFactory {
      *
      * @return {Factory}
      */
-    factory?(): Factory<Model>;
+    factory?: () => Factory<Model>;
 
     /**
      * The implementer should allow indexing by string.
      */
-    [factory: string]: undefined | (() => Factory<Model>);
+    [factory: string]: (() => Factory<Model>) | undefined;
 }

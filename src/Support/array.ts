@@ -13,14 +13,14 @@ declare global {
          *
          * @return {Collection}
          */
-        collect(): Collection<T>;
+        collect: () => Collection<T>;
 
         /**
          * Construct a paginator instance.
          *
          * @return {Paginator}
          */
-        paginate(): Paginator<T>;
+        paginate: () => Paginator<T>;
     }
 
     /**
@@ -34,7 +34,7 @@ declare global {
          *
          * @return {Collection}
          */
-        collect(items?: any[]): Collection<any>;
+        collect: (items?: any[]) => Collection<any>;
 
         /**
          * Ensure the given value is an array.
@@ -43,7 +43,7 @@ declare global {
          *
          * @return {array};
          */
-        wrap(value: any): Array<any>;
+        wrap: (value: any) => any[];
 
         /**
          * Construct a paginator instance.
@@ -52,7 +52,7 @@ declare global {
          *
          * @return {Paginator}
          */
-        paginate(items: any[]): Paginator<any>;
+        paginate: (items: any[]) => Paginator<any>;
     }
 }
 
@@ -90,7 +90,7 @@ if (!('paginate' in Array)) {
 
 if (!('wrap' in Array)) {
     Object.defineProperty(Array, 'wrap', {
-        value: function (value: any): Array<any> {
+        value: function (value: any): any[] {
             if (!value && typeof value !== 'boolean') {
                 value = [];
             }

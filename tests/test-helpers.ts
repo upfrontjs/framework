@@ -4,7 +4,7 @@ import { isObject } from '../src/Support/function';
 import type User from './mock/Models/User';
 import fetchMock from 'jest-fetch-mock';
 
-export const buildResponse = (response?: string|Record<string, any>): MockResponseInit => {
+export const buildResponse = (response?: Record<string, any> | string): MockResponseInit => {
     let responseObject: MockResponseInit = {
         status: 200,
         body: JSON.stringify({ data: 'value' })
@@ -18,7 +18,7 @@ export const buildResponse = (response?: string|Record<string, any>): MockRespon
         try {
             value = JSON.parse(value);
             // eslint-disable-next-line no-empty
-        } catch (e) {}
+        } catch (e: unknown) {}
 
         responseObject.body = JSON.stringify(value);
     }
@@ -41,7 +41,7 @@ export const mockUserModelResponse = (user: User): void => {
 
 type FetchCall = {
     url: string;
-    method: 'get'|'post'|'delete'|'patch'|'put';
+    method: 'delete' | 'get' | 'patch' | 'post' | 'put';
     headers: Headers;
     body?: any;
 };
@@ -70,9 +70,8 @@ export const getLastFetchCall = (): FetchCall|undefined => {
     if ('body' in lastCall && typeof lastCall.body === 'string') {
         try {
             lastCall.body = JSON.parse(lastCall.body);
-        }
-        // eslint-disable-next-line no-empty
-        catch (e) {}
+            // eslint-disable-next-line no-empty
+        } catch (e: unknown) {}
     }
 
     return lastCall;

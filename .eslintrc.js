@@ -2,8 +2,7 @@ module.exports = {
     parser: "@typescript-eslint/parser",
     parserOptions: {
         "tsconfigDir": __dirname,
-        "project": "./tsconfig.json",
-        "debugLevel": true,
+        "project": "**/tsconfig.json",
         "ecmaVersion": "es2020"
     },
     plugins: [
@@ -11,8 +10,7 @@ module.exports = {
     ],
     extends: [
         "eslint:recommended",
-        "plugin:@typescript-eslint/recommended",
-        "plugin:@typescript-eslint/recommended-requiring-type-checking"
+        "plugin:@typescript-eslint/all"
     ],
     env: {
         browser: true,
@@ -21,7 +19,8 @@ module.exports = {
     ignorePatterns: [
         'node_modules',
         '.eslintrc.js',
-        '*config*.js'
+        '*config*.js',
+        'DateTime*'
     ],
     rules: {
         // https://eslint.org/docs/rules/
@@ -64,6 +63,27 @@ module.exports = {
         "@typescript-eslint/consistent-type-imports": ["error", { prefer: 'type-imports' }],
         "@typescript-eslint/member-delimiter-style": "warn",
         "@typescript-eslint/type-annotation-spacing": "warn",
-        "@typescript-eslint/naming-convention": "error"
+        "@typescript-eslint/naming-convention": "error",
+        "@typescript-eslint/no-magic-numbers": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/member-ordering": "off",
+        "@typescript-eslint/class-literal-property-style": "off",
+        "@typescript-eslint/space-before-function-paren": ["warn", {
+            "anonymous": "always",
+            "named": "never",
+            "asyncArrow": "always"
+        }],
+        "@typescript-eslint/prefer-readonly-parameter-types": "off",
+        "@typescript-eslint/init-declarations": "off",
+        "@typescript-eslint/no-unnecessary-condition": "off",
+        "@typescript-eslint/no-type-alias": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/consistent-type-definitions": "off",
+        "@typescript-eslint/strict-boolean-expressions": "off",
+        "@typescript-eslint/no-dynamic-delete": "off",
+        "@typescript-eslint/no-loop-func": "off",
+        "@typescript-eslint/no-confusing-void-expression": "off",
+        "@typescript-eslint/array-type": "warn",
+        "@typescript-eslint/prefer-for-of": "off"
     }
 }

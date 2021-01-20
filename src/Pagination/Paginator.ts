@@ -46,7 +46,7 @@ class Paginator<T> implements Iterable<T> {
      *
      * @return {number}
      */
-    get pageCount(): number {
+    public get pageCount(): number {
         return Math.ceil(this.elements.length / this.itemsPerPage);
     }
 
@@ -91,7 +91,7 @@ class Paginator<T> implements Iterable<T> {
      */
     public *[Symbol.iterator](): Iterator<T> {
         for (let i = 0; i < this.elements.length; i++) {
-            yield this.elements[i] as T;
+            yield this.elements[i]!;
         }
     }
 
@@ -109,7 +109,7 @@ class Paginator<T> implements Iterable<T> {
      *
      * @return {this}
      */
-    constructor(elements: T[], itemsPerPage = 10, wrapsAround = false) {
+    public constructor(elements: T[], itemsPerPage = 10, wrapsAround = false) {
         if (!elements?.length) {
             throw new InvalidArgumentException('Paginator expect at least one element in the constructor.');
         }

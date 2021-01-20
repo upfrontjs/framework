@@ -16,89 +16,89 @@ declare global {
         /**
          * Uppercase the first letter.
          */
-        ucFirst(): string;
+        ucFirst: () => string;
 
         /**
          * Determine whether the given string is a uuid of version 4.
          */
-        isUuid(): boolean;
+        isUuid: () => boolean;
 
         /**
          * Transform the string to Title Case.
          */
-        title(): string;
+        title: () => string;
 
         /**
          * Ensure the string ends with the given string.
          *
          * @param {string} token.
          */
-        finish(token: string): string;
+        finish: (token: string) => string;
 
         /**
          * Ensure the string starts with the given string.
          *
          * @param {string} token.
          */
-        start(token: string): string;
+        start: (token: string) => string;
 
         /**
          * Transform the string to camelCase.
          */
-        camel(): string;
+        camel: () => string;
 
         /**
          * Transform the string to snake_case.
          */
-        snake(): string;
+        snake: () => string;
 
         /**
          * Transform the string to camelCase.
          */
-        kebab(): string;
+        kebab: () => string;
 
         /**
          * Get the plural form of the string.
          */
-        plural(): string;
+        plural: () => string;
 
         /**
          * Get the singular form of the string.
          */
-        singular(): string;
+        singular: () => string;
 
         /**
          * Get the string up to and not including the given token.
          *
          * @param {string} token - The string to search for.
          */
-        before(token: string): string;
+        before: (token: string) => string;
 
         /**
          * Get the string before the last instance of the found token.
          *
          * @param {string} token - The string to search for.
          */
-        beforeLast(token: string): string;
+        beforeLast: (token: string) => string;
 
         /**
          * Get part of the string after the given token.
          *
          * @param {string} token - The string to search for.
          */
-        after(token: string): string;
+        after: (token: string) => string;
 
         /**
          * Get part of the string after the last found instance of the given token.
          *
          * @param {string} token - The string to search for.
          */
-        afterLast(token: string): string;
+        afterLast: (token: string) => string;
 
         /**
          * Transform the string to PascalCase.
          */
-        pascal(): string;
+        pascal: () => string;
 
         /**
          * Limit the number of characters on the string.
@@ -106,7 +106,7 @@ declare global {
          * @param {number} count - The number of characters to keep.
          * @param {string} limiter - The string to be appended at the end after the limit.
          */
-        limit(count: number, limiter?: string): string;
+        limit: (count: number, limiter?: string) => string;
 
         /**
          * Limit the number of words on the string.
@@ -114,7 +114,7 @@ declare global {
          * @param {number} count - The number of words to keep.
          * @param {string} limiter - The string to be appended at the end after the limit.
          */
-        words(count: number, limiter?: string): string;
+        words: (count: number, limiter?: string) => string;
 
         /**
          * Check whether the string matches the given string.
@@ -122,12 +122,12 @@ declare global {
          * @param {string|RegExp} compareValue - The Regexp or the string to test for. "*" functions as a wildcard.
          * @param {string} ignoreCase - Flag indicating whether the casing should be ignored or not.
          */
-        is(compareValue: string | RegExp, ignoreCase?: boolean): boolean;
+        is: (compareValue: RegExp | string, ignoreCase?: boolean) => boolean;
 
         /**
          * Test whether all the tokens included in the string.
          */
-        includesAll(tokens: string[]): boolean;
+        includesAll: (tokens: string[]) => boolean;
     }
 
     /**
@@ -137,7 +137,7 @@ declare global {
         /**
          * Generate a uuid of version 4.
          */
-        uuid(): string;
+        uuid: () => string;
     }
 }
 
@@ -295,7 +295,7 @@ if (!('singular' in String.prototype)) {
 
 if (!('is' in String.prototype)) {
     Object.defineProperty(String.prototype, 'is', {
-        value: function (compareValue: string | RegExp, ignoreCase = false): boolean {
+        value: function (compareValue: RegExp | string, ignoreCase = false): boolean {
             if (typeof compareValue === 'string') {
                 compareValue = new RegExp(
                     compareValue.replace(/\*/g, '.*'),

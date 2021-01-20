@@ -14,7 +14,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      * @param {any[]} items
      *
      */
-    constructor(items?: T|T[]) {
+    public constructor(items?: T | T[]) {
         if (!items) {
             return this;
         }
@@ -46,9 +46,9 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @type {Symbol.iterator}
      */
-    public *[Symbol.iterator](): Iterator<T> {
+    public* [Symbol.iterator](): Iterator<T> {
         for (let i = 0; i < this.length; i++) {
-            yield this[i] as T;
+            yield this[i]!;
         }
     }
 
@@ -68,7 +68,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     // due to poor design (any such should be a member method).
     // With this method it will only call the constructor
     // with the items.
-    protected _newInstance(items?: T|T[]): this {
+    protected _newInstance(items?: T | T[]): this {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         return new (this.constructor as any)(items);
     }
@@ -142,7 +142,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {undefined|any|this}
      */
-    public random(count = 1): T | undefined | this {
+    public random(count = 1): T | this | undefined {
         count = Math.abs(count);
 
         if (!this.length) {
@@ -157,7 +157,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
             const randomElements: T[] = [];
 
             for (let i = 0; i < count; i++) {
-                randomElements.push(this[Math.floor(Math.random() * this.length)] as T);
+                randomElements.push(this[Math.floor(Math.random() * this.length)]!);
             }
 
             return this._newInstance(randomElements);
@@ -348,6 +348,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
             }
 
             for (let i = 0; i < diff; i++) {
+                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 end ? collection.push(value) : collection.unshift(value);
             }
         }
@@ -376,7 +377,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    public diff(values: T|T[]): this {
+    public diff(values: T | T[]): this {
         const argCollection = Collection.isCollection(values)
             ? values
             : new Collection(Array.isArray(values) ? values : [values]);
@@ -397,7 +398,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    public intersect(values: T|T[]): this {
+    public intersect(values: T | T[]): this {
         const argCollection = Collection.isCollection(values)
             ? values
             : new Collection(Array.isArray(values) ? values : [values]);
@@ -440,7 +441,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      * @return {this}
      */
     public when(
-        boolean: ((collection: Collection<T>) => boolean) | boolean, callback: (collection: this) => this
+        boolean: boolean | ((collection: Collection<T>) => boolean), callback: (collection: this) => this
     ): this {
         let bool: boolean;
 
@@ -474,7 +475,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      * @return {this}
      */
     public unless(
-        boolean: ((collection: Collection<T>) => boolean) | boolean,
+        boolean: boolean | ((collection: Collection<T>) => boolean),
         callback: (collection: this) => this
     ): this {
         let bool: boolean;
@@ -566,7 +567,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
         const items: T[] = [];
 
         while (this.length && !closure(this[0])) {
-            items.push(this.splice(0, 1)[0] as T);
+            items.push(this.splice(0, 1)[0]!);
         }
 
         return this._newInstance(items);
@@ -584,7 +585,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
         const items: T[] = [];
 
         while (this.length && closure(this[0])) {
-            items.push(this.splice(0, 1)[0] as T);
+            items.push(this.splice(0, 1)[0]!);
         }
 
         return this._newInstance(items);
@@ -646,7 +647,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     public skipWhile(closure: (item: T) => boolean): this {
         const array = this.toArray();
 
-        while (array.length && closure(array[0] as T)) {
+        while (array.length && closure(array[0]!)) {
             array.shift();
         }
 
@@ -662,7 +663,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @throws {Error}
      */
-    public pluck(properties: string|string[]): Collection<any> | never {
+    public pluck(properties: string[] | string): Collection<any> | never {
         if (!this._allAreObjects()) {
             throw new TypeError('Every item needs to be an object to be able to access its properties');
         }
@@ -768,7 +769,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    public static times<T>(number: number, value: ((index: number) => T) | T): Collection<T> {
+    public static times<ST>(number: number, value: ST | ((index: number) => ST)): Collection<ST> {
         const items = [];
 
         for (let i = 1; i < number + 1; i++) {
@@ -797,7 +798,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    public forEach(callback: (value: T, index: number, array: T[]) => void, thisArg?: Array<any>): this {
+    public forEach(callback: (value: T, index: number, array: T[]) => void, thisArg?: any[]): this {
         this.toArray().forEach(callback, thisArg);
 
         return this;
@@ -910,7 +911,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      * @return {Collection}
      */
     public flatMap<U, This = undefined>(
-        callback: (this: This, value: T, index: number, array: T[]) => (ReadonlyArray<U> | U),
+        callback: (this: This, value: T, index: number, array: T[]) => (U | readonly U[]),
         thisArg?: This
     ): Collection<U> {
         return new Collection(this.toArray().flatMap(callback, thisArg));
@@ -1039,7 +1040,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     public reduce(
         callback: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T,
         initialValue?: T
-    ): T{
+    ): T {
         if (!initialValue) {
             return this.toArray().reduce(callback);
         }

@@ -18,7 +18,7 @@ export default class GlobalConfig<T extends Configuration> {
      *
      * @param {object} configuration
      */
-    constructor(configuration?: T) {
+    public constructor(configuration?: T) {
         if (configuration) {
             merge(GlobalConfig.configuration, configuration);
         }
@@ -31,7 +31,7 @@ export default class GlobalConfig<T extends Configuration> {
      * @param {any=}   defaultVal
      */
     public get<K extends keyof T>(key: K, defaultVal?: T[K]): T[K];
-    public get<D extends unknown>(key: string, defaultVal?: D): D {
+    public get<D>(key: string, defaultVal?: D): D {
         return GlobalConfig.configuration[key] ?? defaultVal;
     }
 
@@ -40,7 +40,7 @@ export default class GlobalConfig<T extends Configuration> {
      *
      * @param {string} key
      */
-    public has<K extends keyof Configuration|string>(key: K): this is GlobalConfig<WithProperty<T, K>> {
+    public has<K extends string | keyof Configuration>(key: K): this is GlobalConfig<WithProperty<T, K>> {
         return GlobalConfig.configuration.hasOwnProperty(key);
     }
 
@@ -50,7 +50,7 @@ export default class GlobalConfig<T extends Configuration> {
      * @param {string} key
      * @param {any}    value
      */
-    public set<K extends keyof Configuration|string>(
+    public set<K extends string | keyof Configuration>(
         key: K,
         value: T[K]
     ): asserts this is GlobalConfig<WithProperty<T, K>> {
@@ -63,7 +63,7 @@ export default class GlobalConfig<T extends Configuration> {
      * @param {string} key
      */
     // todo - omit doesn't seem to work
-    public unset<K extends keyof Configuration|string>(key: K): asserts this is GlobalConfig<Omit<T, K>> {
+    public unset<K extends string | keyof Configuration>(key: K): asserts this is GlobalConfig<Omit<T, K>> {
         delete GlobalConfig.configuration[key];
     }
 

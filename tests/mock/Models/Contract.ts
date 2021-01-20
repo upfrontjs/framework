@@ -10,7 +10,7 @@ export default class Contract extends Model {
         };
     }
 
-    factory(): Factory<this> {
+    public factory(): Factory<this> {
         return new ContractFactory;
     }
 

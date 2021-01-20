@@ -47,7 +47,7 @@ export default class FactoryBuilder<T extends Model> {
      */
     protected relations: Record<string, FactoryBuilder<Model>> = {};
 
-    constructor(modelConstructor: new (attributes?: Attributes) => T) {
+    public constructor(modelConstructor: new (attributes?: Attributes) => T) {
         this.model = new modelConstructor;
     }
 
@@ -58,7 +58,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {this}
      */
-    public state(states: string | string[]): this {
+    public state(states: string[] | string): this {
         this.states = Array.isArray(states) ? states : [states];
 
         return this;
@@ -93,7 +93,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {Model|ModelCollection<Model>}
      */
-    public make(attributes?: Attributes): T | ModelCollection<T> {
+    public make(attributes?: Attributes): ModelCollection<T> | T {
         const modelOrCollection = this.compileRaw(attributes);
 
         const factory = this.getFactory();
@@ -102,7 +102,7 @@ export default class FactoryBuilder<T extends Model> {
             factory.afterMaking(modelOrCollection);
         }
 
-        return this.addRelations(modelOrCollection, 'make') as T | ModelCollection<T>;
+        return this.addRelations(modelOrCollection, 'make') as ModelCollection<T> | T;
     }
 
     /**
@@ -112,7 +112,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {Model|ModelCollection<Model>}
      */
-    public create(attributes?: Attributes): T | ModelCollection<T> {
+    public create(attributes?: Attributes): ModelCollection<T> | T {
         const modelOrCollection = this.compileRaw(attributes);
 
         if (ModelCollection.isModelCollection<T>(modelOrCollection)) {
@@ -129,7 +129,7 @@ export default class FactoryBuilder<T extends Model> {
             factory.afterCreating(modelOrCollection);
         }
 
-        return this.addRelations(modelOrCollection, 'create') as T | ModelCollection<T>;
+        return this.addRelations(modelOrCollection, 'create') as ModelCollection<T> | T;
     }
 
     /**
@@ -174,19 +174,19 @@ export default class FactoryBuilder<T extends Model> {
      * @return {object|Model|Collection|ModelCollection}
      */
     protected addRelations(
-        data: Attributes | Collection<Attributes> | T | ModelCollection<T>,
-        method: 'raw' | 'make' | 'create'
-    ): Attributes | Collection<Attributes> | T | ModelCollection<T> {
+        data: Attributes | Collection<Attributes> | ModelCollection<T> | T,
+        method: 'create' | 'make' | 'raw'
+    ): Attributes | Collection<Attributes> | ModelCollection<T> | T {
         if (Object.keys(this.relations).length) {
             // if collection, be it attributes or model collection
-            if (Collection.isCollection<T | Attributes>(data)) {
+            if (Collection.isCollection<Attributes | T>(data)) {
                 // for each recursively call this method
                 data = data.map(
                     (entry: Attributes | T) => this.addRelations(entry, method)
                 ) as Collection<Attributes> | ModelCollection<T>;
             } else {
                 Object.keys(this.relations).forEach(relation => {
-                    const relationValue = (this.relations[relation] as FactoryBuilder<Model>)[method]();
+                    const relationValue = this.relations[relation]![method]();
 
                     if (method === 'raw') {
                         (data as Attributes)[relation] = relationValue;
@@ -236,20 +236,20 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {Model|ModelCollection<Model>}
      */
-    protected compileRaw(attributes?: Attributes): T | ModelCollection<T> {
+    protected compileRaw(attributes?: Attributes): ModelCollection<T> | T {
         const compiledAttributes = this.rawAttributes(attributes);
 
         if (Collection.isCollection<Attributes>(compiledAttributes)) {
             const models: T[] = [];
 
-            compiledAttributes.forEach(attributes => {
-                const model = new (<typeof Model>this.model.constructor) as T;
-                models.push(model.forceFill(attributes).syncOriginal());
+            compiledAttributes.forEach(compiledAttribute => {
+                const model = new (this.model.constructor as typeof Model) as T;
+                models.push(model.forceFill(compiledAttribute).syncOriginal());
             });
 
             return new ModelCollection(models);
         } else {
-            const model = new (<typeof Model>this.model.constructor) as T;
+            const model = new (this.model.constructor as typeof Model) as T;
             return model.forceFill(compiledAttributes).syncOriginal();
         }
     }
@@ -287,7 +287,7 @@ export default class FactoryBuilder<T extends Model> {
                     );
                 }
 
-                const attributesFromState = (factory[state] as CallableFunction)(this.model, times);
+                const attributesFromState = factory[state]!(this.model, times);
 
                 if (!attributesFromState || typeof attributesFromState !== 'object') {
                     throw new TypeError(
@@ -315,7 +315,7 @@ export default class FactoryBuilder<T extends Model> {
         }
 
         return compiledAttributeArray.length === 1
-            ? compiledAttributeArray[0] as Attributes
+            ? compiledAttributeArray[0]!
             : new Collection(compiledAttributeArray);
     }
 
@@ -383,7 +383,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {string|number}
      */
-    protected getKey(): string | number {
+    protected getKey(): number | string {
         const config: GlobalConfig<Record<'lastIds', Record<string, number>>> = new GlobalConfig();
 
         if (this.model.getKeyName() === 'uuid') {
@@ -401,6 +401,6 @@ export default class FactoryBuilder<T extends Model> {
             config.set('lastIds', lastIds);
         }
 
-        return lastIds[this.model.getName()] as number;
+        return lastIds[this.model.getName()]!;
     }
 }

@@ -22,11 +22,11 @@ export default interface ApiCaller {
      *
      * @return {Partial<RequestInit>}
      */
-    initRequest?(
+    initRequest?: (
         url: string,
-        method: 'get'|'post'|'delete'|'patch'|'put',
-        data?: Record<string, unknown> | FormData
-    ): Partial<RequestInit>;
+        method: 'delete' | 'get' | 'patch' | 'post' | 'put',
+        data?: FormData | Record<string, unknown>
+    ) => Partial<RequestInit>;
 
     /**
      * The expected signature of the call method.
@@ -38,10 +38,10 @@ export default interface ApiCaller {
      *
      * @return {Promise<Response>}
      */
-    call(
+    call: (
         url: string,
-        method: 'get'|'post'|'delete'|'patch'|'put',
-        data?: Record<string, unknown> | FormData,
-        customHeaders?: Record<string, string|string[]>
-    ): Promise<Response>;
+        method: 'delete' | 'get' | 'patch' | 'post' | 'put',
+        data?: FormData | Record<string, unknown>,
+        customHeaders?: Record<string, string[] | string>
+    ) => Promise<Response>;
 }

@@ -11,13 +11,14 @@ export default class Team extends Model {
     }
 
     protected readonly timestamps = false;
+
     protected readonly softDeletes = false;
 
-    $users(): User {
+    public $users(): User {
         return this.hasMany(User);
     }
 
-    factory(): Factory<this> {
+    public factory(): Factory<this> {
         return new TeamFactory;
     }
 }

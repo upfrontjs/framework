@@ -6,7 +6,7 @@ import ModelCollection from '../../../src/Calliope/ModelCollection';
 import Shift from '../../mock/Models/Shift';
 import type Model from '../../../src/Calliope/Model';
 import Contract from '../../mock/Models/Contract';
-import File from '../../mock/Models/File';
+import FileModel from '../../mock/Models/FileModel';
 import fetchMock from 'jest-fetch-mock';
 import { buildResponse, getLastFetchCall } from '../../test-helpers';
 import { cloneDeep } from 'lodash';
@@ -170,8 +170,8 @@ describe('hasRelations', () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(
                 buildResponse({
                     ...hasRelations.getRawOriginal(),
-                    file: (File.factory().create() as Model).getRawOriginal(),
-                    files: (File.factory().times(2).create() as unknown as ModelCollection<File>)
+                    file: (FileModel.factory().create() as Model).getRawOriginal(),
+                    files: (FileModel.factory().times(2).create() as unknown as ModelCollection<FileModel>)
                         .map(file => file.getRawOriginal())
                         .toArray()
                 })
@@ -179,7 +179,7 @@ describe('hasRelations', () => {
         });
 
         it('should skip relations if already loaded', async () => {
-            const file = File.factory().create() as File;
+            const file = FileModel.factory().create() as FileModel;
             hasRelations.addRelation('file', file);
 
             await hasRelations.load('file').then(model => {
@@ -202,7 +202,7 @@ describe('hasRelations', () => {
 
             await hasRelations.load(['file', 'files']);
 
-            expect(hasRelations.file).toBeInstanceOf(File);
+            expect(hasRelations.file).toBeInstanceOf(FileModel);
             expect(hasRelations.files).toBeInstanceOf(ModelCollection);
         });
 
@@ -243,7 +243,7 @@ describe('hasRelations', () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(
                 buildResponse({
                     ...hasRelations.getRawOriginal(),
-                    file: (File.factory().create() as Model).getRawOriginal(),
+                    file: (FileModel.factory().create() as Model).getRawOriginal(),
                     team: cloneDeep(hasRelations.team.getRawOriginal())
                 })
             ));
@@ -429,14 +429,14 @@ describe('hasRelations', () => {
         });
 
         describe('morphTo()', () => {
-            let morphModel: File;
+            let morphModel: FileModel;
 
             beforeEach(() => {
-                morphModel = new File();
+                morphModel = new FileModel();
             });
 
             it('should return an instance of the same morph model', () => {
-                expect(morphModel.$fileable()).toBeInstanceOf(File);
+                expect(morphModel.$fileable()).toBeInstanceOf(FileModel);
             });
 
             it('should set the withs for the next query', () => {
@@ -447,7 +447,7 @@ describe('hasRelations', () => {
 
         describe('morphMany()', () => {
             it('should return an instance of the morph model', () => {
-                expect(hasRelations.$files()).toBeInstanceOf(File);
+                expect(hasRelations.$files()).toBeInstanceOf(FileModel);
             });
 
             it('should set the query parameters correctly', () => {
@@ -495,7 +495,7 @@ describe('hasRelations', () => {
 
         describe('morphOne()', () => {
             it('should return an instance of the morph model', () => {
-                expect(hasRelations.$file()).toBeInstanceOf(File);
+                expect(hasRelations.$file()).toBeInstanceOf(FileModel);
             });
 
             it('should set the query parameters correctly', () => {

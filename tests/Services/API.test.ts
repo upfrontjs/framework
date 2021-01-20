@@ -1,16 +1,16 @@
 import API from '../../src/Services/API';
-import { config } from '../setupTests';
+import { config as globalConfig } from '../setupTests';
 
-const url = String(config.get('baseEndPoint')).finish('/') + 'users';
+const url = String(globalConfig.get('baseEndPoint')).finish('/') + 'users';
 
 class APITester extends API {
     public getConfig(
-        url: string,
-        method: 'get'|'post'|'delete'|'patch'|'put',
+        endpoint: string,
+        method: 'delete' | 'get' | 'patch' | 'post' | 'put',
         data?: Record<string, any>,
-        customHeaders?: Record<string, string|string[]>
+        customHeaders?: Record<string, string[] | string>
     ): { url: string; requestInit: RequestInit } {
-        return this.initConfig(url, method, data, customHeaders);
+        return this.initConfig(endpoint, method, data, customHeaders);
     }
 }
 
@@ -134,7 +134,7 @@ describe('api', () => {
         });
 
         it('should process the given custom headers', () => {
-            const header: Record<string, string|string[]> = { custom: 'header' };
+            const header: Record<string, string[] | string> = { custom: 'header' };
             const config = api.getConfig(url, 'post', undefined, header).requestInit;
 
             // @ts-expect-error
@@ -149,7 +149,7 @@ describe('api', () => {
         });
 
         it('should only merge custom headers if their value is a string or string[]', () => {
-            const header: Record<string, null|null[]> = { custom: null };
+            const header: Record<string, null[] | null> = { custom: null };
             // @ts-expect-error
             const config = api.getConfig(url, 'post', undefined, header).requestInit;
 
@@ -165,8 +165,8 @@ describe('api', () => {
             expect(newConfig.headers.has('custom')).toBe(false);
         });
 
-        it('merges in headers from the config if set', () => {
-            config.set('headers', { 'custom-header': 'value' });
+        it('should merge in headers from the config if set', () => {
+            globalConfig.set('headers', { 'custom-header': 'value' });
 
             const initConfig = api.getConfig(url, 'post').requestInit;
 
@@ -176,7 +176,7 @@ describe('api', () => {
             // @ts-expect-error
             expect(initConfig.headers.get('custom-header')).toBe('value');
 
-            config.unset('headers');
+            globalConfig.unset('headers');
         });
     });
 

@@ -2,7 +2,7 @@ import Collection from '../Support/Collection';
 import type Model from './Model';
 
 export default class ModelCollection<T extends Model> extends Collection<T> {
-    constructor(models?: T[]) {
+    public constructor(models?: T[]) {
         super(models);
         this._throwIfNotModels();
     }
@@ -90,7 +90,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {Collection<number|string>}
      */
-    modelKeys(): Collection<number|string|undefined> {
+    public modelKeys(): Collection<number|string|undefined> {
         this._throwIfNotModels();
         const ids = this.map(model => model.getKey());
 
@@ -105,18 +105,18 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {Model|ModelCollection|undefined|any}
      */
-    public findByKey(key: (number|string)[]|number|string, defaultVal?: any): this|T|undefined|any {
+    public findByKey(key: (number|string)[]|number|string, defaultVal?: any): T | any | this | undefined {
         this._throwIfNotModels();
 
         const keys = new Set(this._getArgumentKeys(key));
 
         const result: T[] = [];
 
-        keys.forEach(key => {
-            const model = this.toArray().find(model => String(model.getKey()) === key);
+        keys.forEach(argumentKey => {
+            const modelHit = this.toArray().find(model => String(model.getKey()) === argumentKey);
 
-            if (model) {
-                result.push(model);
+            if (modelHit) {
+                result.push(modelHit);
             }
         });
 
@@ -257,7 +257,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {this}
      */
-    public only(values: any|any[]): this {
+    public only(values: any[] | any): this {
         this._throwIfNotModels();
         const modelKeys = this._getArgumentKeys(values);
 
@@ -271,7 +271,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {this}
      */
-    public except(values: any|any[]): this {
+    public except(values: any[] | any): this {
         this._throwIfNotModels();
         const modelKeys = this._getArgumentKeys(values);
 
@@ -286,7 +286,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {boolean}
      */
-    static isModelCollection<M extends Model>(value: any): value is ModelCollection<M> {
+    public static isModelCollection<M extends Model>(value: any): value is ModelCollection<M> {
         if (!Collection.isCollection(value)) {
             return false;
         }
@@ -336,7 +336,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {this}
      */
-    public union(iterable: T[]|ModelCollection<T>): this {
+    public union(iterable: ModelCollection<T> | T[]): this {
         this._throwIfNotModels(iterable);
 
         const collection = this._newInstance(this.toArray());

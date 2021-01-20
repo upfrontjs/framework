@@ -32,7 +32,7 @@ export default class SoftDeletes extends HasTimestamps {
      *
      * @return {string}
      */
-    getDeletedAtColumn(): string {
+    public getDeletedAtColumn(): string {
         return SoftDeletes.deletedAt[this.attributeCasing]();
     }
 
@@ -64,12 +64,12 @@ export default class SoftDeletes extends HasTimestamps {
         return super.delete({
             ...data,
             [this.getDeletedAtColumn()]: new Date().toISOString()
-        }).then(data => {
-            if (!data.getAttribute(this.getDeletedAtColumn())) {
-                data.setAttribute(this.getDeletedAtColumn(), new Date().toISOString());
+        }).then(responseData => {
+            if (!responseData.getAttribute(this.getDeletedAtColumn())) {
+                responseData.setAttribute(this.getDeletedAtColumn(), new Date().toISOString());
             }
 
-            return data;
+            return responseData;
         });
     }
 

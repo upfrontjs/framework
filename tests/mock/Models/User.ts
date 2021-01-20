@@ -4,7 +4,7 @@ import type Factory from '../../../src/Calliope/Factory/Factory';
 import UserFactory from '../Factories/UserFactory';
 import Shift from './Shift';
 import Contract from './Contract';
-import File from './File';
+import { default as FileModel } from './File';
 
 export default class User extends Model {
     public get endpoint(): string {
@@ -17,59 +17,59 @@ export default class User extends Model {
         };
     }
 
-    factory(): Factory<this> {
+    public factory(): Factory<this> {
         return new UserFactory;
     }
 
-    $invalidRelationDefinition(): Team {
+    public $invalidRelationDefinition(): Team {
         return new Team();
     }
 
-    $team(): Team {
+    public $team(): Team {
         return this.belongsTo(Team, 'teamId');
     }
 
-    $teamWithoutForeignKey(): Team {
+    public $teamWithoutForeignKey(): Team {
         return this.belongsTo(Team);
     }
 
-    $contract(): Contract {
+    public $contract(): Contract {
         return this.hasOne(Contract, 'userId');
     }
 
-    $contractWithoutForeignKey(): Contract {
+    public $contractWithoutForeignKey(): Contract {
         return this.hasOne(Contract);
     }
 
-    $shifts(): Shift {
+    public $shifts(): Shift {
         return this.hasMany(Shift, 'userId');
     }
 
-    $shiftsWithoutForeignKey(): Shift {
+    public $shiftsWithoutForeignKey(): Shift {
         return this.hasMany(Shift);
     }
 
-    $inverseShifts(): Shift {
+    public $inverseShifts(): Shift {
         return this.belongsToMany(Shift, 'shiftId');
     }
 
-    $inverseShiftsWithoutForeignKey(): Shift {
+    public $inverseShiftsWithoutForeignKey(): Shift {
         return this.belongsToMany(Shift);
     }
 
-    $files(): File {
-        return this.morphMany(File, 'User');
+    public $files(): FileModel {
+        return this.morphMany(FileModel, 'User');
     }
 
-    $filesWithoutMorphName(): File {
-        return this.morphMany(File);
+    public $filesWithoutMorphName(): FileModel {
+        return this.morphMany(FileModel);
     }
 
-    $file(): File {
-        return this.morphOne(File, 'User');
+    public $file(): FileModel {
+        return this.morphOne(FileModel, 'User');
     }
 
-    $fileWithoutMorphName(): File {
-        return this.morphOne(File);
+    public $fileWithoutMorphName(): FileModel {
+        return this.morphOne(FileModel);
     }
 }

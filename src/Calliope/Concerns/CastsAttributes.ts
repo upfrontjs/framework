@@ -4,7 +4,7 @@ import { cloneDeep } from 'lodash';
 import type DateTimeInterface from '../../Contracts/DateTimeInterface';
 import type AttributeCaster from '../../Contracts/AttributeCaster';
 
-type CastType = 'boolean' | 'string' | 'dateTime' | 'number' | 'collection' | 'class';
+type CastType = 'boolean' | 'class' | 'collection' | 'dateTime' | 'number' | 'string';
 
 export default class CastsAttributes {
     /**
@@ -14,7 +14,7 @@ export default class CastsAttributes {
      *
      * @type {object}
      */
-    protected casts: Record<string, CastType | AttributeCaster | DateTimeInterface> = {};
+    protected casts: Record<string, AttributeCaster | CastType | DateTimeInterface> = {};
 
     /**
      * Merge new casts with existing casts on the model.
@@ -23,7 +23,7 @@ export default class CastsAttributes {
      *
      * @return {this}
      */
-    public mergeCasts(casts: Record<string, CastType | AttributeCaster | DateTimeInterface>): this {
+    public mergeCasts(casts: Record<string, AttributeCaster | CastType | DateTimeInterface>): this {
         this.casts = cloneDeep(casts);
 
         return this;

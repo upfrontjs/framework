@@ -13,7 +13,7 @@ export default class API implements ApiCaller {
     /**
      * Enable indexing object by strings.
      */
-    [index: string]: Record<string, unknown> | CallableFunction | IStringifyOptions
+    [index: string]: CallableFunction | IStringifyOptions | Record<string, unknown>
 
     /**
      * The settings for the parsing of the get parameters.
@@ -35,9 +35,9 @@ export default class API implements ApiCaller {
      */
     public async call(
         url: string,
-        method: 'get' | 'post' | 'delete' | 'patch' | 'put',
-        data?: Record<string, any> | FormData,
-        customHeaders?: Record<string, string | string[]>
+        method: 'delete' | 'get' | 'patch' | 'post' | 'put',
+        data?: FormData | Record<string, any>,
+        customHeaders?: Record<string, string[] | string>
     ): Promise<Response> {
         const config = this.initConfig(url, method, data, customHeaders);
 
@@ -58,9 +58,9 @@ export default class API implements ApiCaller {
      */
     protected initConfig(
         url: string,
-        method: 'get' | 'post' | 'delete' | 'patch' | 'put',
-        data?: Record<string, any> | FormData,
-        customHeaders?: Record<string, string | string[]>
+        method: 'delete' | 'get' | 'patch' | 'post' | 'put',
+        data?: FormData | Record<string, any>,
+        customHeaders?: Record<string, string[] | string>
     ): { url: string; requestInit: RequestInit } {
         const initOptions: RequestInit = { method };
         const configHeaders = new Headers(new GlobalConfig().get('headers', undefined) as HeadersInit|undefined);

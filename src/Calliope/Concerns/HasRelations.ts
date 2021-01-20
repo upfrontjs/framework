@@ -7,7 +7,7 @@ import type { Attributes } from './HasAttributes';
 import Collection from '../../Support/Collection';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 
-type Relation = 'belongsTo'|'belongsToMany'|'hasOne'|'hasMany'|'morphTo'|'morphMany'|'morphOne';
+type Relation = 'belongsTo' | 'belongsToMany' | 'hasMany' | 'hasOne' | 'morphMany' | 'morphOne' | 'morphTo';
 
 export default class HasRelations extends CallsApi {
     /**
@@ -29,7 +29,7 @@ export default class HasRelations extends CallsApi {
      *
      * @return {Promise<this>}
      */
-    public async load(relations: string|string[], forceReload = false): Promise<this> {
+    public async load(relations: string[] | string, forceReload = false): Promise<this> {
         if (!Array.isArray(relations)) {
             relations = [relations];
         }
@@ -48,10 +48,10 @@ export default class HasRelations extends CallsApi {
 
         if (relations.length === 1) {
             const relation = await
-            ((this[(relations[0] as string).start(this.relationMethodPrefix)] as CallableFunction)() as Model)
+            ((this[relations[0]!.start(this.relationMethodPrefix)] as CallableFunction)() as Model)
                 .get() as Model;
 
-            this.addRelation(relations[0] as string, relation);
+            this.addRelation(relations[0]!, relation);
 
             return Promise.resolve(this);
         }
@@ -59,12 +59,12 @@ export default class HasRelations extends CallsApi {
         const returnedRelations = (
             await (this as unknown as Model)
                 .with(relations)
-                .find(((this as unknown as Model)).getKey() as number|string)
+                .find(((this as unknown as Model)).getKey()!)
         )
             .getRelations();
 
-        Object.keys(returnedRelations).forEach(relation => {
-            this.addRelation(relation, returnedRelations[relation] as Model | ModelCollection<Model>);
+        Object.keys(returnedRelations).forEach(returnedRelation => {
+            this.addRelation(returnedRelation, returnedRelations[returnedRelation]!);
         });
 
         return Promise.resolve(this);
@@ -105,7 +105,7 @@ export default class HasRelations extends CallsApi {
                 );
             }
 
-            return this.relations[name] as Model | ModelCollection<Model>;
+            return this.relations[name]!;
         }
 
         throw new InvalidArgumentException('\'' + name + '\' relationship is not defined.');
@@ -193,7 +193,7 @@ export default class HasRelations extends CallsApi {
         }
 
         const relatedModel: Model = (this[name.start(this.relationMethodPrefix)] as CallableFunction)();
-        let relation: ModelCollection<Model>|Model;
+        let relation: Model | ModelCollection<Model>;
 
         // set up the relations by calling the constructor of the related models
         if (Array.isArray(value) || Collection.isCollection<Attributes>(value)) {
@@ -206,10 +206,10 @@ export default class HasRelations extends CallsApi {
 
             const collection = new ModelCollection;
 
-            value.forEach(modelData => collection.push(new (<typeof Model> relatedModel.constructor)(modelData)));
+            value.forEach(modelData => collection.push(new (relatedModel.constructor as typeof Model)(modelData)));
             relation = collection;
         } else {
-            const model = new (<typeof Model> relatedModel.constructor)(value);
+            const model = new (relatedModel.constructor as typeof Model)(value);
 
             if (relationType === 'belongsTo') {
                 this.setAttribute(model.getForeignKeyName(), model.getKey());
@@ -309,7 +309,7 @@ export default class HasRelations extends CallsApi {
      *
      * @return this
      */
-    public for(models: Model[]|Model): this {
+    public for(models: Model | Model[]): this {
         models = Array.isArray(models) ? models : [models];
 
         this.resetEndpoint();
@@ -448,7 +448,7 @@ export default class HasRelations extends CallsApi {
      * @return {Model}
      */
     public morphTo<T extends Model>(): T {
-        const relatedModel = new (<typeof Model> this.constructor)().with(['*']) as T;
+        const relatedModel = new (this.constructor as typeof Model)().with(['*']) as T;
 
         HasRelations.configureRelationType(relatedModel, 'morphTo');
 

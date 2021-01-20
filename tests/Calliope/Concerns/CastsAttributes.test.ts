@@ -93,10 +93,11 @@ describe('castsAttributes', () => {
 
         it('should cast to a dateTime', () => {
             class DateTime implements DateTimeInterface {
-                parse(): DateTimeInterface {
+                public parse(): DateTimeInterface {
                     return this;
                 }
-                value = 'object value';
+
+                public value = 'object value';
             }
 
             caster.mergeCasts({ test: new DateTime() });
@@ -120,7 +121,7 @@ describe('castsAttributes', () => {
         });
 
         it('should hit error if hasCast() and this.getCastType() are not in sync', () => {
-            // @ts-expect-error
+            // @ts-expect-errorx2
             caster.hasCast = () => true;
             const failingCall = () => caster.getValue('test', '1');
 

@@ -10,7 +10,7 @@ import FactoryBuilder from '../Calliope/Factory/FactoryBuilder';
  *
  * @return {Collection}
  */
-export function collect<T extends any>(items?: any): Collection<T> {
+export function collect<T>(items?: any): Collection<T> {
     return new Collection(items);
 }
 
@@ -21,7 +21,7 @@ export function collect<T extends any>(items?: any): Collection<T> {
  *
  * @return {Paginator}
  */
-export function paginate<T extends any>(items: any[]): Paginator<T> {
+export function paginate<T>(items: any[]): Paginator<T> {
     return new Paginator(items);
 }
 
@@ -46,6 +46,6 @@ export function factory<T extends Model>(modelConstructor: new () => T, amount =
  *
  * @return {boolean}
  */
-export function isObject (value: any): value is NonNullable<Record<any, any>> {
+export function isObject(value: any): value is NonNullable<Record<any, any>> {
     return value !== null && typeof value === 'object' && !Array.isArray(value);
 }

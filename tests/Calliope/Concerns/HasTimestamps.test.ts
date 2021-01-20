@@ -58,7 +58,7 @@ describe('hasTimestamps', () => {
             expect(hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtColumn())).not.toBe(updatedAt);
         });
 
-        it('should throw an error if created at column is not in the response',  async() => {
+        it('should throw an error if created at column is not in the response',  async () => {
             fetchMock.resetMocks();
             fetchMock.mockResponseOnce(async () =>
                 Promise.resolve(buildResponse({ updatedAt: new Date().toISOString() })));
@@ -67,11 +67,11 @@ describe('hasTimestamps', () => {
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
                 'No \'' + hasTimestamps.getCreatedAtColumn().camel() + '\' or '
-                + '\'' + hasTimestamps.getCreatedAtColumn().snake() +'\' attribute found on the response data.'
+                + '\'' + hasTimestamps.getCreatedAtColumn().snake() + '\' attribute found on the response data.'
             ));
         });
 
-        it('should throw an error if updated at column is not in the response',  async() => {
+        it('should throw an error if updated at column is not in the response',  async () => {
             fetchMock.resetMocks();
             fetchMock.mockResponseOnce(async () =>
                 Promise.resolve(buildResponse({ createdAt: new Date().toISOString() })));
@@ -80,7 +80,7 @@ describe('hasTimestamps', () => {
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
                 'No \'' + hasTimestamps.getUpdatedAtColumn().camel() + '\' or '
-                + '\'' + hasTimestamps.getUpdatedAtColumn().snake() +'\' attribute found on the response data.'
+                + '\'' + hasTimestamps.getUpdatedAtColumn().snake() + '\' attribute found on the response data.'
             ));
         });
 
@@ -129,7 +129,7 @@ describe('hasTimestamps', () => {
             expect(hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtColumn())).not.toBe(updatedAt);
         });
 
-        it('should throw an error if created at column is not in the response',  async() => {
+        it('should throw an error if created at column is not in the response',  async () => {
             fetchMock.resetMocks();
             fetchMock.mockResponseOnce(async () =>
                 Promise.resolve(buildResponse({ updatedAt: new Date().toISOString() })));
@@ -138,11 +138,11 @@ describe('hasTimestamps', () => {
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
                 'No \'' + hasTimestamps.getCreatedAtColumn().camel() + '\' or '
-                + '\'' + hasTimestamps.getCreatedAtColumn().snake() +'\' attribute found on the response data.'
+                + '\'' + hasTimestamps.getCreatedAtColumn().snake() + '\' attribute found on the response data.'
             ));
         });
 
-        it('should throw an error if updated at column is not in the response',  async() => {
+        it('should throw an error if updated at column is not in the response',  async () => {
             fetchMock.resetMocks();
             fetchMock.mockResponseOnce(async () =>
                 Promise.resolve(buildResponse({ createdAt: new Date().toISOString() })));
@@ -151,7 +151,7 @@ describe('hasTimestamps', () => {
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
                 'No \'' + hasTimestamps.getUpdatedAtColumn().camel() + '\' or '
-                + '\'' + hasTimestamps.getUpdatedAtColumn().snake() +'\' attribute found on the response data.'
+                + '\'' + hasTimestamps.getUpdatedAtColumn().snake() + '\' attribute found on the response data.'
             ));
         });
 

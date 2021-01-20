@@ -1,5 +1,5 @@
 {
-  "name": "@upfront/framework",
+  "name": "@upfrontjs/framework",
   "version": "0.1.0",
   "description": "Data handling framework complementary to backend model systems.",
   "main": "index.min.js",
@@ -15,7 +15,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nandi95/upfront"
+    "url": "https://github.com/nandi95/upfront-framework"
   },
   "directories": {
     "lib": "./src",

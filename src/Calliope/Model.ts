@@ -22,7 +22,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @type {boolean}
      */
-    get exists(): boolean {
+    public get exists(): boolean {
         let boolean = String(this.getKey()).isUuid() || !isNaN(Number(this.getKey()));
 
         if (boolean && this.usesTimestamps()) {
@@ -50,7 +50,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {string|number}
      */
-    public getKey(): string | number | undefined {
+    public getKey(): number | string | undefined {
         return this.getAttribute(this.getKeyName());
     }
 
@@ -71,7 +71,7 @@ export default class Model extends SoftDeletes implements HasFactory {
             excluded = [...new Set([...excluded, ...except])];
         }
 
-        return new (<typeof Model> this.constructor)(this.except(excluded));
+        return new (this.constructor as typeof Model)(this.except(excluded));
     }
 
     /**
@@ -119,7 +119,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {Promise<Model|ModelCollection<Model>>}
      */
-    static async all(): Promise<ModelCollection<Model>> {
+    public static async all(): Promise<ModelCollection<Model>> {
         let response = await new this().get();
 
         if (response instanceof Model) {
@@ -154,7 +154,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return
      */
-    public async find(id: string|number): Promise<Model> {
+    public async find(id: number | string): Promise<Model> {
         const model = await this
             .setEndpoint(this.getEndpoint().finish('/') + String(id))
             .get() as Model;
@@ -167,7 +167,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @see {Model.prototype.find}
      */
-    public static async find(id: string|number): Promise<Model> {
+    public static async find(id: number | string): Promise<Model> {
         return new this().find(id);
     }
 

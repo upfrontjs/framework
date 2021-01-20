@@ -90,10 +90,10 @@ describe('modelCollection', () => {
     });
 
     describe('unique()', () => {
-        const elements = [user1, user2, user1];
+        const users = [user1, user2, user1];
 
         beforeEach(() => {
-            collection = new ModelCollection(elements);
+            collection = new ModelCollection(users);
         });
 
         it('should de-duplicate the collection', () => {
@@ -132,17 +132,17 @@ describe('modelCollection', () => {
     });
 
     describe('hasDuplicates()', () => {
-        const elements = [user1, user2, user1];
+        const users = [user1, user2, user1];
 
         beforeEach(() => {
-            collection = new ModelCollection(elements);
+            collection = new ModelCollection(users);
         });
 
         it('should check if the collection has duplicates', () => {
             expect(collection.hasDuplicates()).toBe(true);
 
-            elements.pop();
-            collection = new ModelCollection(elements);
+            users.pop();
+            collection = new ModelCollection(users);
 
             expect(collection.hasDuplicates()).toBe(false);
         });
@@ -156,10 +156,10 @@ describe('modelCollection', () => {
     });
 
     describe('duplicates()', () => {
-        const elements = [user1, user2, user1];
+        const users = [user1, user2, user1];
 
         beforeEach(() => {
-            collection = new ModelCollection(elements);
+            collection = new ModelCollection(users);
         });
 
         it('should only keep the duplicates', () => {
@@ -208,10 +208,10 @@ describe('modelCollection', () => {
     });
 
     describe('delete()', () => {
-        const elements = [user1, user2, user1];
+        const users = [user1, user2, user1];
 
         beforeEach(() => {
-            collection = new ModelCollection(elements);
+            collection = new ModelCollection(users);
         });
 
         it('should delete items', () => {
@@ -251,10 +251,10 @@ describe('modelCollection', () => {
     });
 
     describe('diff()', () => {
-        const elements = [user1, user2, new User({ ...user2.getRawOriginal(), id: user3.getKey() })];
+        const users = [user1, user2, new User({ ...user2.getRawOriginal(), id: user3.getKey() })];
 
         beforeEach(() => {
-            collection = new ModelCollection(elements);
+            collection = new ModelCollection(users);
         });
 
         it('should return models that are in either not in the arguments or collection', () => {
@@ -287,14 +287,14 @@ describe('modelCollection', () => {
     });
 
     describe('union()', () => {
-        const elements = [user1, user2, new User({ ...user2.getRawOriginal(), id: 3 })];
+        const users = [user1, user2, new User({ ...user2.getRawOriginal(), id: 3 })];
 
         beforeEach(() => {
-            collection = new ModelCollection(elements);
+            collection = new ModelCollection(users);
         });
         it('should join two arrays without duplicates', () => {
             expect(collection.union([user2, new User({ ...user2.getRawOriginal(), id: 4 })])).toHaveLength(
-                elements.length + 1
+                users.length + 1
             );
         });
 
@@ -306,7 +306,7 @@ describe('modelCollection', () => {
         it('should return a model collection ready for chaining', () => {
             expect(
                 collection.union([user2, new User({ ...user2.getRawOriginal(), id: 4 })]).nth(1)
-            ).toHaveLength(elements.length + 1);
+            ).toHaveLength(users.length + 1);
         });
 
         it('should check the collection\'s integrity before the method', () => {
@@ -347,15 +347,15 @@ describe('modelCollection', () => {
     });
 
     describe('except()', () => {
-        const elements = [user1, user2, new User({ ...user2.getRawOriginal(), id: user3.getKey() })];
+        const users = [user1, user2, new User({ ...user2.getRawOriginal(), id: user3.getKey() })];
 
         beforeEach(() => {
-            collection = new ModelCollection(elements);
+            collection = new ModelCollection(users);
         });
 
         it('should return all the models except the specified ones', () => {
-            expect(collection.except(user1)).toHaveLength(elements.length - 1);
-            expect(collection.last()).toBe(elements[elements.length - 1]);
+            expect(collection.except(user1)).toHaveLength(users.length - 1);
+            expect(collection.last()).toBe(users[users.length - 1]);
         });
 
         it('should take arguments in a various format', () => {
@@ -365,7 +365,7 @@ describe('modelCollection', () => {
         it('should take ids as an argument', () => {
             const filteredCollection = collection.except([1, '2']);
             expect(filteredCollection).toHaveLength(1);
-            expect(filteredCollection.first()).toBe(elements[elements.length - 1]);
+            expect(filteredCollection.first()).toBe(users[users.length - 1]);
         });
 
         it('should check the collection\'s integrity before the method', () => {

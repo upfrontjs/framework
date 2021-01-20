@@ -64,7 +64,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @return {this}
      */
-    constructor(attributes?: Attributes) {
+    public constructor(attributes?: Attributes) {
         super();
 
         if (attributes instanceof HasAttributes) {
@@ -72,7 +72,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
             // in their current state, not the original.
             const allProperties = attributes.attributes;
 
-            if (isObject(attributes['relations'])) {
+            if (isObject(attributes.relations)) {
                 Object.assign(allProperties, attributes.relations);
             }
 
@@ -96,7 +96,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
         const keys = Object.keys(properties);
 
         for (let i = 0; i < keys.length; i++) {
-            yield properties[keys[i] as string];
+            yield properties[keys[i]!];
         }
     }
 
@@ -205,7 +205,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @return {this}
      */
-    protected createDescriptors(keys: string|string[]): this {
+    protected createDescriptors(keys: string[] | string): this {
         keys = Array.isArray(keys) ? keys : [keys];
 
         keys.forEach(key => {
@@ -232,7 +232,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @return {this}
      */
-    deleteAttribute(key: string): this {
+    public deleteAttribute(key: string): this {
         delete this.attributes[key];
 
         // @ts-expect-error
@@ -300,7 +300,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @return {this}
      */
-    public syncOriginal(keys?: string|string[]): this {
+    public syncOriginal(keys?: string[] | string): this {
         if (keys) {
             keys = Array.isArray(keys) ? keys : [keys];
 
@@ -443,7 +443,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @return {object}
      */
-    public only(attributes: string|string[]): Attributes {
+    public only(attributes: string[] | string): Attributes {
         attributes = Array.isArray(attributes) ? attributes : [attributes];
         const result: Attributes = {};
 
@@ -463,7 +463,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      *
      * @return {object}
      */
-    public except(attributes: string|string[]): Attributes {
+    public except(attributes: string[] | string): Attributes {
         const result: Attributes = {};
 
         attributes = Array.isArray(attributes) ? attributes : [attributes];

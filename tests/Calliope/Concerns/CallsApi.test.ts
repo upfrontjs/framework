@@ -51,7 +51,7 @@ describe('callsApi', () => {
 
         it('should get the ApiCaller from the config if set',  async () => {
             const api = new class CustomAPICallerImplementation extends API {
-                initRequest(): Partial<RequestInit> {
+                public initRequest(): Partial<RequestInit> {
                     const headers = new Headers();
                     headers.set('custom', 'header');
 
@@ -71,7 +71,7 @@ describe('callsApi', () => {
         it('should get the HandlesApiResponse from the config if set',  async () => {
             const mockFn = jest.fn();
             const apiResponseHandler = new class CustomApiResponseHandlerImplementation extends ApiResponseHandler {
-                handleFinally() {
+                public handleFinally() {
                     mockFn();
                 }
             };
@@ -141,6 +141,11 @@ describe('callsApi', () => {
             expect(() => caller.newInstanceFromResponseData(null)).toThrow(new TypeError(
                 'Unexpected response type. Ensure that the endpoint returns model data only.'
             ));
+
+            //@ts-expect-error
+            expect(() => caller.newInstanceFromResponseData()).toThrow(new TypeError(
+                'Unexpected response type. Ensure that the endpoint returns model data only.'
+            ));
         });
 
         it('should construct a single instance of a model', () => {
@@ -189,8 +194,8 @@ describe('callsApi', () => {
             // @ts-expect-error
             const users = caller.newInstanceFromResponseData(usersData.toArray()) as ModelCollection<Model>;
 
-            users.forEach(user => {
-                expect(user['_' + 'last_synced_at'[user.attributeCasing]()]).toStrictEqual(new Date);
+            users.forEach(userModel => {
+                expect(userModel['_' + 'last_synced_at'[userModel.attributeCasing]()]).toStrictEqual(new Date);
             });
         });
     });

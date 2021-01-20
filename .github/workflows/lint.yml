@@ -17,7 +17,6 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 15
-          registry-url: https://npm.pkg.github.com/
       - run: npm ci
       - name: ESLint
         run: node node_modules/.bin/eslint . --ext .ts

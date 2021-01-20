@@ -10,5 +10,5 @@ export default interface HandlesApiResponse {
      *
      * @return {Promise<any>}
      */
-    handle(promise: Promise<Response>): Promise<any>;
+    handle: (promise: Promise<Response>) => Promise<any>;
 }

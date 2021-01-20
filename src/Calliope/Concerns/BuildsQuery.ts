@@ -4,7 +4,7 @@ import type Model from '../Model';
 
 type BooleanOperator = 'and'|'or';
 type Direction = 'asc'|'desc';
-type Operator = '='|'<'|'>'|'<='|'>='|'!='|'like'|'in'|'notIn'|'between'|'notBetween';
+type Operator = '!=' | '<' | '<=' | '=' | '>' | '>=' | 'between' | 'in' | 'like' | 'notBetween' | 'notIn';
 type WhereDescription = {
     column: string;
     operator: Operator;
@@ -310,7 +310,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public whereKey(value: string|number|(string|number)[], boolean: BooleanOperator = 'and'): this {
+    public whereKey(value: (number | string)[] | number | string, boolean: BooleanOperator = 'and'): this {
         const column = (this as unknown as Model).getKeyName();
 
         if (Array.isArray(value)) {
@@ -328,7 +328,9 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereKey
      */
-    public static whereKey(value: string|number|(string|number)[], boolean: BooleanOperator = 'and'): BuildsQuery {
+    public static whereKey(
+        value: (number | string)[] | number | string, boolean: BooleanOperator = 'and'
+    ): BuildsQuery {
         return BuildsQuery.newQuery().whereKey(value, boolean);
     }
 
@@ -339,7 +341,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public orWhereKey(value: string|number|(string|number)[]): this {
+    public orWhereKey(value: (number | string)[] | number | string): this {
         return this.whereKey(value, 'or');
     }
 
@@ -351,7 +353,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public whereKeyNot(value: string|number|(string|number)[], boolean: BooleanOperator = 'and'): this {
+    public whereKeyNot(value: (number | string)[] | number | string, boolean: BooleanOperator = 'and'): this {
         const column = (this as unknown as Model).getKeyName();
 
         if (Array.isArray(value)) {
@@ -369,7 +371,9 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotIn
      */
-    public static whereKeyNot(value: string|number|(string|number)[], boolean: BooleanOperator = 'and'): BuildsQuery {
+    public static whereKeyNot(
+        value: (number | string)[] | number | string, boolean: BooleanOperator = 'and'
+    ): BuildsQuery {
         return BuildsQuery.newQuery().whereKeyNot(value, boolean);
     }
 
@@ -380,7 +384,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public orWhereKeyNot(value: string|number|(string|number)[]): this {
+    public orWhereKeyNot(value: (number | string)[] | number | string): this {
         return this.whereKeyNot(value, 'or');
     }
 
@@ -392,7 +396,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public whereNull(columns: string | string[], boolean: BooleanOperator = 'and'): this {
+    public whereNull(columns: string[] | string, boolean: BooleanOperator = 'and'): this {
         if (!Array.isArray(columns)) {
             columns = [columns];
         }
@@ -411,7 +415,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNull
      */
-    public static whereNull(columns: string | string[]): BuildsQuery {
+    public static whereNull(columns: string[] | string): BuildsQuery {
         return BuildsQuery.newQuery().whereNull(columns);
     }
 
@@ -422,7 +426,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public orWhereNull(columns: string | string[]): this {
+    public orWhereNull(columns: string[] | string): this {
         return this.whereNull(columns, 'or');
     }
 
@@ -434,7 +438,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public whereNotNull(columns: string | string[], boolean: BooleanOperator = 'and'): this {
+    public whereNotNull(columns: string[] | string, boolean: BooleanOperator = 'and'): this {
         if (!Array.isArray(columns)) {
             columns = [columns];
         }
@@ -453,7 +457,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotNull
      */
-    public static whereNotNull(columns: string | string[]): BuildsQuery {
+    public static whereNotNull(columns: string[] | string): BuildsQuery {
         return BuildsQuery.newQuery().whereNotNull(columns);
     }
 
@@ -464,7 +468,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public orWhereNotNull(columns: string | string[]): this {
+    public orWhereNotNull(columns: string[] | string): this {
         return this.whereNotNull(columns, 'or');
     }
 

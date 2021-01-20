@@ -32,11 +32,11 @@ describe('guardsAttributes', () => {
 
     describe('setGuarded()', () => {
         beforeEach(() => {
-            class TestClass extends GuardsAttributes {
-                guarded = ['attr1'];
+            class TestGuardingClass extends GuardsAttributes {
+                protected guarded = ['attr1'];
             }
 
-            guardedObject = new TestClass;
+            guardedObject = new TestGuardingClass;
         });
 
         it('should set the fillable array', () => {
@@ -111,4 +111,3 @@ describe('guardsAttributes', () => {
         });
     });
 });
-

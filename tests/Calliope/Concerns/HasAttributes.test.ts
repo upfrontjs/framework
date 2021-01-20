@@ -184,7 +184,7 @@ describe('hasAttributes', () => {
             expect(hasAttributes.setAttribute('test', 1)).toBeInstanceOf(User);
         });
 
-        it('creates the accessor', () => {
+        it('should create an accessor', () => {
             hasAttributes.setAttribute('test', 1);
 
             expect(hasAttributes.test).toBe(1);

@@ -14,9 +14,9 @@ import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentExc
 
 class FakeFactory extends Factory<User> {
     // @ts-expect-error
-    scopeAsProperty = 0;
+    public scopeAsProperty = 0;
 
-    invalidScope() {
+    public invalidScope() {
         return null;
     }
 }
@@ -187,11 +187,11 @@ describe('factoryBuilder', () => {
             const originalFactory = User.prototype.factory;
 
             class MockUserFactory extends UserFactory {
-                afterCreating(modelOrCollection: Model | ModelCollection<Model>) {
+                public afterCreating(modelOrCollection: Model | ModelCollection<Model>) {
                     unCalledMockFn(modelOrCollection);
                 }
 
-                afterMaking(modelOrCollection: Model | ModelCollection<Model>) {
+                public afterMaking(modelOrCollection: Model | ModelCollection<Model>) {
                     mockFn(modelOrCollection);
                 }
             }
@@ -230,9 +230,9 @@ describe('factoryBuilder', () => {
         });
 
         it('should not set the dates if they\'re disabled', () => {
-            const factoryBuilder = new FactoryBuilder(Team);
+            const teamFactoryBuilder = new FactoryBuilder(Team);
 
-            const team = factoryBuilder.create() as Team;
+            const team = teamFactoryBuilder.create() as Team;
 
             expect(team.createdAt).toBeUndefined();
             expect(team.updatedAt).toBeUndefined();
@@ -248,11 +248,11 @@ describe('factoryBuilder', () => {
             const originalFactory = User.prototype.factory;
 
             class MockUserFactory extends UserFactory {
-                afterCreating(modelOrCollection: Model | ModelCollection<Model>) {
+                public afterCreating(modelOrCollection: Model | ModelCollection<Model>) {
                     mockFn(modelOrCollection);
                 }
 
-                afterMaking(modelOrCollection: Model | ModelCollection<Model>) {
+                public afterMaking(modelOrCollection: Model | ModelCollection<Model>) {
                     unCalledMockFn(modelOrCollection);
                 }
             }

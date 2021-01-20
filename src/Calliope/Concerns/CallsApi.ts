@@ -45,7 +45,7 @@ export default class CallsApi extends BuildsQuery {
      */
     private requestCount = 0;
 
-    constructor(attributes?: Attributes) {
+    public constructor(attributes?: Attributes) {
         super(attributes);
         this.resetEndpoint();
     }
@@ -62,9 +62,9 @@ export default class CallsApi extends BuildsQuery {
      * @return {Promise<object>}
      */
     protected async call(
-        method: 'get'|'post'|'delete'|'patch'|'put',
-        data?: Record<string, unknown> | FormData,
-        customHeaders?: Record<string, string|string[]>
+        method: 'delete' | 'get' | 'patch' | 'post' | 'put',
+        data?: FormData | Record<string, unknown>,
+        customHeaders?: Record<string, string[] | string>
     ): Promise<any> {
         if (!this.getEndpoint().length) {
             throw new LogicException(
@@ -93,7 +93,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Promise<Model|ModelCollection<Model>>}
      */
-    public async get(data?: Record<string, unknown>): Promise<Model|ModelCollection<Model>> {
+    public async get(data?: Record<string, unknown>): Promise<Model | ModelCollection<Model>> {
         return this.call('get', Object.assign({}, data, this.compileQueryParameters()))
             .then(responseData => {
                 this.resetEndpoint();
@@ -110,7 +110,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @see {CallsApi.prototype.get}
      */
-    static async get(data?: Record<string, unknown>): Promise<Model|ModelCollection<Model>> {
+    public static async get(data?: Record<string, unknown>): Promise<Model | ModelCollection<Model>> {
         return new this().get(data);
     }
 
@@ -121,7 +121,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async post(data: Record<string, unknown>|FormData): Promise<Model> {
+    public async post(data: FormData | Record<string, unknown>): Promise<Model> {
         return this.call('post', Object.assign({}, data, this.compileQueryParameters()))
             .then(responseData => {
                 this.resetEndpoint();
@@ -138,7 +138,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async put(data: Record<string, unknown>|FormData): Promise<Model> {
+    public async put(data: FormData | Record<string, unknown>): Promise<Model> {
         return this.call('put', Object.assign({}, data, this.compileQueryParameters()))
             .then(responseData => {
                 this.resetEndpoint();
@@ -155,7 +155,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async patch(data: Record<string, unknown>|FormData): Promise<Model|ModelCollection<Model>> {
+    public async patch(data: FormData | Record<string, unknown>): Promise<Model | ModelCollection<Model>> {
         return this.call('patch', Object.assign({}, data, this.compileQueryParameters()))
             .then(responseData => {
                 this.resetEndpoint();
@@ -173,7 +173,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Promise<boolean>}
      */
-    public async delete(data?: Record<string, unknown>|FormData): Promise<Model> {
+    public async delete(data?: FormData | Record<string, unknown>): Promise<Model> {
         return this.call('delete', Object.assign({}, data, this.compileQueryParameters()))
             .then(responseData => {
                 this.resetEndpoint();
@@ -188,7 +188,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @param {object} data
      */
-    public async update(data: Attributes): Promise<Model|ModelCollection<Model>> {
+    public async update(data: Attributes): Promise<Model | ModelCollection<Model>> {
         return this.patch(data);
     }
 
@@ -217,9 +217,10 @@ export default class CallsApi extends BuildsQuery {
      * @return {Model}
      */
     protected newInstanceFromResponseData(
-        data: Attributes|Attributes[]
-    ): Model|ModelCollection<Model> {
+        data: Attributes | Attributes[]
+    ): Model | ModelCollection<Model> {
         if (data === null
+            || data === undefined
             || typeof data !== 'object'
             || Array.isArray(data) && data.some(entry => !isObject(entry))
         ) {
@@ -228,14 +229,14 @@ export default class CallsApi extends BuildsQuery {
             );
         }
 
-        let result: Model|ModelCollection<Model>;
+        let result: Model | ModelCollection<Model>;
 
         if (Array.isArray(data)) {
             const collection = new ModelCollection();
 
             data.forEach(attributes => {
                 if (isObject(attributes)) {
-                    const model = new (<typeof Model> this.constructor)();
+                    const model = new (this.constructor as typeof Model)();
                     Object.defineProperty(model, '_' + 'last_synced_at'[this.attributeCasing](), {
                         get: () => new Date
                     });
@@ -244,8 +245,8 @@ export default class CallsApi extends BuildsQuery {
             });
 
             result = collection;
-        } else  {
-            const model = new (<typeof Model> this.constructor)();
+        } else {
+            const model = new (this.constructor as typeof Model)();
             Object.defineProperty(model, '_' + 'last_synced_at'[this.attributeCasing](), {
                 get: () => new Date
             });

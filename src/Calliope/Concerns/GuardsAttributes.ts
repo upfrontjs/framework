@@ -21,7 +21,7 @@ export default class GuardsAttributes extends CastsAttributes {
      */
     protected guarded: string[] = ['*'];
 
-    constructor() {
+    public constructor() {
         super();
         this._setInitialVariables();
     }

@@ -10,14 +10,14 @@ export default interface FactoryHooks<T extends Model> {
      *
      * @param {Model|ModelCollection<Model>} modelOrCollection
      */
-    afterMaking?(modelOrCollection: T|ModelCollection<T>): void;
+    afterMaking?: (modelOrCollection: ModelCollection<T> | T) => void;
 
     /**
      * The factory hook to be called where the value might be changed.
      *
      * @param {Model|ModelCollection<Model>} modelOrCollection
      */
-    afterCreating?(modelOrCollection: T|ModelCollection<T>): void;
+    afterCreating?: (modelOrCollection: ModelCollection<T> | T) => void;
 
     /**
      * The class can be indexed by strings

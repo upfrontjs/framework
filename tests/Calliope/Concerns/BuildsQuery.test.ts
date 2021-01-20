@@ -1,5 +1,5 @@
 import BuildsQuery from '../../../src/Calliope/Concerns/BuildsQuery';
-import InvalidArgumentException from "../../../src/Exceptions/InvalidArgumentException";
+import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 
 class TestClass extends BuildsQuery {
     public compiledParams(): Record<string, unknown> {

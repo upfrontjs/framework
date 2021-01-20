@@ -1,3 +1,4 @@
+
 import Collection from '../../src/Support/Collection';
 
 let collection: Collection<any>;
@@ -55,7 +56,7 @@ describe('collection', () => {
 
     describe('_allAreObjects()', () => {
         it('should determine if all ar object or not', () => {
-            let collection = new Collection([{}, '']);
+            collection = new Collection([{}, '']);
             // @ts-expect-error
             expect(collection._allAreObjects()).toBe(false);
 
@@ -65,7 +66,7 @@ describe('collection', () => {
         });
 
         it('should assert that all are object not including null', () => {
-            const collection = new Collection([{}, null]);
+            collection = new Collection([{}, null]);
             // @ts-expect-error
             expect(collection._allAreObjects()).toBe(false);
         });
@@ -385,16 +386,16 @@ describe('collection', () => {
         });
 
         it('should mutate the collection conditionally with a boolean', () => {
-            expect(collection.when(true, collection => collection.nth(2))).toHaveLength(2);
+            expect(collection.when(true, coll => coll.nth(2))).toHaveLength(2);
 
-            expect(collection.when(false, collection => collection.nth(2))).toHaveLength(elements.length);
+            expect(collection.when(false, coll => coll.nth(2))).toHaveLength(elements.length);
         });
 
         it('should mutate the collection conditionally with a closure resolving to boolean', () => {
             expect(
                 collection.when(
                     () => true,
-                    (collection) => collection.nth(2)
+                    coll => coll.nth(2)
                 )
             ).toHaveLength(2);
 
@@ -403,7 +404,7 @@ describe('collection', () => {
             expect(
                 collection.when(
                     () => true,
-                    (collection) => collection.nth(2)
+                    coll => coll.nth(2)
                 )
             ).toHaveLength(2);
         });
@@ -417,7 +418,7 @@ describe('collection', () => {
             // @ts-expect-error
             const mockWrapper = ((...args: any[]) => mock(...args)) as unknown as () => boolean;
 
-            expect(collection.when(mockWrapper, collection => collection.nth(2))).toHaveLength(elements.length);
+            expect(collection.when(mockWrapper, coll => coll.nth(2))).toHaveLength(elements.length);
             expect(mock).toHaveBeenCalledWith(collection);
         });
 
@@ -434,7 +435,7 @@ describe('collection', () => {
         });
 
         it('should return a collection ready for chaining', () => {
-            expect(collection.when(true, collection => collection).toArray()).toHaveLength(elements.length);
+            expect(collection.when(true, coll => coll).toArray()).toHaveLength(elements.length);
         });
     });
 
@@ -446,15 +447,15 @@ describe('collection', () => {
         });
 
         it('should mutate the collection conditionally with a boolean', () => {
-            expect(collection.unless(false, (collection) => collection.nth(2))).toHaveLength(2);
-            expect(collection.unless(true, (collection) => collection.nth(2))).toHaveLength(elements.length);
+            expect(collection.unless(false, coll => coll.nth(2))).toHaveLength(2);
+            expect(collection.unless(true, coll => coll.nth(2))).toHaveLength(elements.length);
         });
 
         it('should mutate the collection conditionally with a closure resolving to boolean', () => {
             expect(
                 collection.unless(
                     () => false,
-                    (collection) => collection.nth(2)
+                    coll => coll.nth(2)
                 )
             ).toHaveLength(2);
 
@@ -463,7 +464,7 @@ describe('collection', () => {
             expect(
                 collection.unless(
                     () => false,
-                    (collection) => collection.nth(2)
+                    coll => coll.nth(2)
                 )
             ).toHaveLength(2);
         });
@@ -477,7 +478,7 @@ describe('collection', () => {
             // @ts-expect-error
             const mockWrapper = ((...args: any[]) => mock(...args)) as unknown as () => boolean;
 
-            expect(collection.unless(mockWrapper, (collection) => collection.nth(2))).toHaveLength(elements.length);
+            expect(collection.unless(mockWrapper, coll => coll.nth(2))).toHaveLength(elements.length);
             expect(mock).toHaveBeenCalledWith(collection);
         });
 
@@ -492,7 +493,7 @@ describe('collection', () => {
         });
 
         it('should return a collection ready for chaining', () => {
-            expect(collection.unless(true, collection => collection).toArray()).toHaveLength(elements.length);
+            expect(collection.unless(true, coll => coll).toArray()).toHaveLength(elements.length);
         });
     });
 
@@ -850,11 +851,11 @@ describe('collection', () => {
 
         it('should skip items from the beginning', () => {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-            expect(collection.skipUntil(item => item >= (elements[elements.length - 1] as number))).toStrictEqual(
+            expect(collection.skipUntil(item => item >= elements[elements.length - 1]!)).toStrictEqual(
                 new Collection([elements[elements.length - 1]])
             );
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-            expect(collection.skipUntil(item => item >= (elements[elements.length - 1] as number))).toHaveLength(1);
+            expect(collection.skipUntil(item => item >= elements[elements.length - 1]!)).toHaveLength(1);
         });
 
         it('should return a collection ready for chaining', () => {
@@ -883,7 +884,7 @@ describe('collection', () => {
         });
 
         it('should not be able to mutate the collection', () => {
-            const func = (collection: Collection<any>) => collection.pad(10);
+            const func = (coll: Collection<any>) => coll.pad(10);
             collection.tap(func);
             expect(collection.tap(func)).toHaveLength(elements.length);
         });
@@ -901,14 +902,14 @@ describe('collection', () => {
         });
 
         it('should execute a method with the collection passed to the closure', () => {
-            const func = jest.fn(collection => collection);
+            const func = jest.fn(coll => coll);
             collection.pipe(func);
             expect(func).toHaveBeenCalled();
             expect(func).toHaveBeenCalledWith(collection);
         });
 
         it('should mutate the collection', () => {
-            const func = (collection: Collection<any>) => collection.pad(10);
+            const func = (coll: Collection<any>) => coll.pad(10);
             collection.pipe(func);
             expect(collection.pipe(func)).toHaveLength(10);
         });
@@ -995,6 +996,7 @@ describe('collection', () => {
         it('should take a function to execute or other types', () => {
             expect(Collection.times(5, 1).first()).toStrictEqual(1);
             expect(Collection.times(5, (i: number) => ({ id: i })).first()).toStrictEqual({ id: 1 });
+            // eslint-disable-next-line @typescript-eslint/no-extraneous-class
             const test = class Test {};
             expect(Collection.times(5, new test()).first()).toBeInstanceOf(test);
         });
@@ -1018,7 +1020,7 @@ describe('collection', () => {
 
             it('should transform values', () => {
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-                expect(collection.map(elem => elem * 2).first()).toStrictEqual((elements[0] as number) * 2);
+                expect(collection.map(elem => elem * 2).first()).toStrictEqual(elements[0]! * 2);
             });
 
             it('should return a new collection', () => {
@@ -1092,7 +1094,7 @@ describe('collection', () => {
 
                 expect(collection.lastIndexOf(lastElement))
                     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-                    .toStrictEqual(elements.lastIndexOf(elements[elements.length - 1] as number));
+                    .toStrictEqual(elements.lastIndexOf(elements[elements.length - 1]!));
 
                 expect(collection.lastIndexOf('something')).toStrictEqual(-1);
             });
@@ -1160,12 +1162,6 @@ describe('collection', () => {
 
         describe('includes()', () => {
             /* eslint-disable jest/prefer-to-contain */
-            const elements = [1, 2, 3, 4, 5];
-
-            beforeEach(() => {
-                collection = new Collection(elements);
-            });
-
             it('should assert whether the collection includes an element', () => {
                 expect(collection.includes(elements[0])).toBe(true);
                 expect(collection.includes(Math.random())).toBe(false);
@@ -1228,7 +1224,7 @@ describe('collection', () => {
                 collection.push(1);
                 expect(collection[0]).toBe(1);
                 // @ts-expect-error
-                expect(collection['NaN']).toBeUndefined();
+                expect(collection.NaN).toBeUndefined();
             });
         });
 
@@ -1270,7 +1266,7 @@ describe('collection', () => {
                 collection.unshift(1);
                 expect(collection[0]).toBe(1);
                 // @ts-expect-error
-                expect(collection['NaN']).toBeUndefined();
+                expect(collection.NaN).toBeUndefined();
             });
         });
 
@@ -1320,7 +1316,7 @@ describe('collection', () => {
         describe('indexOf()', () => {
             it('should return the index of the found element or -1 on not found', () => {
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-                expect(collection.indexOf(elements[0])).toStrictEqual(elements.indexOf(elements[0] as number));
+                expect(collection.indexOf(elements[0])).toStrictEqual(elements.indexOf(elements[0]!));
                 expect(collection.indexOf('something')).toStrictEqual(-1);
             });
         });

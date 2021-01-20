@@ -13,7 +13,7 @@ export default interface AttributeCaster {
      *
      * @return {any}
      */
-    get(key: string, value: unknown): any;
+    get: (key: string, value: unknown) => any;
 
     /**
      * Transform the attribute to its underlying model values.
@@ -23,5 +23,5 @@ export default interface AttributeCaster {
      *
      * @return {void}
      */
-    set(key: string, value: unknown): void;
+    set: (key: string, value: unknown) => void;
 }

@@ -1,8 +1,8 @@
 import Factory from '../../../src/Calliope/Factory/Factory';
 import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
-import type File from '../Models/File';
+import type FileModel from '../Models/FileModel';
 
-export default class FileFactory extends Factory<File> {
+export default class FileFactory extends Factory<FileModel> {
     public definition(): Attributes {
         return {
             name: 'image.jpg',

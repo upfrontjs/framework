@@ -4,7 +4,7 @@ import type Factory from '../../../src/Calliope/Factory/Factory';
 import UserFactory from '../Factories/UserFactory';
 import Shift from './Shift';
 import Contract from './Contract';
-import { default as FileModel } from './File';
+import FileModel from './FileModel';
 
 export default class User extends Model {
     public get endpoint(): string {

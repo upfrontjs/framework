@@ -49,8 +49,8 @@ describe('callsApi', () => {
             expect(responseData).toStrictEqual(User.factory().raw());
         });
 
-        it('should get the ApiCaller from the config if set',  async () => {
-            const api = new class CustomAPICallerImplementation extends API {
+        it('should get the ApiCaller from the Configuration if set',  async () => {
+            const api = class CustomAPICallerImplementation extends API {
                 public initRequest(): Partial<RequestInit> {
                     const headers = new Headers();
                     headers.set('custom', 'header');
@@ -68,9 +68,9 @@ describe('callsApi', () => {
             expect(getLastFetchCall()?.headers.get('custom')).toBe('header');
         });
 
-        it('should get the HandlesApiResponse from the config if set',  async () => {
+        it('should get the HandlesApiResponse from the Configuration if set',  async () => {
             const mockFn = jest.fn();
-            const apiResponseHandler = new class CustomApiResponseHandlerImplementation extends ApiResponseHandler {
+            const apiResponseHandler = class CustomApiResponseHandlerImplementation extends ApiResponseHandler {
                 public handleFinally() {
                     mockFn();
                 }
@@ -516,69 +516,13 @@ describe('callsApi', () => {
 
     describe('update()', () => {
         // update is an alias for patch
-        it('should send a PATCH request', async () => {
+        it('should call the patch() method', async () => {
             mockUserModelResponse(caller);
-            await caller.patch({ key: 'value' });
+            const spy = jest.spyOn(caller, 'patch');
+            await caller.update({ key: 'value' });
 
-            expect(getLastFetchCall()?.method).toBe('patch');
-        });
-
-        it('should return this or new model depending on the response', async () => {
-            const responseUser = User.factory().create() as User;
-            const callerUser = User.factory().create() as User;
-
-            // if response returns model data
-            mockUserModelResponse(responseUser);
-            let returnModel = await callerUser.patch(responseUser.getRawOriginal());
-
-            // a new model will be returned using the response data
-            expect(callerUser).not.toStrictEqual(returnModel);
-
-            // if response isn't model data
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse('1')));
-            returnModel = await callerUser.patch({ key: 'value' });
-
-            // the returned model is the calling model
-            expect(callerUser).toStrictEqual(returnModel);
-        });
-
-        it('should reset the endpoint', async () => {
-            mockUserModelResponse(User.factory().create() as User);
-
-            caller.setEndpoint('endpoint');
-            await caller.patch({ key: 'value' });
-            expect(caller.getEndpoint()).toBe('users');
-        });
-
-        it('should reset the query parameters', async () => {
-            caller.whereKey(43);
-            // @ts-expect-error
-            expect(caller.compileQueryParameters().wheres).toHaveLength(1);
-
-            mockUserModelResponse(User.factory().create() as User);
-            await caller.patch({ key: 'value' });
-
-            // @ts-expect-error
-            expect(caller.compileQueryParameters().wheres).toBeUndefined();
-        });
-
-        it('should send query parameters in the request', async () => {
-            caller.whereKey(43);
-
-            mockUserModelResponse(User.factory().create() as User);
-            await caller.patch({ key: 'value' });
-
-            expect(getLastFetchCall()?.body).toStrictEqual({
-                key: 'value',
-                wheres: [
-                    {
-                        boolean: 'and',
-                        column: 'id',
-                        operator: '=',
-                        value: 43
-                    }
-                ]
-            });
+            expect(spy).toHaveBeenCalledWith({ key: 'value' });
+            spy.mockRestore();
         });
     });
 

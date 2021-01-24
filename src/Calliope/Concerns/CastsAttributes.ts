@@ -1,10 +1,14 @@
 import LogicException from '../../Exceptions/LogicException';
 import Collection from '../../Support/Collection';
 import { cloneDeep } from 'lodash';
-import type DateTimeInterface from '../../Contracts/DateTimeInterface';
 import type AttributeCaster from '../../Contracts/AttributeCaster';
+import GlobalConfig from '../../Support/GlobalConfig';
+import type { Attributes } from './HasAttributes';
+import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
+import { isConstructableUserClass, isObjectLiteral } from '../../Support/function';
 
-type CastType = 'boolean' | 'class' | 'collection' | 'dateTime' | 'number' | 'string';
+type BuiltInCastType = 'boolean' | 'collection' | 'datetime' | 'number' | 'string';
+export type CastType = AttributeCaster | BuiltInCastType;
 
 export default class CastsAttributes {
     /**
@@ -14,7 +18,7 @@ export default class CastsAttributes {
      *
      * @type {object}
      */
-    protected casts: Record<string, AttributeCaster | CastType | DateTimeInterface> = {};
+    protected casts: Record<string, CastType> = {};
 
     /**
      * Merge new casts with existing casts on the model.
@@ -23,7 +27,7 @@ export default class CastsAttributes {
      *
      * @return {this}
      */
-    public mergeCasts(casts: Record<string, AttributeCaster | CastType | DateTimeInterface>): this {
+    public mergeCasts(casts: Record<string, CastType>): this {
         this.casts = cloneDeep(casts);
 
         return this;
@@ -36,14 +40,12 @@ export default class CastsAttributes {
      *
      * @return {boolean}
      */
-    public hasCast(key: string): key is CastType {
+    public hasCast(key: string): key is BuiltInCastType | 'object' {
         const cast = this.getCastType(key);
 
-        if (!cast) {
-            return false;
-        }
+        if (!cast) return false;
 
-        return ['boolean', 'dateTime', 'number', 'collection', 'class', 'string'].includes(cast);
+        return ['boolean', 'datetime', 'number', 'collection', 'object', 'string'].includes(cast);
     }
 
     /**
@@ -55,22 +57,18 @@ export default class CastsAttributes {
      *
      * @return {string|undefined}
      */
-    protected getCastType(key: string): string | undefined {
-        const caster = this.casts[key];
+    protected getCastType(key: string): BuiltInCastType | 'object' | undefined {
+        const caster = this.casts[key.toLowerCase().trim()];
 
         if (!caster) {
             return undefined;
         }
 
         if (this.implementsCaster(caster)) {
-            return 'class';
+            return 'object';
         }
 
-        if (this.implementsDateTime(caster)) {
-            return 'dateTime';
-        }
-
-        return caster.toLowerCase().trim();
+        return caster;
     }
 
     /**
@@ -78,72 +76,62 @@ export default class CastsAttributes {
      *
      * @param {string} key
      * @param {any} value
+     * @param {object} attributes
+     * @param {string} method - The
      *
      * @protected
      *
      * @return {any}
      */
-    protected castAttribute(key: string, value: any): unknown {
-        let result: unknown;
+    protected castAttribute(
+        key: string,
+        value: any,
+        attributes: Attributes,
+        method: keyof AttributeCaster = 'get'
+    ): never | unknown {
+        value = cloneDeep(value);
 
-        if (this.hasCast(key)) {
-            const cast = this.getCastType(key);
-
-            if (cast === 'boolean') {
-                const string = String(value);
-                let boolean;
-
-                if (['1', 'true'].includes(string.toLowerCase())) {
-                    boolean = true;
-                }
-
-                if (['0', 'false'].includes(string.toLowerCase())) {
-                    boolean = false;
-                }
-
-                if (typeof boolean !== 'boolean') {
-                    throw new LogicException(
-                        '\'' + key + '\' is not castable to a boolean type in \'' + this.constructor.name + '\'.'
-                    );
-                }
-
-                result = boolean;
-            } else if (cast === 'number') {
-                const number = Number(value);
-
-                if (isNaN(number)) {
-                    throw new LogicException(
-                        '\'' + key + '\' is not castable to a number type in \'' + this.constructor.name + '\'.'
-                    );
-                }
-
-                result = number;
-            } else if (cast === 'string') {
-                result = String(value);
-            } else if (cast === 'collection') {
-                if (!Array.isArray(value)) {
-                    throw new LogicException(
-                        '\'' + key + '\' is not castable to a collection type in \'' + this.constructor.name + '\'.'
-                    );
-                }
-
-                result = new Collection(cloneDeep(value));
-            } else if (cast === 'dateTime') {
-                result = (this.casts[key] as DateTimeInterface).parse(value);
-            } else if (cast === 'class') {
-                result = (this.casts[key] as AttributeCaster).get(key, value);
-            } else {
-                // either or both hasCast() and getCastType() has been overridden and hasCast()
-                // returns true while getCastType() cannot determine the cast type
-                throw new LogicException(
-                    'Impossible logic path reached. hasCast() and getCastType() implementations are not in sync.'
-                );
-            }
-        } else {
-            result = cloneDeep(value);
+        if (!this.hasCast(key)) {
+            return value;
         }
 
-        return result;
+        switch (this.getCastType(key)) {
+            case 'boolean':
+                return this.castToBoolean(key, value);
+            case 'string':
+                return String(value);
+            case 'number':
+                return this.castToNumber(key, value);
+            case 'object':
+                return this.castWithObject(key, value, attributes, method);
+            case 'collection':
+                if (method === 'set') {
+                    if (Collection.isCollection(value)) {
+                        // we don't want to wrap collection in a collection on every get
+                        return value.toArray();
+                    }
+
+                    // check if it throws
+                    this.castToCollection(key, value);
+                    return value;
+                } else {
+                    return this.castToCollection(key, value);
+                }
+            case 'datetime':
+                if (method === 'set') {
+                    // check if it throws
+                    this.getDateTimeLibInstance(value);
+                    return value;
+                } else {
+                    return this.castToDateTime(key, value);
+                }
+            default:
+                // either or both hasCast() and getCastType() has been overridden and hasCast()
+                // returns true while getCastType() returns value that lands in this default case
+                throw new LogicException(
+                    'Impossible logic path reached. getCastType() returned unexpected value.'
+                );
+        }
     }
 
     /**
@@ -156,32 +144,145 @@ export default class CastsAttributes {
      * @return {boolean}
      */
     protected implementsCaster(value: any): value is AttributeCaster {
-        if (!value || value !== Object(value)) {
+        if (!isObjectLiteral(value)) {
             return false;
         }
 
-        const object = value as Record<string, unknown>;
-
-        return 'set' in object
-            && object.set instanceof Function
-            && 'get' in object
-            && object.get instanceof Function;
+        return 'set' in value
+            && value.set instanceof Function
+            && 'get' in value
+            && value.get instanceof Function;
     }
 
     /**
-     * Determine whether the given value implements the date time interface
+     * Get the date time library from the config, throw error if library is invalid.
      *
      * @param {any} value
      *
      * @protected
      */
-    protected implementsDateTime(value: any): value is DateTimeInterface {
-        if (!value || value !== Object(value)) {
-            return false;
+    protected getDateTimeLibInstance(value: unknown): never | unknown {
+        const dateTimeLib = new GlobalConfig().get('datetime');
+
+        if (!dateTimeLib || !(dateTimeLib instanceof Function)) { // class and function are both of type Function
+            throw new InvalidArgumentException(
+                '\'datetime\' is not of expected type or has not been set in the ' + GlobalConfig.name + '.'
+            );
         }
 
-        const object = value as Record<string, unknown>;
+        if (isConstructableUserClass(dateTimeLib)) {
+            return new dateTimeLib(value);
+        }
 
-        return 'parse' in object && object.parse instanceof Function;
+        return dateTimeLib(value);
+    }
+
+    /**
+     * Cast the given value to number, throw error if it can't be casted.
+     *
+     * @param {string} key
+     * @param {any} value
+     *
+     * @private
+     *
+     * @return {number}
+     */
+    private castToNumber(key: string, value: any): never | number {
+        const number = Number(value);
+
+        if (isNaN(number)) {
+            throw new LogicException(
+                '\'' + key + '\' is not castable to a number type in \'' + this.constructor.name + '\'.'
+            );
+        }
+
+        return number;
+    }
+
+    /**
+     * Cast the given value to boolean, throw error if it can't be casted.
+     *
+     * @param {string} key
+     * @param {any} value
+     *
+     * @private
+     *
+     * @return {boolean}
+     */
+    private castToBoolean(key: string, value: any): boolean | never {
+        const string = String(value);
+        let boolean;
+
+        if (['1', 'true'].includes(string.toLowerCase())) {
+            boolean = true;
+        }
+
+        if (['0', 'false'].includes(string.toLowerCase())) {
+            boolean = false;
+        }
+
+        if (typeof boolean !== 'boolean') {
+            throw new LogicException(
+                '\'' + key + '\' is not castable to a boolean type in \'' + this.constructor.name + '\'.'
+            );
+        }
+
+        return boolean;
+    }
+
+    /**
+     * Cat value to collection, throw error if it can't be casted.
+     *
+     * @param {string} key
+     * @param {any} value
+     *
+     * @private
+     *
+     * @return {Collection}
+     */
+    private castToCollection(key: string, value: any): Collection<any> | never {
+        if (!Array.isArray(value)) {
+            throw new LogicException(
+                '\'' + key + '\' is not castable to a collection type in \'' + this.constructor.name + '\'.'
+            );
+        }
+
+        return new Collection(value);
+    }
+
+
+    /**
+     * Cast to date time using the configured library, throw error if it can't be casted.
+     *
+     * @param {string} _key
+     * @param {any} value
+     *
+     * @private
+     *
+     * @return {any}
+     */
+    private castToDateTime(_key: string, value: any): never | unknown {
+        return this.getDateTimeLibInstance(value);
+    }
+
+    /**
+     * Cast using the custom casting object.
+     *
+     * @param {string} key
+     * @param {any} value
+     * @param {object} attributes
+     * @param {string} method
+     *
+     * @private
+     *
+     * @return {any}
+     */
+    private castWithObject(
+        key: string,
+        value: any,
+        attributes: Attributes,
+        method: keyof AttributeCaster
+    ): unknown {
+        return (this.casts[key] as AttributeCaster)[method](key, value, attributes);
     }
 }

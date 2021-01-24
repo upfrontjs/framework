@@ -1,9 +1,11 @@
 import Model from './Calliope/Model';
 import Collection from './Support/Collection';
 import ModelCollection from './Calliope/ModelCollection';
-import Paginator from './Pagination/Paginator';
+import Paginator from './Support/Paginator';
 import GlobalConfig from './Support/GlobalConfig';
 import Factory from './Calliope/Factory/Factory';
+import ApiResponseHandler from './Services/ApiResponseHandler';
+import API from './Services/API';
 
 export {
     Model,
@@ -11,23 +13,27 @@ export {
     ModelCollection,
     Paginator,
     GlobalConfig,
-    Factory
+    Factory,
+    ApiResponseHandler,
+    API
 };
 
-import type DateTimeInterface from './Contracts/DateTimeInterface';
 import type AttributeCaster from './Contracts/AttributeCaster';
 import type HandlesApiResponse from './Contracts/HandlesApiResponse';
 import type ApiCaller from './Contracts/ApiCaller';
 import type Configuration from './Contracts/Configuration';
 import type { Attributes } from './Calliope/Concerns/HasAttributes';
+import type FactoryHooks from './Contracts/FactoryHooks';
+import type { CastType } from './Calliope/Concerns/CastsAttributes';
 
 export type {
-    DateTimeInterface,
     AttributeCaster,
     ApiCaller,
     HandlesApiResponse,
     Configuration,
-    Attributes
+    Attributes,
+    FactoryHooks,
+    CastType
 };
 
 import './Support/array';
@@ -37,5 +43,6 @@ export {
     collect,
     paginate,
     factory,
-    isObject
+    isObjectLiteral,
+    isConstructableUserClass
 } from './Support/function';

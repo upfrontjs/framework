@@ -1,6 +1,6 @@
 import type { MockResponseInit } from 'jest-fetch-mock';
 import { cloneDeep } from 'lodash';
-import { isObject } from '../src/Support/function';
+import { isObjectLiteral } from '../src/Support/function';
 import type User from './mock/Models/User';
 import fetchMock from 'jest-fetch-mock';
 
@@ -23,7 +23,7 @@ export const buildResponse = (response?: Record<string, any> | string): MockResp
         responseObject.body = JSON.stringify(value);
     }
 
-    if (isObject(response)) {
+    if (isObjectLiteral(response)) {
         if (!response.body) {
             responseObject.body = JSON.stringify(response);
         } else {
@@ -76,3 +76,23 @@ export const getLastFetchCall = (): FetchCall|undefined => {
 
     return lastCall;
 };
+
+export const types = [
+    1,
+    true,
+    'val',
+    [],
+    {},
+    (): void => {},
+    Symbol,
+    null,
+    undefined,
+    // eslint-disable-next-line @typescript-eslint/no-extraneous-class
+    class C {},
+    String,
+    Object,
+    BigInt,
+    Function,
+    Boolean,
+    Number
+];

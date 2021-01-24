@@ -1,5 +1,5 @@
 import Collection from './Collection';
-import Paginator from '../Pagination/Paginator';
+import Paginator from './Paginator';
 
 export {}; // this file needs to be a module
 

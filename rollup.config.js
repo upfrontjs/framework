@@ -11,8 +11,7 @@ const rollupConfig = {
     output: [
         {
             file: pkg.main,
-            format: 'iife',
-            name: 'Upfront',
+            format: 'cjs',
             sourcemap: true
         },
         {
@@ -26,6 +25,7 @@ const rollupConfig = {
         ...Object.keys(pkg.optionalDependencies)
     ],
     plugins: [
+        // it doesn't find the config by default and doesn't emit interface files
         typescript({ tsconfig: './tsconfig.json' }),
         terser(),
         bundleSize()

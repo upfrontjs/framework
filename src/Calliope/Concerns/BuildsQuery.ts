@@ -281,7 +281,7 @@ export default class BuildsQuery extends HasAttributes {
         value?: any,
         boolean: BooleanOperator = 'and'
     ): BuildsQuery {
-        return BuildsQuery.newQuery().addWhereConstraint(
+        return BuildsQuery.newQuery().where(
             column,
             value ? operator : '=',
             value ? value : operator,

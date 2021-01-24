@@ -1,33 +1,32 @@
 import type ApiCaller from './ApiCaller';
 import type HandlesApiResponse from './HandlesApiResponse';
-import type DateTimeInterface from './DateTimeInterface';
 
 /**
  * Interface serves as a typehint to see what might be in the config.
  *
- * @link {Config.configuration}
+ * @link {GlobalConfig.configuration}
  */
 export default interface Configuration extends Record<string, unknown> {
     /**
-     * The ApiCaller instance.
+     * The ApiCaller constructor.
      *
      * @type {ApiCaller}
      */
-    api?: ApiCaller;
+    api?: new () => ApiCaller;
 
     /**
-     * The HandlesApiResponse instance.
+     * The HandlesApiResponse constructor.
      *
      * @type {HandlesApiResponse}
      */
-    apiResponseHandler?: HandlesApiResponse;
+    apiResponseHandler?: new () => HandlesApiResponse;
 
     /**
-     * The DateTimeInterface instance.
+     * The date time library to be used.
      *
-     * @type {DateTimeInterface}
+     * @type {any} - expects a function or class constructor
      */
-    dateTime?: DateTimeInterface;
+    datetime?: CallableFunction | (new (arg?: any) => any);
 
     /**
      * The base url endpoint where the backend api is located.

@@ -6,7 +6,7 @@ import ApiResponseHandler from '../../Services/ApiResponseHandler';
 import type Model from '../Model';
 import BuildsQuery from './BuildsQuery';
 import type { Attributes } from './HasAttributes';
-import { isObject } from '../../Support/function';
+import { isObjectLiteral } from '../../Support/function';
 
 export default class CallsApi extends BuildsQuery {
     /**
@@ -76,8 +76,8 @@ export default class CallsApi extends BuildsQuery {
         const config = new GlobalConfig;
         const url = String(config.get('baseEndPoint', '')).finish('/')
             + (this.getEndpoint().startsWith('/') ? this.getEndpoint().slice(1) : this.getEndpoint());
-        const apiCaller = config.get('api', new API)!;
-        const handlesApiResponse = config.get('apiResponseHandler', new ApiResponseHandler)!;
+        const apiCaller = new (config.get('api', API))!;
+        const handlesApiResponse = new (config.get('apiResponseHandler', ApiResponseHandler))!;
 
         return handlesApiResponse
             .handle(
@@ -204,7 +204,7 @@ export default class CallsApi extends BuildsQuery {
      */
     private getResponseModel(defaultVal: Model, responseData?: Attributes): Model {
         // returning a collection outside of GET is unexpected.
-        return isObject(responseData) ? this.newInstanceFromResponseData(responseData) as Model : defaultVal;
+        return isObjectLiteral(responseData) ? this.newInstanceFromResponseData(responseData) as Model : defaultVal;
     }
 
     /**
@@ -222,7 +222,7 @@ export default class CallsApi extends BuildsQuery {
         if (data === null
             || data === undefined
             || typeof data !== 'object'
-            || Array.isArray(data) && data.some(entry => !isObject(entry))
+            || Array.isArray(data) && data.some(entry => !isObjectLiteral(entry))
         ) {
             throw new TypeError(
                 'Unexpected response type. Ensure that the endpoint returns model data only.'
@@ -235,7 +235,7 @@ export default class CallsApi extends BuildsQuery {
             const collection = new ModelCollection();
 
             data.forEach(attributes => {
-                if (isObject(attributes)) {
+                if (isObjectLiteral(attributes)) {
                     const model = new (this.constructor as typeof Model)();
                     Object.defineProperty(model, '_' + 'last_synced_at'[this.attributeCasing](), {
                         get: () => new Date

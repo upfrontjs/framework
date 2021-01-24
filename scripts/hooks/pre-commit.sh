@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# todo - update to include .eslintrc.js and tsconfig.json
 STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep ".tsx?$")
 
 if [[ "$STAGED_FILES" = "" ]]; then

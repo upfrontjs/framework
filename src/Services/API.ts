@@ -1,6 +1,6 @@
 import type ApiCaller from '../Contracts/ApiCaller';
 import qs from 'qs';
-import { isObject } from '../Support/function';
+import { isObjectLiteral } from '../Support/function';
 import GlobalConfig from '../Support/GlobalConfig';
 
 /**
@@ -65,7 +65,7 @@ export default class API implements ApiCaller {
         const configHeaders = new Headers(new GlobalConfig().get('headers', undefined) as HeadersInit|undefined);
 
         // merge in the user provided RequestInit object
-        if (isObject(this.requestOptions)) {
+        if (isObjectLiteral(this.requestOptions)) {
             Object.assign(initOptions, this.requestOptions);
         }
 
@@ -73,7 +73,7 @@ export default class API implements ApiCaller {
         if (this.initRequest && this.initRequest instanceof Function) {
             const initMethodValue = this.initRequest(url, method, data);
 
-            if (isObject(initMethodValue)) {
+            if (isObjectLiteral(initMethodValue)) {
                 Object.assign(initOptions, initMethodValue);
             }
         }
@@ -90,7 +90,7 @@ export default class API implements ApiCaller {
             delete initOptions.body;
         }
 
-        if (isObject(data) && Object.keys(data).length || data instanceof FormData) {
+        if (isObjectLiteral(data) && Object.keys(data).length || data instanceof FormData) {
             // if not a GET method
             if (initOptions.method && initOptions.method.toLowerCase() !== 'get') {
                 if (data instanceof FormData) {
@@ -110,7 +110,7 @@ export default class API implements ApiCaller {
         }
 
         // append passed in custom headers
-        if (isObject(customHeaders)) {
+        if (isObjectLiteral(customHeaders)) {
             Object.keys(customHeaders).forEach(header => {
                 const headerValue = customHeaders[header];
 

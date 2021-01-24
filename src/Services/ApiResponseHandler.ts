@@ -1,5 +1,5 @@
 import type HandlesApiResponse from '../Contracts/HandlesApiResponse';
-import { isObject } from '../Support/function';
+import { isObjectLiteral } from '../Support/function';
 
 /**
  * The default HandlesApiResponse class used by the package.
@@ -27,7 +27,7 @@ export default class ApiResponseHandler implements HandlesApiResponse {
     public async handleSuccess(response: Response): Promise<any> {
         let responseData = await response.json();
 
-        if (isObject(responseData) && 'data' in responseData) {
+        if (isObjectLiteral(responseData) && 'data' in responseData) {
             responseData = responseData.data;
         }
 

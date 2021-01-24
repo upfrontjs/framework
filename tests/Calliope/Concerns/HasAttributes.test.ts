@@ -150,6 +150,12 @@ describe('hasAttributes', () => {
         });
     });
 
+    describe('getRawAttributes()', () => {
+        it('should return the class attributes without any transformation', () => {
+            expect(hasAttributes.getRawAttributes()).toStrictEqual({ test: 1 });
+        });
+    });
+
     describe('getAttributeKeys()', () => {
         it('should return an array of strings that are the keys in the attributes', () =>{
             hasAttributes = new User({ test1: 1, test2: 2 });
@@ -167,6 +173,14 @@ describe('hasAttributes', () => {
             });
 
             expect(hasAttributes.setAttribute('test', 1).test).toBe(2);
+        });
+
+        it('should cast the value if caster set', () => {
+            hasAttributes.mergeCasts({ test: 'number' });
+
+            hasAttributes.setAttribute('test', '1.2');
+
+            expect(hasAttributes.test).toBe(1.2);
         });
 
         it('should set the attribute value', () => {
@@ -322,6 +336,12 @@ describe('hasAttributes', () => {
 
         it('should delete attributes that has been removed', () => {
             hasAttributes.deleteAttribute('test').syncOriginal();
+
+            expect(hasAttributes.getOriginal('test')).toBeUndefined();
+        });
+
+        it('should delete attributes when key is specified and has been removed', () => {
+            hasAttributes.deleteAttribute('test').syncOriginal('test');
 
             expect(hasAttributes.getOriginal('test')).toBeUndefined();
         });

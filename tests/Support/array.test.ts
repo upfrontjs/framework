@@ -1,5 +1,5 @@
 import Collection from '../../src/Support/Collection';
-import Paginator from '../../src/Pagination/Paginator';
+import Paginator from '../../src/Support/Paginator';
 import '../../src/Support/array';
 
 describe('array helpers', () => {

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import Paginator from '../../src/Pagination/Paginator';
+import Paginator from '../../src/Support/Paginator';
 import InvalidOffsetException from '../../src/Exceptions/InvalidOffsetException';
+import InvalidArgumentException from "../../src/Exceptions/InvalidArgumentException";
 
 describe('paginator', () => {
     const elements: [1, 2, 3, 4, 5] = [1, 2, 3, 4, 5];
@@ -69,7 +70,9 @@ describe('paginator', () => {
                 // @ts-expect-error
                 const failingFunc = jest.fn(() => new Paginator());
 
-                expect(failingFunc).toThrow('Paginator expect at least one element in the constructor.');
+                expect(failingFunc).toThrow(new InvalidArgumentException(
+                    'Paginator expect at least one element in the constructor.'
+                ));
             });
         });
 
@@ -237,6 +240,13 @@ describe('paginator', () => {
             });
         });
 
+        describe('isOnPage()', () => {
+            it('should correctly determine if the given item is on the current page', () => {
+                expect(paginator.isOnPage(lastItem)).toBe(false);
+                expect(paginator.first().isOnPage(lastItem)).toBe(false);
+            });
+        });
+
         describe('jumpToItem', () => {
             it('should throw an error if item doesn\'t exists in the paginator', () => {
                 const failingFunc = jest.fn(() => paginator.jumpToItem(Math.random()));
@@ -246,6 +256,12 @@ describe('paginator', () => {
             it('should set to the page where the item is located', () => {
                 expect(paginator.jumpToItem(lastItem).currentPage).toBe(paginator.pageCount);
                 expect(paginator.jumpToItem(elements[0]).currentPage).toBe(1);
+            });
+
+            it('should return itself if the item is already on the current page', () => {
+                paginator.first();
+
+                expect(paginator.jumpToItem(elements[0])).toBeInstanceOf(Paginator);
             });
         });
     });

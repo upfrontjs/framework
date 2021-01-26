@@ -16,7 +16,7 @@ class APITester extends API {
 
 let api: APITester;
 
-describe('api', () => {
+describe('API', () => {
     beforeEach(() => {
         api = new APITester();
     });

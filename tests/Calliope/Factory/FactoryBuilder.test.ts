@@ -23,7 +23,7 @@ class FakeFactory extends Factory<User> {
 
 let factoryBuilder: FactoryBuilder<User>;
 
-describe('factoryBuilder', () => {
+describe('FactoryBuilder', () => {
     beforeEach(() => {
         factoryBuilder = new FactoryBuilder(User);
     });
@@ -293,6 +293,26 @@ describe('factoryBuilder', () => {
             expect(failingFunc).toThrow(new InvalidArgumentException(
                 '\'' + contractFactoryBuilder.model.getName()
                 + '\' doesn\'t have the \'shift\' or \'shifts\' relationship defined.'
+            ));
+        });
+
+        it('should accept a model constructor as the first argument', () => {
+            expect((factoryBuilder.with(Contract).raw() as Attributes).contract).not.toBeUndefined();
+            expect((factoryBuilder.with(Contract).make() as User).contract).toBeInstanceOf(Contract);
+
+            factoryBuilder.with(Shift).times(2).make().forEach((user: User) => {
+                expect(user.shifts).toBeInstanceOf(ModelCollection);
+            });
+        });
+
+        it('should throw an error if the first argument is not a FactoryBuilder nor a Model constructor', () => {
+            const contractFactoryBuilder = new FactoryBuilder<Contract>(Contract);
+            // @ts-expect-error
+            const failingFunc = jest.fn(() => contractFactoryBuilder.with(new Shift).make());
+
+            expect(failingFunc).toThrow(new InvalidArgumentException(
+                'Argument for the \'with\' method expected to be an instance of '
+                + FactoryBuilder.name + ' or a ' + 'Model constructor.'
             ));
         });
     });

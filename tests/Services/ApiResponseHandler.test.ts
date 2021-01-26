@@ -5,7 +5,7 @@ import User from '../mock/Models/User';
 
 const handler = new ApiResponseHandler();
 
-describe('apiResponseHandler', () => {
+describe('ApiResponseHandler', () => {
     beforeEach(() => {
         fetchMock.resetMocks();
     });

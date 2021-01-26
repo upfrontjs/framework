@@ -3,7 +3,7 @@ import Collection from '../../src/Support/Collection';
 
 let collection: Collection<any>;
 
-describe('collection', () => {
+describe('Collection', () => {
     describe('construct()', () => {
         it('should be able to instantiated with an array', () => {
             expect(new Collection([1, 2])).toBeInstanceOf(Collection);
@@ -14,7 +14,7 @@ describe('collection', () => {
         });
 
         it('should have a length value', () => {
-            expect(new Collection([1, 2]).length).toBeTruthy();
+            expect(new Collection([1, 2])).toHaveLength(2);
         });
 
         it('should be able to be indexed by numbers', () => {

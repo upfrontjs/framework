@@ -10,7 +10,7 @@ class TestClass extends GuardsAttributes {
 
 let guardedObject: GuardsAttributes;
 
-describe('guardsAttributes', () => {
+describe('GuardsAttributes', () => {
     beforeEach(() => {
         guardedObject = new TestClass;
     });

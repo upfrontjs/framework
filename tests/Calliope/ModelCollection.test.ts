@@ -9,7 +9,7 @@ const user1 = User.factory().create() as User;
 const user2 = User.factory().create() as User;
 const user3 = User.factory().create() as User;
 
-describe('modelCollection', () => {
+describe('ModelCollection', () => {
     const elements = [user1, user2, user3];
 
     beforeEach(() => {

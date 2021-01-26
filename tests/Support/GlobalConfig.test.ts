@@ -4,7 +4,7 @@ import type Configuration from '../../src/Contracts/Configuration';
 
 let config: GlobalConfig<Configuration> = new GlobalConfig();
 
-describe('config', () => {
+describe('GlobalConfig', () => {
     beforeEach(() => {
         config.unset('api');
     });
@@ -15,7 +15,7 @@ describe('config', () => {
 
     describe('construct()', () => {
         it('should be instantiated with some config values', function () {
-            config = new GlobalConfig({ api: new API });
+            config = new GlobalConfig({ api: API });
 
             expect(config.has('api')).toBe(true);
         });
@@ -23,9 +23,9 @@ describe('config', () => {
 
     describe('get()', () => {
         it('should get a specified value', function () {
-            config.set('api', new API());
+            config.set('api', API);
 
-            expect(config.get('api')).toStrictEqual(new API());
+            expect(config.get('api')).toStrictEqual(API);
         });
 
         it('should return the default if key not found', function () {
@@ -37,7 +37,7 @@ describe('config', () => {
         it('should determine whether the value is set', function () {
             expect(config.has('api')).toBe(false);
 
-            config.set('api', new API());
+            config.set('api', API);
 
             expect(config.has('api')).toBe(true);
         });
@@ -47,7 +47,7 @@ describe('config', () => {
         it('should set a value', function () {
             expect(config.has('api')).toBe(false);
 
-            config.set('api', new API());
+            config.set('api', API);
 
             expect(config.has('api')).toBe(true);
         });
@@ -55,7 +55,7 @@ describe('config', () => {
 
     describe('unset()', () => {
         it('should set a value', function () {
-            config.set('api', new API());
+            config.set('api', API);
 
             expect(config.has('api')).toBe(true);
 
@@ -67,7 +67,7 @@ describe('config', () => {
 
     describe('reset()', () => {
         it('should empty the configuration', function () {
-            config.set('api', new API());
+            config.set('api', API);
 
             expect(config.has('api')).toBe(true);
 

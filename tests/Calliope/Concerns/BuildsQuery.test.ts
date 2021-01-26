@@ -17,7 +17,7 @@ class TestClass extends BuildsQuery {
 
 let builder: BuildsQuery;
 
-describe('buildsQuery', () => {
+describe('BuildsQuery', () => {
     beforeEach(() => {
         builder = new TestClass();
     });

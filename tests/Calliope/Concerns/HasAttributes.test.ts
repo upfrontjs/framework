@@ -5,7 +5,7 @@ import { isEqual } from 'lodash';
 
 let hasAttributes: User;
 
-describe('hasAttributes', () => {
+describe('HasAttributes', () => {
     beforeEach(() => {
         hasAttributes = new User({ test: 1 });
     });

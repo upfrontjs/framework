@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import Paginator from '../../src/Support/Paginator';
 import InvalidOffsetException from '../../src/Exceptions/InvalidOffsetException';
-import InvalidArgumentException from "../../src/Exceptions/InvalidArgumentException";
+import InvalidArgumentException from '../../src/Exceptions/InvalidArgumentException';
 
-describe('paginator', () => {
+describe('Paginator', () => {
     const elements: [1, 2, 3, 4, 5] = [1, 2, 3, 4, 5];
     const lastItem = elements[elements.length - 1] as number;
     let paginator: Paginator<number>;

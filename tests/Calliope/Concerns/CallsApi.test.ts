@@ -13,7 +13,7 @@ import { advanceTo } from 'jest-date-mock';
 
 let caller: User;
 
-describe('callsApi', () => {
+describe('CallsApi', () => {
     beforeEach(() => {
         caller = new User();
         caller.usesSoftDeletes = () => false;

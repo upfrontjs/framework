@@ -4,7 +4,7 @@ import { advanceTo } from 'jest-date-mock';
 
 let softDeletes: User;
 
-describe('softDeletes', () => {
+describe('SoftDeletes', () => {
     beforeEach(() => {
         softDeletes = User.factory().create() as User;
         fetchMock.resetMocks();

@@ -28,6 +28,19 @@ module.exports = {
             mustMatch: {
                 it: '^should '
             }
-        }]
+        }],
+        "jest/no-restricted-matchers": [
+            "error",
+            {
+                "toBeFalsy": 'Use toBe(false) instead to avoid unexpected type coercion.',
+                "toBeTruthy": 'Use toBe(true) instead to avoid unexpected type coercion.',
+            }
+        ],
+        "jest/lowercase-name": [
+            "error",
+            {
+                "ignore": ["describe"]
+            }
+        ]
     }
 }

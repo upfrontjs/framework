@@ -7,7 +7,7 @@ import { config } from '../../setupTests';
 
 let hasTimestamps: User;
 
-describe('hasTimestamps', () => {
+describe('HasTimestamps', () => {
     beforeEach(() => {
         hasTimestamps = User.factory().create() as User;
         fetchMock.mockResponseOnce(async () => Promise.resolve(

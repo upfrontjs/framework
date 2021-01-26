@@ -1,4 +1,4 @@
-import type Model from '../Model';
+import Model from '../Model';
 import type { Attributes } from '../Concerns/HasAttributes';
 import ModelCollection from '../ModelCollection';
 import Factory from './Factory';
@@ -6,6 +6,7 @@ import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
 import GlobalConfig from '../../Support/GlobalConfig';
 import Collection from '../../Support/Collection';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
+import { isConstructableUserClass } from '../../Support/function';
 
 export default class FactoryBuilder<T extends Model> {
     /**
@@ -135,30 +136,40 @@ export default class FactoryBuilder<T extends Model> {
     /**
      * Add the relation to the builder fluently.
      *
-     * @param {FactoryBuilder} factoryBuilder - The builder instance to be called.
-     * @param {string=} relation - The optional relation name.
+     * @param {FactoryBuilder} relation - The builder instance to be called.
+     * @param {string=} relationName - The optional relation name.
      *
      * @return {this}
      */
-    public with(factoryBuilder: FactoryBuilder<Model>, relation?: string): this {
-        relation = relation ?? factoryBuilder.model.getName().toLowerCase();
+    public with(relation: FactoryBuilder<Model> | (new () => Model), relationName?: string): this {
+        if (relation instanceof FactoryBuilder) {
+            relationName = relationName ?? relation.model.getName().toLowerCase();
+        } else if (isConstructableUserClass<typeof Model>(relation)) {
+            relationName = relationName ?? (new relation).getName().toLowerCase();
+            relation = relation.factory();
+        } else {
+            throw new InvalidArgumentException(
+                'Argument for the \'with\' method expected to be an instance of '
+                + FactoryBuilder.name + ' or a ' + Model.name + ' constructor.'
+            );
+        }
 
         // @ts-expect-error
-        if (!this.model.relationDefined(relation)) {
-            relation = relation.plural();
+        if (!this.model.relationDefined(relationName)) {
+            relationName = relationName.plural();
 
             // @ts-expect-error
-            if (!this.model.relationDefined(relation)) {
+            if (!this.model.relationDefined(relationName)) {
                 throw new InvalidArgumentException(
                     '\'' + this.model.getName()
                     + '\' doesn\'t have the \''
-                    + relation.singular() + '\' or \'' + relation +
+                    + relationName.singular() + '\' or \'' + relationName +
                     '\' relationship defined.'
                 );
             }
         }
 
-        this.relations[relation] = factoryBuilder;
+        this.relations[relationName] = relation;
 
         return this;
     }
@@ -320,7 +331,7 @@ export default class FactoryBuilder<T extends Model> {
     }
 
     /**
-     * Resolve the methods in the attributes.
+     * Resolve the attributes in order.
      *
      * @link {https://stackoverflow.com/a/5525820}
      *

@@ -17,7 +17,7 @@ import { config } from '../../setupTests';
 
 let hasRelations: User;
 
-describe('hasRelations', () => {
+describe('HasRelations', () => {
     beforeEach(() => {
         hasRelations = User.factory().state('withTeam').create() as User;
     });

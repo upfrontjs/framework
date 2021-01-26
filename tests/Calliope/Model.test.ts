@@ -8,7 +8,7 @@ import LogicException from '../../src/Exceptions/LogicException';
 
 let user: User;
 
-describe('model', () => {
+describe('Model', () => {
     beforeEach(() => {
         user = User.factory().create() as User;
         fetchMock.resetMocks();

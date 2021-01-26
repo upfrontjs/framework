@@ -36,6 +36,8 @@ export type {
     CastType
 };
 
+// todo - make these helpers into functions (static class?) and use that in the code.
+//  Then user optionally can include the files as they are while also having the functions - better tree-shaking
 import './Support/array';
 import './Support/string';
 

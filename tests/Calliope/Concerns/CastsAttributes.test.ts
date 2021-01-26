@@ -23,7 +23,7 @@ class CastingClass extends User {
 
 let caster: CastingClass;
 
-describe('castsAttributes', () => {
+describe('CastsAttributes', () => {
     beforeEach(() => {
         caster = new CastingClass;
     });

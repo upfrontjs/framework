@@ -61,7 +61,7 @@ export default class API implements ApiCaller {
         data?: FormData | Record<string, any>,
         customHeaders?: Record<string, string[] | string>
     ): { url: string; requestInit: RequestInit } {
-        const initOptions: RequestInit = { method };
+        const initOptions: RequestInit = { method: method.toLowerCase() };
         const configHeaders = new Headers(new GlobalConfig().get('headers', undefined) as HeadersInit|undefined);
 
         // merge in the user provided RequestInit object
@@ -84,7 +84,7 @@ export default class API implements ApiCaller {
         });
 
         // if explicitly or implicitly a GET method
-        if (!initOptions.method || initOptions.method.toLowerCase() === 'get') {
+        if (!initOptions.method || initOptions.method === 'get') {
             // given if there was any body it was merged in above,
             // we delete it as GET cannot have a body
             delete initOptions.body;
@@ -92,7 +92,7 @@ export default class API implements ApiCaller {
 
         if (isObjectLiteral(data) && Object.keys(data).length || data instanceof FormData) {
             // if not a GET method
-            if (initOptions.method && initOptions.method.toLowerCase() !== 'get') {
+            if (initOptions.method && initOptions.method !== 'get') {
                 if (data instanceof FormData) {
                     headers.set('Content-Type', 'multipart/form-data');
                     initOptions.body = data;

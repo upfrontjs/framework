@@ -14,7 +14,11 @@ export default class UserFactory extends Factory<User> {
         const team = Team.factory().create() as Team;
 
         return {
+            // the foreign key is required at the same time with the team as when it
+            // calls the relation at constructor we need to know the foreign key value upfront
             teamId: team.getKey(),
+            // the team has to include the primary key to ensure sync.
+            /** @see {HasRelations.prototype.addRelation} */
             team: team // both model and model attributes are acceptable
         };
     }

@@ -212,6 +212,7 @@ export default class HasRelations extends CallsApi {
             const model = new (relatedModel.constructor as typeof Model)(value);
 
             if (relationType === 'belongsTo') {
+                // set attribute to ensure sync between the foreign key and the given value
                 this.setAttribute(model.getForeignKeyName(), model.getKey());
             }
 

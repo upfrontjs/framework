@@ -388,7 +388,7 @@ export default class FactoryBuilder<T extends Model> {
     }
 
     /**
-     * Get a unique id.
+     * Get a unique id based on the key name.
      *
      * @protected
      *

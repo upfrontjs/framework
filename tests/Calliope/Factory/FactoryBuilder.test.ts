@@ -177,6 +177,16 @@ describe('FactoryBuilder', () => {
         it('should return a model collection', () => {
             expect(factoryBuilder.times(2).make()).toBeInstanceOf(ModelCollection);
         });
+
+        it('should return a related model if the raw attributes given for the relation', () => {
+            const team = Team.factory().create() as Team;
+            expect(
+                (factoryBuilder.make({
+                    teamId: team.getKey(),
+                    team: team.getRawAttributes()
+                }) as User).team
+            ).toBeInstanceOf(Team);
+        });
     });
 
     describe('afterMaking()', () => {

@@ -176,11 +176,18 @@ export default class HasRelations extends CallsApi {
         const isSingularRelationType = ['belongsTo', 'hasOne', 'morphOne'].includes(relationType);
 
         if (value instanceof HasRelations || ModelCollection.isModelCollection(value)) {
+            if (isSingularRelationType && ModelCollection.isModelCollection(value)) {
+                throw new InvalidArgumentException(
+                    '\'' + name + '\' is a singular relation, received type: \'' + ModelCollection.name + '\'.'
+                );
+            }
+
             if (value instanceof HasRelations) {
                 if (!isSingularRelationType) {
                     value = new ModelCollection([value]);
                 } else {
                     if (relationType === 'belongsTo') {
+                        // set attribute to ensure sync between the foreign key and the given value
                         this.setAttribute(value.getForeignKeyName(), value.getKey());
                     }
                 }

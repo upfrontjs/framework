@@ -325,6 +325,20 @@ describe('FactoryBuilder', () => {
                 + FactoryBuilder.name + ' or a ' + 'Model constructor.'
             ));
         });
+
+        it('should throw an error if it\'s a singular relation but the amount on the given factory is multiple', () => {
+            const failingCreateFunc = jest.fn(() => factoryBuilder.with(Contract.factory().times(2)).create());
+
+            expect(failingCreateFunc).toThrow(new InvalidArgumentException(
+                '\'contract\' is a singular relation, received type: \'' + ModelCollection.name + '\'.'
+            ));
+
+            const failingRawFunc = jest.fn(() => factoryBuilder.with(Contract.factory().times(2)).raw());
+
+            expect(failingRawFunc).toThrow(new InvalidArgumentException(
+                '\'contract\' is a singular relation, received type: \'' + Collection.name + '\'.'
+            ));
+        });
     });
 
     describe('raw()', () => {

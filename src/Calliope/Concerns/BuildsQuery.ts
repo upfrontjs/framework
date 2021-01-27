@@ -764,7 +764,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.select
      */
-    public static select(columns: string[]): BuildsQuery {
+    public static select(columns: string[]): BuildsQuery { // todo also accept single string throughout?
         return BuildsQuery.newQuery().select(columns);
     }
 
@@ -775,7 +775,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public has(relations: string[]): this {
+    public has(relations: string[]): this { // todo accept model constructor?
         this.relationsExists.push(...relations.flat());
 
         return this;

@@ -150,6 +150,19 @@ describe('HasRelations', () => {
             );
         });
 
+        it('should throw an error if value is a model collection but the relation is of singular type', () => {
+            const failingFunc = jest.fn(() => hasRelations.addRelation(
+                'contract',
+                Contract.factory().times(2).create()
+            ));
+
+            expect(failingFunc).toThrow(
+                new InvalidArgumentException(
+                    '\'contract\' is a singular relation, received type: \'' + ModelCollection.name + '\'.'
+                )
+            );
+        });
+
         it('should create magic access to the relation when given models', () => {
             expect(hasRelations.addRelation('shifts', shifts).shifts).toBeInstanceOf(ModelCollection);
         });

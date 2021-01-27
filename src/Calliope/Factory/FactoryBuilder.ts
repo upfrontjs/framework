@@ -141,7 +141,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {this}
      */
-    public with(relation: FactoryBuilder<Model> | (new () => Model), relationName?: string): this {
+    public with(relation: FactoryBuilder<Model> | (new () => Model), relationName?: string): never | this {
         if (relation instanceof FactoryBuilder) {
             relationName = relationName ?? relation.model.getName().toLowerCase();
         } else if (isConstructableUserClass<typeof Model>(relation)) {
@@ -177,8 +177,8 @@ export default class FactoryBuilder<T extends Model> {
     /**
      * Add the relations if any onto the given data.
      *
-     * @param {object|Model|Collection|ModelCollection} data
-     * @param {'raw'|'make'|'create'} method
+     * @param {object|Model|Collection|ModelCollection} data - the object to add the relation to
+     * @param {'raw'|'make'|'create'} method - the method the relation should be created with
      *
      * @protected
      *
@@ -200,6 +200,8 @@ export default class FactoryBuilder<T extends Model> {
                     const relationValue = this.relations[relation]![method]();
 
                     if (method === 'raw') {
+                        // construct model to check the relationValue is a valid value for the relation type
+                        new (this.model.constructor as typeof Model)({ [relation]: relationValue });
                         (data as Attributes)[relation] = relationValue;
                     } else {
                         (data as Model).addRelation(relation, relationValue);
@@ -274,7 +276,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {object|object[]}
      */
-    protected rawAttributes(attributes: Attributes = {}): Attributes | Collection<Attributes> {
+    protected rawAttributes(attributes: Attributes = {}): Attributes | Collection<Attributes> | never {
         const factory = this.getFactory();
 
         const compiledAttributeArray: Attributes[] = [];
@@ -360,7 +362,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {Factory}
      */
-    protected getFactory(): Factory<T> {
+    protected getFactory(): Factory<T> | never {
         if (this.factory) {
             return this.factory;
         }

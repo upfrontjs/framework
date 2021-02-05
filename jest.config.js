@@ -14,7 +14,7 @@ module.exports = {
     cacheDirectory: '<rootDir>/tests/cache',
     coverageDirectory: '<rootDir>/tests/coverage',
     coverageProvider: 'babel',
-    coverageReporters: ['json', 'text-summary'],
+    coverageReporters: ['json', 'text'],
     testMatch: [
         '<rootDir>tests/**/*(*.)@(test).[tj]s?(x)'
     ],

@@ -35,7 +35,7 @@ export default class HasTimestamps extends HasRelations {
      * @return {string}
      */
     public getCreatedAtColumn(): string {
-        return HasTimestamps.createdAt[this.attributeCasing]();
+        return this.setStringCase(HasTimestamps.createdAt);
     }
 
     /**
@@ -44,7 +44,7 @@ export default class HasTimestamps extends HasRelations {
      * @return {string}
      */
     public getUpdatedAtColumn(): string {
-        return HasTimestamps.updatedAt[this.attributeCasing]();
+        return this.setStringCase(HasTimestamps.updatedAt);
     }
 
     /**

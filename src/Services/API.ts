@@ -2,6 +2,7 @@ import type ApiCaller from '../Contracts/ApiCaller';
 import qs from 'qs';
 import { isObjectLiteral } from '../Support/function';
 import GlobalConfig from '../Support/GlobalConfig';
+import { finish } from '../Support/string';
 
 /**
  * The default ApiCaller class used by the package.
@@ -105,7 +106,7 @@ export default class API implements ApiCaller {
                     'Content-Type',
                     'application/x-www-form-urlencoded; charset=' + String(this.getParamEncodingOptions.charset)
                 );
-                url = url.finish('?') + qs.stringify(data, this.getParamEncodingOptions);
+                url = finish(url, '?') + qs.stringify(data, this.getParamEncodingOptions);
             }
         }
 

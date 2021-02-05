@@ -33,7 +33,7 @@ export default class SoftDeletes extends HasTimestamps {
      * @return {string}
      */
     public getDeletedAtColumn(): string {
-        return SoftDeletes.deletedAt[this.attributeCasing]();
+        return this.setStringCase(SoftDeletes.deletedAt);
     }
 
     /**

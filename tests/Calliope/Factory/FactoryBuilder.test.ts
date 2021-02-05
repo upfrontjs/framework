@@ -11,6 +11,7 @@ import type Model from '../../../src/Calliope/Model';
 import Shift from '../../mock/Models/Shift';
 import Contract from '../../mock/Models/Contract';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
+import { isUuid } from '../../../src';
 
 class FakeFactory extends Factory<User> {
     // @ts-expect-error
@@ -459,7 +460,7 @@ describe('FactoryBuilder', () => {
             });
 
             // @ts-expect-error
-            expect((factoryBuilder.getKey() as string).isUuid()).toBe(true);
+            expect(isUuid(factoryBuilder.getKey() as string)).toBe(true);
 
             Object.defineProperty(factoryBuilder.model, 'primaryKey', {
                 get(): string {

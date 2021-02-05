@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import Paginator from '../../src/Support/Paginator';
 import InvalidOffsetException from '../../src/Exceptions/InvalidOffsetException';
-import InvalidArgumentException from '../../src/Exceptions/InvalidArgumentException';
 
 describe('Paginator', () => {
     const elements: [1, 2, 3, 4, 5] = [1, 2, 3, 4, 5];
@@ -55,24 +54,12 @@ describe('Paginator', () => {
                 expect(paginator.last().hasNext).toBe(false);
             });
         });
-
-        describe('.hasPages', () => {
-            it('should determine if it has pages or not', () => {
-                expect(paginator.hasPages).toBe(true);
-                expect(paginator.setItemsPerPage(elements.length).hasPages).toBe(false);
-            });
-        });
     });
 
     describe('methods', () => {
         describe('constructor()', () => {
-            it('should fail on invalid input', () => {
-                // @ts-expect-error
-                const failingFunc = jest.fn(() => new Paginator());
-
-                expect(failingFunc).toThrow(new InvalidArgumentException(
-                    'Paginator expect at least one element in the constructor.'
-                ));
+            it('should accept a single element as the first argument', () => {
+                expect(new Paginator(1)).toBeInstanceOf(Paginator);
             });
         });
 
@@ -98,6 +85,11 @@ describe('Paginator', () => {
         describe('last()', () => {
             it('should set to last page', () => {
                 expect(paginator.last().items).toContain(lastItem);
+            });
+
+            it('should not set the currentPage to 0', () => {
+                paginator = new Paginator();
+                expect(paginator.last().currentPage).toBe(1);
             });
         });
 
@@ -199,6 +191,24 @@ describe('Paginator', () => {
             it('should return the last item of the paginator', () => {
                 expect(paginator.pop()).toBe(lastItem);
             });
+
+            it('should set page number to previous if the item was the only one on page and recalculate the items', () => {
+                paginator.setItemsPerPage(2).last();
+                expect(paginator.items).toStrictEqual([5]);
+                expect(paginator.currentPage).toBe(3);
+
+                paginator.pop();
+                expect(paginator.items).toStrictEqual([3, 4]);
+                expect(paginator.currentPage).toBe(2);
+
+                paginator.pop();
+                expect(paginator.items).toStrictEqual([3]);
+                expect(paginator.currentPage).toBe(2);
+
+                paginator.pop();
+                expect(paginator.items).toStrictEqual([1, 2]);
+                expect(paginator.currentPage).toBe(1);
+            });
         });
 
         describe('push()', () => {
@@ -209,6 +219,14 @@ describe('Paginator', () => {
             it('should set the given item at the end of the paginator', () => {
                 paginator.push(lastItem + 1);
                 expect(paginator.getAll()).toContain(lastItem + 1);
+            });
+
+            it('should update the items with the pushed in values', () => {
+                paginator.last().push(6);
+                expect(paginator.pageCount).toBe(2);
+                expect(paginator.items).toStrictEqual([4, 5, 6]);
+                paginator.last().push(7);
+                expect(paginator.pageCount).toBe(3);
             });
         });
 
@@ -221,11 +239,41 @@ describe('Paginator', () => {
             it('should return the first item of the paginator', () => {
                 expect(paginator.shift()).toBe(elements[0]);
             });
+
+            it('should set page to previous if no items left on current page', () => {
+                paginator.last();
+
+                expect(paginator.currentPage).toBe(2);
+                expect(paginator.items).toStrictEqual([4, 5]);
+
+                paginator.shift();
+                expect(paginator.currentPage).toBe(2);
+                expect(paginator.items).toStrictEqual([5]);
+
+                paginator.shift();
+                expect(paginator.currentPage).toBe(1);
+                expect(paginator.items).toStrictEqual([3, 4, 5]);
+            });
         });
 
         describe('unshift()', () => {
             it('should return the new length of the paginator', () => {
                 expect(paginator.unshift(elements[0] - 1)).toBe(elements.length + 1);
+            });
+
+            it('should add the element to the beginning of the paginator', () => {
+                paginator.unshift(0);
+                expect(paginator.items[0]).toBe(0);
+            });
+
+            it('should update the items with the un-shifted in values', () => {
+                paginator.setItemsPerPage(5);
+                expect(paginator.pageCount).toBe(1);
+
+                paginator.unshift(0);
+                expect(paginator.pageCount).toBe(2);
+                expect(paginator.currentPage).toBe(1);
+                expect(paginator.items).toStrictEqual([0, 1, 2, 3, 4]);
             });
         });
 

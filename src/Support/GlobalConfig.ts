@@ -1,4 +1,4 @@
-import { merge } from 'lodash';
+import { cloneDeep, merge } from 'lodash';
 import type Configuration from '../Contracts/Configuration';
 
 type WithProperty<T, K extends PropertyKey> = T & {
@@ -32,7 +32,13 @@ export default class GlobalConfig<T extends Configuration> {
      */
     public get<K extends keyof T>(key: K, defaultVal?: T[K]): T[K];
     public get<D>(key: string, defaultVal?: D): D {
-        return GlobalConfig.configuration[key] ?? defaultVal;
+        if (!this.has(key)) {
+            return defaultVal!;
+        }
+
+        const value = GlobalConfig.configuration[key];
+
+        return typeof value === 'function' ? value : cloneDeep(value);
     }
 
     /**
@@ -54,7 +60,7 @@ export default class GlobalConfig<T extends Configuration> {
         key: K,
         value: T[K]
     ): asserts this is GlobalConfig<WithProperty<T, K>> {
-        GlobalConfig.configuration[key] = value;
+        GlobalConfig.configuration[key] = typeof value === 'function' ? value : cloneDeep(value);
     }
 
     /**

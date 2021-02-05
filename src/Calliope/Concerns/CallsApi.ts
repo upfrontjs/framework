@@ -7,6 +7,7 @@ import type Model from '../Model';
 import BuildsQuery from './BuildsQuery';
 import type { Attributes } from './HasAttributes';
 import { isObjectLiteral } from '../../Support/function';
+import { finish, plural } from '../../Support/string';
 
 export default class CallsApi extends BuildsQuery {
     /**
@@ -74,7 +75,7 @@ export default class CallsApi extends BuildsQuery {
 
         this.requestCount++;
         const config = new GlobalConfig;
-        const url = String(config.get('baseEndPoint', '')).finish('/')
+        const url = finish(String(config.get('baseEndPoint', '')), '/')
             + (this.getEndpoint().startsWith('/') ? this.getEndpoint().slice(1) : this.getEndpoint());
         const apiCaller = new (config.get('api', API))!;
         const handlesApiResponse = new (config.get('apiResponseHandler', ApiResponseHandler))!;
@@ -237,7 +238,7 @@ export default class CallsApi extends BuildsQuery {
             data.forEach(attributes => {
                 if (isObjectLiteral(attributes)) {
                     const model = new (this.constructor as typeof Model)();
-                    Object.defineProperty(model, '_' + 'last_synced_at'[this.attributeCasing](), {
+                    Object.defineProperty(model, '_' + this.setStringCase('last_synced_at'), {
                         get: () => new Date
                     });
                     collection.push(model.forceFill(attributes).syncOriginal());
@@ -247,7 +248,7 @@ export default class CallsApi extends BuildsQuery {
             result = collection;
         } else {
             const model = new (this.constructor as typeof Model)();
-            Object.defineProperty(model, '_' + 'last_synced_at'[this.attributeCasing](), {
+            Object.defineProperty(model, '_' + this.setStringCase('last_synced_at'), {
                 get: () => new Date
             });
             result = model.forceFill(data).syncOriginal();
@@ -286,7 +287,7 @@ export default class CallsApi extends BuildsQuery {
     public resetEndpoint(): this {
         this.mutatedEndpoint = typeof this.endpoint === 'string' && this.endpoint.length
             ? this.endpoint
-            : this.constructor.name.toLowerCase().plural();
+            : plural(this.constructor.name.toLowerCase());
 
         return this;
     }

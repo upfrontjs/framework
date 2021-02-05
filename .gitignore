@@ -1,6 +1,8 @@
 # compiled output
 api-docs
-index.*
+index.*.js*
+array.*.js*
+string.*.js*
 types
 .tgz
 

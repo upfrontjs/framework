@@ -6,6 +6,7 @@ import type Model from '../Model';
 import type ModelCollection from '../ModelCollection';
 import { isObjectLiteral } from '../../Support/function';
 import Collection from '../../Support/Collection';
+import { camel, pascal, snake } from '../../Support/string';
 
 export type Attributes = Record<string, unknown>;
 
@@ -101,6 +102,19 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
     }
 
     /**
+     * Utility to cast the given string to the attributeCasing's case.
+     *
+     * @param {string} attribute
+     *
+     * @protected
+     *
+     * @return {string}
+     */
+    protected setStringCase(attribute: string): string {
+        return this.attributeCasing === 'camel' ? camel(attribute) : snake(attribute);
+    }
+
+    /**
      * Get an attribute from the model.
      *
      * @param {string} key
@@ -113,7 +127,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
         if (key in this.attributes) {
             // If it has an accessor call it.
             if (this.hasGetAccessor(key)) {
-                return (this[`get${key.pascal()}Attribute`] as CallableFunction)(cloneDeep(this.attributes[key]));
+                return (this[`get${pascal(key)}Attribute`] as CallableFunction)(cloneDeep(this.attributes[key]));
             }
 
             return this.castAttribute(key, this.attributes[key], this.getRawAttributes());
@@ -181,7 +195,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      */
     public setAttribute(key: string, value: unknown): this {
         if (this.hasSetMutator(key)) {
-            (this[`set${key.pascal()}Attribute`] as CallableFunction)(cloneDeep(value));
+            (this[`set${pascal(key)}Attribute`] as CallableFunction)(cloneDeep(value));
 
             this.createDescriptors(key);
             return this;
@@ -267,7 +281,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      * @return {boolean}
      */
     public hasSetMutator(key: string): boolean {
-        return `set${key.pascal()}Attribute` in this && this[`set${key.pascal()}Attribute`] instanceof Function;
+        return `set${pascal(key)}Attribute` in this && this[`set${pascal(key)}Attribute`] instanceof Function;
     }
 
     /**
@@ -278,7 +292,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      * @return {boolean}
      */
     public hasGetAccessor(key: string): boolean {
-        return `get${key.pascal()}Attribute` in this && this[`get${key.pascal()}Attribute`] instanceof Function;
+        return `get${pascal(key)}Attribute` in this && this[`get${pascal(key)}Attribute`] instanceof Function;
     }
 
     /**
@@ -303,7 +317,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable 
      */
     public forceFill(attributes: Attributes): this {
         Object.keys(attributes).forEach(name => {
-            this.setAttribute(name[this.attributeCasing](), attributes[name]);
+            this.setAttribute(this.setStringCase(name), attributes[name]);
         });
 
         return this;

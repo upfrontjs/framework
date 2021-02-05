@@ -4,6 +4,7 @@ import type HasFactory from '../Contracts/HasFactory';
 import type { Attributes } from './Concerns/HasAttributes';
 import ModelCollection from './ModelCollection';
 import LogicException from '../Exceptions/LogicException';
+import { finish, isUuid } from '../Support/string';
 
 export default class Model extends SoftDeletes implements HasFactory {
     /**
@@ -23,7 +24,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      * @type {boolean}
      */
     public get exists(): boolean {
-        let boolean = String(this.getKey()).isUuid() || !isNaN(Number(this.getKey()));
+        let boolean = isUuid(String(this.getKey())) || !isNaN(Number(this.getKey()));
 
         if (boolean && this.usesTimestamps()) {
             boolean = !!this.getAttribute(this.getCreatedAtColumn(), false);
@@ -156,7 +157,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      */
     public async find(id: number | string): Promise<Model> {
         const model = await this
-            .setEndpoint(this.getEndpoint().finish('/') + String(id))
+            .setEndpoint(finish(this.getEndpoint(), '/') + String(id))
             .get() as Model;
 
         return Promise.resolve(model);

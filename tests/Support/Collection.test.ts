@@ -43,6 +43,17 @@ describe('Collection', () => {
             expect(count).toBe(elements.length);
         });
 
+        it('should have the capability to be looped over using generator', () => {
+            let count = 0;
+            const iterator = collection[Symbol.iterator]();
+
+            while (!iterator.next().done) {
+                count++;
+            }
+
+            expect(count).toBe(elements.length);
+        });
+
         it('should return the expected elements', () => {
             let boolean = true;
 
@@ -161,6 +172,17 @@ describe('Collection', () => {
             collection = new Collection(elements);
             expect(collection.hasDuplicates('id')).toBe(true);
             expect(new Collection([{ id: 1 }, { id: 2 }]).hasDuplicates('id')).toBe(false);
+        });
+    });
+
+    describe('keys()', () => {
+        const elements = [1, 2, 3, 4, 5];
+        beforeEach(() => {
+            collection = new Collection(elements);
+        });
+
+        it('should return the collection keys', () => {
+            expect(collection.keys()).toStrictEqual(Array.from(elements.keys()).map(n => String(n)));
         });
     });
 
@@ -337,8 +359,7 @@ describe('Collection', () => {
         });
 
         it('should return every nth element', () => {
-            expect(collection.nth(2)).toHaveLength(2);
-            expect(collection.includes(2) && collection.includes(4)).toBe(true);
+            expect(collection.nth(2)).toStrictEqual(new Collection([2, 4]));
         });
 
         it('should return a collection ready for chaining', () => {
@@ -385,28 +406,15 @@ describe('Collection', () => {
             collection = new Collection(elements);
         });
 
-        it('should mutate the collection conditionally with a boolean', () => {
-            expect(collection.when(true, coll => coll.nth(2))).toHaveLength(2);
-
-            expect(collection.when(false, coll => coll.nth(2))).toHaveLength(elements.length);
+        it('should not mutate the collection conditionally with a boolean', () => {
+            collection.when(true, coll => coll.nth(2));
+            expect(collection).toHaveLength(elements.length);
         });
 
-        it('should mutate the collection conditionally with a closure resolving to boolean', () => {
-            expect(
-                collection.when(
-                    () => true,
-                    coll => coll.nth(2)
-                )
-            ).toHaveLength(2);
+        it('should not mutate the collection conditionally with a closure resolving to boolean', () => {
+            collection.when(() => true, coll => coll.nth(2));
 
-            collection = new Collection(elements);
-
-            expect(
-                collection.when(
-                    () => true,
-                    coll => coll.nth(2)
-                )
-            ).toHaveLength(2);
+            expect(collection).toHaveLength(elements.length);
         });
 
         it('should pass the collection to the first argument if it\'s a function', () => {
@@ -422,16 +430,16 @@ describe('Collection', () => {
             expect(mock).toHaveBeenCalledWith(collection);
         });
 
-        it('should throws an error if the fist argument isn\'t boolean or function', () => {
-            const type = null;
+        it('should evaluate non functions as truthy or falsy', () => {
+            const func = jest.fn();
+
             // @ts-expect-error
-            const func = () => collection.when(type, () => {});
-            expect(func).toThrow(
-                new TypeError(
-                    '\'when\' expect the first argument to be a type of boolean or function, \''
-                    + typeof type + '\' given.'
-                )
-            );
+            collection.when({}, func);
+            // @ts-expect-error
+            collection.when('value', func);
+            // @ts-expect-error
+            collection.when(1, func);
+            expect(func).toHaveBeenCalledTimes(3);
         });
 
         it('should return a collection ready for chaining', () => {
@@ -446,30 +454,20 @@ describe('Collection', () => {
             collection = new Collection(elements);
         });
 
-        it('should mutate the collection conditionally with a boolean', () => {
-            expect(collection.unless(false, coll => coll.nth(2))).toHaveLength(2);
-            expect(collection.unless(true, coll => coll.nth(2))).toHaveLength(elements.length);
+        it('should not mutate the collection conditionally with a boolean', () => {
+            collection.unless(false, coll => coll.nth(2))
+            expect(collection).toHaveLength(elements.length);
+
+            collection.unless(true, coll => coll.nth(2))
+            expect(collection).toHaveLength(elements.length);
         });
 
-        it('should mutate the collection conditionally with a closure resolving to boolean', () => {
-            expect(
-                collection.unless(
-                    () => false,
-                    coll => coll.nth(2)
-                )
-            ).toHaveLength(2);
-
-            collection = new Collection(elements);
-
-            expect(
-                collection.unless(
-                    () => false,
-                    coll => coll.nth(2)
-                )
-            ).toHaveLength(2);
+        it('should not mutate the collection conditionally with a closure resolving to boolean', () => {
+            collection.unless(() => false, coll => coll.nth(2));
+            expect(collection).toHaveLength(elements.length);
         });
 
-        it('should passe the collection to the first argument if it\'s a function', () => {
+        it('should pass the collection to the first argument if it\'s a function', () => {
             collection = new Collection(elements);
 
             // quick fix for https://github.com/facebook/jest/issues/2549
@@ -482,14 +480,16 @@ describe('Collection', () => {
             expect(mock).toHaveBeenCalledWith(collection);
         });
 
-        it('should throw an error if the fist argument isn\'t boolean or function', () => {
-            const type = null;
+        it('should evaluate non functions as truthy or falsy', () => {
+            const func = jest.fn();
+
             // @ts-expect-error
-            const func = () => collection.unless(type, () => {});
-            expect(func).toThrow(
-                new TypeError('\'unless\' expect the first argument to be a boolean or function, \''
-                    + typeof type + '\' given.')
-            );
+            collection.unless('', func);
+            // @ts-expect-error
+            collection.unless(null, func);
+            // @ts-expect-error
+            collection.unless(undefined, func);
+            expect(func).toHaveBeenCalledTimes(3);
         });
 
         it('should return a collection ready for chaining', () => {
@@ -616,6 +616,15 @@ describe('Collection', () => {
         it('should return a collection ready for chaining', () => {
             expect(collection.union([{ id: 5 }, { id: 6 }]).nth(1)).toHaveLength(elements.length + 1);
         });
+
+        it('should accept number of arguments', () => {
+            expect(collection.union(
+                [{ id: 5 }, { id: 6 }],
+                new Collection([{ id: 5 }, { id: 6 }]),
+                { id: 7 }
+            ))
+                .toHaveLength(elements.length + 2);
+        });
     });
 
     describe('diff()', () => {
@@ -627,11 +636,11 @@ describe('Collection', () => {
         });
 
         it('should get the difference the collection and the arguments', () => {
-            expect(collection.diff(items)).toHaveLength(2);
+            expect(collection.diff(items)).toStrictEqual(new Collection([1, 6]));
         });
 
         it('should return a collection ready for chaining', () => {
-            expect(collection.diff(items).toArray()).toHaveLength(2);
+            expect(collection.diff(new Collection(items)).toArray()).toHaveLength(2);
         });
     });
 
@@ -654,7 +663,6 @@ describe('Collection', () => {
     });
 
     describe('dump()', () => {
-        /* eslint-disable @typescript-eslint/no-unsafe-call */
         const elements = [1, 2, 3, 4, 5];
 
         beforeEach(() => {
@@ -662,42 +670,27 @@ describe('Collection', () => {
         });
 
         it('should dumps to the console', () => {
-            jest.spyOn(console, 'info');
-            // @ts-expect-error
-            console.info.mockImplementation(() => {});
+            jest.spyOn(console, 'info').mockImplementation(() => {});
             collection.dump();
 
             expect(console.info).toHaveBeenCalled();
 
-            // @ts-expect-error
-            console.info.mockRestore();
         });
 
         it('should dump with a message', () => {
-            jest.spyOn(console, 'info');
-            // @ts-expect-error
-            console.info.mockImplementation(() => {});
+            jest.spyOn(console, 'info').mockImplementation(() => {});
             collection.dump('test');
 
             expect(console.info).toHaveBeenCalledWith(
                 new Date().toLocaleTimeString() + ' (test)' + ' - All items: ' + elements.toString()
             );
-
-            // @ts-expect-error
-            console.info.mockRestore();
         });
 
         it('should return a collection ready for chaining', () => {
-            jest.spyOn(console, 'info');
-            // @ts-expect-error
-            console.info.mockImplementation(() => {});
+            jest.spyOn(console, 'info').mockImplementation(() => {});
 
             expect(collection.dump().toArray()).toHaveLength(elements.length);
-
-            // @ts-expect-error
-            console.info.mockRestore();
         });
-        /* eslint-enable @typescript-eslint/no-unsafe-call */
     });
 
     describe('chunk()', () => {
@@ -708,8 +701,16 @@ describe('Collection', () => {
         });
 
         it('should chunk the collection into collections', () => {
-            expect(collection.chunk(2)).toHaveLength(3);
-            expect(Collection.isCollection(collection.chunk(2).first())).toBe(true);
+            expect(collection.chunk(2)).toStrictEqual(new Collection([
+                new Collection([1, 2]),
+                new Collection([3, 4]),
+                new Collection([5])
+            ]));
+        });
+
+        it('should wrap the collection in collection if chunk size same or exceeds length', () => {
+            expect(collection.chunk(elements.length)).toStrictEqual(new Collection(collection));
+            expect(collection.chunk(elements.length + 1)).toStrictEqual(new Collection(collection));
         });
 
         it('should return a collection ready for chaining', () => {
@@ -757,6 +758,11 @@ describe('Collection', () => {
             expect(collection.takeWhile(item => item < 4)).toHaveLength(3);
         });
 
+        it('should not change the original collection', () => {
+            collection.takeWhile(item => item < 4);
+            expect(collection).toHaveLength(elements.length);
+        });
+
         it('should return a collection ready for chaining', () => {
             expect(collection.takeWhile(item => item < 4).toArray()).toHaveLength(3);
         });
@@ -771,6 +777,11 @@ describe('Collection', () => {
 
         it('should take items from the collection until the condition is true', () => {
             expect(collection.takeUntil(item => item >= 4)).toHaveLength(3);
+        });
+
+        it('should not change the original collection', () => {
+            collection.takeUntil(item => item >= 4);
+            expect(collection).toHaveLength(elements.length);
         });
 
         it('should return a collection ready for chaining', () => {
@@ -908,10 +919,9 @@ describe('Collection', () => {
             expect(func).toHaveBeenCalledWith(collection);
         });
 
-        it('should mutate the collection', () => {
-            const func = (coll: Collection<any>) => coll.pad(10);
-            collection.pipe(func);
-            expect(collection.pipe(func)).toHaveLength(10);
+        it('should not mutate the collection', () => {
+            collection.pipe(coll => coll.pad(10));
+            expect(collection).toHaveLength(elements.length);
         });
 
         it('should return a collection ready for chaining', () => {
@@ -1003,6 +1013,23 @@ describe('Collection', () => {
 
         it('should return a collection ready for chaining', () => {
             expect(Collection.times(5, (i: number) => i).toArray()).toHaveLength(5);
+        });
+    });
+
+    describe('withoutEmpty()', () => {
+        beforeEach(() => {
+            collection = new Collection([1, 2, 3, null, undefined]);
+        });
+
+        it('should filter out null and undefined values', () => {
+            expect(collection.withoutEmpty().toArray()).toStrictEqual([1, 2, 3]);
+        });
+
+        it('should return a new collection', () => {
+            expect(collection.withoutEmpty()).toBeInstanceOf(Collection);
+            const withoutEmpty = collection.withoutEmpty();
+            collection.pop();
+            expect(withoutEmpty).toBeInstanceOf(Collection);
         });
     });
 
@@ -1193,11 +1220,6 @@ describe('Collection', () => {
                 expect(collection.filter(e => e > 2).nth(1)).toHaveLength(3);
             });
 
-            it('should filter undefined and null without arguments', () => {
-                collection.push(null, undefined);
-                expect(collection.filter()).toHaveLength(elements.length);
-            });
-
             it('should return a new collection', () => {
                 collection.filter(elem => !!elem);
                 expect(collection.first()).toStrictEqual(elements[0]);
@@ -1225,6 +1247,22 @@ describe('Collection', () => {
                 expect(collection[0]).toBe(1);
                 // @ts-expect-error
                 expect(collection.NaN).toBeUndefined();
+            });
+        });
+
+        describe('pop()', () => {
+            it('should remove the last element of the collection', () => {
+                collection.pop();
+                expect(collection).toHaveLength(elements.length - 1);
+            });
+
+            it('should return the last element of the collection', () => {
+                expect(collection.pop()).toBe(elements[elements.length - 1]);
+            });
+
+            it('should return undefined if the collection is empty', () => {
+                collection = new Collection;
+                expect(collection.pop()).toBeUndefined();
             });
         });
 

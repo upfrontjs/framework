@@ -1,7 +1,8 @@
 import API from '../../src/Services/API';
 import { config as globalConfig } from '../setupTests';
+import { finish } from '../../src';
 
-const url = String(globalConfig.get('baseEndPoint')).finish('/') + 'users';
+const url = finish(String(globalConfig.get('baseEndPoint')), '/') + 'users';
 
 class APITester extends API {
     public getConfig(

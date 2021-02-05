@@ -1,24 +1,41 @@
-import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
 import { isEqual, cloneDeep } from 'lodash';
 import InvalidOffsetException from '../Exceptions/InvalidOffsetException';
 
 /**
  * Utility to paginate data.
  */
-class Paginator<T> implements Iterable<T> {
+export default class Paginator<T> implements Iterable<T> {
     /**
-     * The current page.
+     * The internal current page. This is always at least 1.
      *
      * @type {number}
      */
-    public currentPage = 1;
+    protected internalCurrentPage = 1;
+
+    /**
+     * The internal current page.
+     *
+     * @type {number}
+     */
+    public get currentPage(): number {
+        return this.internalCurrentPage;
+    }
+
+    /**
+     * The internal tacker for the items per page count.
+     *
+     * @type {number}
+     */
+    protected internalItemsPerPage = 10;
 
     /**
      * Number of items to return per page.
      *
      * @type {number}
      */
-    public itemsPerPage = 10;
+    public get itemsPerPage(): number {
+        return this.internalItemsPerPage;
+    }
 
     /**
      * Current page's items.
@@ -47,11 +64,11 @@ class Paginator<T> implements Iterable<T> {
      * @return {number}
      */
     public get pageCount(): number {
-        return Math.ceil(this.elements.length / this.itemsPerPage);
+        return Math.ceil(this.elements.length / this.internalItemsPerPage);
     }
 
     /**
-     * TGet the length of all the items within the paginator.
+     * Get the length of all the items within the paginator.
      */
     public get length(): number {
         return this.elements.length;
@@ -63,7 +80,7 @@ class Paginator<T> implements Iterable<T> {
      * @return {boolean}
      */
     public get hasPrevious(): boolean {
-        return this.currentPage > 1;
+        return this.internalCurrentPage > 1;
     }
 
     /**
@@ -72,18 +89,9 @@ class Paginator<T> implements Iterable<T> {
      * @return {boolean}
      */
     public get hasNext(): boolean {
-        const start = this.currentPage * this.itemsPerPage;
+        const start = this.internalCurrentPage * this.internalItemsPerPage;
 
-        return !!this.elements.slice(start, start + this.itemsPerPage).length;
-    }
-
-    /**
-     * Determine whether the Paginator has pages or not.
-     *
-     * @return {boolean}
-     */
-    public get hasPages(): boolean {
-        return this.pageCount > 1;
+        return !!this.elements.slice(start, start + this.internalItemsPerPage).length;
     }
 
     /**
@@ -96,27 +104,19 @@ class Paginator<T> implements Iterable<T> {
     }
 
     /**
-     * Allow indexing by numbers.
-     */
-    [index: number]: T;
-
-    /**
      * The paginator constructor.
      *
-     * @param {any[]} elements
+     * @param {any|any[]} elements
      * @param {number} itemsPerPage
      * @param {boolean} wrapsAround
      *
      * @return {this}
      */
-    public constructor(elements: T[], itemsPerPage = 10, wrapsAround = false) {
-        if (!elements?.length) {
-            throw new InvalidArgumentException('Paginator expect at least one element in the constructor.');
-        }
-
+    public constructor(elements?: T|T[], itemsPerPage = 10, wrapsAround = false) {
+        elements = elements !== undefined ? cloneDeep(elements) : [];
         this.wrapsAround = wrapsAround;
-        this.itemsPerPage = itemsPerPage;
-        this.elements = Array.isArray(elements) ? cloneDeep(elements) : [cloneDeep(elements)];
+        this.internalItemsPerPage = itemsPerPage;
+        this.elements = Array.isArray(elements) ? elements : [elements];
         this._setPageItems();
 
         return this;
@@ -130,9 +130,9 @@ class Paginator<T> implements Iterable<T> {
      * @return {this}
      */
     private _setPageItems(): this {
-        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const start = (this.internalCurrentPage - 1) * this.internalItemsPerPage;
 
-        this.items = this.elements.slice(start, start + this.itemsPerPage);
+        this.items = this.elements.slice(start, start + this.internalItemsPerPage);
 
         return this;
     }
@@ -145,7 +145,7 @@ class Paginator<T> implements Iterable<T> {
      * @return {this}
      */
     public setItemsPerPage(count: number): this {
-        this.itemsPerPage = Number(count);
+        this.internalItemsPerPage = Number(count);
         this._setPageItems();
 
         return this;
@@ -157,7 +157,7 @@ class Paginator<T> implements Iterable<T> {
      * @return {this}
      */
     public first(): this {
-        this.currentPage = 1;
+        this.internalCurrentPage = 1;
         this._setPageItems();
 
         return this;
@@ -169,7 +169,7 @@ class Paginator<T> implements Iterable<T> {
      * @return {this}
      */
     public last(): this {
-        this.currentPage = this.pageCount;
+        this.internalCurrentPage = this.pageCount > 0 ? this.pageCount : 1;
         this._setPageItems();
 
         return this;
@@ -184,7 +184,7 @@ class Paginator<T> implements Iterable<T> {
      */
     public page(pageNum: number): this {
         if (pageNum <= this.pageCount && pageNum >= 1) {
-            this.currentPage = pageNum;
+            this.internalCurrentPage = pageNum;
             this._setPageItems();
         }
 
@@ -198,7 +198,7 @@ class Paginator<T> implements Iterable<T> {
      */
     public previous(): this {
         if (this.hasPrevious) {
-            this.currentPage--;
+            this.internalCurrentPage--;
             this._setPageItems();
 
             return this;
@@ -218,7 +218,7 @@ class Paginator<T> implements Iterable<T> {
      */
     public next(): this {
         if (this.hasNext) {
-            this.currentPage++;
+            this.internalCurrentPage++;
             this._setPageItems();
 
             return this;
@@ -266,7 +266,7 @@ class Paginator<T> implements Iterable<T> {
             throw new InvalidOffsetException('Given item does not exists on the paginator');
         }
 
-        if (this.currentPage === pageNumber) {
+        if (this.internalCurrentPage === pageNumber) {
             return this;
         }
 
@@ -289,6 +289,7 @@ class Paginator<T> implements Iterable<T> {
      */
     public push(...items: T[]): number {
         this.elements.push(...items);
+        this._setPageItems();
 
         return this.length;
     }
@@ -301,6 +302,7 @@ class Paginator<T> implements Iterable<T> {
      */
     public unshift(...items: T[]): number {
         this.elements.unshift(...items);
+        this._setPageItems();
 
         return this.length;
     }
@@ -311,7 +313,15 @@ class Paginator<T> implements Iterable<T> {
      * @return {any}
      */
     public pop(): T | undefined {
-        return this.elements.pop();
+        // this is the last page and there's only 1 item on page
+        if (this.pageCount === this.currentPage && this.items.length === 1) {
+            this.previous();
+        }
+
+        const lastElement = this.elements.pop();
+        this._setPageItems();
+
+        return lastElement;
     }
 
     /**
@@ -320,7 +330,15 @@ class Paginator<T> implements Iterable<T> {
      * @return {any}
      */
     public shift(): T | undefined {
-        return this.elements.shift();
+        // this is the last page and there's only 1 item on page
+        if (this.pageCount === this.currentPage && this.items.length === 1) {
+            this.previous();
+        }
+
+        const firstElement = this.elements.shift();
+        this._setPageItems();
+
+        return firstElement;
     }
 
     /**
@@ -329,7 +347,7 @@ class Paginator<T> implements Iterable<T> {
      * @return {any[]}
      */
     public getAll(): T[] {
-        return this.elements;
+        return cloneDeep(this.elements);
     }
 
     /**
@@ -341,11 +359,9 @@ class Paginator<T> implements Iterable<T> {
         const elementMatrix: T[][] = [];
 
         for (let i = 0; i <= this.pageCount - 1; i++) {
-            elementMatrix.push(this.elements.slice(i * this.itemsPerPage, (i + 1) * this.itemsPerPage));
+            elementMatrix.push(this.elements.slice(i * this.internalItemsPerPage, (i + 1) * this.internalItemsPerPage));
         }
 
-        return elementMatrix;
+        return cloneDeep(elementMatrix);
     }
 }
-
-export default Paginator;

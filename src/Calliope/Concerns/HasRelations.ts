@@ -6,6 +6,7 @@ import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
 import type { Attributes } from './HasAttributes';
 import Collection from '../../Support/Collection';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
+import { finish, snake, start } from '../../Support/string';
 
 type Relation = 'belongsTo' | 'belongsToMany' | 'hasMany' | 'hasOne' | 'morphMany' | 'morphOne' | 'morphTo';
 
@@ -48,7 +49,7 @@ export default class HasRelations extends CallsApi {
 
         if (relations.length === 1) {
             const relation = await
-            ((this[relations[0]!.start(this.relationMethodPrefix)] as CallableFunction)() as Model)
+            ((this[start(relations[0]!, this.relationMethodPrefix)] as CallableFunction)() as Model)
                 .get() as Model;
 
             this.addRelation(relations[0]!, relation);
@@ -120,7 +121,7 @@ export default class HasRelations extends CallsApi {
      * @return {boolean}
      */
     protected relationDefined(name: string): boolean {
-        name = name.start(this.relationMethodPrefix);
+        name = start(name, this.relationMethodPrefix);
 
         if (this[name] instanceof Function) {
             const value = (this[name] as CallableFunction)();
@@ -141,7 +142,7 @@ export default class HasRelations extends CallsApi {
      * @return {'belongsTo'|'belongsToMany'|'hasOne'|'hasMany'|'morphs'|'morphTo'|'morphMany'|'morphOne'}
      */
     protected getRelationType(name: string): Relation {
-        name = name.start(this.relationMethodPrefix);
+        name = start(name, this.relationMethodPrefix);
         const model = (this[name] as CallableFunction)() as Model & { relationType: Relation };
 
         if (!model.relationType) {
@@ -199,7 +200,7 @@ export default class HasRelations extends CallsApi {
             return this;
         }
 
-        const relatedModel: Model = (this[name.start(this.relationMethodPrefix)] as CallableFunction)();
+        const relatedModel: Model = (this[start(name, this.relationMethodPrefix)] as CallableFunction)();
         let relation: Model | ModelCollection<Model>;
 
         // set up the relations by calling the constructor of the related models
@@ -270,9 +271,11 @@ export default class HasRelations extends CallsApi {
      * @return {string}
      */
     public getForeignKeyName(): string {
-        return ((this as unknown as Model).getName().snake().toLowerCase()
+        return this.setStringCase(
+            snake((this as unknown as Model).getName()).toLowerCase()
             + '_'
-            + (this as unknown as Model).getKeyName())[this.attributeCasing]();
+            + (this as unknown as Model).getKeyName()
+        );
     }
 
     /**
@@ -353,7 +356,7 @@ export default class HasRelations extends CallsApi {
 
         HasRelations.configureRelationType(relatedModel, 'belongsTo');
 
-        return relatedModel.setEndpoint(relatedModel.getEndpoint().finish('/') + String(foreignKeyValue));
+        return relatedModel.setEndpoint(finish(relatedModel.getEndpoint(), '/') + String(foreignKeyValue));
     }
 
     /**
@@ -469,7 +472,7 @@ export default class HasRelations extends CallsApi {
      * @param {string=} name
      */
     protected getMorphs(name?: string): Record<'id'|'type', string> {
-        name = name ?? (this as unknown as Model).getName().toLowerCase().finish('able');
+        name = name ?? finish((this as unknown as Model).getName().toLowerCase(), 'able');
 
         return { id: name + '_id', type: name + '_type' };
     }

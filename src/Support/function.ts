@@ -10,7 +10,7 @@ import FactoryBuilder from '../Calliope/Factory/FactoryBuilder';
  *
  * @return {Collection}
  */
-export function collect<T>(items?: any): Collection<T> {
+export function collect<T>(items?: T | T[]): Collection<T> {
     return new Collection(items);
 }
 
@@ -18,11 +18,13 @@ export function collect<T>(items?: any): Collection<T> {
  * Construct a paginator instance.
  *
  * @param {...any} items
+ * @param {number} itemsPerPage
+ * @param {boolean} wrapsAround
  *
  * @return {Paginator}
  */
-export function paginate<T>(items: any[]): Paginator<T> {
-    return new Paginator(items);
+export function paginate<T>(items: any[], itemsPerPage = 10, wrapsAround = false): Paginator<T> {
+    return new Paginator(items, itemsPerPage, wrapsAround);
 }
 
 /**

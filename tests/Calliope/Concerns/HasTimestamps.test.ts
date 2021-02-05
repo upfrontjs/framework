@@ -4,6 +4,7 @@ import { buildResponse, getLastFetchCall } from '../../test-helpers';
 import { advanceBy } from 'jest-date-mock';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import { config } from '../../setupTests';
+import { camel, snake, start } from '../../../src';
 
 let hasTimestamps: User;
 
@@ -66,8 +67,8 @@ describe('HasTimestamps', () => {
             const failingFunc = jest.fn(async () => hasTimestamps.touch());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
-                'No \'' + hasTimestamps.getCreatedAtColumn().camel() + '\' or '
-                + '\'' + hasTimestamps.getCreatedAtColumn().snake() + '\' attribute found on the response data.'
+                'No \'' + camel(hasTimestamps.getCreatedAtColumn()) + '\' or '
+                + '\'' + snake(hasTimestamps.getCreatedAtColumn()) + '\' attribute found on the response data.'
             ));
         });
 
@@ -79,8 +80,8 @@ describe('HasTimestamps', () => {
             const failingFunc = jest.fn(async () => hasTimestamps.touch());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
-                'No \'' + hasTimestamps.getUpdatedAtColumn().camel() + '\' or '
-                + '\'' + hasTimestamps.getUpdatedAtColumn().snake() + '\' attribute found on the response data.'
+                'No \'' + camel(hasTimestamps.getUpdatedAtColumn()) + '\' or '
+                + '\'' + snake(hasTimestamps.getUpdatedAtColumn()) + '\' attribute found on the response data.'
             ));
         });
 
@@ -106,7 +107,7 @@ describe('HasTimestamps', () => {
             expect(getLastFetchCall()?.method).toBe('get');
             expect(getLastFetchCall()?.url).toBe(
                 String(config.get('baseEndPoint'))
-                + hasTimestamps.getEndpoint().start('/')
+                + start(hasTimestamps.getEndpoint(), '/')
                 + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=1&wheres[][boolean]=and'
                 + '&columns[]=createdAt&columns[]=updatedAt'
             );
@@ -137,8 +138,8 @@ describe('HasTimestamps', () => {
             const failingFunc = jest.fn(async () => hasTimestamps.freshTimestamps());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
-                'No \'' + hasTimestamps.getCreatedAtColumn().camel() + '\' or '
-                + '\'' + hasTimestamps.getCreatedAtColumn().snake() + '\' attribute found on the response data.'
+                'No \'' + camel(hasTimestamps.getCreatedAtColumn()) + '\' or '
+                + '\'' + snake(hasTimestamps.getCreatedAtColumn()) + '\' attribute found on the response data.'
             ));
         });
 
@@ -150,8 +151,8 @@ describe('HasTimestamps', () => {
             const failingFunc = jest.fn(async () => hasTimestamps.freshTimestamps());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
-                'No \'' + hasTimestamps.getUpdatedAtColumn().camel() + '\' or '
-                + '\'' + hasTimestamps.getUpdatedAtColumn().snake() + '\' attribute found on the response data.'
+                'No \'' + camel(hasTimestamps.getUpdatedAtColumn()) + '\' or '
+                + '\'' + snake(hasTimestamps.getUpdatedAtColumn()) + '\' attribute found on the response data.'
             ));
         });
 

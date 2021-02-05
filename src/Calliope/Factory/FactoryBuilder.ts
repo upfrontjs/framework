@@ -1,4 +1,4 @@
-import Model from '../Model';
+import type Model from '../Model';
 import type { Attributes } from '../Concerns/HasAttributes';
 import ModelCollection from '../ModelCollection';
 import Factory from './Factory';
@@ -7,6 +7,7 @@ import GlobalConfig from '../../Support/GlobalConfig';
 import Collection from '../../Support/Collection';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import { isConstructableUserClass } from '../../Support/function';
+import { plural, singular, uuid } from '../../Support/string';
 
 export default class FactoryBuilder<T extends Model> {
     /**
@@ -150,20 +151,20 @@ export default class FactoryBuilder<T extends Model> {
         } else {
             throw new InvalidArgumentException(
                 'Argument for the \'with\' method expected to be an instance of '
-                + FactoryBuilder.name + ' or a ' + Model.name + ' constructor.'
+                + FactoryBuilder.name + ' or a Model constructor.'
             );
         }
 
         // @ts-expect-error
         if (!this.model.relationDefined(relationName)) {
-            relationName = relationName.plural();
+            relationName = plural(relationName);
 
             // @ts-expect-error
             if (!this.model.relationDefined(relationName)) {
                 throw new InvalidArgumentException(
                     '\'' + this.model.getName()
                     + '\' doesn\'t have the \''
-                    + relationName.singular() + '\' or \'' + relationName +
+                    + singular(relationName) + '\' or \'' + relationName +
                     '\' relationship defined.'
                 );
             }
@@ -400,7 +401,7 @@ export default class FactoryBuilder<T extends Model> {
         const config: GlobalConfig<Record<'lastIds', Record<string, number>>> = new GlobalConfig();
 
         if (this.model.getKeyName() === 'uuid') {
-            return String.uuid();
+            return uuid();
         }
 
         const lastIds = config.get('lastIds', {});

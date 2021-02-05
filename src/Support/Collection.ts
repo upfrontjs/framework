@@ -61,13 +61,6 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    // todo - caveat to mention in docs
-    // we cannot know what the extending class' arguments going to be,
-    // while taking anything else than the items is unexpected is
-    // not impossible that they may introduce an extra argument
-    // due to poor design (any such should be a member method).
-    // With this method it will only call the constructor
-    // with the items.
     protected _newInstance(items?: T | T[]): this {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         return new (this.constructor as any)(items);
@@ -209,9 +202,10 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    public unique(key?: string | ((obj: Record<string, any>) => T)): this {
+    public unique(key?: string | ((obj: T) => T)): this {
         if (!this._allAreObjects()) {
             let values: T[];
+
             if (key instanceof Function) {
                 const array = this.toArray();
 
@@ -323,6 +317,15 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
+     * Filter out null and undefined values.
+     *
+     * @return {this}
+     */
+    public withoutEmpty(): Collection<T> {
+        return this._newInstance(this.toArray().filter(item => item !== undefined && item !== null));
+    }
+
+    /**
      * Pad collection to the specified length with a value.
      * Negative length will pad the beginning of the collection.
      *
@@ -357,17 +360,25 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * Join this and the argument without overlapping values.
+     * Join the collection and one or more iterables without overlapping values.
      *
-     * @param {array|this} iterable
+     * @param {array|Collection} iterables
      *
      * @return {this}
      */
-    public union(iterable: T[]): this {
-        const collection = this._newInstance(this.toArray());
-        collection.push(...iterable.filter(item => !this.includes(item)));
+    public union(...iterables: (Collection<T> | T | T[])[]): this {
+        const targetCollection = this._newInstance(this.toArray());
 
-        return collection;
+        Array.from(iterables).forEach(iterable => {
+            iterable = !Array.isArray(iterable)
+                ? Collection.isCollection<T>(iterable) ? iterable : [iterable]
+                : iterable;
+
+            targetCollection.push(...iterable.filter(item => !targetCollection.includes(item)));
+        });
+
+
+        return targetCollection;
     }
 
     /**
@@ -386,7 +397,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
             return !argCollection.includes(item);
         });
 
-        result.push(argCollection.toArray().filter((arg: any) => !this.includes(arg)));
+        result.push(...argCollection.toArray().filter((arg: any) => !this.includes(arg)));
 
         return this._newInstance(result);
     }
@@ -443,18 +454,9 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     public when(
         boolean: boolean | ((collection: Collection<T>) => boolean), callback: (collection: this) => this
     ): this {
-        let bool: boolean;
-
-        if (typeof boolean === 'boolean') {
-            bool = boolean;
-        } else if (boolean instanceof Function) {
-            bool = !!boolean(this._newInstance(this.toArray()));
-        } else {
-            throw new TypeError(
-                '\'when\' expect the first argument to be a type of boolean or function, \''
-                + typeof boolean + '\' given.'
-            );
-        }
+        const bool = boolean instanceof Function
+            ? !!boolean(this._newInstance(this.toArray()))
+            : !!boolean;
 
         if (bool) {
             return callback(this._newInstance(this.toArray()));
@@ -478,18 +480,9 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
         boolean: boolean | ((collection: Collection<T>) => boolean),
         callback: (collection: this) => this
     ): this {
-        let bool: boolean;
-
-        if (typeof boolean === 'boolean') {
-            bool = boolean;
-        } else if (boolean instanceof Function) {
-            bool = !!boolean(this._newInstance(this.toArray()));
-        } else {
-            throw new TypeError(
-                '\'unless\' expect the first argument to be a boolean or function, \''
-                + typeof boolean + '\' given.'
-            );
-        }
+        const bool = boolean instanceof Function
+            ? !!boolean(this._newInstance(this.toArray()))
+            : !!boolean;
 
         if (!bool) {
             return callback(this._newInstance(this.toArray()));
@@ -507,7 +500,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      */
     public whenEmpty(callback: (collection: this) => void): this {
         if (this.isEmpty()) {
-            callback(this);
+            callback(this._newInstance(this.toArray()));
         }
 
         return this;
@@ -522,7 +515,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      */
     public whenNotEmpty(callback: (collection: this) => void): this {
         if (this.isNotEmpty()) {
-            callback(this);
+            callback(this._newInstance(this.toArray()));
         }
 
         return this;
@@ -564,10 +557,11 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      * @return {this}
      */
     public takeUntil(closure: (item: any) => boolean): this {
+        const array = this.toArray();
         const items: T[] = [];
 
-        while (this.length && !closure(this[0])) {
-            items.push(this.splice(0, 1)[0]!);
+        while (array[0] && !closure(array[0])) {
+            items.push(array.splice(0, 1)[0]!);
         }
 
         return this._newInstance(items);
@@ -582,10 +576,11 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      * @return {this}
      */
     public takeWhile(closure: (item: any) => boolean): this {
+        const array = this.toArray();
         const items: T[] = [];
 
-        while (this.length && closure(this[0])) {
-            items.push(this.splice(0, 1)[0]!);
+        while (array[0] && closure(array[0])) {
+            items.push(array.splice(0, 1)[0]!);
         }
 
         return this._newInstance(items);
@@ -626,10 +621,10 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    public skipUntil(closure: (item: any) => boolean): this {
+    public skipUntil(closure: (item: T) => boolean): this {
         const array = this.toArray();
 
-        while (array.length && !closure(array[0])) {
+        while (array[0] && !closure(array[0])) {
             array.shift();
         }
 
@@ -866,15 +861,9 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     /**
      * @see {Array.prototype.filter}
      *
-     * If called without argument it filters undefined and null values.
-     *
      * @return {this}
      */
-    public filter(predicate?: (value: T, index: number, array: T[]) => boolean, thisArg?: any): Collection<T> {
-        predicate = predicate ?? function (value: T) {
-            return value !== null && value !== undefined;
-        };
-
+    public filter(predicate: (value: T, index: number, array: T[]) => boolean, thisArg?: any): Collection<T> {
         return this._newInstance(this.toArray().filter(predicate, thisArg));
     }
 
@@ -939,6 +928,17 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
         this._setArray([...items, ...this]);
 
         return this.length;
+    }
+
+    /**
+     * @see {Array.prototype.pop}
+     */
+    public pop(): T | undefined {
+        const array = this.toArray();
+        const last = array.pop();
+
+        this._setArray(array);
+        return last;
     }
 
     /**

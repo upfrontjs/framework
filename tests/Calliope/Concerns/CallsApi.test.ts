@@ -187,7 +187,8 @@ describe('CallsApi', () => {
 
             //@ts-expect-error
             const user = caller.newInstanceFromResponseData(userData) as User;
-            expect(user['_' + 'last_synced_at'[user.attributeCasing]()]).toStrictEqual(new Date);
+            // @ts-expect-error
+            expect(user['_' + String(user.setStringCase('last_synced_at'))]).toStrictEqual(new Date);
 
             const usersData = User.factory().times(2).raw() as Collection<Attributes>;
 
@@ -195,7 +196,8 @@ describe('CallsApi', () => {
             const users = caller.newInstanceFromResponseData(usersData.toArray()) as ModelCollection<Model>;
 
             users.forEach(userModel => {
-                expect(userModel['_' + 'last_synced_at'[userModel.attributeCasing]()]).toStrictEqual(new Date);
+                // @ts-expect-error
+                expect(userModel['_' + String(userModel.setStringCase('last_synced_at'))]).toStrictEqual(new Date);
             });
         });
     });

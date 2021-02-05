@@ -5,6 +5,7 @@ import { buildResponse, getLastFetchCall, mockUserModelResponse } from '../test-
 import fetchMock from 'jest-fetch-mock';
 import ModelCollection from '../../src/Calliope/ModelCollection';
 import LogicException from '../../src/Exceptions/LogicException';
+import { finish } from '../../src';
 
 let user: User;
 
@@ -165,7 +166,7 @@ describe('Model', () => {
             await user.refresh();
 
             expect(getLastFetchCall()?.method).toBe('get');
-            expect(getLastFetchCall()?.url).toContain(user.getEndpoint().finish('/') + String(user.getKey()));
+            expect(getLastFetchCall()?.url).toContain(finish(user.getEndpoint(), '/') + String(user.getKey()));
         });
 
         it('should refresh only the attributes that the model already has', async () => {

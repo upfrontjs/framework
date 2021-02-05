@@ -17,7 +17,19 @@ describe('GlobalConfig', () => {
         it('should be instantiated with some config values', function () {
             config = new GlobalConfig({ api: API });
 
-            expect(config.has('api')).toBe(true);
+            expect(config.get('api')).toStrictEqual(API);
+        });
+
+        it('should prevent changing values by reference when merging config', () => {
+            const deepObj = { count: 1 };
+            const obj = { test: deepObj };
+            config.set('obj', obj);
+
+            new GlobalConfig(obj);
+
+            deepObj.count++;
+
+            expect(config.get('obj').test.count).toBe(1);
         });
     });
 
@@ -30,6 +42,32 @@ describe('GlobalConfig', () => {
 
         it('should return the default if key not found', function () {
             expect(config.get('something', 'default')).toBe('default');
+        });
+
+        it('should return falsy values if set', () => {
+            config.set('test', false);
+            expect(config.get('test')).toBe(false);
+            expect(config.get('test', 'decoy value')).toBe(false);
+
+            config.set('test', null);
+            expect(config.get('test')).toBeNull();
+            expect(config.get('test', 'decoy value')).toBeNull();
+
+            config.set('test', undefined);
+            expect(config.get('test')).toBeUndefined();
+            expect(config.get('test', 'decoy value')).toBeUndefined();
+        });
+
+        it('should prevent changing values by reference by returning clone', () => {
+            const obj = { test: 1 };
+            config.set('test', obj);
+
+            const copy = config.get('test');
+
+            copy.test++;
+
+            expect(config.get('test').test).toBe(1);
+            expect(obj.test).toBe(1);
         });
     });
 
@@ -49,8 +87,22 @@ describe('GlobalConfig', () => {
 
             config.set('api', API);
 
-            expect(config.has('api')).toBe(true);
+            expect(config.get('api')).toStrictEqual(API);
         });
+
+
+        it('should prevent changing value by reference', () => {
+            const obj = { test: 1 };
+            config.set('test', obj);
+
+            expect(config.get('test').test).toBe(1);
+
+            obj.test++;
+
+            expect(config.get('test').test).toBe(1);
+        });
+
+
     });
 
     describe('unset()', () => {

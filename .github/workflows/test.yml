@@ -2,14 +2,11 @@ name: Test
 
 on:
   pull_request:
-    paths-ignore:
-      - 'docs/*'
-      - '**/*.md'
-      - '.editorconfig'
-      - '.eslintrc.js'
-      - 'LICENSE.txt'
-      - 'typedoc.json'
-      - 'api-docs.tsconfig.json'
+    paths:
+      - '**/tsconfig.json'
+      - 'tests/**/*.ts'
+      - 'src/**/*.ts'
+      - 'jest.config.js'
     branches:
       - main
       - 'releases/*'

@@ -4,10 +4,8 @@ import type Factory from '../../../src/Calliope/Factory/Factory';
 import TeamFactory from '../Factories/TeamFactory';
 
 export default class Team extends Model {
-    protected initialise(): { guarded?: string[]; fillable?: string[] } {
-        return {
-            fillable: ['*']
-        };
+    public get fillable(): string[] {
+        return ['*'];
     }
 
     protected readonly timestamps = false;

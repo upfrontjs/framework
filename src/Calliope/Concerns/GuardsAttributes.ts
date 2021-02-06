@@ -1,4 +1,3 @@
-import { cloneDeep } from 'lodash';
 import CastsAttributes from './CastsAttributes';
 import type { Attributes } from './HasAttributes';
 
@@ -10,7 +9,7 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @type {string[]}
      */
-    protected fillable: string[] = [];
+    protected fillableAttributes: string[] = this.fillable;
 
     /**
      * The attributes that aren't mass assignable
@@ -19,42 +18,28 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @type {string[]}
      */
-    protected guarded: string[] = ['*'];
-
-    public constructor() {
-        super();
-        this._setInitialVariables();
-    }
+    protected guardedAttributes: string[] = this.guarded;
 
     /**
-     * Set attribute guarding for the model.
-     *
-     * @return {{guarded?: string[], fillable?: string[]}}
+     * The attributes that are mass assignable.
      *
      * @protected
+     *
+     * @type {string[]}
      */
-    protected initialise(): { guarded?: string[]; fillable?: string[] } {
-        return {
-            fillable: [],
-            guarded: ['*']
-        };
+    public get fillable(): string[] {
+        return [];
     }
 
     /**
-     * Set variables related to guarding concerns.
+     * The attributes that are not mass assignable.
      *
-     * @private
+     * @protected
+     *
+     * @type {string[]}
      */
-    private _setInitialVariables(): void {
-        const variables = this.initialise();
-
-        if (variables.fillable) {
-            this.setFillable(variables.fillable);
-        }
-
-        if (variables.guarded) {
-            this.setGuarded(variables.guarded);
-        }
+    public get guarded(): string[] {
+        return ['*'];
     }
 
     /**
@@ -63,7 +48,7 @@ export default class GuardsAttributes extends CastsAttributes {
      * @return {string[]}
      */
     public getGuarded(): string[] {
-        return this.guarded;
+        return this.guardedAttributes;
     }
 
     /**
@@ -72,7 +57,7 @@ export default class GuardsAttributes extends CastsAttributes {
      * @return {string[]}
      */
     public getFillable(): string[] {
-        return this.fillable;
+        return this.fillableAttributes;
     }
 
     /**
@@ -83,7 +68,7 @@ export default class GuardsAttributes extends CastsAttributes {
      * @return {this}
      */
     public mergeFillable(fillable: string[]): this {
-        this.fillable = [...this.getFillable(), ...fillable];
+        this.fillableAttributes = [...this.getFillable(), ...fillable];
 
         return this;
     }
@@ -96,7 +81,7 @@ export default class GuardsAttributes extends CastsAttributes {
      * @return {this}
      */
     public mergeGuarded(guarded: string[]): this {
-        this.guarded = [...this.getGuarded(), ...guarded];
+        this.guardedAttributes = [...this.getGuarded(), ...guarded];
 
         return this;
     }
@@ -109,7 +94,7 @@ export default class GuardsAttributes extends CastsAttributes {
      * @return {this}
      */
     public setFillable(fillable: string[]): this {
-        this.fillable = fillable;
+        this.fillableAttributes = fillable;
 
         return this;
     }
@@ -122,7 +107,7 @@ export default class GuardsAttributes extends CastsAttributes {
      * @return {this}
      */
     public setGuarded(guarded: string[]): this {
-        this.guarded = guarded;
+        this.guardedAttributes = guarded;
 
         return this;
     }
@@ -156,12 +141,12 @@ export default class GuardsAttributes extends CastsAttributes {
     protected getFillableFromObject(attributes: Attributes): Partial<Attributes> {
         const fillable: Attributes = {};
         if (this.getFillable().includes('*')) {
-            return cloneDeep(attributes);
+            return attributes;
         }
 
         Object.keys(attributes).forEach(name => {
             if (!this.isGuarded(name)) {
-                fillable[name] = cloneDeep(attributes[name]);
+                fillable[name] = attributes[name];
             }
         });
 

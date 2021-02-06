@@ -11,10 +11,8 @@ export default class User extends Model {
         return 'users';
     }
 
-    protected initialise(): { guarded?: string[]; fillable?: string[] } {
-        return {
-            fillable: ['*']
-        };
+    public get fillable(): string[] {
+        return ['*'];
     }
 
     public factory(): Factory<this> {

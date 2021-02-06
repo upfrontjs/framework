@@ -1,10 +1,8 @@
 import GuardsAttributes from '../../../src/Calliope/Concerns/GuardsAttributes';
 
 class TestClass extends GuardsAttributes {
-    protected initialise(): { guarded?: string[]; fillable?: string[] } {
-        return {
-            fillable: ['attr1']
-        };
+    public get fillable(): string[] {
+        return ['attr1'];
     }
 }
 
@@ -33,7 +31,7 @@ describe('GuardsAttributes', () => {
     describe('setGuarded()', () => {
         beforeEach(() => {
             class TestGuardingClass extends GuardsAttributes {
-                protected guarded = ['attr1'];
+                public guardedAttributes = ['attr1'];
             }
 
             guardedObject = new TestGuardingClass;

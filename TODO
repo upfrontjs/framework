@@ -1,16 +1,7 @@
 // todo - make sure to test file uploads
 // todo - improve typings (eg.: collection pluck K extends keyof T, better user guards)
-// todo - add built-in graphql support (single endpoint, query/body encoding/parsing)
 // todo - tinker with node support (take callsApi out)
 
-// todo - get scripts to work on windows
 // todo - arrange api-docs to be live
 // todo - investigate lodash-es
-// todo - versioning:
-       enforce commit messages (+notes) https://git-scm.com/book/en/v2/Customizing-Git-An-Example-Git-Enforced-Policy
-       enforce semantic versioning (detect changes to the api by comparing the previous and this version of the declarations?)
-       breaking changes to go on the next dist tag for testing
-       set up automated change log
-// todo - pinst post install hook as opposed to setup.sh
-// todo - https://github.com/davglass/license-checker license badge
 // todo - https://github.com/microsoft/TypeScript/issues/33079 figure out the package entries so user doesn't have to specify .es.min.js for string and array helpers and when using helpers in js the typings will be found

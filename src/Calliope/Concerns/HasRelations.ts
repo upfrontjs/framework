@@ -6,7 +6,7 @@ import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
 import type { Attributes } from './HasAttributes';
 import Collection from '../../Support/Collection';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
-import { finish, snake, start } from '../../Support/string';
+import {finish, plural, snake, start} from '../../Support/string';
 
 type Relation = 'belongsTo' | 'belongsToMany' | 'hasMany' | 'hasOne' | 'morphMany' | 'morphOne' | 'morphTo';
 
@@ -189,7 +189,7 @@ export default class HasRelations extends CallsApi {
                 } else {
                     if (relationType === 'belongsTo') {
                         // set attribute to ensure sync between the foreign key and the given value
-                        this.setAttribute(value.getForeignKeyName(), value.getKey());
+                        this.setAttribute(value.guessForeignKeyName(), value.getKey());
                     }
                 }
             }
@@ -221,7 +221,7 @@ export default class HasRelations extends CallsApi {
 
             if (relationType === 'belongsTo') {
                 // set attribute to ensure sync between the foreign key and the given value
-                this.setAttribute(model.getForeignKeyName(), model.getKey());
+                this.setAttribute(model.guessForeignKeyName(), model.getKey());
             }
 
             relation = isSingularRelationType
@@ -270,7 +270,7 @@ export default class HasRelations extends CallsApi {
      *
      * @return {string}
      */
-    public getForeignKeyName(): string {
+    public guessForeignKeyName(): string {
         return this.setStringCase(
             snake((this as unknown as Model).getName()).toLowerCase()
             + '_'
@@ -345,7 +345,7 @@ export default class HasRelations extends CallsApi {
      */
     public belongsTo<T extends Model>(related: new() => T, foreignKey?: string): T {
         const relatedModel = new related();
-        foreignKey = foreignKey ?? relatedModel.getForeignKeyName();
+        foreignKey = foreignKey ?? relatedModel.guessForeignKeyName();
         const foreignKeyValue = this.getAttribute(foreignKey);
 
         if (!foreignKeyValue) {
@@ -363,24 +363,20 @@ export default class HasRelations extends CallsApi {
      * Set the endpoint on the correct model for querying.
      *
      * @param {Model} related
-     * @param {string=} foreignKey
+     * @param {string=} relationName - The name of the relation on the backend.
      *
      * @return {Model}
      */
-    public belongsToMany<T extends Model>(related: new() => T, foreignKey?: string): T {
+    public belongsToMany<T extends Model>(related: new() => T, relationName?: string): T {
         const relatedModel = new related();
-        foreignKey = foreignKey ?? relatedModel.getForeignKeyName();
-        const foreignKeyValue = this.getAttribute(foreignKey);
-
-        if (!foreignKeyValue) {
-            throw new LogicException(
-                '\'' + (this as unknown as Model).getName() + '\' doesn\'t have \'' + foreignKey + '\' defined.'
-            );
-        }
-
         HasRelations.configureRelationType(relatedModel, 'belongsToMany');
+        relationName = relationName ?? plural((this as unknown as Model).getName()).toLowerCase();
 
-        return relatedModel.whereKey(foreignKeyValue);
+        return relatedModel.where(
+            relationName + '.' + (this as unknown as Model).getKeyName(),
+            '=',
+            (this as unknown as Model).getKey()
+        );
     }
 
     /**
@@ -396,7 +392,7 @@ export default class HasRelations extends CallsApi {
 
         HasRelations.configureRelationType(relatedModel, 'hasOne');
 
-        return relatedModel.where(foreignKey ?? this.getForeignKeyName(), '=', (this as unknown as Model).getKey());
+        return relatedModel.where(foreignKey ?? this.guessForeignKeyName(), '=', (this as unknown as Model).getKey());
     }
 
     /**
@@ -412,7 +408,7 @@ export default class HasRelations extends CallsApi {
 
         HasRelations.configureRelationType(relatedModel, 'hasMany');
 
-        return relatedModel.where(foreignKey ?? this.getForeignKeyName(), '=', (this as unknown as Model).getKey());
+        return relatedModel.where(foreignKey ?? this.guessForeignKeyName(), '=', (this as unknown as Model).getKey());
     }
 
     /**

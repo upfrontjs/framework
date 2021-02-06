@@ -4,10 +4,8 @@ import ContractFactory from '../Factories/ContractFactory';
 import type Factory from '../../../src/Calliope/Factory/Factory';
 
 export default class Contract extends Model {
-    protected initialise(): { guarded?: string[]; fillable?: string[] } {
-        return {
-            fillable: ['*']
-        };
+    public get fillable(): string[] {
+        return ['*'];
     }
 
     public factory(): Factory<this> {

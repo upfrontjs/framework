@@ -48,10 +48,10 @@ export default class User extends Model {
     }
 
     public $inverseShifts(): Shift {
-        return this.belongsToMany(Shift, 'shiftId');
+        return this.belongsToMany(Shift, 'users');
     }
 
-    public $inverseShiftsWithoutForeignKey(): Shift {
+    public $inverseShiftsWithoutRelationName(): Shift {
         return this.belongsToMany(Shift);
     }
 

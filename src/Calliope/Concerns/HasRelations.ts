@@ -6,7 +6,8 @@ import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
 import type { Attributes } from './HasAttributes';
 import Collection from '../../Support/Collection';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
-import {finish, plural, snake, start} from '../../Support/string';
+import { finish, plural, snake, start } from '../../Support/string';
+import { cloneDeep } from 'lodash';
 
 type Relation = 'belongsTo' | 'belongsToMany' | 'hasMany' | 'hasOne' | 'morphMany' | 'morphOne' | 'morphTo';
 
@@ -106,7 +107,7 @@ export default class HasRelations extends CallsApi {
                 );
             }
 
-            return this.relations[name]!;
+            return cloneDeep(this.relations[name]!);
         }
 
         throw new InvalidArgumentException('\'' + name + '\' relationship is not defined.');
@@ -262,7 +263,7 @@ export default class HasRelations extends CallsApi {
      * @return {object}
      */
     public getRelations(): Record<string, (Model | ModelCollection<Model>)> {
-        return this.relations;
+        return cloneDeep(this.relations);
     }
 
     /**
@@ -455,11 +456,11 @@ export default class HasRelations extends CallsApi {
      * @return {Model}
      */
     public morphTo<T extends Model>(): T {
-        const relatedModel = new (this.constructor as typeof Model)().with(['*']) as T;
+        const thisModel = new (this.constructor as typeof Model)().with(['*']) as T;
 
-        HasRelations.configureRelationType(relatedModel, 'morphTo');
+        HasRelations.configureRelationType(thisModel, 'morphTo');
 
-        return relatedModel;
+        return thisModel;
     }
 
     /**

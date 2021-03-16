@@ -9,7 +9,7 @@ export default class Factory<T extends Model> implements FactoryHooks<T> {
     /**
      * The instance of the randomisation library if set.
      */
-    public random?: any = new GlobalConfig().get('randomDataGenerator');
+    public random? = new GlobalConfig().get('randomDataGenerator');
 
     /**
      * Define the model's default attributes.

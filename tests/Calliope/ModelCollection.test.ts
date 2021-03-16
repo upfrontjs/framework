@@ -425,7 +425,7 @@ describe('ModelCollection', () => {
         });
 
         it('should return a default value if on not found', () => {
-            expect(collection.findByKey('randomKey', 1)).toBe(1);
+            expect(collection.findByKey('randomKey', user1)).toStrictEqual(user1);
         });
 
         it('should check the collection\'s integrity before the method', () => {
@@ -534,6 +534,19 @@ describe('ModelCollection', () => {
 
         it('should return a model collection ready for chaining', () => {
             expect(ModelCollection.times(5, () => user1).toArray()).toHaveLength(5);
+        });
+    });
+
+    describe('array-methods', () => {
+        describe('map', () => {
+            it('should return a collection if not every item returned is model', () => {
+                expect(collection.map(user => user.getKey())).toBeInstanceOf(Collection);
+                expect(collection.map(user => user.getKey())).not.toBeInstanceOf(ModelCollection);
+            });
+
+            it('should return a model collection if every item is still a model', () => {
+                expect(collection.map(user => user)).toBeInstanceOf(ModelCollection);
+            });
         });
     });
 });

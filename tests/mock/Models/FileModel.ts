@@ -7,7 +7,7 @@ export default class FileModel extends Model {
         return new FileFactory;
     }
 
-    public $fileable(): FileModel {
+    public $fileables(): FileModel {
         return this.morphTo();
     }
 }

@@ -1,6 +1,7 @@
 import User from '../../mock/Models/User';
 import { getLastFetchCall, mockUserModelResponse } from '../../test-helpers';
 import { advanceTo } from 'jest-date-mock';
+import { snake } from '../../../src';
 
 let softDeletes: User;
 
@@ -64,7 +65,8 @@ describe('SoftDeletes', () => {
 
             await softDeletes.delete();
 
-            expect(getLastFetchCall()?.body).toStrictEqual({ [softDeletes.getDeletedAtColumn()]: now.toISOString() });
+            expect(getLastFetchCall()?.body)
+                .toStrictEqual({ [snake(softDeletes.getDeletedAtColumn())]: now.toISOString() });
         });
 
         it('should return the model with the updated deleted at column', async () => {
@@ -118,7 +120,7 @@ describe('SoftDeletes', () => {
             softDeletes = await softDeletes.restore() as User;
 
             expect(getLastFetchCall()?.method).toBe('patch');
-            expect(getLastFetchCall()?.body).toStrictEqual({ [softDeletes.getDeletedAtColumn()]: null });
+            expect(getLastFetchCall()?.body).toStrictEqual({ [snake(softDeletes.getDeletedAtColumn())]: null });
         });
     });
 });

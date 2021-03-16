@@ -9,7 +9,7 @@ import LogicException from '../../../src/Exceptions/LogicException';
 
 class CastingClass extends User {
     public getCasts() {
-        return this.casts;
+        return this.attributeCasts;
     }
 
     public publicCastAttribute(
@@ -28,25 +28,48 @@ describe('CastsAttributes', () => {
         caster = new CastingClass;
     });
 
+    describe('constructor()', () => {
+        it('should merge the getter into the internal casts', () => {
+            class CastingClassWithGetter extends CastingClass {
+                public get casts() {
+                    return {
+                        test: 'boolean' as const
+                    };
+                }
+            }
+
+            const withGetter = new CastingClassWithGetter();
+
+            expect(withGetter.hasCast('test')).toBe(true);
+        });
+    });
+
     describe('mergeCasts()', () => {
         it('should merge the casts property with existing casts', () => {
             expect(caster.getCasts()).toStrictEqual({});
 
-            caster.mergeCasts({ 'test': 'boolean' });
-            expect(caster.getCasts()).toStrictEqual({ 'test': 'boolean' });
+            caster.mergeCasts({ test: 'boolean' });
+            expect(caster.getCasts()).toStrictEqual({ test: 'boolean' });
 
-            caster.mergeCasts({ 'test': 'string', 'thing': 'number' });
-            expect(caster.getCasts()).toStrictEqual({ 'test': 'string', 'thing': 'number' });
+            caster.mergeCasts({ thing: 'number' });
+            expect(caster.getCasts()).toStrictEqual({ test: 'boolean', thing: 'number' });
         });
     });
 
     describe('hasCast()', () => {
-        it('should merge the casts property with existing casts', () => {
+        it('should determine correctly whether a cast exists or not', () => {
             expect(caster.hasCast('test')).toBe(false);
 
-            caster.mergeCasts({ 'test': 'boolean' });
+            caster.mergeCasts({ test: 'boolean' });
 
             expect(caster.hasCast('test')).toBe(true);
+        });
+    });
+
+    describe('setCasts()', () => {
+        it('should replace the casts for the model', () => {
+            expect(caster.getCasts()).toStrictEqual({});
+            expect(caster.setCasts({ test: 'boolean' }).getCasts()).toStrictEqual({ test: 'boolean' });
         });
     });
 
@@ -56,7 +79,7 @@ describe('CastsAttributes', () => {
         });
 
         it('should cast to a boolean', () => {
-            caster.mergeCasts({ 'test': 'boolean' });
+            caster.mergeCasts({ test: 'boolean' });
 
             expect(caster.publicCastAttribute('test', '1')).toBe(true);
             expect(caster.publicCastAttribute('test', 1)).toBe(true);
@@ -73,17 +96,23 @@ describe('CastsAttributes', () => {
         });
 
         it('should cast to a string', () => {
-            caster.mergeCasts({ 'test': 'string' });
+            caster.mergeCasts({ test: 'string' });
+            const transformsToString = {
+                toString() {
+                    return 'value';
+                }
+            };
 
             expect(caster.publicCastAttribute('test', 1)).toBe('1');
             expect(caster.publicCastAttribute('test', undefined)).toBe('undefined');
             expect(caster.publicCastAttribute('test', false)).toBe('false');
-            //calls the to primitive string method
+            // calls the toString method
             expect(caster.publicCastAttribute('test', caster)).toBe('[object Object]');
+            expect(caster.publicCastAttribute('test', transformsToString)).toBe('value');
         });
 
         it('should cast to a number', () => {
-            caster.mergeCasts({ 'test': 'number' });
+            caster.mergeCasts({ test: 'number' });
 
             expect(caster.publicCastAttribute('test', '1')).toBe(1);
             expect(caster.publicCastAttribute('test', '-1')).toBe(-1);
@@ -100,25 +129,12 @@ describe('CastsAttributes', () => {
 
             expect(caster.publicCastAttribute('test', ['1'])).toStrictEqual(new Collection(['1']));
 
-            const func = () => caster.publicCastAttribute('test', 'random value');
-            expect(func)
-                .toThrow(new LogicException(
-                    '\'test\' is not castable to a collection type in \'' + caster.constructor.name + '\'.'
-                ));
+            expect(caster.publicCastAttribute('test', 'random value')).toStrictEqual(new Collection('random value'));
         });
 
         it('should set collection casted collection value to array on set to avoid wrapping on get', () => {
             caster.mergeCasts({ test: 'collection' });
             expect(caster.publicCastAttribute('test', new Collection([1, 2]), 'set')).toStrictEqual([1, 2]);
-        });
-
-        it('should throw error if value is not castable to collection', () => {
-            caster.mergeCasts({ test: 'collection' });
-            const failingFunc = jest.fn(() => caster.publicCastAttribute('test', 1, 'set'));
-
-            expect(failingFunc).toThrow(new LogicException(
-                '\'test\' is not castable to a collection type in \'' + CastingClass.name + '\'.'
-            ));
         });
 
         it('should return the value untouched when using collection and it can be casted on get', () => {
@@ -150,7 +166,7 @@ describe('CastsAttributes', () => {
         });
 
         it('should throw an error if the datetime is not the expected type in the config', () => {
-            caster.mergeCasts({ 'test': 'datetime' });
+            caster.mergeCasts({ test: 'datetime' });
             const failingFunc = jest.fn(() => caster.publicCastAttribute('test', 'value'));
             config.unset('datetime');
 
@@ -170,11 +186,13 @@ describe('CastsAttributes', () => {
 
         it('should cast when using an object literal', () => {
             caster.mergeCasts({
-                'test': {
+                test: {
                     get() {
                         return 'get value';
                     },
-                    set() {}
+                    set() {
+                        return 'set value';
+                    }
                 }
             });
 

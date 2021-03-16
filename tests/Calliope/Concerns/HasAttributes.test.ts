@@ -10,6 +10,30 @@ describe('HasAttributes', () => {
         hasAttributes = new User({ test: 1 });
     });
 
+    describe('.attributeCasing', () => {
+        it('should dictate how attribute keys are formatted', () => {
+            // the formatting boils down to the forceFill method
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            hasAttributes = new User({ some_value: 1 });
+
+            expect(hasAttributes.getAttribute('someValue')).toBe(1);
+            expect(hasAttributes.getAttribute('some_value')).toBeUndefined();
+        });
+
+        it('should get the attributeCasing value from the extending model', () => {
+            class UserWithSnakeCase extends User {
+                public get attributeCasing() {
+                    return 'snake' as const;
+                }
+            }
+
+            const user = new UserWithSnakeCase({ someValue: 1 });
+
+            expect(user.getAttribute('someValue')).toBeUndefined();
+            expect(user.getAttribute('some_value')).toBe(1);
+        });
+    });
+
     describe('constructor()', () => {
         it('should set up mutators', () => {
             // when it has a mutator defined
@@ -35,7 +59,7 @@ describe('HasAttributes', () => {
         });
 
         it('should set attributes with given argument', () => {
-            expect(hasAttributes.getAttributes()).toStrictEqual({ 'test': 1 });
+            expect(hasAttributes.getAttributes()).toStrictEqual({ test: 1 });
         });
 
         it('should sync the original values', () => {
@@ -78,6 +102,27 @@ describe('HasAttributes', () => {
             }
 
             expect(boolean).toBe(true);
+        });
+
+        it('should return the attributes first then the relations.', async () => {
+            hasAttributes.addRelation('shifts', [new Shift]);
+
+            let attributeTouchTimestamp = 0;
+            let relationTouchTimestamp = 0;
+            for (const item of hasAttributes) {
+                // eslint-disable-next-line jest/no-if
+                if (item === hasAttributes.test) {
+                    attributeTouchTimestamp = new Date().getTime();
+                } else {
+                    relationTouchTimestamp = new Date().getTime();
+                }
+                await new Promise(r => setTimeout(r, 1));
+            }
+
+            expect(relationTouchTimestamp).not.toBe(0);
+            expect(attributeTouchTimestamp).not.toBe(0);
+
+            expect(relationTouchTimestamp).toBeGreaterThan(attributeTouchTimestamp);
         });
     });
 
@@ -245,6 +290,23 @@ describe('HasAttributes', () => {
             expect(Object.getOwnPropertyDescriptor(hasAttributes, 'test')).toBeUndefined();
         });
 
+        it('should remove the relation if loaded', () => {
+            hasAttributes.addRelation('shifts', new Shift);
+
+            expect(hasAttributes.relationLoaded('shifts')).toBe(true);
+            expect(Object.getOwnPropertyDescriptor(hasAttributes, 'shifts')).not.toBeUndefined();
+            expect(hasAttributes.deleteAttribute('shifts').relationLoaded('shifts')).toBe(false);
+            expect(Object.getOwnPropertyDescriptor(hasAttributes, 'shifts')).toBeUndefined();
+        });
+
+        it('should not remove methods from the model', () => {
+            // eslint-disable-next-line @typescript-eslint/unbound-method
+            expect(hasAttributes.factory).not.toBeUndefined();
+            hasAttributes.deleteAttribute('factory');
+            // eslint-disable-next-line @typescript-eslint/unbound-method
+            expect(hasAttributes.factory).not.toBeUndefined();
+        });
+
         it('should not remove the original value', () => {
             hasAttributes.deleteAttribute('test');
 
@@ -255,6 +317,7 @@ describe('HasAttributes', () => {
 
     describe('hasSetMutator()', () => {
         it('should determine whether a mutator exists for a given key', () => {
+            // @ts-expect-error
             expect(hasAttributes.hasSetMutator('test')).toBe(false);
 
             Object.defineProperty(hasAttributes, 'setTestAttribute', {
@@ -263,12 +326,14 @@ describe('HasAttributes', () => {
                 }
             });
 
+            // @ts-expect-error
             expect(hasAttributes.hasSetMutator('test')).toBe(true);
         });
     });
 
     describe('hasGetAccessor()', () => {
         it('should determine whether an accessor exists for a given key', () => {
+            // @ts-expect-error
             expect(hasAttributes.hasGetAccessor('test')).toBe(false);
 
             Object.defineProperty(hasAttributes, 'getTestAttribute', {
@@ -277,6 +342,7 @@ describe('HasAttributes', () => {
                 }
             });
 
+            // @ts-expect-error
             expect(hasAttributes.hasGetAccessor('test')).toBe(true);
         });
     });
@@ -385,27 +451,34 @@ describe('HasAttributes', () => {
 
     describe('getOriginal()', () =>  {
         it('should get the original values from the attributes in a resolved format', () => {
-            hasAttributes.mergeCasts({ test: 'boolean' });
+            class UserWithAccessor extends User {
+                public getTestAttribute() {
+                    return 'accessed value';
+                }
+            }
+            const userValueTransformator = new UserWithAccessor({ test: 1, test1: 1 });
 
-            expect(hasAttributes.getOriginal()).toStrictEqual({ test: true });
+            userValueTransformator.mergeCasts({ test1: 'boolean' });
+
+            expect(userValueTransformator.getOriginal()).toStrictEqual({ test: 'accessed value', test1: true });
         });
 
         it('should get a single original value from the attributes in a resolved format', () => {
-            hasAttributes.mergeCasts({ test: 'boolean' });
+            class UserWithAccessor extends User {
+                public getTestAttribute() {
+                    return 'accessed value';
+                }
+            }
+            const userValueTransformator = new UserWithAccessor({ test: 1, test1: 1 });
 
-            expect(hasAttributes.getOriginal('test')).toBe(true);
+            userValueTransformator.mergeCasts({ test1: 'boolean' });
+
+            expect(userValueTransformator.getOriginal('test')).toBe('accessed value');
+            expect(userValueTransformator.getOriginal('test1')).toBe(true);
         });
 
-        it('should return a default value if given and value not set', () => {
+        it('should return a default value if given key not set', () => {
             expect(hasAttributes.getOriginal('some key', 'default value')).toBe('default value');
-        });
-
-        it('should return the default value if original value doesn\'t exits', () => {
-            hasAttributes.getAttributeKeys().forEach(key => {
-                hasAttributes.deleteAttribute(key);
-            });
-
-            expect(hasAttributes.syncOriginal().getOriginal('test', 'default value')).toBe('default value');
         });
     });
 
@@ -425,7 +498,7 @@ describe('HasAttributes', () => {
 
     describe('getChanges()', () => {
         it('should get the changes since last sync with original', () => {
-            expect(hasAttributes.getChanges()).toBeNull();
+            expect(hasAttributes.getChanges()).toStrictEqual({});
             expect(hasAttributes.setAttribute('test', 2).getChanges()).toStrictEqual({ test: 2 });
         });
 
@@ -433,12 +506,12 @@ describe('HasAttributes', () => {
             expect(hasAttributes.setAttribute('test', 2).getChanges('test')).toStrictEqual({ test: 2 });
         });
 
-        it('should return null if no changes detected for the given key', () => {
-            expect(hasAttributes.setAttribute('test', 1).getChanges('test')).toBeNull();
+        it('should return empty objet if no changes detected for the given key', () => {
+            expect(hasAttributes.setAttribute('test', 1).getChanges('test')).toStrictEqual({});
         });
 
-        it('should return null if no changes detected', () => {
-            expect(hasAttributes.getChanges()).toBeNull();
+        it('should return empty object if no changes detected', () => {
+            expect(hasAttributes.getChanges()).toStrictEqual({});
         });
     });
 
@@ -505,9 +578,22 @@ describe('HasAttributes', () => {
     });
 
     describe('toJson()', () => {
-        it('should stringify the attributes and relations', () => {
+        it('should stringify the attributes', () => {
             expect(hasAttributes.toJson()).toStrictEqual(JSON.stringify({
                 test: hasAttributes.getAttribute('test')
+            }));
+        });
+
+        it('should recursively stringify the relations', () => {
+            const shift = new Shift();
+            shift.setAttribute('shiftAttr', 1);
+            hasAttributes.addRelation('shifts', shift);
+
+            expect(hasAttributes.toJson()).toBe(JSON.stringify({
+                test: 1,
+                shifts: [
+                    { shiftAttr: 1 }
+                ]
             }));
         });
     });

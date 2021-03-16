@@ -7,7 +7,7 @@ import GlobalConfig from '../../Support/GlobalConfig';
 import Collection from '../../Support/Collection';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import { isConstructableUserClass } from '../../Support/function';
-import { plural, singular, uuid } from '../../Support/string';
+import { plural, singular } from '../../Support/string';
 
 export default class FactoryBuilder<T extends Model> {
     /**
@@ -399,10 +399,6 @@ export default class FactoryBuilder<T extends Model> {
      */
     protected getKey(): number | string {
         const config: GlobalConfig<Record<'lastIds', Record<string, number>>> = new GlobalConfig();
-
-        if (this.model.getKeyName() === 'uuid') {
-            return uuid();
-        }
 
         const lastIds = config.get('lastIds', {});
 

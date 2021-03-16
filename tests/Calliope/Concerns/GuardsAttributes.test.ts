@@ -91,18 +91,18 @@ describe('GuardsAttributes', () => {
     describe('getFillableFromObject()', () => {
         it('should filter an object by what is fillable', () => {
             const attributes = {
-                'attr1': 1,
-                'attr2': 2
+                attr1: 1,
+                attr2: 2
             };
             // @ts-expect-error
-            expect(guardedObject.getFillableFromObject(attributes)).toStrictEqual({ 'attr1': 1 });
+            expect(guardedObject.getFillableFromObject(attributes)).toStrictEqual({ attr1: 1 });
         });
 
         it('should return all attributes if fillable includes \'*\'', () => {
             guardedObject.setFillable(['*']);
             const attributes = {
-                'attr1': 1,
-                'attr2': 2
+                attr1: 1,
+                attr2: 2
             };
             // @ts-expect-error
             expect(guardedObject.getFillableFromObject(attributes)).toStrictEqual(attributes);

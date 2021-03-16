@@ -435,12 +435,12 @@ describe('HasRelations', () => {
             });
 
             it('should return an instance of the same morph model', () => {
-                expect(morphModel.$fileable()).toBeInstanceOf(FileModel);
+                expect(morphModel.$fileables()).toBeInstanceOf(FileModel);
             });
 
             it('should set the withs for the next query', () => {
                 // @ts-expect-error
-                expect(morphModel.$fileable().compileQueryParameters().with).toStrictEqual(['*']);
+                expect(morphModel.$fileables().compileQueryParameters().with).toStrictEqual(['*']);
             });
         });
 

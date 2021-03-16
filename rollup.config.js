@@ -3,6 +3,14 @@ import pkg from './package.json';
 import { terser } from "rollup-plugin-terser";
 import bundleSize from 'rollup-plugin-bundle-size';
 
+const banner = `
+/*! ================================
+${pkg.name} v${pkg.version}
+(c) ${new Date().getFullYear()} ${pkg.author}
+Released under ${pkg.license} License
+================================== */
+`;
+
 const commonConfig = {
     external: [
         ...Object.keys(pkg.dependencies ?? {}),
@@ -11,8 +19,17 @@ const commonConfig = {
     ],
     plugins: [
         // it doesn't find the config by default and doesn't emit interface files
+        // todo - https://github.com/rollup/plugins/pull/791/files#diff-77ceb76f06466d761730b952567396e6b5c292cc4044441cdfdf048b4614881dR83 check those tests
         typescript({ tsconfig: './tsconfig.json' }),
-        terser(),
+        terser({
+            format: {
+                comments: (node, comment) => {
+                    if (comment.type === "comment2") {
+                        return /@upfront/.test(comment.value);
+                    }
+                }
+            }
+        }),
         bundleSize()
     ]
 };
@@ -27,12 +44,14 @@ const rollupConfig = [
             {
                 file: pkg.main,
                 format: 'cjs',
-                sourcemap: true
+                sourcemap: true,
+                banner
             },
             {
                 file: pkg.module,
                 format: 'es',
-                sourcemap: true
+                sourcemap: true,
+                banner
             }
         ],
         ...commonConfig
@@ -44,12 +63,14 @@ const rollupConfig = [
             {
                 file: 'array.min.js',
                 format: 'cjs',
-                sourcemap: true
+                sourcemap: true,
+                banner
             },
             {
                 file: 'array.es.min.js',
                 format: 'es',
-                sourcemap: true
+                sourcemap: true,
+                banner
             }
         ],
         ...commonConfig
@@ -61,12 +82,14 @@ const rollupConfig = [
             {
                 file: 'string.min.js',
                 format: 'cjs',
-                sourcemap: true
+                sourcemap: true,
+                banner
             },
             {
                 file: 'string.es.min.js',
                 format: 'es',
-                sourcemap: true
+                sourcemap: true,
+                banner
             }
         ],
         ...commonConfig

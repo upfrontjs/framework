@@ -1,4 +1,3 @@
-
 import Collection from '../../src/Support/Collection';
 
 let collection: Collection<any>;
@@ -21,8 +20,13 @@ describe('Collection', () => {
             expect(new Collection([1, 2])[0]).toStrictEqual(1);
         });
 
-        it('should be able to instantiated without arguments', () => {
+        it('should be able to be instantiated without arguments', () => {
             expect(new Collection()).toBeInstanceOf(Collection);
+        });
+
+        it('should be able to be instantiated with empty array', () => {
+            expect(new Collection([])).toBeInstanceOf(Collection);
+            expect(new Collection([]).isEmpty()).toBe(true);
         });
     });
 
@@ -209,6 +213,10 @@ describe('Collection', () => {
 
         it('should return the collection as a json string', () => {
             expect(typeof collection.toJson() === 'string').toBe(true);
+        });
+
+        it('should resolve to the same as an array json string', () => {
+            expect(collection.toJson()).toBe(JSON.stringify(elements));
         });
     });
 
@@ -455,10 +463,10 @@ describe('Collection', () => {
         });
 
         it('should not mutate the collection conditionally with a boolean', () => {
-            collection.unless(false, coll => coll.nth(2))
+            collection.unless(false, coll => coll.nth(2));
             expect(collection).toHaveLength(elements.length);
 
-            collection.unless(true, coll => coll.nth(2))
+            collection.unless(true, coll => coll.nth(2));
             expect(collection).toHaveLength(elements.length);
         });
 
@@ -663,32 +671,43 @@ describe('Collection', () => {
     });
 
     describe('dump()', () => {
-        const elements = [1, 2, 3, 4, 5];
+        const elements = [1, 2, 3, 4, 5] as const;
+
+        let consoleLogMock: jest.SpyInstance,
+            consoleGroupCollapsedMock: jest.SpyInstance,
+            consoleGroupEndMock: jest.SpyInstance;
 
         beforeEach(() => {
             collection = new Collection(elements);
+
+            consoleLogMock = jest.spyOn(console, 'log').mockImplementation(() => {});
+            consoleGroupCollapsedMock = jest.spyOn(console, 'groupCollapsed').mockImplementation(() => {});
+            consoleGroupEndMock = jest.spyOn(console, 'groupEnd').mockImplementation(() => {});
+        });
+
+        afterEach(() => {
+            consoleLogMock.mockRestore();
+            consoleGroupCollapsedMock.mockRestore();
+            consoleGroupEndMock.mockRestore();
         });
 
         it('should dumps to the console', () => {
-            jest.spyOn(console, 'info').mockImplementation(() => {});
             collection.dump();
 
-            expect(console.info).toHaveBeenCalled();
-
+            expect(console.groupCollapsed).toHaveBeenCalledWith(new Date().toLocaleTimeString() + ':');
+            elements.forEach((elem, index) => {
+                expect(console.log).toHaveBeenNthCalledWith(index + 1, `${index}:`, elem);
+            });
+            expect(console.groupEnd).toHaveBeenCalled();
         });
 
         it('should dump with a message', () => {
-            jest.spyOn(console, 'info').mockImplementation(() => {});
             collection.dump('test');
 
-            expect(console.info).toHaveBeenCalledWith(
-                new Date().toLocaleTimeString() + ' (test)' + ' - All items: ' + elements.toString()
-            );
+            expect(console.groupCollapsed).toHaveBeenCalledWith(new Date().toLocaleTimeString() + ' (test):');
         });
 
         it('should return a collection ready for chaining', () => {
-            jest.spyOn(console, 'info').mockImplementation(() => {});
-
             expect(collection.dump().toArray()).toHaveLength(elements.length);
         });
     });

@@ -62,10 +62,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'and',
-                    'column': 'column',
-                    'operator': '=',
-                    'value': '1'
+                    boolean: 'and',
+                    column: 'column',
+                    operator: '=',
+                    value: '1'
                 }
             ]);
         });
@@ -75,10 +75,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'and',
-                    'column': 'column',
-                    'operator': '=',
-                    'value': '1'
+                    boolean: 'and',
+                    column: 'column',
+                    operator: '=',
+                    value: '1'
                 }
             ]);
         });
@@ -94,10 +94,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'or',
-                    'column': 'column',
-                    'operator': '=',
-                    'value': '1'
+                    boolean: 'or',
+                    column: 'column',
+                    operator: '=',
+                    value: '1'
                 }
             ]);
         });
@@ -107,10 +107,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'or',
-                    'column': 'column',
-                    'operator': '=',
-                    'value': '1'
+                    boolean: 'or',
+                    column: 'column',
+                    operator: '=',
+                    value: '1'
                 }
             ]);
         });
@@ -122,10 +122,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'and',
-                    'column': builder.getKeyName(),
-                    'operator': '=',
-                    'value': '1'
+                    boolean: 'and',
+                    column: builder.getKeyName(),
+                    operator: '=',
+                    value: '1'
                 }
             ]);
         });
@@ -135,10 +135,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'and',
-                    'column': builder.getKeyName(),
-                    'operator': 'in',
-                    'value': ['1', '2']
+                    boolean: 'and',
+                    column: builder.getKeyName(),
+                    operator: 'in',
+                    value: ['1', '2']
                 }
             ]);
         });
@@ -156,10 +156,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'or',
-                    'column': builder.getKeyName(),
-                    'operator': '=',
-                    'value': '1'
+                    boolean: 'or',
+                    column: builder.getKeyName(),
+                    operator: '=',
+                    value: '1'
                 }
             ]);
         });
@@ -169,10 +169,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'or',
-                    'column': builder.getKeyName(),
-                    'operator': 'in',
-                    'value': ['1', '2']
+                    boolean: 'or',
+                    column: builder.getKeyName(),
+                    operator: 'in',
+                    value: ['1', '2']
                 }
             ]);
         });
@@ -184,10 +184,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'and',
-                    'column': builder.getKeyName(),
-                    'operator': '!=',
-                    'value': '1'
+                    boolean: 'and',
+                    column: builder.getKeyName(),
+                    operator: '!=',
+                    value: '1'
                 }
             ]);
         });
@@ -197,10 +197,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'and',
-                    'column': builder.getKeyName(),
-                    'operator': 'notIn',
-                    'value': ['1', '2']
+                    boolean: 'and',
+                    column: builder.getKeyName(),
+                    operator: 'notIn',
+                    value: ['1', '2']
                 }
             ]);
         });
@@ -218,10 +218,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'or',
-                    'column': builder.getKeyName(),
-                    'operator': '!=',
-                    'value': '1'
+                    boolean: 'or',
+                    column: builder.getKeyName(),
+                    operator: '!=',
+                    value: '1'
                 }
             ]);
         });
@@ -231,10 +231,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'or',
-                    'column': builder.getKeyName(),
-                    'operator': 'notIn',
-                    'value': ['1', '2']
+                    boolean: 'or',
+                    column: builder.getKeyName(),
+                    operator: 'notIn',
+                    value: ['1', '2']
                 }
             ]);
         });
@@ -246,10 +246,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'and',
-                    'column': 'column',
-                    'operator': '=',
-                    'value': 'null'
+                    boolean: 'and',
+                    column: 'column',
+                    operator: '=',
+                    value: 'null'
                 }
             ]);
         });
@@ -259,16 +259,16 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'and',
-                    'column': 'column1',
-                    'operator': '=',
-                    'value': 'null'
+                    boolean: 'and',
+                    column: 'column1',
+                    operator: '=',
+                    value: 'null'
                 },
                 {
-                    'boolean': 'and',
-                    'column': 'column2',
-                    'operator': '=',
-                    'value': 'null'
+                    boolean: 'and',
+                    column: 'column2',
+                    operator: '=',
+                    value: 'null'
                 }
             ]);
         });
@@ -284,10 +284,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'or',
-                    'column': 'column',
-                    'operator': '=',
-                    'value': 'null'
+                    boolean: 'or',
+                    column: 'column',
+                    operator: '=',
+                    value: 'null'
                 }
             ]);
         });
@@ -297,16 +297,16 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'or',
-                    'column': 'column1',
-                    'operator': '=',
-                    'value': 'null'
+                    boolean: 'or',
+                    column: 'column1',
+                    operator: '=',
+                    value: 'null'
                 },
                 {
-                    'boolean': 'or',
-                    'column': 'column2',
-                    'operator': '=',
-                    'value': 'null'
+                    boolean: 'or',
+                    column: 'column2',
+                    operator: '=',
+                    value: 'null'
                 }
             ]);
         });
@@ -318,10 +318,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'and',
-                    'column': 'column',
-                    'operator': '!=',
-                    'value': 'null'
+                    boolean: 'and',
+                    column: 'column',
+                    operator: '!=',
+                    value: 'null'
                 }
             ]);
         });
@@ -331,16 +331,16 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'and',
-                    'column': 'column1',
-                    'operator': '!=',
-                    'value': 'null'
+                    boolean: 'and',
+                    column: 'column1',
+                    operator: '!=',
+                    value: 'null'
                 },
                 {
-                    'boolean': 'and',
-                    'column': 'column2',
-                    'operator': '!=',
-                    'value': 'null'
+                    boolean: 'and',
+                    column: 'column2',
+                    operator: '!=',
+                    value: 'null'
                 }
             ]);
         });
@@ -356,10 +356,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'or',
-                    'column': 'column',
-                    'operator': '!=',
-                    'value': 'null'
+                    boolean: 'or',
+                    column: 'column',
+                    operator: '!=',
+                    value: 'null'
                 }
             ]);
         });
@@ -369,16 +369,16 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'or',
-                    'column': 'column1',
-                    'operator': '!=',
-                    'value': 'null'
+                    boolean: 'or',
+                    column: 'column1',
+                    operator: '!=',
+                    value: 'null'
                 },
                 {
-                    'boolean': 'or',
-                    'column': 'column2',
-                    'operator': '!=',
-                    'value': 'null'
+                    boolean: 'or',
+                    column: 'column2',
+                    operator: '!=',
+                    value: 'null'
                 }
             ]);
         });
@@ -390,10 +390,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'and',
-                    'column': 'column',
-                    'operator': 'in',
-                    'value': [1, 2]
+                    boolean: 'and',
+                    column: 'column',
+                    operator: 'in',
+                    value: [1, 2]
                 }
             ]);
         });
@@ -409,10 +409,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'or',
-                    'column': 'column',
-                    'operator': 'in',
-                    'value': [1, 2]
+                    boolean: 'or',
+                    column: 'column',
+                    operator: 'in',
+                    value: [1, 2]
                 }
             ]);
         });
@@ -424,10 +424,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'and',
-                    'column': 'column',
-                    'operator': 'notIn',
-                    'value': [1, 2]
+                    boolean: 'and',
+                    column: 'column',
+                    operator: 'notIn',
+                    value: [1, 2]
                 }
             ]);
         });
@@ -443,10 +443,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'or',
-                    'column': 'column',
-                    'operator': 'notIn',
-                    'value': [1, 2]
+                    boolean: 'or',
+                    column: 'column',
+                    operator: 'notIn',
+                    value: [1, 2]
                 }
             ]);
         });
@@ -458,10 +458,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'and',
-                    'column': 'column',
-                    'operator': 'between',
-                    'value': [1, 2]
+                    boolean: 'and',
+                    column: 'column',
+                    operator: 'between',
+                    value: [1, 2]
                 }
             ]);
         });
@@ -487,10 +487,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'or',
-                    'column': 'column',
-                    'operator': 'between',
-                    'value': [1, 2]
+                    boolean: 'or',
+                    column: 'column',
+                    operator: 'between',
+                    value: [1, 2]
                 }
             ]);
         });
@@ -502,10 +502,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'and',
-                    'column': 'column',
-                    'operator': 'notBetween',
-                    'value': [1, 2]
+                    boolean: 'and',
+                    column: 'column',
+                    operator: 'notBetween',
+                    value: [1, 2]
                 }
             ]);
         });
@@ -531,10 +531,10 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().wheres).toStrictEqual([
                 {
-                    'boolean': 'or',
-                    'column': 'column',
-                    'operator': 'notBetween',
-                    'value': [1, 2]
+                    boolean: 'or',
+                    column: 'column',
+                    operator: 'notBetween',
+                    value: [1, 2]
                 }
             ]);
         });
@@ -590,7 +590,7 @@ describe('BuildsQuery', () => {
     });
 
     describe('unless()', () => {
-        it('should call the given closure depending on the falsiness if the first argument', () => {
+        it('should call the given closure depending on the falsy state of the first argument', () => {
             builder.unless(true, builderInstance => builderInstance.limit(10));
 
             expect(builder.compiledParams().limit).toBeUndefined();
@@ -642,6 +642,15 @@ describe('BuildsQuery', () => {
             // @ts-expect-error
             expect(builder.compileQueryParameters().columns).toStrictEqual(['id']);
         });
+
+        it('should accept string or array of strings', () => {
+            builder = BuildsQuery.select(['id']);
+            // @ts-expect-error
+            expect(builder.compileQueryParameters().columns).toStrictEqual(['id']);
+            builder = BuildsQuery.select('id');
+            // @ts-expect-error
+            expect(builder.compileQueryParameters().columns).toStrictEqual(['id']);
+        });
     });
 
     describe('has()', () => {
@@ -655,6 +664,15 @@ describe('BuildsQuery', () => {
             // @ts-expect-error
             expect(builder.compileQueryParameters().relationsExists).toStrictEqual(['relation']);
         });
+
+        it('should accept string or array of strings', () => {
+            builder = BuildsQuery.has(['relation']);
+            // @ts-expect-error
+            expect(builder.compileQueryParameters().relationsExists).toStrictEqual(['relation']);
+            builder = BuildsQuery.has('relation');
+            // @ts-expect-error
+            expect(builder.compileQueryParameters().relationsExists).toStrictEqual(['relation']);
+        });
     });
 
     describe('with()', () => {
@@ -665,6 +683,15 @@ describe('BuildsQuery', () => {
 
         it('should be able to be called statically', () => {
             builder = BuildsQuery.with(['relation']);
+            // @ts-expect-error
+            expect(builder.compileQueryParameters().with).toStrictEqual(['relation']);
+        });
+
+        it('should accept string or array of strings', () => {
+            builder = BuildsQuery.with(['relation']);
+            // @ts-expect-error
+            expect(builder.compileQueryParameters().with).toStrictEqual(['relation']);
+            builder = BuildsQuery.with('relation');
             // @ts-expect-error
             expect(builder.compileQueryParameters().with).toStrictEqual(['relation']);
         });
@@ -690,6 +717,25 @@ describe('BuildsQuery', () => {
             // @ts-expect-error
             TestClass.prototype.withRelations = originalWithRelations;
         });
+
+        it('should accept string and array of strings', () => {
+            // @ts-expect-error
+            const originalWithRelations = TestClass.prototype.withRelations;
+            // @ts-expect-error
+            TestClass.prototype.withRelations = ['relations'];
+            builder = BuildsQuery.without(['relation']);
+
+            // @ts-expect-error
+            expect(builder.compileQueryParameters().with).toBeUndefined();
+
+            builder = BuildsQuery.without('relation');
+
+            // @ts-expect-error
+            expect(builder.compileQueryParameters().with).toBeUndefined();
+
+            // @ts-expect-error
+            TestClass.prototype.withRelations = originalWithRelations;
+        });
     });
 
     describe('scope()', () => {
@@ -702,6 +748,13 @@ describe('BuildsQuery', () => {
             builder = BuildsQuery.scope(['testScope']);
             // @ts-expect-error
             expect(builder.compileQueryParameters().scopes).toStrictEqual(['testScope']);
+        });
+
+        it('should accept string and array of strings', () => {
+            expect(builder.scope('testScope').compiledParams().scopes).toStrictEqual(['testScope']);
+            // @ts-expect-error
+            expect(builder.resetQueryParameters().scope(['testScope']).compiledParams().scopes)
+                .toStrictEqual(['testScope']);
         });
     });
 
@@ -724,7 +777,6 @@ describe('BuildsQuery', () => {
                     direction: 'asc'
                 }
             ]);
-
         });
     });
 
@@ -747,7 +799,6 @@ describe('BuildsQuery', () => {
                     direction: 'desc'
                 }
             ]);
-
         });
     });
 
@@ -773,7 +824,6 @@ describe('BuildsQuery', () => {
                     direction: 'desc'
                 }
             ]);
-
         });
     });
 
@@ -812,7 +862,6 @@ describe('BuildsQuery', () => {
             builder = BuildsQuery.offset(10);
             // @ts-expect-error
             expect(builder.compileQueryParameters().offset).toStrictEqual(10);
-
         });
     });
 
@@ -825,7 +874,6 @@ describe('BuildsQuery', () => {
             builder = BuildsQuery.skip(10);
             // @ts-expect-error
             expect(builder.compileQueryParameters().offset).toStrictEqual(10);
-
         });
     });
 });

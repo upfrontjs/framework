@@ -229,7 +229,7 @@ export function is(str: string, compareValue: RegExp | string, ignoreCase = fals
         );
     }
 
-    const match = str.match(compareValue);
+    const match = compareValue.exec(str);
 
     return !!match && !!match.length && match[0] === str;
 }

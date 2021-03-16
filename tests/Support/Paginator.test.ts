@@ -192,7 +192,8 @@ describe('Paginator', () => {
                 expect(paginator.pop()).toBe(lastItem);
             });
 
-            it('should set page number to previous if the item was the only one on page and recalculate the items', () => {
+            it('should set page number to previous if the item was the only one on page' +
+                'and recalculate the items', () => {
                 paginator.setItemsPerPage(2).last();
                 expect(paginator.items).toStrictEqual([5]);
                 expect(paginator.currentPage).toBe(3);

@@ -147,7 +147,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {object}
      */
-    protected compileQueryParameters(): QueryParams {
+    protected compileQueryParameters(): Partial<QueryParams> {
         const params: Record<string, any> = {};
 
         if (this.wheres.length) {
@@ -558,7 +558,7 @@ export default class BuildsQuery extends HasAttributes {
      * @return {this}
      */
     public whereBetween(column: string, values: any[], boolean: BooleanOperator = 'and'): this {
-        if (!Array.isArray(values) || values.length !== 2) {
+        if (!Array.isArray(values) || Array.isArray(values) && values.length !== 2) {
             throw new InvalidArgumentException('Expected an array with 2 values for \'whereBetween\'' +
                 ' got: \'' + JSON.stringify(values) + '\'.');
         }
@@ -749,8 +749,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public select(columns: string[]): this {
-        this.columns.push(...columns);
+    public select(columns: string[]|string): this {
+        this.columns.push(...Array.isArray(columns) ? columns : [columns]);
 
         return this;
     }
@@ -764,7 +764,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.select
      */
-    public static select(columns: string[]): BuildsQuery { // todo also accept single string throughout?
+    public static select(columns: string[]|string): BuildsQuery {
         return BuildsQuery.newQuery().select(columns);
     }
 
@@ -775,8 +775,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public has(relations: string[]): this { // todo accept model constructor?
-        this.relationsExists.push(...relations.flat());
+    public has(relations: string[]|string): this {
+        this.relationsExists.push(...Array.isArray(relations) ? relations : [relations]);
 
         return this;
     }
@@ -790,7 +790,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.has
      */
-    public static has(relations: string[]): BuildsQuery {
+    public static has(relations: string[]|string): BuildsQuery {
         return BuildsQuery.newQuery().has(relations);
     }
 
@@ -801,8 +801,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public with(relations: string[]): this {
-        this.withs.push(...relations.flat());
+    public with(relations: string[]|string): this {
+        this.withs.push(...Array.isArray(relations) ? relations : [relations]);
 
         return this;
     }
@@ -816,7 +816,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.with
      */
-    public static with(relations: string[]): BuildsQuery {
+    public static with(relations: string[]|string): BuildsQuery {
         return BuildsQuery.newQuery().with(relations);
     }
 
@@ -825,8 +825,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @param relations
      */
-    public without(relations: string[]): this {
-        this.withouts.push(...relations.flat());
+    public without(relations: string[]|string): this {
+        this.withouts.push(...Array.isArray(relations) ? relations : [relations]);
 
         return this;
     }
@@ -840,7 +840,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.without
      */
-    public static without(relations: string[]): BuildsQuery {
+    public static without(relations: string[]|string): BuildsQuery {
         return BuildsQuery.newQuery().without(relations);
     }
 
@@ -851,8 +851,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public scope(scopes: string[]): this {
-        this.scopes.push(...scopes.flat());
+    public scope(scopes: string[]|string): this {
+        this.scopes.push(...Array.isArray(scopes) ? scopes : [scopes]);
 
         return this;
     }
@@ -866,7 +866,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.scope
      */
-    public static scope(scopes: string[]): BuildsQuery {
+    public static scope(scopes: string[]|string): BuildsQuery {
         return BuildsQuery.newQuery().scope(scopes);
     }
 
@@ -958,7 +958,9 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public oldest(column = 'created_at'): this {
+    public oldest(column?: string): this {
+        column = column ?? (this as unknown as Model).getCreatedAtColumn();
+
         return this.orderBy(column, 'asc');
     }
 

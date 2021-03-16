@@ -68,7 +68,6 @@ export default class GlobalConfig<T extends Configuration> {
      *
      * @param {string} key
      */
-    // todo - omit doesn't seem to work
     public unset<K extends string | keyof Configuration>(key: K): asserts this is GlobalConfig<Omit<T, K>> {
         delete GlobalConfig.configuration[key];
     }

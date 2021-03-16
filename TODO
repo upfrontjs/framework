@@ -1,7 +1,4 @@
-// todo - make sure to test file uploads
-// todo - improve typings (eg.: collection pluck K extends keyof T, better user guards)
 // todo - tinker with node support (take callsApi out)
 
 // todo - arrange api-docs to be live
-// todo - investigate lodash-es
 // todo - https://github.com/microsoft/TypeScript/issues/33079 figure out the package entries so user doesn't have to specify .es.min.js for string and array helpers and when using helpers in js the typings will be found

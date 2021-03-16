@@ -2,7 +2,7 @@ import Collection from '../Support/Collection';
 import type Model from './Model';
 
 export default class ModelCollection<T extends Model> extends Collection<T> {
-    public constructor(models?: T[]) {
+    public constructor(models?: T | T[]) {
         super(models);
         this._throwIfNotModels();
     }
@@ -12,7 +12,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @param {any[]=} iterable
      *
-     * @private
+     * @protected
      */
     protected _throwIfNotModels(iterable?: any): void {
         if (!this._isModelArray(iterable)) {
@@ -28,7 +28,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {boolean}
      *
-     * @private
+     * @protected
      */
     protected _isModelArray(iterable?: any): iterable is Model[] {
         if (iterable && Array.isArray(iterable)) {
@@ -45,14 +45,15 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @param {any} arg
      *
-     * @private
-     *
      * @return {boolean}
+     *
+     * @protected
      */
-    private static _isModel(arg: any): arg is Model {
+    protected static _isModel(arg: any): arg is Model {
         return typeof arg === 'object'
             && arg !== null
-            && (arg as Record<string, any>).getKey instanceof Function;
+            && (arg as Record<string, any>).getKey instanceof Function
+            && (arg as Record<string, any>).getName instanceof Function;
     }
 
     /**
@@ -64,7 +65,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {string[]}
      *
-     * @private
+     * @protected
      */
     protected _getArgumentKeys(values: any): Collection<string> {
         if (values instanceof ModelCollection) {
@@ -92,9 +93,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      */
     public modelKeys(): Collection<number|string|undefined> {
         this._throwIfNotModels();
-        const ids = this.map(model => model.getKey());
-
-        return new Collection(ids.toArray());
+        return this.map(model => model.getKey());
     }
 
     /**
@@ -105,7 +104,10 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {Model|ModelCollection|undefined|any}
      */
-    public findByKey(key: (number|string)[]|number|string, defaultVal?: any): T | any | this | undefined {
+    public findByKey(
+        key: (number|string)[]|number|string,
+        defaultVal?: ModelCollection<T> | T
+    ): T | any | this | undefined {
         this._throwIfNotModels();
 
         const keys = new Set(this._getArgumentKeys(key));
@@ -379,5 +381,31 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
         this._throwIfNotModels(Array.of(...items));
 
         return super.unshift(...items);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public map<U extends Model | unknown>(
+        callback: (value: T, index: number, array: T[]) => U,
+        thisArg?: any
+    ): [U] extends [Model] ? ModelCollection<U> : Collection<U> {
+        const results = super.map(callback, thisArg);
+
+        // todo - remove expect errors once https://github.com/microsoft/TypeScript/pull/43183 merged in/released
+        if (results.every(result => ModelCollection._isModel(result))) {
+            // @ts-expect-error
+            return new (this.constructor as typeof ModelCollection)(results.toArray());
+        }
+
+        // @ts-expect-error
+        return results;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public toJson(): string {
+        return JSON.stringify(this.toArray().map(model => JSON.parse(model.toJson())));
     }
 }

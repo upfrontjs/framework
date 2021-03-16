@@ -5,7 +5,6 @@
         "declarationMap": true,
         "module": "ESNext",
         "rootDir": "src",
-        "preserveConstEnums": false,
         "sourceMap": true,
         "downlevelIteration": true,
         "isolatedModules": true,

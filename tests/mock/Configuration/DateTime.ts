@@ -1,10 +1,11 @@
 export class DateTime {
-    private internalValue;
+    private readonly internalValue;
+
     public constructor(value: any) {
         this.internalValue = value;
     }
 
-    value(): any {
+    public value(): any {
         return this.internalValue;
     }
 }

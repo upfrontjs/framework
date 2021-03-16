@@ -23,8 +23,6 @@ export default class GuardsAttributes extends CastsAttributes {
     /**
      * The attributes that are mass assignable.
      *
-     * @protected
-     *
      * @type {string[]}
      */
     public get fillable(): string[] {
@@ -33,8 +31,6 @@ export default class GuardsAttributes extends CastsAttributes {
 
     /**
      * The attributes that are not mass assignable.
-     *
-     * @protected
      *
      * @type {string[]}
      */

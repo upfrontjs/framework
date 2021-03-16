@@ -20,8 +20,8 @@ module.exports = {
     ignorePatterns: [
         'node_modules',
         '.eslintrc.js',
-        '*config*.js',
-        'DateTime*',
+        'rollup.config.js',
+        'jest.config.js',
         '/types'
     ],
     rules: {

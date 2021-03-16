@@ -7,7 +7,7 @@ import type Model from '../Model';
 import BuildsQuery from './BuildsQuery';
 import type { Attributes } from './HasAttributes';
 import { isObjectLiteral } from '../../Support/function';
-import { finish, plural } from '../../Support/string';
+import { finish, plural, snake, camel } from '../../Support/string';
 
 export default class CallsApi extends BuildsQuery {
     /**
@@ -19,6 +19,18 @@ export default class CallsApi extends BuildsQuery {
      */
     protected get endpoint(): string {
         return '';
+    }
+
+    /**
+     * Property indicating how attributes and relation names
+     * should be casted by default when sent to the server.
+     *
+     * @type {'snake'|'camel'}
+     *
+     * @protected
+     */
+    protected get serverAttributeCasing(): 'camel' | 'snake' {
+        return 'snake';
     }
 
     /**
@@ -64,7 +76,7 @@ export default class CallsApi extends BuildsQuery {
      */
     protected async call(
         method: 'delete' | 'get' | 'patch' | 'post' | 'put',
-        data?: FormData | Record<string, unknown>,
+        data?: Attributes | FormData,
         customHeaders?: Record<string, string[] | string>
     ): Promise<any> {
         if (!this.getEndpoint().length) {
@@ -73,12 +85,30 @@ export default class CallsApi extends BuildsQuery {
             );
         }
 
-        this.requestCount++;
         const config = new GlobalConfig;
         const url = finish(String(config.get('baseEndPoint', '')), '/')
             + (this.getEndpoint().startsWith('/') ? this.getEndpoint().slice(1) : this.getEndpoint());
         const apiCaller = new (config.get('api', API))!;
         const handlesApiResponse = new (config.get('apiResponseHandler', ApiResponseHandler))!;
+
+        if (data && isObjectLiteral<Attributes>(data) && !(data instanceof FormData)) {
+            const setStringCase = (key: string) => this.serverAttributeCasing === 'camel' ? camel(key) : snake(key);
+            const transformValues = (object: Attributes): Attributes => {
+                const dataWithKeyCasing: Attributes = {};
+
+                Object.keys(object).map(key => {
+                    dataWithKeyCasing[setStringCase(key)] = object[key] && isObjectLiteral(object[key])
+                        ? transformValues(object[key] as Attributes)
+                        : object[key];
+                });
+
+                return dataWithKeyCasing;
+            };
+
+            data = transformValues(data);
+        }
+
+        this.requestCount++;
 
         return handlesApiResponse
             .handle(

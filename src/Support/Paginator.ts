@@ -89,9 +89,7 @@ export default class Paginator<T> implements Iterable<T> {
      * @return {boolean}
      */
     public get hasNext(): boolean {
-        const start = this.internalCurrentPage * this.internalItemsPerPage;
-
-        return !!this.elements.slice(start, start + this.internalItemsPerPage).length;
+        return !!this.elements.slice(this.internalCurrentPage * this.internalItemsPerPage).length;
     }
 
     /**

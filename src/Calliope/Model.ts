@@ -14,7 +14,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @protected
      */
-    protected get primaryKey(): 'id' | 'uuid' {
+    protected get primaryKey(): string {
         return 'id';
     }
 

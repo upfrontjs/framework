@@ -121,6 +121,7 @@ describe('API', () => {
             const config = api.getConfig(url, 'post', form).requestInit;
 
             expect(config.body).toBeInstanceOf(FormData);
+            expect((config.body as FormData).get('key')).toBe('value');
             // @ts-expect-error
             expect(config.headers.get('Content-Type')).toBe('multipart/form-data');
         });

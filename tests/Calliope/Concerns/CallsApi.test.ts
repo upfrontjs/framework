@@ -10,6 +10,7 @@ import { config } from '../../setupTests';
 import type Collection from '../../../src/Support/Collection';
 import type Model from '../../../src/Calliope/Model';
 import { advanceTo } from 'jest-date-mock';
+import { snake } from '../../../src';
 
 let caller: User;
 
@@ -25,6 +26,65 @@ describe('CallsApi', () => {
     describe('constructor()', () => {
         it('should reset the mutated endpoint to the set endpoint', () => {
             expect(caller.getEndpoint()).toBe('users');
+        });
+    });
+
+    describe('.serverAttributeCasing', () => {
+        it('should cast the outgoing attributes to the set serverAttributeCasing', async () => {
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+            // @ts-expect-error
+            await caller.call('post', { someValue: 1 });
+
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            expect(getLastFetchCall()?.body).toStrictEqual({ some_value: 1 });
+        });
+
+        it('should recursively cast the keys to any depth', async () => {
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+            // @ts-expect-error
+            await caller.call('post', {
+                someValue: {
+                    anotherValue: 1
+                }
+            });
+
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            expect(getLastFetchCall()?.body).toStrictEqual({ some_value: { another_value: 1 } });
+        });
+
+        it('should get the serverAttributeCasing from the extending model', async () => {
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+
+            class UserWithSnakeCase extends User {
+                protected get serverAttributeCasing() {
+                    return 'camel' as const;
+                }
+            }
+
+            const user = new UserWithSnakeCase;
+
+            // @ts-expect-error
+            await user.call('post', {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                some_value: {
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    another_value: 1
+                }
+            });
+
+            expect(getLastFetchCall()?.body).toStrictEqual({ someValue: { anotherValue: 1 } });
+        });
+
+        it('should not cast keys for form data', async () => {
+            const formData = new FormData();
+            formData.append('my_field', 'value');
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+
+            // @ts-expect-error
+            await caller.call('post', formData);
+
+            expect((getLastFetchCall()?.body as FormData).has('my_field')).toBe(true);
+            expect((getLastFetchCall()?.body as FormData).has('myField')).toBe(false);
         });
     });
 
@@ -137,15 +197,12 @@ describe('CallsApi', () => {
 
     describe('newInstanceFromResponseData()', () => {
         it('should throw an error if unexpected data given', () => {
-            //@ts-expect-error
-            expect(() => caller.newInstanceFromResponseData(null)).toThrow(new TypeError(
-                'Unexpected response type. Ensure that the endpoint returns model data only.'
-            ));
-
-            //@ts-expect-error
-            expect(() => caller.newInstanceFromResponseData()).toThrow(new TypeError(
-                'Unexpected response type. Ensure that the endpoint returns model data only.'
-            ));
+            [null, undefined, [{}, 1]].forEach(invalidVal => {
+                //@ts-expect-error
+                expect(() => caller.newInstanceFromResponseData(invalidVal)).toThrow(new TypeError(
+                    'Unexpected response type. Ensure that the endpoint returns model data only.'
+                ));
+            });
         });
 
         it('should construct a single instance of a model', () => {
@@ -167,7 +224,7 @@ describe('CallsApi', () => {
             const userData = User.factory().raw() as Attributes;
             const expectedUser = new User(userData);
 
-            // eslint-disable-next-line @typescript-eslint/unbound-method
+            // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
             const originalFillableReturn =  User.prototype.getFillable;
 
             User.prototype.getFillable = () => [];
@@ -286,17 +343,13 @@ describe('CallsApi', () => {
             mockUserModelResponse(User.factory().create() as User);
             await caller.get({ myParam: 1 });
 
-            expect(getLastFetchCall()?.url).toBe(
-                String(config.get('baseEndPoint')) + '/'
-                + caller.getEndpoint() + '?myParam=1'
-            );
+            expect(getLastFetchCall()?.url)
+                .toBe(`${config.get('baseEndPoint')!}/${caller.getEndpoint()}?${snake('myParam')}=1`);
         });
 
         it('should send query parameters in the request', async () => {
-            caller.whereKey(43);
-
             mockUserModelResponse(User.factory().create() as User);
-            await caller.get();
+            await caller.whereKey(43).get();
 
             expect(getLastFetchCall()?.url).toBe(
                 String(config.get('baseEndPoint')) + '/'

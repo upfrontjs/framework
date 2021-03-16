@@ -710,13 +710,9 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      * @return {this}
      */
     public dump(message?: string): this {
-        const items = !window || !global ? JSON.stringify(this) : this;
-
-        console.info(
-            new Date().toLocaleTimeString()
-            + (message ? ' (' + message + ')' : '')
-            + ' - All items: ' + items.toString()
-        );
+        console.groupCollapsed(new Date().toLocaleTimeString() + (message ? ' (' + message + ')' : '') + ':');
+        this.forEach((value, index) => console.log(String(index) + ':', value));
+        console.groupEnd();
 
         return this;
     }
@@ -740,7 +736,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      * @inheritDoc
      */
     public toJson(): string {
-        return JSON.stringify(this);
+        return JSON.stringify(this.toArray());
     }
 
     /**
@@ -800,7 +796,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @inheritDoc
+     * @see {Array.prototype.map}
      *
      * @return {this}
      */
@@ -809,7 +805,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @inheritDoc
+     * @see {Array.prototype.reverse}
      *
      * @return {this}
      */
@@ -818,7 +814,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @inheritDoc
+     * @see {Array.prototype.concat}
      *
      * @return {this}
      */
@@ -827,7 +823,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @inheritDoc
+     * @see {Array.prototype.sort}
      *
      * @return {this}
      */
@@ -895,7 +891,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @inheritDoc
+     * @see {Array.prototype.flatMap}
      *
      * @return {Collection}
      */
@@ -908,6 +904,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
 
     /**
      * @see {Array.prototype.shift}
+     *
+     * @return {any}
      */
     public shift(): T | undefined {
         if (!this.length) {
@@ -923,6 +921,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
 
     /**
      * @see {Array.prototype.unshift}
+     *
+     * @return {number}
      */
     public unshift(...items: T[]): number {
         this._setArray([...items, ...this]);
@@ -932,6 +932,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
 
     /**
      * @see {Array.prototype.pop}
+     *
+     * @return {any}
      */
     public pop(): T | undefined {
         const array = this.toArray();
@@ -943,6 +945,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
 
     /**
      * @see {Array.prototype.push}
+     *
+     * @return {number}
      */
     public push(...items: T[]): number {
         // ensure indexes are continuous
@@ -960,6 +964,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
 
     /**
      * @see {Array.prototype.fill}
+     *
+     * @return {this}
      */
     public fill(value: T, start?: number, end?: number): this {
         this._setArray(this.toArray().fill(value, start, end));
@@ -969,6 +975,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
 
     /**
      * @see {Array.prototype.copyWithin}
+     *
+     * @return {this}
      */
     public copyWithin(target: number, start: number, end?: number): this {
         return this._newInstance(this.toArray().copyWithin(target, start, end));
@@ -976,6 +984,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
 
     /**
      * @see {Array.prototype.every}
+     *
+     * @return {boolean}
      */
     public every(predicate: (value: T, index?: number, array?: T[]) => unknown, thisArg?: any): boolean {
         return this.toArray().every(predicate, thisArg);
@@ -983,6 +993,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
 
     /**
      * @see {Array.prototype.some}
+     *
+     * @return {boolean}
      */
     public some(predicate: (value: T, index?: number, array?: T[]) => unknown, thisArg?: any): boolean {
         return this.toArray().some(predicate, thisArg);
@@ -990,6 +1002,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
 
     /**
      * @see {Array.prototype.find}
+     *
+     * @return {any}
      */
     public find(predicate: (value: T, index?: number, obj?: T[]) => unknown, thisArg?: any): T | undefined {
         return this.toArray().find(predicate, thisArg);
@@ -997,6 +1011,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
 
     /**
      * @see {Array.prototype.findIndex}
+     *
+     * @return {number}
      */
     public findIndex(predicate: (value: T, index?: number, obj?: T[]) => unknown, thisArg?: any): number {
         return this.toArray().findIndex(predicate, thisArg);
@@ -1004,6 +1020,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
 
     /**
      * @see {Array.prototype.indexOf}
+     *
+     * @return {boolean}
      */
     public indexOf(searchElement: T, fromIndex = 0): number {
         return this.toArray().indexOf(searchElement, fromIndex);
@@ -1011,6 +1029,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
 
     /**
      * @see {Array.prototype.join}
+     *
+     * @return {string}
      */
     public join(separator?: string): string {
         return this.toArray().join(separator);
@@ -1018,6 +1038,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
 
     /**
      * @see {Array.prototype.toString}
+     *
+     * @return {string}
      */
     public toString(): string {
         return this.join();
@@ -1025,6 +1047,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
 
     /**
      * @see {Array.prototype.lastIndexOf}
+     *
+     * @return {number}
      */
     public lastIndexOf(searchElement: T, fromIndex?: number): number {
         if (fromIndex) {
@@ -1036,6 +1060,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
 
     /**
      * @see {Array.prototype.reduce}
+     *
+     * @return {any}
      */
     public reduce(
         callback: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T,
@@ -1050,6 +1076,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
 
     /**
      * @see {Array.prototype.reduceRight}
+     *
+     * @return {any}
      */
     public reduceRight(
         callback: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T,
@@ -1065,9 +1093,9 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     /**
      * Determine whether all the values in this are objects.
      *
-     * @private
-     *
      * @return {boolean}
+     *
+     * @protected
      */
     protected _allAreObjects(): this is Collection<Record<string, any>> {
         return this.every(item => typeof item === 'object' && item !== null);

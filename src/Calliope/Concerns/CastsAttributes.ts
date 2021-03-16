@@ -1,6 +1,6 @@
 import LogicException from '../../Exceptions/LogicException';
 import Collection from '../../Support/Collection';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, merge } from 'lodash';
 import type AttributeCaster from '../../Contracts/AttributeCaster';
 import GlobalConfig from '../../Support/GlobalConfig';
 import type { Attributes } from './HasAttributes';
@@ -18,7 +18,18 @@ export default class CastsAttributes {
      *
      * @type {object}
      */
-    protected casts: Record<string, CastType> = {};
+    protected attributeCasts: Record<string, CastType> = this.casts;
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @protected
+     *
+     * @type {object}
+     */
+    public get casts(): Record<string, CastType> {
+        return {};
+    }
 
     /**
      * Merge new casts with existing casts on the model.
@@ -28,7 +39,20 @@ export default class CastsAttributes {
      * @return {this}
      */
     public mergeCasts(casts: Record<string, CastType>): this {
-        this.casts = cloneDeep(casts);
+        this.attributeCasts = merge(this.attributeCasts, casts);
+
+        return this;
+    }
+
+    /**
+     * Set the casts for the model.
+     *
+     * @param {object} casts
+     *
+     * @return {this}
+     */
+    public setCasts(casts: Record<string, CastType>): this {
+        this.attributeCasts = casts;
 
         return this;
     }
@@ -58,7 +82,7 @@ export default class CastsAttributes {
      * @return {string|undefined}
      */
     protected getCastType(key: string): BuiltInCastType | 'object' | undefined {
-        const caster = this.casts[key.toLowerCase().trim()];
+        const caster = this.attributeCasts[key];
 
         if (!caster) {
             return undefined;
@@ -77,7 +101,7 @@ export default class CastsAttributes {
      * @param {string} key
      * @param {any} value
      * @param {object} attributes
-     * @param {string} method - The
+     * @param {string} method - The method to use when interacting with the AttributeCaster.
      *
      * @protected
      *
@@ -111,11 +135,9 @@ export default class CastsAttributes {
                         return value.toArray();
                     }
 
-                    // check if it throws
-                    this.castToCollection(key, value);
                     return value;
                 } else {
-                    return this.castToCollection(key, value);
+                    return new Collection(value);
                 }
             case 'datetime':
                 if (method === 'set') {
@@ -231,27 +253,6 @@ export default class CastsAttributes {
     }
 
     /**
-     * Cat value to collection, throw error if it can't be casted.
-     *
-     * @param {string} key
-     * @param {any} value
-     *
-     * @private
-     *
-     * @return {Collection}
-     */
-    private castToCollection(key: string, value: any): Collection<any> | never {
-        if (!Array.isArray(value)) {
-            throw new LogicException(
-                '\'' + key + '\' is not castable to a collection type in \'' + this.constructor.name + '\'.'
-            );
-        }
-
-        return new Collection(value);
-    }
-
-
-    /**
      * Cast to date time using the configured library, throw error if it can't be casted.
      *
      * @param {string} _key
@@ -283,6 +284,6 @@ export default class CastsAttributes {
         attributes: Attributes,
         method: keyof AttributeCaster
     ): unknown {
-        return (this.casts[key] as AttributeCaster)[method](key, value, attributes);
+        return (this.attributeCasts[key] as AttributeCaster)[method](value, attributes);
     }
 }

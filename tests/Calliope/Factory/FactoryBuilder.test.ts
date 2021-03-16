@@ -7,11 +7,10 @@ import Factory from '../../../src/Calliope/Factory/Factory';
 import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 import Collection from '../../../src/Support/Collection';
 import UserFactory from '../../mock/Factories/UserFactory';
-import type Model from '../../../src/Calliope/Model';
+import Model from '../../../src/Calliope/Model';
 import Shift from '../../mock/Models/Shift';
 import Contract from '../../mock/Models/Contract';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
-import { isUuid } from '../../../src';
 
 class FakeFactory extends Factory<User> {
     // @ts-expect-error
@@ -97,7 +96,7 @@ describe('FactoryBuilder', () => {
     });
 
     describe('getFactory()', () => {
-        // eslint-disable-next-line @typescript-eslint/unbound-method
+        // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
         const userFactory = User.prototype.factory;
 
         afterEach(() => {
@@ -194,7 +193,7 @@ describe('FactoryBuilder', () => {
         it('should call the afterCreating with the created model or collection', () => {
             const mockFn = jest.fn();
             const unCalledMockFn = jest.fn();
-            // eslint-disable-next-line @typescript-eslint/unbound-method
+            // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
             const originalFactory = User.prototype.factory;
 
             class MockUserFactory extends UserFactory {
@@ -255,7 +254,7 @@ describe('FactoryBuilder', () => {
         it('should call the afterCreating with the created model or collection', () => {
             const mockFn = jest.fn();
             const unCalledMockFn = jest.fn();
-            // eslint-disable-next-line @typescript-eslint/unbound-method
+            // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
             const originalFactory = User.prototype.factory;
 
             class MockUserFactory extends UserFactory {
@@ -354,7 +353,8 @@ describe('FactoryBuilder', () => {
 
         it('should return an empty object if no attributes has been defined or 0 models requested', () => {
             class TestFactory extends Factory<any> {}
-            // eslint-disable-next-line @typescript-eslint/unbound-method
+
+            // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
             const originalValue = Team.prototype.factory;
 
             Team.prototype.factory = () => new TestFactory;
@@ -451,24 +451,6 @@ describe('FactoryBuilder', () => {
     });
 
     describe('getId()', () => {
-        it('should return uuid if primaryKey is uuid', () => {
-            Object.defineProperty(factoryBuilder.model, 'primaryKey', {
-                configurable: true,
-                get(): string {
-                    return 'uuid';
-                }
-            });
-
-            // @ts-expect-error
-            expect(isUuid(factoryBuilder.getKey() as string)).toBe(true);
-
-            Object.defineProperty(factoryBuilder.model, 'primaryKey', {
-                get(): string {
-                    return 'id';
-                }
-            });
-        });
-
         it('should return unique sequential ids', () => {
             // @ts-expect-error
             const id1 = factoryBuilder.getKey();
@@ -491,6 +473,18 @@ describe('FactoryBuilder', () => {
 
             expect(teamId1).toBe(userId1);
             expect(teamId2).toBe(userId2);
+        });
+    });
+
+    describe('addRelations()', () => {
+        it('should return a ModelCollection on make/create', () => {
+            expect(factoryBuilder.with(Shift.factory()).times(2).make()).toBeInstanceOf(ModelCollection);
+            expect(factoryBuilder.with(Shift.factory()).times(2).create()).toBeInstanceOf(ModelCollection);
+        });
+
+        it('should return a Model on make/create of one model', () => {
+            expect(factoryBuilder.with(Shift.factory()).make()).toBeInstanceOf(Model);
+            expect(factoryBuilder.with(Shift.factory()).create()).toBeInstanceOf(Model);
         });
     });
 });

@@ -42,8 +42,6 @@ export function factory<T extends Model>(modelConstructor: new () => T, amount =
 /**
  * Determine whether the given value is an object not including the type array.
  *
- * @internal
- *
  * @param {any} value
  *
  * @return {boolean}

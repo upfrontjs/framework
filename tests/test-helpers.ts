@@ -4,7 +4,7 @@ import { isObjectLiteral } from '../src/Support/function';
 import type User from './mock/Models/User';
 import fetchMock from 'jest-fetch-mock';
 
-export const buildResponse = (response?: Record<string, any> | string): MockResponseInit => {
+export const buildResponse = (response?: any[] | Record<string, any> | string): MockResponseInit => {
     let responseObject: MockResponseInit = {
         status: 200,
         body: JSON.stringify({ data: 'value' })
@@ -21,9 +21,9 @@ export const buildResponse = (response?: Record<string, any> | string): MockResp
         } catch (e: unknown) {}
 
         responseObject.body = JSON.stringify(value);
-    }
-
-    if (isObjectLiteral(response)) {
+    } else if (Array.isArray(response)) {
+        responseObject.body = JSON.stringify(response);
+    } else if (isObjectLiteral(response)) {
         if (!response.body) {
             responseObject.body = JSON.stringify(response);
         } else {

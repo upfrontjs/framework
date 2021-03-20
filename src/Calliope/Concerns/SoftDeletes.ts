@@ -1,5 +1,7 @@
 import HasTimestamps from './HasTimestamps';
 import type Model from '../Model';
+import LogicException from '../../Exceptions/LogicException';
+import { finish } from '../../Support/string';
 
 export default class SoftDeletes extends HasTimestamps {
     /**
@@ -52,24 +54,27 @@ export default class SoftDeletes extends HasTimestamps {
      *
      * @return {Promise<boolean>}
      */
-    public async delete(data?: Record<string, unknown>): Promise<Model> {
+    public async delete(data: Record<string, unknown> = {}): Promise<Model> {
         if (!this.usesSoftDeletes()) {
             return super.delete(data);
         }
 
-        if (!data) {
-            data = {};
+        const deletedAt = this.getDeletedAtColumn();
+
+        if (this.getAttribute(deletedAt)) {
+            return Promise.resolve(this as unknown as Model);
         }
 
+        // @ts-expect-error
+        (this as unknown as Model).throwIfDoesntExists('delete');
+
+        this.setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()));
         return super.delete({
             ...data,
-            [this.getDeletedAtColumn()]: new Date().toISOString()
-        }).then(responseData => {
-            if (!responseData.getAttribute(this.getDeletedAtColumn())) {
-                responseData.setAttribute(this.getDeletedAtColumn(), new Date().toISOString());
-            }
-
-            return responseData;
+            [deletedAt]: new Date().toISOString()
+        }).then(model => {
+            return this.setAttribute(deletedAt, model.getAttribute(deletedAt))
+                .syncOriginal(deletedAt) as unknown as Model;
         });
     }
 
@@ -78,22 +83,24 @@ export default class SoftDeletes extends HasTimestamps {
      *
      * @return {Promise<this>}
      */
-    public async restore(): Promise<Model> {
-        if (!this.usesSoftDeletes()) {
-            return Promise.resolve(this as unknown as Model);
+    public async restore(): Promise<this> {
+        if (!this.usesSoftDeletes() || !this.getAttribute(this.getDeletedAtColumn())) {
+            return Promise.resolve(this);
         }
 
-        if (!this.getAttribute(this.getDeletedAtColumn())) {
-            return Promise.resolve(this as unknown as Model);
+        if (!(this as unknown as Model).getKey()) {
+            throw new LogicException(
+                'Attempted to call restore on \'' + (this as unknown as Model).getName()
+                + '\' when it doesn\'t have a primary key.'
+            );
         }
 
-        return (this.patch({ [this.getDeletedAtColumn()]: null }) as Promise<Model>)
-            .then(data => {
-                if (!data.getAttribute(this.getDeletedAtColumn())) {
-                    data.setAttribute(this.getDeletedAtColumn(), undefined);
-                }
+        return this.setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()))
+            .patch({ [this.getDeletedAtColumn()]: null })
+            .then(model => {
+                const deletedAt = this.getDeletedAtColumn();
 
-                return data;
+                return this.setAttribute(deletedAt, model.getAttribute(deletedAt, null)).syncOriginal(deletedAt);
             });
     }
 }

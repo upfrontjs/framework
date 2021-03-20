@@ -438,14 +438,20 @@ describe('HasAttributes', () => {
     });
 
     describe('reset()', () => {
-        it('should set the original to the values from the attributes', () => {
-            hasAttributes = new User();
+        it('should set the attributes to the original', () => {
+            hasAttributes = new User({ test: 1 });
+            hasAttributes.test = 2;
 
-            hasAttributes.fill({ test: 1 });
+            expect(hasAttributes.getAttribute('test')).toBe(2);
 
-            expect(hasAttributes.getRawOriginal()).toBeUndefined();
+            expect(hasAttributes.reset().getAttribute('test')).toBe(1);
+        });
 
-            expect(hasAttributes.reset().getRawOriginal()).toStrictEqual({ test: 1 });
+        it('should use deep cloning', () => {
+            hasAttributes = new User({ test: 1 });
+            // @ts-expect-error
+            hasAttributes.reset().original.test = 2;
+            expect(hasAttributes.getAttribute('test')).not.toBe(2);
         });
     });
 

@@ -51,7 +51,7 @@ export default class HasRelations extends CallsApi {
         if (relations.length === 1) {
             const relation = await
             ((this[start(relations[0]!, this.relationMethodPrefix)] as CallableFunction)() as Model)
-                .get() as Model;
+                .get();
 
             this.addRelation(relations[0]!, relation);
 

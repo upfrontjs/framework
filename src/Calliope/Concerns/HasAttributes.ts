@@ -354,14 +354,14 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     }
 
     /**
-     * Alias for the syncOriginal method.
+     * Reset the attributes to the original values.
      *
      * @return {this}
-     *
-     * @see HasAttributes.prototype.syncOriginal
      */
     public reset(): this {
-        return this.syncOriginal();
+        this.attributes = cloneDeep(this.original);
+
+        return this;
     }
 
     /**

@@ -1,7 +1,7 @@
 import HasRelations from './HasRelations';
 import type Model from '../Model';
-import type { Attributes } from './HasAttributes';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
+import { finish } from '../../Support/string';
 
 export default class HasTimestamps extends HasRelations {
     /**
@@ -61,18 +61,24 @@ export default class HasTimestamps extends HasRelations {
      *
      * @return {Promise<this>}
      */
-    public async touch(): Promise<Model> {
+    public async touch(): Promise<this> {
         if (!this.usesTimestamps()) {
-            return Promise.resolve(this as unknown as Model);
+            return Promise.resolve(this);
         }
 
-        return this.patch({
-            [this.getCreatedAtColumn()]: new Date().toISOString(),
-            [this.getUpdatedAtColumn()]: new Date().toISOString()
-        })
+        // @ts-expect-error
+        (this as unknown as Model).throwIfDoesntExists('touch');
+
+        const updatedAt = this.getUpdatedAtColumn();
+
+        return this.setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()))
+            .patch({ [updatedAt]: new Date().toISOString() })
             .then(model => {
-                return this.updateTimestampsFromResponse((model as Model).getRawOriginal())
-                    .syncOriginal([this.getCreatedAtColumn(), this.getUpdatedAtColumn()]) as unknown as Model;
+                if (!(updatedAt in model)) {
+                    throw new InvalidArgumentException('\'' + updatedAt + '\' is not found in the response.');
+                }
+
+                return this.setAttribute(updatedAt, model.getAttribute(updatedAt)).syncOriginal(updatedAt);
             });
     }
 
@@ -81,48 +87,32 @@ export default class HasTimestamps extends HasRelations {
      *
      * @return {Promise<this>}
      */
-    public async freshTimestamps(): Promise<Model> {
+    public async freshTimestamps(): Promise<this> {
         if (!this.usesTimestamps()) {
-            return Promise.resolve(this as unknown as Model);
+            return Promise.resolve(this);
         }
 
-        return this.select([this.getCreatedAtColumn(), this.getUpdatedAtColumn()])
+        // @ts-expect-error
+        (this as unknown as Model).throwIfDoesntExists('freshTimestamps');
+
+        const createdAt = this.getCreatedAtColumn();
+        const updatedAt = this.getUpdatedAtColumn();
+
+        return this.select([createdAt, updatedAt])
             .whereKey((this as unknown as Model).getKey()!)
+            .setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()))
             .get()
             .then(model => {
-                return this.updateTimestampsFromResponse((model as Model).getRawOriginal())
-                    .syncOriginal([this.getCreatedAtColumn(), this.getUpdatedAtColumn()]) as unknown as Model;
+                if (!(createdAt in model)) {
+                    throw new InvalidArgumentException('\'' + createdAt + '\' is not found in the response.');
+                }
+                if (!(updatedAt in model)) {
+                    throw new InvalidArgumentException('\'' + updatedAt + '\' is not found in the response.');
+                }
+
+                return this.setAttribute(createdAt, (model as Model).getAttribute(createdAt))
+                    .setAttribute(updatedAt, (model as Model).getAttribute(updatedAt))
+                    .syncOriginal([createdAt, updatedAt]);
             });
-    }
-
-    /**
-     * Update this timestamps based on the response.
-     *
-     * @param {object} data
-     *
-     * @private
-     *
-     * @return {this}
-     */
-    private updateTimestampsFromResponse(data: Attributes): this {
-        if (this.getCreatedAtColumn() in data) {
-            this.setAttribute(this.getCreatedAtColumn(), data[this.getCreatedAtColumn()]);
-        } else {
-            throw new InvalidArgumentException(
-                'No \'' + this.getCreatedAtColumn() + '\' or '
-                + '\'' + HasTimestamps.createdAt + '\' attribute found on the response data.'
-            );
-        }
-
-        if (this.getUpdatedAtColumn() in data) {
-            this.setAttribute(this.getUpdatedAtColumn(), data[this.getUpdatedAtColumn()]);
-        } else {
-            throw new InvalidArgumentException(
-                'No \'' + this.getUpdatedAtColumn() + '\' or '
-                + '\'' + HasTimestamps.updatedAt + '\' attribute found on the response data.'
-            );
-        }
-
-        return this;
     }
 }

@@ -570,7 +570,6 @@ describe('CallsApi', () => {
     });
 
     describe('update()', () => {
-        // update is an alias for patch
         it('should call the patch() method', async () => {
             mockUserModelResponse(caller);
             const spy = jest.spyOn(caller, 'patch');
@@ -578,6 +577,13 @@ describe('CallsApi', () => {
 
             expect(spy).toHaveBeenCalledWith({ key: 'value' });
             spy.mockRestore();
+        });
+
+        it('should set the correct endpoint', async () => {
+            mockUserModelResponse(caller);
+
+            await caller.update({ key: 'value' });
+            expect(getLastFetchCall()?.url).toContain(caller.getEndpoint() + '/' + String(caller.getKey()));
         });
     });
 
@@ -598,7 +604,9 @@ describe('CallsApi', () => {
 
         it('should return this or new model depending on the response', async () => {
             const responseUser = User.factory().create() as User;
+            responseUser.usesSoftDeletes = () => false;
             const callerUser = User.factory().create() as User;
+            callerUser.usesSoftDeletes = () => false;
 
             // if response returns model data
             mockUserModelResponse(responseUser);

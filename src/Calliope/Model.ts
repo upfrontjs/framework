@@ -136,13 +136,17 @@ export default class Model extends SoftDeletes implements HasFactory {
      * @param data
      */
     public async save(data?: Attributes): Promise<this> {
-        const dataToSave = Object.assign({}, this.getChanges(), data);
+        const dataToSave = Object.assign({}, this.exists ? this.getChanges() : this.getRawAttributes(), data);
 
         if (!Object.keys(dataToSave).length) {
             return Promise.resolve(this);
         }
 
-        const model = await (this.exists ? this.patch(dataToSave) : this.post(dataToSave)) as Model;
+        const model = await (
+            this.exists
+                ? this.setEndpoint(finish(this.getEndpoint(), '/') + String(this.getKey())).patch(dataToSave)
+                : this.post(dataToSave)
+        );
         this.forceFill(Object.assign({}, model.getRawOriginal(), model.getRelations()));
 
         return Promise.resolve(this);
@@ -156,11 +160,9 @@ export default class Model extends SoftDeletes implements HasFactory {
      * @return
      */
     public async find(id: number | string): Promise<Model> {
-        const model = await this
+        return await this
             .setEndpoint(finish(this.getEndpoint(), '/') + String(id))
             .get() as Model;
-
-        return Promise.resolve(model);
     }
 
     /**
@@ -206,13 +208,27 @@ export default class Model extends SoftDeletes implements HasFactory {
      * @return {Promise<Model>}
      */
     public async refresh(): Promise<Model> {
+        this.throwIfDoesntExists('refresh');
+        const model = await this.reset().select(this.getAttributeKeys()).find(this.getKey()!);
+
+        return Promise.resolve(this.forceFill(model.getRawAttributes()).syncOriginal());
+    }
+
+    /**
+     * Throw an error if the model does not exists.
+     *
+     * @param {string} method
+     *
+     * @protected
+     *
+     * @internal
+     */
+    protected throwIfDoesntExists(method: string): never | void {
         if (!this.exists) {
             throw new LogicException(
-                'Attempted to refresh \'' + this.getName()
-                + '\' when it has not been persisted yet.'
+                'Attempted to call ' + method + ' on \'' + this.getName()
+                + '\' when it has not been persisted yet or it has been soft deleted.'
             );
         }
-
-        return this.select(this.getAttributeKeys()).find(String(this.getKey()));
     }
 }

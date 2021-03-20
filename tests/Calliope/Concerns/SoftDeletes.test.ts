@@ -1,7 +1,9 @@
 import User from '../../mock/Models/User';
-import { getLastFetchCall, mockUserModelResponse } from '../../test-helpers';
+import { buildResponse, getLastFetchCall, mockUserModelResponse } from '../../test-helpers';
 import { advanceTo } from 'jest-date-mock';
-import { snake } from '../../../src';
+import { finish, snake } from '../../../src';
+import fetchMock from 'jest-fetch-mock';
+import LogicException from '../../../src/Exceptions/LogicException';
 
 let softDeletes: User;
 
@@ -44,6 +46,13 @@ describe('SoftDeletes', () => {
     });
 
     describe('delete()', () => {
+        it('should return if the model has already been deleted', async () => {
+            softDeletes.setAttribute(softDeletes.getDeletedAtColumn(), new Date().toISOString());
+            await softDeletes.delete();
+
+            expect(getLastFetchCall()).toBeUndefined();
+        });
+
         it('should call the parent delete method if not using soft deletes', async () => {
             mockUserModelResponse(softDeletes);
 
@@ -54,6 +63,16 @@ describe('SoftDeletes', () => {
             await softDeletes.delete();
 
             expect(getLastFetchCall()?.body).toBeUndefined();
+        });
+
+        it('should send a DELETE request', async () => {
+            mockUserModelResponse(softDeletes);
+
+            await softDeletes.delete();
+
+            expect(getLastFetchCall()?.method).toBe('delete');
+            expect(getLastFetchCall()?.url)
+                .toContain(finish(softDeletes.getEndpoint(), '/') + String(softDeletes.getKey()));
         });
 
         it('should merge in the deleted at column into the optional parameters', async () => {
@@ -69,21 +88,34 @@ describe('SoftDeletes', () => {
                 .toStrictEqual({ [snake(softDeletes.getDeletedAtColumn())]: now.toISOString() });
         });
 
-        it('should return the model with the updated deleted at column', async () => {
-            mockUserModelResponse(softDeletes);
+        it('should update the model\'s deleted at column', async () => {
             const now = new Date();
+
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({
+                ...softDeletes.getRawOriginal(),
+                [softDeletes.getDeletedAtColumn()]: now.toISOString()
+            })));
 
             advanceTo(now);
 
-            softDeletes = await softDeletes.delete() as User;
+            await softDeletes.delete();
 
             expect(softDeletes.getAttribute(softDeletes.getDeletedAtColumn())).toBe(now.toISOString());
+        });
+
+        it('should throw an error if the model has not been persisted before calling the method', async () => {
+            softDeletes = User.factory().make() as User;
+
+            await expect(softDeletes.delete()).rejects.toThrow(new LogicException(
+                'Attempted to call delete on \'' + softDeletes.getName()
+                + '\' when it has not been persisted yet or it has been soft deleted.'
+            ));
         });
     });
 
     describe('restore()', () => {
         beforeEach(() => {
-            softDeletes.setAttribute(softDeletes.getDeletedAtColumn(), new Date().toISOString());
+            softDeletes.setAttribute(softDeletes.getDeletedAtColumn(), new Date().toISOString()).syncOriginal();
         });
 
         it('should return itself if it isn\'t using soft deletes', async () => {
@@ -91,7 +123,7 @@ describe('SoftDeletes', () => {
                 value: false
             });
 
-            softDeletes = await softDeletes.restore() as User;
+            softDeletes = await softDeletes.restore();
 
             expect(softDeletes).toStrictEqual(softDeletes);
         });
@@ -99,28 +131,40 @@ describe('SoftDeletes', () => {
         it('should return itself if the deleted at column is already undefined', async () => {
             softDeletes.setAttribute(softDeletes.getDeletedAtColumn(), undefined);
 
-            softDeletes = await softDeletes.restore() as User;
+            softDeletes = await softDeletes.restore();
 
             expect(getLastFetchCall()).toBeUndefined();
         });
 
         it('should set the deleted at column to undefined', async () => {
             // response will not include the deleted at column
-            mockUserModelResponse(softDeletes);
+            const responseUser = User.factory().create() as User;
+            responseUser.deleteAttribute(responseUser.getDeletedAtColumn()).syncOriginal();
+            mockUserModelResponse(responseUser);
 
-            softDeletes = await softDeletes.restore() as User;
+            softDeletes = await softDeletes.restore()!;
 
-            // but it's still set to undefined
-            expect(softDeletes.getAttribute(softDeletes.getDeletedAtColumn())).toBeUndefined();
+            // but it's still set to null
+            expect(softDeletes.getAttribute(softDeletes.getDeletedAtColumn())).toBeNull();
         });
 
-        it('should send a patch request with the column set to null', async () => {
+        it('should send a PATCH request with the column set to null', async () => {
             mockUserModelResponse(softDeletes);
 
-            softDeletes = await softDeletes.restore() as User;
+            softDeletes = await softDeletes.restore()!;
 
             expect(getLastFetchCall()?.method).toBe('patch');
             expect(getLastFetchCall()?.body).toStrictEqual({ [snake(softDeletes.getDeletedAtColumn())]: null });
+            expect(getLastFetchCall()?.url)
+                .toContain(finish(softDeletes.getEndpoint(), '/') + String(softDeletes.getKey()));
+        });
+
+        it('should throw an error if the model doesn\'t have a primary key', async () => {
+            softDeletes.deleteAttribute(softDeletes.getKeyName());
+
+            await expect(softDeletes.restore()).rejects.toThrow(new LogicException(
+                'Attempted to call restore on \'' + softDeletes.getName() + '\' when it doesn\'t have a primary key.'
+            ));
         });
     });
 });

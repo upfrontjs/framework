@@ -1,4 +1,5 @@
 // todo - tinker with node support (take callsApi out)
 
 // todo - arrange api-docs to be live
+// todo - qs should not be a dependency if the user not using the API service?
 // todo - https://github.com/microsoft/TypeScript/issues/33079 figure out the package entries so user doesn't have to specify .es.min.js for string and array helpers and when using helpers in js the typings will be found

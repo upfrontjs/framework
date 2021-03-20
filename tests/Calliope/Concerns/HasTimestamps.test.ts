@@ -4,7 +4,8 @@ import { buildResponse, getLastFetchCall } from '../../test-helpers';
 import { advanceBy } from 'jest-date-mock';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import { config } from '../../setupTests';
-import { camel, snake, start } from '../../../src';
+import { start, finish } from '../../../src';
+import LogicException from '../../../src/Exceptions/LogicException';
 
 let hasTimestamps: User;
 
@@ -42,10 +43,12 @@ describe('HasTimestamps', () => {
     });
 
     describe('touch()', () => {
-        it('should send a patch request', async () => {
+        it('should send a PATCH request', async () => {
             await hasTimestamps.touch();
 
             expect(getLastFetchCall()?.method).toBe('patch');
+            expect(getLastFetchCall()?.url)
+                .toContain(finish(hasTimestamps.getEndpoint(), '/') + String(hasTimestamps.getKey()));
         });
 
         it('should update the timestamps', async () => {
@@ -55,21 +58,8 @@ describe('HasTimestamps', () => {
             advanceBy(1000);
             await hasTimestamps.touch();
 
-            expect(hasTimestamps.getAttribute(hasTimestamps.getCreatedAtColumn())).not.toBe(createdAt);
+            expect(hasTimestamps.getAttribute(hasTimestamps.getCreatedAtColumn())).toBe(createdAt);
             expect(hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtColumn())).not.toBe(updatedAt);
-        });
-
-        it('should throw an error if created at column is not in the response',  async () => {
-            fetchMock.resetMocks();
-            fetchMock.mockResponseOnce(async () =>
-                Promise.resolve(buildResponse({ updatedAt: new Date().toISOString() })));
-
-            const failingFunc = jest.fn(async () => hasTimestamps.touch());
-
-            await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
-                'No \'' + camel(hasTimestamps.getCreatedAtColumn()) + '\' or '
-                + '\'' + snake(hasTimestamps.getCreatedAtColumn()) + '\' attribute found on the response data.'
-            ));
         });
 
         it('should throw an error if updated at column is not in the response',  async () => {
@@ -80,8 +70,7 @@ describe('HasTimestamps', () => {
             const failingFunc = jest.fn(async () => hasTimestamps.touch());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
-                'No \'' + camel(hasTimestamps.getUpdatedAtColumn()) + '\' or '
-                + '\'' + snake(hasTimestamps.getUpdatedAtColumn()) + '\' attribute found on the response data.'
+                '\'' + hasTimestamps.getUpdatedAtColumn() + '\' is not found in the response.'
             ));
         });
 
@@ -98,16 +87,25 @@ describe('HasTimestamps', () => {
                 value: true
             });
         });
+
+        it('should throw an error if the model has not been persisted before calling the method', async () => {
+            hasTimestamps = User.factory().make() as User;
+
+            await expect(hasTimestamps.touch()).rejects.toThrow(new LogicException(
+                'Attempted to call touch on \'' + hasTimestamps.getName()
+                + '\' when it has not been persisted yet or it has been soft deleted.'
+            ));
+        });
     });
 
     describe('freshTimestamps()', () => {
-        it('should send a get request with the selected columns', async () => {
+        it('should send a GET request with the selected columns', async () => {
             await hasTimestamps.freshTimestamps();
 
             expect(getLastFetchCall()?.method).toBe('get');
             expect(getLastFetchCall()?.url).toBe(
                 String(config.get('baseEndPoint'))
-                + start(hasTimestamps.getEndpoint(), '/')
+                + finish(start(hasTimestamps.getEndpoint(), '/'), '/' + String(hasTimestamps.getKey()))
                 + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=1&wheres[][boolean]=and'
                 + '&columns[]=createdAt&columns[]=updatedAt'
             );
@@ -130,6 +128,13 @@ describe('HasTimestamps', () => {
             expect(hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtColumn())).not.toBe(updatedAt);
         });
 
+        it('should return itself instead of new instance', async () => {
+            const timestamped = await hasTimestamps.freshTimestamps();
+
+            hasTimestamps.name = 'new name';
+            expect(timestamped.name).toBe('new name');
+        });
+
         it('should throw an error if created at column is not in the response',  async () => {
             fetchMock.resetMocks();
             fetchMock.mockResponseOnce(async () =>
@@ -138,8 +143,7 @@ describe('HasTimestamps', () => {
             const failingFunc = jest.fn(async () => hasTimestamps.freshTimestamps());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
-                'No \'' + camel(hasTimestamps.getCreatedAtColumn()) + '\' or '
-                + '\'' + snake(hasTimestamps.getCreatedAtColumn()) + '\' attribute found on the response data.'
+                '\'' + hasTimestamps.getCreatedAtColumn() + '\' is not found in the response.'
             ));
         });
 
@@ -151,8 +155,7 @@ describe('HasTimestamps', () => {
             const failingFunc = jest.fn(async () => hasTimestamps.freshTimestamps());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
-                'No \'' + camel(hasTimestamps.getUpdatedAtColumn()) + '\' or '
-                + '\'' + snake(hasTimestamps.getUpdatedAtColumn()) + '\' attribute found on the response data.'
+                '\'' + hasTimestamps.getUpdatedAtColumn() + '\' is not found in the response.'
             ));
         });
 
@@ -168,6 +171,15 @@ describe('HasTimestamps', () => {
             Object.defineProperty(hasTimestamps, 'timestamps', {
                 value: true
             });
+        });
+
+        it('should throw an error if the model has not been persisted before calling the method', async () => {
+            hasTimestamps = User.factory().make() as User;
+
+            await expect(hasTimestamps.freshTimestamps()).rejects.toThrow(new LogicException(
+                'Attempted to call freshTimestamps on \''
+                + hasTimestamps.getName() + '\' when it has not been persisted yet or it has been soft deleted.'
+            ));
         });
     });
 });

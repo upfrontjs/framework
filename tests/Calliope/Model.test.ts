@@ -5,7 +5,7 @@ import { buildResponse, getLastFetchCall, mockUserModelResponse } from '../test-
 import fetchMock from 'jest-fetch-mock';
 import ModelCollection from '../../src/Calliope/ModelCollection';
 import LogicException from '../../src/Exceptions/LogicException';
-import { finish } from '../../src';
+import { finish, snake } from '../../src/Support/string';
 
 let user: User;
 
@@ -104,7 +104,7 @@ describe('Model', () => {
     });
 
     describe('find()', () => {
-        it('should send a get request to the correct endpoint', async () => {
+        it('should send a GET request to the correct endpoint', async () => {
             mockUserModelResponse(user);
             await user.find(String(user.getKey()));
 
@@ -128,7 +128,7 @@ describe('Model', () => {
     });
 
     describe('findMany()', () => {
-        it('should send a get request with query params', async () => {
+        it('should send a GET request with query params', async () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().times(2).create())));
             await user.findMany([2, 3]);
 
@@ -156,12 +156,12 @@ describe('Model', () => {
             const failingFunc = jest.fn(async () => user.refresh());
 
             await expect(failingFunc).rejects.toThrow(new LogicException(
-                'Attempted to refresh \'' + user.getName()
-                + '\' when it has not been persisted yet.'
+                'Attempted to call refresh on \'' + user.getName()
+                + '\' when it has not been persisted yet or it has been soft deleted.'
             ));
         });
 
-        it('should send a get request', async () => {
+        it('should send a GET request', async () => {
             mockUserModelResponse(user);
             await user.refresh();
 
@@ -179,10 +179,26 @@ describe('Model', () => {
 
             expect(getLastFetchCall()?.url).toContain(params);
         });
+
+        it('should return the model itself', async () => {
+            mockUserModelResponse(user);
+            const returnUser = await user.refresh();
+            returnUser.name = 'new name';
+
+            expect(user.name).toBe('new name');
+        });
+
+        it('should clear the changes on the model', async () => {
+            mockUserModelResponse(user);
+            user.name = 'new name';
+            expect(user.getChanges()).not.toStrictEqual({});
+            await user.refresh();
+            expect(user.getChanges()).toStrictEqual({});
+        });
     });
 
     describe('all()', () => {
-        it('should send a get request', async () => {
+        it('should send a GET request', async () => {
             mockUserModelResponse(user);
             await User.all();
 
@@ -231,6 +247,7 @@ describe('Model', () => {
             await user.save({ name: 'new name' });
 
             expect(getLastFetchCall()?.method).toBe('patch');
+            expect(getLastFetchCall()?.url).toContain(finish(user.getEndpoint(), '/') + String(user.getKey()));
         });
 
         it('should send a POST request if the model not yet exists', async () => {
@@ -241,6 +258,34 @@ describe('Model', () => {
             await user.save({});
 
             expect(getLastFetchCall()?.method).toBe('post');
+        });
+
+        it('should send all attributes if model doesn\'t exist', async () => {
+            const thisUser = User.factory().make({ myAttr: 1 }) as User;
+            mockUserModelResponse(thisUser);
+
+            await thisUser.save({ customAttr: 1 });
+
+
+            expect(getLastFetchCall()?.body).toStrictEqual({
+                /* eslint-disable @typescript-eslint/naming-convention */
+                my_attr: 1,
+                custom_attr: 1,
+                name: thisUser.name,
+                [snake(thisUser.getCreatedAtColumn())]: null,
+                [snake(thisUser.getUpdatedAtColumn())]: null,
+                [snake(thisUser.getDeletedAtColumn())]: null
+                /* eslint-enable @typescript-eslint/naming-convention */
+            });
+        });
+
+        it('should sync changes after the request', async () => {
+            user.name = 'new name';
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(user.getRawAttributes())));
+
+            expect(user.getChanges('name').name).toBe('new name');
+            await user.save();
+            expect(user.getChanges('name').name).toBeUndefined();
         });
     });
 });

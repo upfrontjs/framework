@@ -185,7 +185,7 @@ describe('HasRelations', () => {
                 buildResponse({
                     ...hasRelations.getRawOriginal(),
                     file: (FileModel.factory().create() as Model).getRawOriginal(),
-                    files: (FileModel.factory().times(2).create() as unknown as ModelCollection<FileModel>)
+                    files: (FileModel.factory().times(2).create() as ModelCollection<Model>)
                         .map(file => file.getRawOriginal())
                         .toArray()
                 })
@@ -196,9 +196,7 @@ describe('HasRelations', () => {
             const file = FileModel.factory().create() as FileModel;
             hasRelations.addRelation('file', file);
 
-            await hasRelations.load('file').then(model => {
-                expect(model).toBeInstanceOf(hasRelations.constructor);
-            });
+            await hasRelations.load('file');
 
             expect(getLastFetchCall()).toBeUndefined();
         });
@@ -228,6 +226,67 @@ describe('HasRelations', () => {
                 + '/' + String(hasRelations.team.getEndpoint())
                 + '/' + String(hasRelations.team.getKey())
             );
+        });
+
+        it('should correctly load single relations', async () => {
+            fetchMock.resetMocks();
+            hasRelations.loadedRelationKeys().forEach(relation => {
+                hasRelations.removeRelation(relation);
+            });
+
+            // hasOne
+            fetchMock.mockResponseOnce(async () => Promise.resolve(
+                buildResponse((Contract.factory().create() as Model).getRawOriginal())
+            ));
+            await hasRelations.load('contract');
+            expect(hasRelations.contract).toBeInstanceOf(Contract);
+
+            // belongsTo
+            fetchMock.mockResponseOnce(async () => Promise.resolve(
+                buildResponse((Team.factory().create() as Model).getRawOriginal())
+            ));
+            await hasRelations.load('team');
+            expect(hasRelations.team).toBeInstanceOf(Team);
+
+            // morphOne
+            fetchMock.mockResponseOnce(async () => Promise.resolve(
+                buildResponse((FileModel.factory().create() as Model).getRawOriginal())
+            ));
+            await hasRelations.load('file');
+            expect(hasRelations.file).toBeInstanceOf(FileModel);
+
+            // morphMany
+            fetchMock.mockResponseOnce(async () => Promise.resolve(
+                buildResponse(
+                    (FileModel.factory().times(2).create() as ModelCollection<Model>)
+                        .map(file => file.getRawOriginal())
+                        .toArray()
+                )
+            ));
+            await hasRelations.load('files');
+            expect(hasRelations.files).toBeInstanceOf(ModelCollection);
+
+            // hasMany
+            fetchMock.mockResponseOnce(async () => Promise.resolve(
+                buildResponse(
+                    (Shift.factory().times(2).create() as ModelCollection<Model>)
+                        .map(shift => shift.getRawOriginal())
+                        .toArray()
+                )
+            ));
+            await hasRelations.load('shifts');
+            expect(hasRelations.shifts).toBeInstanceOf(ModelCollection);
+
+            // belongsToMany
+            fetchMock.mockResponseOnce(async () => Promise.resolve(
+                buildResponse(
+                    (Shift.factory().times(2).create() as unknown as ModelCollection<FileModel>)
+                        .map(shift => shift.getRawOriginal())
+                        .toArray()
+                )
+            ));
+            await hasRelations.load('inverseShifts');
+            expect(hasRelations.inverseShifts).toBeInstanceOf(ModelCollection);
         });
 
         it('should query the current model with eager loaded relations if multiple relation required',

@@ -98,7 +98,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
         const keys = Object.keys(properties);
 
         for (let i = 0; i < keys.length; i++) {
-            yield properties[keys[i]!];
+            yield [cloneDeep(properties[keys[i]!]), keys[i]];
         }
     }
 

@@ -80,7 +80,7 @@ describe('HasAttributes', () => {
             let count = 0;
 
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            for (const _item of hasAttributes) {
+            for (const [_item] of hasAttributes) {
                 count++;
             }
 
@@ -97,7 +97,7 @@ describe('HasAttributes', () => {
                 return Object.keys(values).filter(key => isEqual(values[key], value)).length > 0;
             };
 
-            for (const item of hasAttributes) {
+            for (const [item] of hasAttributes) {
                 boolean = boolean && hasValue(item);
             }
 
@@ -109,7 +109,7 @@ describe('HasAttributes', () => {
 
             let attributeTouchTimestamp = 0;
             let relationTouchTimestamp = 0;
-            for (const item of hasAttributes) {
+            for (const [item] of hasAttributes) {
                 // eslint-disable-next-line jest/no-if
                 if (item === hasAttributes.test) {
                     attributeTouchTimestamp = new Date().getTime();
@@ -123,6 +123,19 @@ describe('HasAttributes', () => {
             expect(attributeTouchTimestamp).not.toBe(0);
 
             expect(relationTouchTimestamp).toBeGreaterThan(attributeTouchTimestamp);
+        });
+
+        it('should return deep copies', () => {
+            hasAttributes.setAttribute('myAttr', { key: 1 });
+
+            for (const [item, key] of hasAttributes) {
+                // eslint-disable-next-line jest/no-if
+                if (key === 'myAttr') {
+                    item.key = 2;
+                }
+            }
+
+            expect(hasAttributes.getAttribute('myAttr').key).toBe(1);
         });
     });
 

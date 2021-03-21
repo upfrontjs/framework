@@ -147,7 +147,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {object}
      */
-    protected compileQueryParameters(): Partial<QueryParams> {
+    protected compileQueryParameters(): QueryParams {
         const params: Record<string, any> = {};
 
         if (this.wheres.length) {

@@ -149,7 +149,7 @@ export default class CastsAttributes {
                 }
             default:
                 // either or both hasCast() and getCastType() has been overridden and hasCast()
-                // returns true while getCastType() returns value that lands in this default case
+                // returns true while getCastType() returns a value that lands in this default case
                 throw new LogicException(
                     'Impossible logic path reached. getCastType() returned unexpected value.'
                 );

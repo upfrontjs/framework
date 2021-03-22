@@ -1,10 +1,3 @@
----
-tags:
-- testing models
-- mocha
-- jest
----
-
 # Testing
 
 Upfront is fully tested to give as much confidence in the code as possible. To carry on this ethos in your application, upfront offers helpful tools to for testing with mock data and test outgoing requests.

@@ -10,7 +10,7 @@ export default interface AttributeCaster {
     /**
      * Transform the attribute from the underlying model value.
      *
-     * @param {any} value
+     * @param {any} value - the value to return
      * @param {object} attributes - receives a clone of the raw attributes
      *
      * @return {any}

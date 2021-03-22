@@ -593,9 +593,35 @@ user.getChanges('name'); // { name: 'Jane Doe' }
 user.getChanges('title'); // {}
 ```
 
+#### getDeletedAttributes
+
+The `getDeletedAttributes` method returns only the deleted attributes since the last [sync](#syncoriginal) with the original attributes. Optionally it takes a key in which case, only the key will be included in the return value if it has been deleted.
+
+```js
+import User from '@Models/User';
+
+const user = new User({ name: 'John Doe', title: 'Mr.' });
+user.getDeletedAttributes(); // {}
+user.deleteAttribute('name').getDeletedAttributes(); // { name: 'John Doe' }
+user.deleteAttribute('title').getDeletedAttributes('name'); // { name: 'John Doe' }
+```
+
+#### getNewAttributes
+
+The `getNewAttributes` method returns only the newly added attributes since the last [sync](#syncoriginal) with the original attributes. Optionally it takes a key in which case, only the key will be included in the return value if it has been recently added.
+
+```js
+import User from '@Models/User';
+
+const user = new User({ name: 'John Doe', title: 'Mr.' });
+user.getNewAttributes(); // {}
+user.setAttribute('attr', 1).getNewAttributes(); // { attr: 1 }
+user.setAttribute('attr2', 2).getNewAttributes('attr'); // { attr: 1 }
+```
+
 #### hasChanges
 
-The `hasChanges` method determines whether any changes have occurred since constructing the model. Optionally it can take a key argument which only inspect the attribute's state which matches the given key.
+The `hasChanges` method determines whether any changes have occurred since constructing the model. Optionally it can take a key argument which only inspect the attribute's state which matches the given key. It takes [new](#getnewattributes) and [deleted](#getdeletedattributes) attributes into consideration.
 ```js
 import User from '@Models/User';
 
@@ -605,6 +631,8 @@ user.name = 'Jane Doe';
 user.hasChanges(); // true
 user.hasChanges('name'); // true
 user.hasChanges('title'); // false
+user.deleteAttribute('title').hasChanges('title'); // true
+user.setAttribute('attr', 1).hasChanges('attr'); // true
 ```
 
 

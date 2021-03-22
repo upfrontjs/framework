@@ -6,6 +6,7 @@ import GlobalConfig from '../../Support/GlobalConfig';
 import type { Attributes } from './HasAttributes';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import { isConstructableUserClass, isObjectLiteral } from '../../Support/function';
+import type Model from '../Model';
 
 type BuiltInCastType = 'boolean' | 'collection' | 'datetime' | 'number' | 'string';
 export type CastType = AttributeCaster | BuiltInCastType;
@@ -110,7 +111,7 @@ export default class CastsAttributes {
     protected castAttribute(
         key: string,
         value: any,
-        attributes: Attributes,
+        attributes?: Attributes,
         method: keyof AttributeCaster = 'get'
     ): never | unknown {
         value = cloneDeep(value);
@@ -127,7 +128,12 @@ export default class CastsAttributes {
             case 'number':
                 return this.castToNumber(key, value);
             case 'object':
-                return this.castWithObject(key, value, attributes, method);
+                return this.castWithObject(
+                    key,
+                    value,
+                    attributes ?? (this as unknown as Model).getRawAttributes(),
+                    method
+                );
             case 'collection':
                 if (method === 'set') {
                     if (Collection.isCollection(value)) {
@@ -214,7 +220,7 @@ export default class CastsAttributes {
 
         if (isNaN(number)) {
             throw new LogicException(
-                '\'' + key + '\' is not castable to a number type in \'' + this.constructor.name + '\'.'
+                '\'' + key + '\' is not castable to a number type in \'' + (this as unknown as Model).getName() + '\'.'
             );
         }
 
@@ -232,20 +238,20 @@ export default class CastsAttributes {
      * @return {boolean}
      */
     private castToBoolean(key: string, value: any): boolean | never {
-        const string = String(value);
+        const string = String(value).toLowerCase();
         let boolean;
 
-        if (['1', 'true'].includes(string.toLowerCase())) {
+        if (['1', 'true'].includes(string)) {
             boolean = true;
         }
 
-        if (['0', 'false'].includes(string.toLowerCase())) {
+        if (['0', 'false'].includes(string)) {
             boolean = false;
         }
 
         if (typeof boolean !== 'boolean') {
             throw new LogicException(
-                '\'' + key + '\' is not castable to a boolean type in \'' + this.constructor.name + '\'.'
+                '\'' + key + '\' is not castable to a boolean type in \'' + (this as unknown as Model).getName() + '\'.'
             );
         }
 

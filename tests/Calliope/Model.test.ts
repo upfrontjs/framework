@@ -6,6 +6,7 @@ import fetchMock from 'jest-fetch-mock';
 import ModelCollection from '../../src/Calliope/ModelCollection';
 import LogicException from '../../src/Exceptions/LogicException';
 import { finish, snake } from '../../src/Support/string';
+import { advanceBy } from 'jest-date-mock';
 
 let user: User;
 
@@ -35,6 +36,12 @@ describe('Model', () => {
         it('should consider that it has soft deleted set if using soft deleted', () => {
             user.setAttribute(user.getDeletedAtColumn(), new Date().toISOString());
 
+            expect(user.exists).toBe(false);
+        });
+
+        it('should consider the _last_synced_at attribute', () => {
+            // @ts-expect-error
+            user.setLastSyncedAt(false);
             expect(user.exists).toBe(false);
         });
     });
@@ -195,6 +202,16 @@ describe('Model', () => {
             await user.refresh();
             expect(user.getChanges()).toStrictEqual({});
         });
+
+        it('should update the last synced at', async () => {
+            mockUserModelResponse(user);
+            const lastSyncedAt = user._lastSyncedAt;
+
+            advanceBy(100);
+            await user.refresh();
+
+            expect(user._lastSyncedAt).not.toBe(lastSyncedAt);
+        });
     });
 
     describe('all()', () => {
@@ -286,6 +303,17 @@ describe('Model', () => {
             expect(user.getChanges('name').name).toBe('new name');
             await user.save();
             expect(user.getChanges('name').name).toBeUndefined();
+        });
+
+        it('should update the last synced at', async () => {
+            mockUserModelResponse(user);
+            const lastSyncedAt = user._lastSyncedAt;
+            user.name = 'new name';
+
+            advanceBy(100);
+            await user.save();
+
+            expect(user._lastSyncedAt).not.toBe(lastSyncedAt);
         });
     });
 });

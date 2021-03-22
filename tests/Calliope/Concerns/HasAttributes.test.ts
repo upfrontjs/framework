@@ -313,11 +313,10 @@ describe('HasAttributes', () => {
         });
 
         it('should not remove methods from the model', () => {
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(hasAttributes.factory).not.toBeUndefined();
-            hasAttributes.deleteAttribute('factory');
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(hasAttributes.factory).not.toBeUndefined();
+            hasAttributes.myFunc = () => true;
+            expect(hasAttributes.myFunc).not.toBeUndefined();
+            hasAttributes.deleteAttribute('myFunc');
+            expect(hasAttributes.myFunc).not.toBeUndefined();
         });
 
         it('should not remove the original value', () => {
@@ -525,12 +524,62 @@ describe('HasAttributes', () => {
             expect(hasAttributes.setAttribute('test', 2).getChanges('test')).toStrictEqual({ test: 2 });
         });
 
-        it('should return empty objet if no changes detected for the given key', () => {
+        it('should return empty object if no changes detected for the given key', () => {
             expect(hasAttributes.setAttribute('test', 1).getChanges('test')).toStrictEqual({});
         });
 
         it('should return empty object if no changes detected', () => {
             expect(hasAttributes.getChanges()).toStrictEqual({});
+        });
+    });
+
+    describe('getDeletedAttributes()', () => {
+        it('should return the deleted attributes', () => {
+            const test = hasAttributes.setAttribute('test2', 2).syncOriginal().getAttribute('test');
+
+            expect(hasAttributes.deleteAttribute('test').getDeletedAttributes()).toStrictEqual({ test });
+        });
+
+        it('should return an object containing only the given key', () => {
+            const test = hasAttributes.setAttribute('test2', 2).syncOriginal().getAttribute('test');
+
+            expect(hasAttributes.deleteAttribute('test').getDeletedAttributes('test')).toStrictEqual({ test });
+        });
+
+        it('should return an empty object if no attributes have been deleted', () => {
+            expect(hasAttributes.getDeletedAttributes()).toStrictEqual({});
+        });
+
+        it('should return an empty object if the attribute with the given key has not been deleted', () => {
+            expect(hasAttributes.getDeletedAttributes('test')).toStrictEqual({});
+        });
+
+        it('should return an empty object if the given key has not been set in the original', () => {
+            expect(hasAttributes.getDeletedAttributes('test1')).toStrictEqual({});
+        });
+    });
+
+    describe('getNewAttributes()', () => {
+        it('should return the new attributes if any', () => {
+            expect(hasAttributes.setAttribute('test1', 1).getNewAttributes()).toStrictEqual({ test1: 1 });
+        });
+
+        it('should return an object containing only the given key', () => {
+            expect(
+                hasAttributes.setAttribute('test1', 1).setAttribute('test2', 2).getNewAttributes('test1')
+            ).toStrictEqual({ test1: 1 });
+        });
+
+        it('should return an empty object if no new attributes have been added', () => {
+            expect(hasAttributes.getNewAttributes()).toStrictEqual({});
+        });
+
+        it('should return an empty object if the attribute with the given key is not new', () => {
+            expect(hasAttributes.getNewAttributes('test')).toStrictEqual({});
+        });
+
+        it('should return an empty object if the given key has not been set in the attributes', () => {
+            expect(hasAttributes.getNewAttributes('test1')).toStrictEqual({});
         });
     });
 
@@ -546,6 +595,16 @@ describe('HasAttributes', () => {
 
             expect(hasAttributes.setAttribute('test', 2).hasChanges('test')).toBe(true);
             expect(hasAttributes.hasChanges('value')).toBe(false);
+        });
+
+        it('should consider new attributes', () => {
+            expect(hasAttributes.setAttribute('test1', 1).hasChanges()).toBe(true);
+            expect(hasAttributes.setAttribute('test1', 1).hasChanges('test1')).toBe(true);
+        });
+
+        it('should consider deleted attributes', () => {
+            expect(hasAttributes.deleteAttribute('test').hasChanges()).toBe(true);
+            expect(hasAttributes.deleteAttribute('test').hasChanges('test')).toBe(true);
         });
     });
 

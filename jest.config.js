@@ -32,6 +32,7 @@ module.exports = {
         'Function',
         'Array',
         'String',
-        'Math'
+        'Math',
+        'Date'
     ]
 };

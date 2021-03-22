@@ -1,13 +1,3 @@
----
-tags:
-- date time
-- random
-- api
-- api response handler
-- base endpoint
-- headers
----
-
 # Global config
 
 GlobalConfig is an in-memory store for all your globally needed configuration values.

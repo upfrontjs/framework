@@ -81,7 +81,8 @@ export default class CallsApi extends BuildsQuery {
     ): Promise<any> {
         if (!this.getEndpoint().length) {
             throw new LogicException(
-                'Endpoint is not defined when calling \'' + method + '\' method on \'' + this.constructor.name + '\'.'
+                'Endpoint is not defined when calling \''
+                + method + '\' method on \'' + (this as unknown as Model).getName() + '\'.'
             );
         }
 
@@ -154,7 +155,7 @@ export default class CallsApi extends BuildsQuery {
     public async post(data: FormData | Record<string, unknown>): Promise<Model> {
         return this.call('post', Object.assign({}, data, this.compileQueryParameters()))
             .then(responseData => {
-                this.resetEndpoint().resetQueryParameters().syncOriginal();
+                this.resetEndpoint().resetQueryParameters();
 
                 return this.getResponseModel(this as unknown as Model, responseData);
             });
@@ -170,7 +171,7 @@ export default class CallsApi extends BuildsQuery {
     public async put(data: FormData | Record<string, unknown>): Promise<Model> {
         return this.call('put', Object.assign({}, data, this.compileQueryParameters()))
             .then(responseData => {
-                this.resetEndpoint().resetQueryParameters().syncOriginal();
+                this.resetEndpoint().resetQueryParameters();
 
                 return this.getResponseModel(this as unknown as Model, responseData);
             });
@@ -186,7 +187,7 @@ export default class CallsApi extends BuildsQuery {
     public async patch(data: FormData | Record<string, unknown>): Promise<Model> {
         return this.call('patch', Object.assign({}, data, this.compileQueryParameters()))
             .then(responseData => {
-                this.resetEndpoint().resetQueryParameters().syncOriginal();
+                this.resetEndpoint().resetQueryParameters();
 
                 return this.getResponseModel(this as unknown as Model, responseData);
             });
@@ -266,23 +267,44 @@ export default class CallsApi extends BuildsQuery {
             data.forEach(attributes => {
                 if (isObjectLiteral(attributes)) {
                     const model = new (this.constructor as typeof Model)();
-                    Object.defineProperty(model, '_' + this.setStringCase('last_synced_at'), {
-                        get: () => new Date
-                    });
-                    collection.push(model.forceFill(attributes).syncOriginal());
+                    collection.push(model.forceFill(attributes).syncOriginal().setLastSyncedAt());
                 }
             });
 
             result = collection;
         } else {
             const model = new (this.constructor as typeof Model)();
-            Object.defineProperty(model, '_' + this.setStringCase('last_synced_at'), {
-                get: () => new Date
-            });
-            result = model.forceFill(data).syncOriginal();
+            result = model.forceFill(data).syncOriginal().setLastSyncedAt();
         }
 
         return result;
+    }
+
+    /**
+     * Set the last synced at attribute.
+     *
+     * @param {any} to
+     * @param {Model} model
+     *
+     * @protected
+     *
+     * @return {this}
+     */
+    protected setLastSyncedAt(to: any = new Date, model?: Model): this {
+        model = model ?? (this as unknown as Model);
+        const key = '_' + this.setStringCase('last_synced_at');
+
+        if (key in model) {
+            delete model[key];
+        }
+
+        Object.defineProperty(model, key, {
+            get: () => to,
+            configurable: true,
+            enumerable: true
+        });
+
+        return this;
     }
 
     /**

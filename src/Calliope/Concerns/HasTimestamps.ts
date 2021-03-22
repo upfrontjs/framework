@@ -75,7 +75,7 @@ export default class HasTimestamps extends HasRelations {
             .patch({ [updatedAt]: new Date().toISOString() })
             .then(model => {
                 if (!(updatedAt in model)) {
-                    throw new InvalidArgumentException('\'' + updatedAt + '\' is not found in the response.');
+                    throw new InvalidArgumentException('\'' + updatedAt + '\' is not found in the response model.');
                 }
 
                 return this.setAttribute(updatedAt, model.getAttribute(updatedAt)).syncOriginal(updatedAt);
@@ -104,10 +104,10 @@ export default class HasTimestamps extends HasRelations {
             .get()
             .then(model => {
                 if (!(createdAt in model)) {
-                    throw new InvalidArgumentException('\'' + createdAt + '\' is not found in the response.');
+                    throw new InvalidArgumentException('\'' + createdAt + '\' is not found in the response model.');
                 }
                 if (!(updatedAt in model)) {
-                    throw new InvalidArgumentException('\'' + updatedAt + '\' is not found in the response.');
+                    throw new InvalidArgumentException('\'' + updatedAt + '\' is not found in the response model.');
                 }
 
                 return this.setAttribute(createdAt, (model as Model).getAttribute(createdAt))

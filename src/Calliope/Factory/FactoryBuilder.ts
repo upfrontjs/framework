@@ -142,7 +142,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {this}
      */
-    public with(relation: FactoryBuilder<Model> | (new () => Model), relationName?: string): never | this {
+    public with(relation: FactoryBuilder<Model> | (new () => Model), relationName?: string): this {
         if (relation instanceof FactoryBuilder) {
             relationName = relationName ?? relation.model.getName().toLowerCase();
         } else if (isConstructableUserClass<typeof Model>(relation)) {
@@ -238,6 +238,9 @@ export default class FactoryBuilder<T extends Model> {
             }
         }
 
+        // @ts-expect-error
+        model.setLastSyncedAt();
+
         return model.syncOriginal();
     }
 
@@ -277,7 +280,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {object|object[]}
      */
-    protected rawAttributes(attributes: Attributes = {}): Attributes | Collection<Attributes> | never {
+    protected rawAttributes(attributes: Attributes = {}): Attributes | Collection<Attributes> {
         const factory = this.getFactory();
 
         const compiledAttributeArray: Attributes[] = [];
@@ -363,7 +366,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {Factory}
      */
-    protected getFactory(): Factory<T> | never {
+    protected getFactory(): Factory<T> {
         if (this.factory) {
             return this.factory;
         }

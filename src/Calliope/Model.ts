@@ -19,12 +19,13 @@ export default class Model extends SoftDeletes implements HasFactory {
     }
 
     /**
-     * Indicates if the model exists.
+     * Indicates whether the model exists on the backend or not.
      *
      * @type {boolean}
      */
     public get exists(): boolean {
         let boolean = isUuid(String(this.getKey())) || !isNaN(Number(this.getKey()));
+        const lastSyncedAt = '_' + this.setStringCase('last_synced_at');
 
         if (boolean && this.usesTimestamps()) {
             boolean = !!this.getAttribute(this.getCreatedAtColumn(), false);
@@ -34,7 +35,7 @@ export default class Model extends SoftDeletes implements HasFactory {
             boolean = !this.getAttribute(this.getDeletedAtColumn(), false);
         }
 
-        return boolean;
+        return boolean && lastSyncedAt in this && !!this[lastSyncedAt];
     }
 
     /**
@@ -72,7 +73,7 @@ export default class Model extends SoftDeletes implements HasFactory {
             excluded = [...new Set([...excluded, ...except])];
         }
 
-        return new (this.constructor as typeof Model)(this.except(excluded));
+        return new (this.constructor as typeof Model)(this.except(excluded)); // todo this using casted :eyes:
     }
 
     /**
@@ -147,7 +148,9 @@ export default class Model extends SoftDeletes implements HasFactory {
                 ? this.setEndpoint(finish(this.getEndpoint(), '/') + String(this.getKey())).patch(dataToSave)
                 : this.post(dataToSave)
         );
-        this.forceFill(Object.assign({}, model.getRawOriginal(), model.getRelations()));
+        this.forceFill(Object.assign({}, model.getRawOriginal(), model.getRelations()))
+            .syncOriginal()
+            .setLastSyncedAt();
 
         return Promise.resolve(this);
     }
@@ -211,22 +214,22 @@ export default class Model extends SoftDeletes implements HasFactory {
         this.throwIfDoesntExists('refresh');
         const model = await this.reset().select(this.getAttributeKeys()).find(this.getKey()!);
 
-        return Promise.resolve(this.forceFill(model.getRawAttributes()).syncOriginal());
+        return Promise.resolve(this.forceFill(model.getRawAttributes()).syncOriginal().setLastSyncedAt());
     }
 
     /**
      * Throw an error if the model does not exists.
      *
-     * @param {string} method
+     * @param {string} methodName
      *
      * @protected
      *
      * @internal
      */
-    protected throwIfDoesntExists(method: string): never | void {
+    protected throwIfDoesntExists(methodName: string): never | void {
         if (!this.exists) {
             throw new LogicException(
-                'Attempted to call ' + method + ' on \'' + this.getName()
+                'Attempted to call ' + methodName + ' on \'' + this.getName()
                 + '\' when it has not been persisted yet or it has been soft deleted.'
             );
         }

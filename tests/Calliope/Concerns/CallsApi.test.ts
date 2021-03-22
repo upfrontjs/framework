@@ -259,6 +259,43 @@ describe('CallsApi', () => {
         });
     });
 
+    describe('setLastSyncedAt()', () => {
+        it('should set the attribute with the correct casing', () => {
+            // @ts-expect-error
+            caller.setLastSyncedAt();
+            expect(caller._last_synced_at).toBeUndefined();
+            expect(caller._lastSyncedAt).not.toBeUndefined();
+            Object.defineProperty(caller, 'attributeCasing', { get: () => 'snake' });
+
+            // @ts-expect-error
+            caller.setLastSyncedAt();
+            expect(caller._last_synced_at).not.toBeUndefined();
+            // if you update the string casing on the fly, that's on you
+            // and you might end up with _lastSyncedAt and _last_synced_at
+        });
+
+        it('should return itself ready for chaining', () => {
+            // @ts-expect-error
+            expect(caller.setLastSyncedAt()).toBeInstanceOf(User);
+        });
+
+        it('should use itself with new date as defaults or set to the given values', () => {
+            // freeze time
+            advanceTo(new Date);
+
+            // @ts-expect-error
+            caller.setLastSyncedAt();
+            expect(caller._lastSyncedAt).toStrictEqual(new Date);
+
+            const model = User.factory().create() as User;
+
+            // @ts-expect-error
+            caller.setLastSyncedAt('my value', model);
+
+            expect(model._lastSyncedAt).toBe('my value');
+        });
+    });
+
     describe('setEndpoint()', () => {
         it('should set the endpoint for the model', () => {
             caller.setEndpoint('endpoint');

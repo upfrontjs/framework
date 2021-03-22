@@ -70,7 +70,7 @@ describe('HasTimestamps', () => {
             const failingFunc = jest.fn(async () => hasTimestamps.touch());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
-                '\'' + hasTimestamps.getUpdatedAtColumn() + '\' is not found in the response.'
+                '\'' + hasTimestamps.getUpdatedAtColumn() + '\' is not found in the response model.'
             ));
         });
 
@@ -143,7 +143,7 @@ describe('HasTimestamps', () => {
             const failingFunc = jest.fn(async () => hasTimestamps.freshTimestamps());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
-                '\'' + hasTimestamps.getCreatedAtColumn() + '\' is not found in the response.'
+                '\'' + hasTimestamps.getCreatedAtColumn() + '\' is not found in the response model.'
             ));
         });
 
@@ -155,7 +155,7 @@ describe('HasTimestamps', () => {
             const failingFunc = jest.fn(async () => hasTimestamps.freshTimestamps());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
-                '\'' + hasTimestamps.getUpdatedAtColumn() + '\' is not found in the response.'
+                '\'' + hasTimestamps.getUpdatedAtColumn() + '\' is not found in the response model.'
             ));
         });
 

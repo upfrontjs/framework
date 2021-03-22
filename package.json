@@ -17,7 +17,7 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/nandi95/upfront-framework"
+        "url": "git+https://github.com/upfrontjs/framework.git"
     },
     "directories": {
         "lib": "./src",
@@ -37,11 +37,20 @@
         "factory",
         "collection",
         "helpers",
+        "string",
+        "array",
         "typescript",
         "tested",
         "relations",
         "attributes",
-        "esm"
+        "query",
+        "casting",
+        "guarding",
+        "timestamps",
+        "soft deletes",
+        "esm",
+        "pagination",
+        "config"
     ],
     "scripts": {
         "test": "jest",

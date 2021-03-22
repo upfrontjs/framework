@@ -100,17 +100,17 @@ export default class HasRelations extends CallsApi {
     public getRelation(name: string): Model | ModelCollection<Model> {
         name = this.removeRelationPrefix(name);
 
-        if (this.relationDefined(name)) {
-            if (!this.relations[name]) {
-                throw new LogicException(
-                    'Trying to access the \'' + name + '\' relationship before it is loaded.'
-                );
-            }
-
-            return cloneDeep(this.relations[name]!);
+        if (!this.relationDefined(name)) {
+            throw new InvalidArgumentException('\'' + name + '\' relationship is not defined.');
         }
 
-        throw new InvalidArgumentException('\'' + name + '\' relationship is not defined.');
+        if (!this.relations[name]) {
+            throw new LogicException(
+                'Trying to access the \'' + name + '\' relationship before it is loaded.'
+            );
+        }
+
+        return cloneDeep(this.relations[name]!);
     }
 
     /**
@@ -180,7 +180,7 @@ export default class HasRelations extends CallsApi {
         if (value instanceof HasRelations || ModelCollection.isModelCollection(value)) {
             if (isSingularRelationType && ModelCollection.isModelCollection(value)) {
                 throw new InvalidArgumentException(
-                    '\'' + name + '\' is a singular relation, received type: \'' + ModelCollection.name + '\'.'
+                    '\'' + name + '\' is a singular relation, received type: \'' + value.constructor.name + '\'.'
                 );
             }
 

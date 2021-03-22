@@ -33,7 +33,7 @@ Here are a few things you can do that will increase the likelihood of your pull 
 - Write a [good commit message](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
 - Update the documentation if applicable.
 
-Work in Progress pull requests are also welcome to get feedback early on, or if there is something blocked you.
+Work in Progress pull requests are also welcome to get feedback early on, or if there is something blocking you.
 
 ## Commit Message Formats
 
@@ -76,7 +76,7 @@ This documentation is kept alongside the source code to keep it in sync with the
 
 To update the docs in the context of this documentation site I advise you pull down the [upfront docs repo](https://github.com/upfrontjs/docs) and create a symbolic link between framework the the docs e.g.:
 ```shell
-ln -sf /absolute/path/to/upfrontjs/docs/* /absolute/path/to/upfrontjs/docs/
+ln -sf /absolute/path/to/upfrontjs/framework/docs/* /absolute/path/to/upfrontjs/docs/
 ```
 
 ## Resources

@@ -126,12 +126,12 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     public getAttribute(key: string, defaultVal?: any): any {
         // If attribute exists
         if (key in this.attributes) {
-            // If it has an accessor call it.
+            // If it has an accessor, call it.
             if (this.hasGetAccessor(key)) {
                 return (this[`get${pascal(key)}Attribute`] as CallableFunction)(cloneDeep(this.attributes[key]));
             }
 
-            return this.castAttribute(key, this.attributes[key], this.getRawAttributes());
+            return this.castAttribute(key, this.attributes[key]);
         }
 
         if ((this as unknown as HasRelations).relationLoaded(key)) {
@@ -269,7 +269,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
         // @ts-expect-error
         if ((this as unknown as HasRelations).relationDefined(key)) {
             (this as unknown as HasRelations).removeRelation(key);
-        } else if (Object.getOwnPropertyDescriptor(this, key)) {
+        } else if (Object.getOwnPropertyDescriptor(this, key) && !(this[key] instanceof Function)) {
             delete this[key];
         }
 
@@ -420,17 +420,18 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     /**
      * Get the attributes that were changed.
      *
-     * @param {string|undefined} key
+     * @param {string=} key
      *
-     * @return {object|null}
+     * @return {object}
      */
     public getChanges(key?: string): Attributes {
         if (key) {
             if (isEqual(this.getRawOriginal(key), this.attributes[key])) {
                 return {};
             }
+
             return {
-                [key]: this.castAttribute(key, this.attributes[key], this.getRawAttributes())
+                [key]: this.castAttribute(key, this.attributes[key])
             };
         }
 
@@ -447,14 +448,85 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     }
 
     /**
-     * Determine whether the given or any attributes has changed.
+     * Get the deleted attributes if any.
+     *
+     * @param {string=} key
+     *
+     * @return {object}
+     */
+    public getDeletedAttributes(key?: string): Attributes {
+        if (key) {
+            if (key in this.original) {
+                if (key in this.attributes) {
+                    return {};
+                } else {
+                    return {
+                        [key]: this.castAttribute(key, this.original[key])
+                    };
+                }
+            }
+
+            return {};
+        }
+
+        const rawAttributes = this.getRawAttributes();
+        const deleted: Attributes = {};
+
+        Object.keys(this.getRawOriginal()).forEach(name => {
+            if (!(name in rawAttributes)) {
+                deleted[name] = this.castAttribute(name, this.original[name]);
+            }
+        });
+
+        return deleted;
+    }
+
+    /**
+     * Get the new attributes if any.
+     *
+     * @param {string=} key
+     *
+     * @return {object}
+     */
+    public getNewAttributes(key?: string): Attributes {
+        if (key) {
+            if (key in this.attributes) {
+                if (key in this.original) {
+                    return {};
+                } else {
+                    return {
+                        [key]: this.castAttribute(key, this.attributes[key])
+                    };
+                }
+            }
+
+            return {};
+        }
+
+        const rawOriginalAttributes = this.getRawOriginal();
+        const added: Attributes = {};
+
+        Object.keys(this.getRawAttributes()).forEach(name => {
+            if (!(name in rawOriginalAttributes)) {
+                added[name] = this.castAttribute(name, this.attributes[name]);
+            }
+        });
+
+        return added;
+    }
+
+    /**
+     * Determine whether the given attribute has changed
+     * or attributes has been added or deleted.
      *
      * @param {key|undefined} key
      *
      * @return {boolean}
      */
     public hasChanges(key?: string): boolean {
-        return !!Object.keys(Object(this.getChanges(key))).length;
+        return !!Object.keys(this.getChanges(key)).length
+            || !!Object.keys(this.getDeletedAttributes(key)).length
+            || !!Object.keys(this.getNewAttributes(key)).length;
     }
 
     /**

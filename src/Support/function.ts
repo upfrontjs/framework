@@ -17,13 +17,13 @@ export function collect<T>(items?: T | T[]): Collection<T> {
 /**
  * Construct a paginator instance.
  *
- * @param {...any} items
+ * @param {any[]=} items
  * @param {number} itemsPerPage
  * @param {boolean} wrapsAround
  *
  * @return {Paginator}
  */
-export function paginate<T>(items: any[], itemsPerPage = 10, wrapsAround = false): Paginator<T> {
+export function paginate<T>(items?: any[], itemsPerPage = 10, wrapsAround = false): Paginator<T> {
     return new Paginator(items, itemsPerPage, wrapsAround);
 }
 
@@ -40,7 +40,7 @@ export function factory<T extends Model>(modelConstructor: new () => T, amount =
 }
 
 /**
- * Determine whether the given value is an object not including the type array.
+ * Determine whether the given value is a non-null object not including the array type or not.
  *
  * @param {any} value
  *

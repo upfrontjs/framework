@@ -241,12 +241,18 @@ describe('FactoryBuilder', () => {
 
         it('should not set the dates if they\'re disabled', () => {
             const teamFactoryBuilder = new FactoryBuilder(Team);
-
             const team = teamFactoryBuilder.create() as Team;
 
             expect(team.createdAt).toBeUndefined();
             expect(team.updatedAt).toBeUndefined();
             expect(team.deletedAt).toBeUndefined();
+        });
+
+        it('should set the last synced at value', () => {
+            const teamFactoryBuilder = new FactoryBuilder(Team);
+            const team = teamFactoryBuilder.create() as Team;
+
+            expect(team._lastSyncedAt).not.toBeUndefined();
         });
     });
 

@@ -1,6 +1,6 @@
 import type Collection from './Support/Collection';
 import type Paginator from './Support/Paginator';
-import { collect, paginate } from './Support/function';
+import { collect, paginate } from './Support/initialiser';
 import { wrap } from './Support/array';
 
 declare global {

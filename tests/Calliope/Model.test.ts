@@ -7,6 +7,7 @@ import ModelCollection from '../../src/Calliope/ModelCollection';
 import LogicException from '../../src/Exceptions/LogicException';
 import { finish, snake } from '../../src/Support/string';
 import { advanceBy } from 'jest-date-mock';
+import Team from '../mock/Models/Team';
 
 let user: User;
 
@@ -101,6 +102,27 @@ describe('Model', () => {
 
         it('should accept attribute keys that should be excluded at replication', () => {
             expect(user.replicate(['name']).name).toBeUndefined();
+            expect(user.replicate('name').name).toBeUndefined();
+        });
+
+        it('should use raw values', () => {
+            const originalName = user.name;
+            user.getNameAttribute = () => 'some random value';
+            expect(user.name).toBe('some random value');
+
+            expect(user.replicate().name).toBe(originalName);
+        });
+
+        it('should clone relations', () => {
+            const team = Team.factory().create() as Team;
+            user.setAttribute('teamId', team.getKey());
+            user.addRelation('team', team);
+
+            const replica = user.replicate();
+            expect((replica.getRelation('team') as Team).getKey()).toBe(team.getKey());
+
+            const replica2 = user.replicate(['team']);
+            expect(replica2.relationLoaded('team')).toBe(false);
         });
     });
 

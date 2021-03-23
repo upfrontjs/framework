@@ -34,18 +34,18 @@ describe('array helpers', () => {
 
             expect(Array.wrap([1, 2])).toStrictEqual([1, 2]);
             expect(Array.wrap(1)).toStrictEqual([1]);
-            expect(Array.wrap([])).toStrictEqual([]);
+            expect(Array.wrap()).toStrictEqual([]);
             expect(Array.wrap([[]])).toStrictEqual([[]]);
         });
 
-        it('should returns empty collection on undefined and null', () => {
-            expect(arr.wrap(null)).toStrictEqual([]);
-            expect(arr.wrap(undefined)).toStrictEqual([]);
-            expect(arr.wrap(false)).toStrictEqual([false]);
+        it('should wrap falsy values', () => {
+            [false, '', 0, null, undefined].forEach(val => {
+                expect(arr.wrap(val)).toStrictEqual([val]);
+            });
+        });
 
-            expect(Array.wrap(null)).toStrictEqual([]);
-            expect(Array.wrap(undefined)).toStrictEqual([]);
-            expect(Array.wrap(false)).toStrictEqual([false]);
+        it('should return an empty collection if no argument given', () => {
+            expect(arr.wrap()).toStrictEqual([]);
         });
     });
 });

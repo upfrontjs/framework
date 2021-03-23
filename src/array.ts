@@ -43,7 +43,7 @@ declare global {
          *
          * @return {array};
          */
-        wrap: (value: any) => any[];
+        wrap: (value?: any) => any[];
 
         /**
          * Construct a paginator instance.
@@ -90,6 +90,8 @@ if (!('paginate' in Array)) {
 
 if (!('wrap' in Array)) {
     Object.defineProperty(Array, 'wrap', {
-        value: (value: any) => wrap(value)
+        value: function (value?: any) {
+            return arguments.length ? wrap(value) : wrap();
+        }
     });
 }

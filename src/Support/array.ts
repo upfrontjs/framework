@@ -6,12 +6,12 @@
  * @return {array};
  */
 export function wrap<T>(value?: T | T[]): T[] {
-    if (!value && typeof value !== 'boolean') {
-        value = [];
+    if (!arguments.length) {
+        return [];
     }
 
     if (!Array.isArray(value)) {
-        value = [value];
+        value = [value] as T[];
     }
 
     return value;

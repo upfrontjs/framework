@@ -22,6 +22,17 @@ describe('BuildsQuery', () => {
         builder = new TestClass();
     });
 
+    describe('.withRelations', () => {
+        it('should be merged with the relations from the with method without duplicates', () => {
+            // @ts-expect-error
+            builder.withRelations = ['relation'];
+
+            builder.with(['relation', 'relation2']);
+
+            expect(builder.compiledParams().with).toStrictEqual(['relation', 'relation2']);
+        });
+    });
+
     describe('newQuery()', () => {
         it('should returns an instantiated builder', () => {
             expect(BuildsQuery.newQuery()).toBeInstanceOf(BuildsQuery);
@@ -562,6 +573,12 @@ describe('BuildsQuery', () => {
 
             // @ts-expect-error
             expect(builder.compileQueryParameters().limit).toBe(10);
+        });
+
+        it('should unset the value if 0 used as argument', () => {
+            builder.limit(10).limit(0);
+
+            expect(builder.compiledParams().limit).toBeUndefined();
         });
     });
 

@@ -12,7 +12,6 @@ const morningWorkers = await User
     .get();
 ```
 
-
 ## Methods
 
 The below methods are all available both on the instance and statically on the models. Exceptions are the methods starting with `or`. They're only available on the instance.
@@ -368,4 +367,22 @@ The `newQuery` is a static method that returns the builder. You're not expected 
 import User from '@Models/User';
 
 User.newQuery(); // The query builder
+```
+
+## Properties
+
+#### withRelations
+
+The `withRelations` is a property that specifies which relations should be set to be included in every request. It merges the unique values set by the [with](#with) method and removes the values specified by the [without](#without) method.
+
+```js
+// User.js
+import { Model } from '@upfrontjs/framework';
+
+export default class User extends Model {
+    withRelations = [
+        'relation1',
+        'relation2'
+    ];
+}
 ```

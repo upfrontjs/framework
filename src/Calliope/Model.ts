@@ -59,9 +59,9 @@ export default class Model extends SoftDeletes implements HasFactory {
     /**
      * Clone the model into a non-exiting instance.
      *
-     * @param {string[]} except
+     * @param {string[]|string} except
      */
-    public replicate(except?: string[]): Model {
+    public replicate(except?: string[] | string): Model {
         let excluded = [
             this.getKeyName(),
             this.getCreatedAtColumn(),
@@ -70,10 +70,15 @@ export default class Model extends SoftDeletes implements HasFactory {
         ];
 
         if (except) {
-            excluded = [...new Set([...excluded, ...except])];
+            excluded = [...new Set([...excluded, ...Array.isArray(except) ? except : [except]])];
         }
 
-        return new (this.constructor as typeof Model)(this.except(excluded)); // todo this using casted :eyes:
+        const attributes = { ...this.getRawAttributes(), ...this.getRelations() };
+        Object.keys(attributes)
+            .filter(key => excluded.includes(key))
+            .forEach(key => delete attributes[key]);
+
+        return new (this.constructor as typeof Model)(attributes);
     }
 
     /**

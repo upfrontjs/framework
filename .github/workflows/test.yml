@@ -1,0 +1,26 @@
+name: Test
+
+on:
+  pull_request:
+    types: [ready_for_review, opened, synchronize, reopened]
+    paths:
+      - '**/tsconfig.json'
+      - 'tests/**/*.ts'
+      - 'src/**/*.ts'
+      - 'jest.config.js'
+    branches:
+      - main
+      - 'releases/*'
+
+jobs:
+  test:
+    if: github.event.pull_request.draft == false
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 15
+      - run: npm ci
+      - run: npm run test

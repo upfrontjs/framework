@@ -37,5 +37,8 @@ If applicable, add screenshots to help explain your problem.
  - Browser [e.g. stock browser, safari]
  - Version [e.g. 22]
 
+**Workaround**
+Can this issue be circumvented in the code's current state? If so, how?
+
 **Additional context**
 Add any other context about the problem here.

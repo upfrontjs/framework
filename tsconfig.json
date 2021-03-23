@@ -1,0 +1,39 @@
+{
+    "compilerOptions": {
+        "declaration": true,
+        "declarationDir": "types",
+        "declarationMap": true,
+        "module": "ESNext",
+        "rootDir": "src",
+        "sourceMap": true,
+        "downlevelIteration": true,
+        "isolatedModules": true,
+        "esModuleInterop": true,
+        "lib": [
+            "ESNext",
+            "DOM"
+        ],
+        "target": "ES6",
+        "noEmitOnError": true,
+        "moduleResolution": "node",
+        "removeComments": false,
+        "pretty": true,
+        "noImplicitReturns": true,
+        "allowSyntheticDefaultImports": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "forceConsistentCasingInFileNames": true,
+        "noUncheckedIndexedAccess": true,
+        "strict": true,
+        "noFallthroughCasesInSwitch": true,
+        "allowUnreachableCode": false
+    },
+    "include": [
+        "src/*.ts"
+    ],
+    "exclude": [
+        "**/node_modules/",
+        "**/.*"
+    ],
+    "$schema": "https://json.schemastore.org/tsconfig"
+}

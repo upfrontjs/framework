@@ -1,0 +1,30 @@
+# compiled output
+api-docs
+index.*.js*
+array.*.js*
+string.*.js*
+types
+.tgz
+
+# testing
+tests/cache/
+/tests/coverage
+
+# IDEs and editors
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# logs
+*.log
+tsconfig.tsbuildinfo
+
+# dependencies
+node_modules
+
+# system Files
+.DS_Store

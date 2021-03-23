@@ -6,7 +6,7 @@ import bundleSize from 'rollup-plugin-bundle-size';
 const banner = `
 /*! ================================
 ${pkg.name} v${pkg.version}
-(c) ${new Date().getFullYear()} ${pkg.author}
+(c) 2020-present ${pkg.author}
 Released under ${pkg.license} License
 ================================== */
 `;

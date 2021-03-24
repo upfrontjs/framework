@@ -15,7 +15,7 @@ jobs:
           check-latest: true
           registry-url: https://registry.npmjs.org/
       - run: npm ci
-      - run: npm publish --access-public
+      - run: npm publish --access public --dry-run
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - uses: actions/setup-node@v2

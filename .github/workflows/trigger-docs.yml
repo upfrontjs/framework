@@ -4,9 +4,9 @@ on:
   push:
     paths:
       - 'docs/**/*'
-      branches:
-        - main
-        - 'releases/*'
+    branches:
+      - main
+      - 'releases/*'
 
 jobs:
   dispatch:

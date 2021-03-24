@@ -19,6 +19,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 15
+          check-latest: true
       - run: npm ci
       - name: ESLint
         run: node node_modules/.bin/eslint . --ext .ts

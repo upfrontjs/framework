@@ -19,4 +19,3 @@ jobs:
           repository: upfrontjs/docs
           event-type: build-docs
           client-payload: '{"ref": "${{ github.ref }}"}'
-

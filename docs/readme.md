@@ -14,4 +14,3 @@ features:
   details: Written with the developer in mind. While keeping it simple, you're not locked into any patterns.
   footer: MIT Licensed | Copyright © 2020-present Nandor Kraszlan
 ---
-

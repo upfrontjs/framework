@@ -12,4 +12,3 @@ While using this package increases ease of access and cuts down development time
 ---
 
 As always you're encouraged to explore the source yourself or look at the api reference to gain insight on how the package works, and the tests to see how it's used.
-

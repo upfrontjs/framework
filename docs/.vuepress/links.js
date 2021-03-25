@@ -60,5 +60,5 @@ const sidebar = [
 
 module.exports = {
     sidebar,
-    links: []
+    nav: []
 }

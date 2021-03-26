@@ -158,6 +158,20 @@ describe('FactoryBuilder', () => {
             expect(factoryBuilder.times(1).create()).toBeInstanceOf(User);
             expect(factoryBuilder.create()).toBeInstanceOf(User);
         });
+
+        it('should throw an error with argument value less than 1', () => {
+            expect(() => factoryBuilder.times(0)).toThrow(
+                new InvalidArgumentException('\'amount\' expected to be higher than 0.')
+            );
+            expect(() => factoryBuilder.times(-1)).toThrow(
+                new InvalidArgumentException('\'amount\' expected to be higher than 0.')
+            );
+        });
+
+        it('should round the argument to integers', () => {
+            expect(factoryBuilder.times(1.4).create()).toBeInstanceOf(User);
+            expect(factoryBuilder.times(1.5).create()).toBeInstanceOf(ModelCollection);
+        });
     });
 
     describe('make()', () => {

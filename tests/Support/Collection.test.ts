@@ -1,4 +1,5 @@
 import Collection from '../../src/Support/Collection';
+import { advanceTo } from 'jest-date-mock';
 
 let collection: Collection<any>;
 
@@ -693,8 +694,10 @@ describe('Collection', () => {
 
         it('should dumps to the console', () => {
             collection.dump();
+            const now = new Date;
+            advanceTo(now);
 
-            expect(console.groupCollapsed).toHaveBeenCalledWith(new Date().toLocaleTimeString() + ':');
+            expect(console.groupCollapsed).toHaveBeenCalledWith(now.toLocaleTimeString() + ':');
             elements.forEach((elem, index) => {
                 expect(console.log).toHaveBeenNthCalledWith(index + 1, `${index}:`, elem);
             });
@@ -703,8 +706,10 @@ describe('Collection', () => {
 
         it('should dump with a message', () => {
             collection.dump('test');
+            const now = new Date;
+            advanceTo(now);
 
-            expect(console.groupCollapsed).toHaveBeenCalledWith(new Date().toLocaleTimeString() + ' (test):');
+            expect(console.groupCollapsed).toHaveBeenCalledWith(now.toLocaleTimeString() + ' (test):');
         });
 
         it('should return a collection ready for chaining', () => {

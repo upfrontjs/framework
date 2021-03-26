@@ -371,7 +371,7 @@ describe('FactoryBuilder', () => {
             });
         });
 
-        it('should return an empty object if no attributes has been defined or 0 models requested', () => {
+        it('should return an empty object if no attributes has been defined', () => {
             class TestFactory extends Factory<any> {}
 
             // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
@@ -380,7 +380,6 @@ describe('FactoryBuilder', () => {
             Team.prototype.factory = () => new TestFactory;
 
             expect(new FactoryBuilder(Team).raw()).toStrictEqual({});
-            expect(new FactoryBuilder(Team).times(0).raw()).toStrictEqual({});
 
             Team.prototype.factory = originalValue;
         });

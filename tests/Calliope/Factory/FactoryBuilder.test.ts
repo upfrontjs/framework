@@ -158,6 +158,20 @@ describe('FactoryBuilder', () => {
             expect(factoryBuilder.times(1).create()).toBeInstanceOf(User);
             expect(factoryBuilder.create()).toBeInstanceOf(User);
         });
+
+        it('should throw an error with argument value less than 1', () => {
+            expect(() => factoryBuilder.times(0)).toThrow(
+                new InvalidArgumentException('\'amount\' expected to be higher than 0.')
+            );
+            expect(() => factoryBuilder.times(-1)).toThrow(
+                new InvalidArgumentException('\'amount\' expected to be higher than 0.')
+            );
+        });
+
+        it('should round the argument to integers', () => {
+            expect(factoryBuilder.times(1.4).create()).toBeInstanceOf(User);
+            expect(factoryBuilder.times(1.5).create()).toBeInstanceOf(ModelCollection);
+        });
     });
 
     describe('make()', () => {
@@ -357,7 +371,7 @@ describe('FactoryBuilder', () => {
             });
         });
 
-        it('should return an empty object if no attributes has been defined or 0 models requested', () => {
+        it('should return an empty object if no attributes has been defined', () => {
             class TestFactory extends Factory<any> {}
 
             // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
@@ -366,7 +380,6 @@ describe('FactoryBuilder', () => {
             Team.prototype.factory = () => new TestFactory;
 
             expect(new FactoryBuilder(Team).raw()).toStrictEqual({});
-            expect(new FactoryBuilder(Team).times(0).raw()).toStrictEqual({});
 
             Team.prototype.factory = originalValue;
         });
@@ -494,3 +507,4 @@ describe('FactoryBuilder', () => {
         });
     });
 });
+

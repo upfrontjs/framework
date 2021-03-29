@@ -74,7 +74,11 @@ export default class FactoryBuilder<T extends Model> {
      * @return {this}
      */
     public times(amount: number): this {
-        this.amount = amount;
+        if (amount < 1) {
+            throw new InvalidArgumentException('\'amount\' expected to be higher than 0.');
+        }
+
+        this.amount = Math.round(amount);
 
         return this;
     }

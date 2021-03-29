@@ -6,7 +6,7 @@ on:
       - 'docs/**/*'
     branches:
       - main
-      - 'releases/*'
+      - 'release/*'
 
 jobs:
   dispatch:

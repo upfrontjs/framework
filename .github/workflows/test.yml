@@ -10,7 +10,7 @@ on:
       - 'jest.config.js'
     branches:
       - main
-      - 'releases/*'
+      - 'release/*'
 
 jobs:
   test:

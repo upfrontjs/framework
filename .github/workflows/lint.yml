@@ -7,7 +7,7 @@ on:
       - '**/*.ts'
     branches:
       - main
-      - 'releases/*'
+      - 'release/*'
 
 jobs:
   build:

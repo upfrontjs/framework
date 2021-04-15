@@ -172,6 +172,14 @@ describe('FactoryBuilder', () => {
             expect(factoryBuilder.times(1.4).create()).toBeInstanceOf(User);
             expect(factoryBuilder.times(1.5).create()).toBeInstanceOf(ModelCollection);
         });
+
+        it('should return an empty object in raw creation when times is less then 1', () => {
+            // this is not expected to happen given the error in the times method
+            // but by overriding user might end up here
+            // @ts-expect-error
+            factoryBuilder.amount = 0;
+            expect(factoryBuilder.raw()).toStrictEqual({});
+        });
     });
 
     describe('make()', () => {

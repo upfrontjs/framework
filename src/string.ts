@@ -143,7 +143,7 @@ declare global {
 if (!('ucFirst' in String.prototype)) {
     Object.defineProperty(String.prototype, 'ucFirst', {
         value: function (): string {
-            return str.ucFirst(this);
+            return str.ucFirst(this as string);
         }
     });
 }
@@ -151,7 +151,7 @@ if (!('ucFirst' in String.prototype)) {
 if (!('isUuid' in String.prototype)) {
     Object.defineProperty(String.prototype, 'isUuid', {
         value: function (): boolean {
-            return str.isUuid(this);
+            return str.isUuid(this as string);
         }
     });
 }
@@ -175,7 +175,7 @@ if (!('uuid' in String)) {
 if (!('finish' in String.prototype)) {
     Object.defineProperty(String.prototype, 'finish', {
         value: function (token: string): string {
-            return str.finish(this, token);
+            return str.finish(this as string, token);
         }
     });
 }
@@ -183,7 +183,7 @@ if (!('finish' in String.prototype)) {
 if (!('start' in String.prototype)) {
     Object.defineProperty(String.prototype, 'start', {
         value: function (token: string): string {
-            return str.start(this, token);
+            return str.start(this as string, token);
         }
     });
 }
@@ -191,7 +191,7 @@ if (!('start' in String.prototype)) {
 if (!('before' in String.prototype)) {
     Object.defineProperty(String.prototype, 'before', {
         value: function (token: string): string {
-            return str.before(this, token);
+            return str.before(this as string, token);
         }
     });
 }
@@ -199,7 +199,7 @@ if (!('before' in String.prototype)) {
 if (!('beforeLast' in String.prototype)) {
     Object.defineProperty(String.prototype, 'beforeLast', {
         value: function (token: string): string {
-            return str.beforeLast(this, token);
+            return str.beforeLast(this as string, token);
         }
     });
 }
@@ -207,7 +207,7 @@ if (!('beforeLast' in String.prototype)) {
 if (!('after' in String.prototype)) {
     Object.defineProperty(String.prototype, 'after', {
         value: function (token: string): string {
-            return str.after(this, token);
+            return str.after(this as string, token);
         }
     });
 }
@@ -216,7 +216,7 @@ if (!('after' in String.prototype)) {
 if (!('afterLast' in String.prototype)) {
     Object.defineProperty(String.prototype, 'afterLast', {
         value: function (token: string): string {
-            return str.afterLast(this, token);
+            return str.afterLast(this as string, token);
         }
     });
 }
@@ -224,7 +224,7 @@ if (!('afterLast' in String.prototype)) {
 if (!('pascal' in String.prototype)) {
     Object.defineProperty(String.prototype, 'pascal', {
         value: function (): string {
-            return str.pascal(this);
+            return str.pascal(this as string);
         }
     });
 }
@@ -232,7 +232,7 @@ if (!('pascal' in String.prototype)) {
 if (!('title' in String.prototype)) {
     Object.defineProperty(String.prototype, 'title', {
         value: function (): string {
-            return str.title(this);
+            return str.title(this as string);
         }
     });
 }
@@ -240,7 +240,7 @@ if (!('title' in String.prototype)) {
 if (!('snake' in String.prototype)) {
     Object.defineProperty(String.prototype, 'snake', {
         value: function (): string {
-            return str.snake(this);
+            return str.snake(this as string);
         }
     });
 }
@@ -248,7 +248,7 @@ if (!('snake' in String.prototype)) {
 if (!('kebab' in String.prototype)) {
     Object.defineProperty(String.prototype, 'kebab', {
         value: function (): string {
-            return str.kebab(this);
+            return str.kebab(this as string);
         }
     });
 }
@@ -256,7 +256,7 @@ if (!('kebab' in String.prototype)) {
 if (!('camel' in String.prototype)) {
     Object.defineProperty(String.prototype, 'camel', {
         value: function (): string {
-            return str.camel(this);
+            return str.camel(this as string);
         }
     });
 }
@@ -264,7 +264,7 @@ if (!('camel' in String.prototype)) {
 if (!('limit' in String.prototype)) {
     Object.defineProperty(String.prototype, 'limit', {
         value: function (count: number, limiter = '...'): string {
-            return str.limit(this, count, limiter);
+            return str.limit(this as string, count, limiter);
         }
     });
 }
@@ -272,7 +272,7 @@ if (!('limit' in String.prototype)) {
 if (!('words' in String.prototype)) {
     Object.defineProperty(String.prototype, 'words', {
         value: function (count: number, limiter = '...'): string {
-            return str.words(this, count, limiter);
+            return str.words(this as string, count, limiter);
         }
     });
 }
@@ -280,7 +280,7 @@ if (!('words' in String.prototype)) {
 if (!('plural' in String.prototype)) {
     Object.defineProperty(String.prototype, 'plural', {
         value: function (): string {
-            return str.plural(this);
+            return str.plural(this as string);
         }
     });
 }
@@ -288,7 +288,7 @@ if (!('plural' in String.prototype)) {
 if (!('singular' in String.prototype)) {
     Object.defineProperty(String.prototype, 'singular', {
         value: function (): string {
-            return str.singular(this);
+            return str.singular(this as string);
         }
     });
 }
@@ -296,7 +296,7 @@ if (!('singular' in String.prototype)) {
 if (!('is' in String.prototype)) {
     Object.defineProperty(String.prototype, 'is', {
         value: function (compareValue: RegExp | string, ignoreCase = false): boolean {
-            return str.is(this, compareValue, ignoreCase);
+            return str.is(this as string, compareValue, ignoreCase);
         }
     });
 }
@@ -304,7 +304,7 @@ if (!('is' in String.prototype)) {
 if (!('includesAll' in String.prototype)) {
     Object.defineProperty(String.prototype, 'includesAll', {
         value: function (tokens: string[]): boolean {
-            return str.includesAll(this, tokens);
+            return str.includesAll(this as string, tokens);
         }
     });
 }

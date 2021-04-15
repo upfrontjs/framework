@@ -130,7 +130,7 @@ export default class CallsApi extends BuildsQuery {
             .then(responseData => {
                 this.resetEndpoint().resetQueryParameters();
 
-                return this.newInstanceFromResponseData(responseData);
+                return this.newInstanceFromResponseData(responseData as Attributes);
             });
     }
 
@@ -226,13 +226,13 @@ export default class CallsApi extends BuildsQuery {
      * Determine whether to return this or a new model from the response.
      *
      * @param {Model} defaultVal
-     * @param {object} responseData
+     * @param {object|any} responseData
      *
      * @private
      *
      * @return {Model|this}
      */
-    private getResponseModel(defaultVal: Model, responseData: Attributes): Model {
+    private getResponseModel(defaultVal: Model, responseData: Attributes | any): Model {
         // returning a collection outside of GET is unexpected.
         return isObjectLiteral(responseData) ? this.newInstanceFromResponseData(responseData) as Model : defaultVal;
     }

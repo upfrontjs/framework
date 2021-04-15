@@ -102,7 +102,7 @@ describe('ModelCollection', () => {
         });
 
         it('should de-duplicate the collection by the given key', () => {
-            const items = [user1, new User({ ...user1.getRawOriginal(), name: user1.name })];
+            const items = [user1, new User({ ...user1.getRawAttributes(), name: user1.name })];
             collection = new ModelCollection(items);
 
             expect(collection.unique('name')).toHaveLength(1);
@@ -174,7 +174,7 @@ describe('ModelCollection', () => {
         });
 
         it('should check for duplicates by key', () => {
-            const items = [user1, new User({ ...user2.getRawOriginal(), name: user1.name })];
+            const items = [user1, new User({ ...user2.getRawAttributes(), name: user1.name })];
             collection = new ModelCollection(items);
 
             expect(collection.duplicates('name')).toHaveLength(1);
@@ -182,14 +182,14 @@ describe('ModelCollection', () => {
         });
 
         it('should check for duplicates by passing a function name that is called on the model', () => {
-            const items = [user1, new User({ ...user2.getRawOriginal(), name: user1.name })];
+            const items = [user1, new User({ ...user2.getRawAttributes(), name: user1.name })];
             collection = new ModelCollection(items);
 
             expect(collection.duplicates('getName')).toHaveLength(1);
         });
 
         it('should check for duplicates by calling a method with the model', () => {
-            const items = [user1, new User({ ...user2.getRawOriginal(), name: user1.name })];
+            const items = [user1, new User({ ...user2.getRawAttributes(), name: user1.name })];
             collection = new ModelCollection(items);
 
             expect(collection.duplicates(model => model.getName())).toHaveLength(1);
@@ -251,7 +251,7 @@ describe('ModelCollection', () => {
     });
 
     describe('diff()', () => {
-        const users = [user1, user2, new User({ ...user2.getRawOriginal(), id: user3.getKey() })];
+        const users = [user1, user2, new User({ ...user2.getRawAttributes(), id: user3.getKey() })];
 
         beforeEach(() => {
             collection = new ModelCollection(users);
@@ -287,32 +287,38 @@ describe('ModelCollection', () => {
     });
 
     describe('union()', () => {
-        const users = [user1, user2, new User({ ...user2.getRawOriginal(), id: 3 })];
+        const users = [user1, user2, new User({ ...user2.getRawAttributes(), id: 3 })];
 
         beforeEach(() => {
             collection = new ModelCollection(users);
         });
         it('should join two arrays without duplicates', () => {
-            expect(collection.union([user2, new User({ ...user2.getRawOriginal(), id: 4 })])).toHaveLength(
+            expect(collection.union([
+                user2,
+                new User({ ...user2.getRawAttributes(), id: 4 })
+            ])).toHaveLength(
                 users.length + 1
             );
         });
 
         it('should add the remaining models to the end of the array', () => {
-            expect(collection.union([user2, new User({ ...user2.getRawOriginal(), id: 4 })]).last())
-                .toStrictEqual(new User({ ...user2.getRawOriginal(), id: 4 }));
+            expect(collection.union([user2, new User({ ...user2.getRawAttributes(), id: 4 })]).last())
+                .toStrictEqual(new User({ ...user2.getRawAttributes(), id: 4 }));
         });
 
         it('should return a model collection ready for chaining', () => {
             expect(
-                collection.union([user2, new User({ ...user2.getRawOriginal(), id: 4 })]).nth(1)
+                collection.union([user2, new User({ ...user2.getRawAttributes(), id: 4 })]).nth(1)
             ).toHaveLength(users.length + 1);
         });
 
         it('should check the collection\'s integrity before the method', () => {
         // @ts-expect-error
             collection[0] = 1;
-            const func = () => collection.union([user2, new User({ ...user2.getRawOriginal(), id: user3.getKey() })]);
+            const func = () => collection.union([
+                user2,
+                new User({ ...user2.getRawAttributes(), id: user3.getKey() })
+            ]);
             expect(func).toThrow(incompatibleElementsError);
         });
     });
@@ -347,7 +353,7 @@ describe('ModelCollection', () => {
     });
 
     describe('except()', () => {
-        const users = [user1, user2, new User({ ...user2.getRawOriginal(), id: user3.getKey() })];
+        const users = [user1, user2, new User({ ...user2.getRawAttributes(), id: user3.getKey() })];
 
         beforeEach(() => {
             collection = new ModelCollection(users);

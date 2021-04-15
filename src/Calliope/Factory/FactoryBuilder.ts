@@ -316,7 +316,7 @@ export default class FactoryBuilder<T extends Model> {
                     );
                 }
 
-                compiledAttributes = this.resolveAttributes(attributesFromState, compiledAttributes);
+                compiledAttributes = this.resolveAttributes(attributesFromState as Attributes, compiledAttributes);
             });
 
             if (this.model.usesTimestamps()) {

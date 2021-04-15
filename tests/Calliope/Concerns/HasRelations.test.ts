@@ -175,7 +175,7 @@ describe('HasRelations', () => {
             expect(hasRelations.relationLoaded('team')).toBe(false);
             expect(hasRelations.addRelation('shifts', Shift.factory().times(1).raw()).shifts)
                 .toBeInstanceOf(ModelCollection);
-            expect(hasRelations.addRelation('team', team.getRawAttributes()).team).toBeInstanceOf(Team);
+            expect(hasRelations.addRelation('team', team.getRawOriginal()).team).toBeInstanceOf(Team);
         });
     });
 
@@ -188,7 +188,7 @@ describe('HasRelations', () => {
                     files: (FileModel.factory().times(2).create() as ModelCollection<Model>)
                         .map(file => file.getRawOriginal())
                         .toArray()
-                } as Attributes)
+                })
             ));
         });
 
@@ -244,7 +244,7 @@ describe('HasRelations', () => {
             // belongsTo
             const team = Team.factory().create() as Team;
             fetchMock.mockResponseOnce(async () => Promise.resolve(
-                buildResponse(team.getRawAttributes())
+                buildResponse(team.getRawOriginal())
             ));
             hasRelations.setAttribute('teamId', team.getKey());
             await hasRelations.load('team');
@@ -320,7 +320,7 @@ describe('HasRelations', () => {
                     ...hasRelations.getRawOriginal(),
                     file: (FileModel.factory().create() as Model).getRawOriginal(),
                     team: cloneDeep(hasRelations.team.getRawOriginal())
-                } as Attributes)
+                })
             ));
 
             const originalTeamName = cloneDeep(hasRelations.team.name);

@@ -1,7 +1,6 @@
 import User from '../../mock/Models/User';
 import { buildResponse, getLastFetchCall, mockUserModelResponse } from '../../test-helpers';
 import { advanceTo } from 'jest-date-mock';
-import type { Attributes } from '../../../src';
 import { finish, snake } from '../../../src';
 import fetchMock from 'jest-fetch-mock';
 import LogicException from '../../../src/Exceptions/LogicException';
@@ -95,7 +94,7 @@ describe('SoftDeletes', () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({
                 ...softDeletes.getRawOriginal(),
                 [softDeletes.getDeletedAtColumn()]: now.toISOString()
-            } as Attributes)));
+            })));
 
             advanceTo(now);
 

@@ -387,7 +387,7 @@ describe('HasAttributes', () => {
 
             hasAttributes.fill({ test: 1 });
 
-            expect(hasAttributes.getRawOriginal()).toBeUndefined();
+            expect(hasAttributes.getRawOriginal()).toStrictEqual({});
 
             expect(hasAttributes.syncOriginal().getRawOriginal()).toStrictEqual({ test: 1 });
         });
@@ -397,7 +397,7 @@ describe('HasAttributes', () => {
 
             hasAttributes.fill({ test: 1, test1: 2 });
 
-            expect(hasAttributes.getRawOriginal()).toBeUndefined();
+            expect(hasAttributes.getRawOriginal()).toStrictEqual({});
 
             expect(hasAttributes.syncOriginal('test').getRawOriginal()).toStrictEqual({ test: 1 });
         });
@@ -407,7 +407,7 @@ describe('HasAttributes', () => {
 
             hasAttributes.fill({ test: 1, test1: 2 });
 
-            expect(hasAttributes.getRawOriginal()).toBeUndefined();
+            expect(hasAttributes.getRawOriginal()).toStrictEqual({});
 
             expect(hasAttributes.syncOriginal(['test', 'test1']).getRawOriginal()).toStrictEqual({ test: 1, test1: 2 });
         });
@@ -503,6 +503,7 @@ describe('HasAttributes', () => {
     describe('getRawOriginal()', () => {
         it('should get the original values from the attributes', () => {
             expect(hasAttributes.getRawOriginal()).toStrictEqual({ test: 1 });
+            expect(hasAttributes.deleteAttribute('test').syncOriginal().getRawOriginal()).toStrictEqual({});
         });
 
         it('should get a single original value from the attributes', () => {

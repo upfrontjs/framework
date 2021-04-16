@@ -119,7 +119,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      * Get an attribute from the model.
      *
      * @param {string} key
-     * @param {any|undefined} defaultVal
+     * @param {any=} defaultVal
      *
      * @return {any}
      */
@@ -372,7 +372,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {any}
      */
-    public getOriginal(key?: string, defaultValue?: any): Attributes | any {
+    public getOriginal<T>(key?: string, defaultValue?: T): Attributes | T {
         const getOriginalValue = (attributeKey: string, rawAttributes: Attributes) => {
             if (this.hasGetAccessor(attributeKey)) {
                 return (this[`get${pascal(attributeKey)}Attribute`] as CallableFunction)(
@@ -400,18 +400,14 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     /**
      * Get the original attributes without casting.
      *
-     * @param {string|undefined} key
-     * @param {any} defaultValue
+     * @param {string=} key
+     * @param {any=} defaultValue
      *
      * @return {any}
      */
-    public getRawOriginal(key?: string, defaultValue?: any): Attributes | any {
+    public getRawOriginal<T>(key?: string, defaultValue?: T): Attributes | T {
         if (key) {
-            return this.original.hasOwnProperty(key) ? cloneDeep(this.original[key]) : defaultValue;
-        }
-
-        if (!Object.keys(this.original).length) {
-            return defaultValue;
+            return this.original.hasOwnProperty(key) ? cloneDeep(this.original[key]) as T : defaultValue!;
         }
 
         return cloneDeep(this.original);
@@ -503,7 +499,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
             return {};
         }
 
-        const rawOriginalAttributes = this.getRawOriginal();
+        const rawOriginalAttributes = this.getRawOriginal<Attributes>();
         const added: Attributes = {};
 
         Object.keys(this.getRawAttributes()).forEach(name => {

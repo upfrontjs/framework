@@ -25,7 +25,7 @@ describe('ModelCollection', () => {
         });
 
         it('should check the collection\'s integrity after setting the models', () => {
-        // @ts-expect-error
+            // @ts-expect-error
             const func = () => new ModelCollection([1]);
             expect(func).toThrow(incompatibleElementsError);
         });
@@ -51,18 +51,18 @@ describe('ModelCollection', () => {
         });
 
         it('should return a collection of strings', () => {
-        //@ts-expect-error
+            //@ts-expect-error
             expect(collection._getArgumentKeys(new ModelCollection(user1)))
                 .toStrictEqual(new Collection([String(user1.getKey())]));
         });
 
         it('should discard non string/number arguments', () => {
-        //@ts-expect-error
+            //@ts-expect-error
             expect(collection._getArgumentKeys([null, true, [1]])).toStrictEqual(new Collection('1'));
         });
 
         it('should accept an array of strings/numbers/Models', () => {
-        //@ts-expect-error
+            //@ts-expect-error
             expect(collection._getArgumentKeys([user1, '2', 3]))
                 .toStrictEqual(new Collection(['1', '2', '3']));
         });
@@ -82,7 +82,7 @@ describe('ModelCollection', () => {
         });
 
         it('should check the collection\'s integrity before the method', () => {
-        // @ts-expect-error
+            // @ts-expect-error
             collection[0] = 1;
             const func = () => collection.modelKeys();
             expect(func).toThrow(incompatibleElementsError);
@@ -120,7 +120,7 @@ describe('ModelCollection', () => {
         });
 
         it('should check the collection\'s integrity before the method', () => {
-        // @ts-expect-error
+            // @ts-expect-error
             collection[0] = 1;
             const func = () => collection.unique();
             expect(func).toThrow(incompatibleElementsError);
@@ -148,7 +148,7 @@ describe('ModelCollection', () => {
         });
 
         it('should check the collection\'s integrity before the method', () => {
-        // @ts-expect-error
+            // @ts-expect-error
             collection[0] = 1;
             const func = () => collection.hasDuplicates();
             expect(func).toThrow(incompatibleElementsError);
@@ -196,7 +196,7 @@ describe('ModelCollection', () => {
         });
 
         it('should check the collection\'s integrity before the method', () => {
-        // @ts-expect-error
+            // @ts-expect-error
             collection[0] = 1;
             const func = () => collection.duplicates();
             expect(func).toThrow(incompatibleElementsError);
@@ -224,7 +224,7 @@ describe('ModelCollection', () => {
         });
 
         it('should check the collection\'s integrity before the method', () => {
-        // @ts-expect-error
+            // @ts-expect-error
             collection[0] = 1;
             const func = () => collection.delete(user2);
             expect(func).toThrow(incompatibleElementsError);
@@ -236,18 +236,18 @@ describe('ModelCollection', () => {
     });
 
     describe('includes()', () => {
-    /* eslint-disable jest/prefer-to-contain */
+        /* eslint-disable jest/prefer-to-contain */
         it('should assert whether the given model is in the collection', () => {
             expect(collection.includes(user1)).toBe(true);
         });
 
         it('should check the collection\'s integrity before the method', () => {
-        // @ts-expect-error
+            // @ts-expect-error
             collection[0] = 1;
             const func = () => collection.includes(user1);
             expect(func).toThrow(incompatibleElementsError);
         });
-    /* eslint-enable jest/prefer-to-contain */
+        /* eslint-enable jest/prefer-to-contain */
     });
 
     describe('diff()', () => {
@@ -310,7 +310,7 @@ describe('ModelCollection', () => {
         });
 
         it('should check the collection\'s integrity before the method', () => {
-        // @ts-expect-error
+            // @ts-expect-error
             collection[0] = 1;
             const func = () => collection.union([user2, new User({ ...user2.getRawOriginal(), id: user3.getKey() })]);
             expect(func).toThrow(incompatibleElementsError);
@@ -369,7 +369,7 @@ describe('ModelCollection', () => {
         });
 
         it('should check the collection\'s integrity before the method', () => {
-        // @ts-expect-error
+            // @ts-expect-error
             collection[0] = 1;
             const func = () => collection.except(1);
             expect(func).toThrow(incompatibleElementsError);
@@ -382,7 +382,7 @@ describe('ModelCollection', () => {
 
     describe('push()', () => {
         it('should only push model values', () => {
-        // @ts-expect-error
+            // @ts-expect-error
             const failingFunc = () => collection.push(3);
             const passingFunc = () => collection.push(user1);
 
@@ -429,7 +429,7 @@ describe('ModelCollection', () => {
         });
 
         it('should check the collection\'s integrity before the method', () => {
-        // @ts-expect-error
+            // @ts-expect-error
             collection[0] = 1;
             const func = () => collection.findByKey(1);
             expect(func).toThrow(incompatibleElementsError);
@@ -483,14 +483,14 @@ describe('ModelCollection', () => {
         });
 
         it('should check the collection\'s integrity before the method', () => {
-        // @ts-expect-error
+            // @ts-expect-error
             collection[0] = 1;
             const func = () => collection.intersect(user1);
             expect(func).toThrow(incompatibleElementsError);
         });
 
         it('should check the argument\'s integrity before the method', () => {
-        // @ts-expect-error
+            // @ts-expect-error
             collection[0] = 1;
             // @ts-expect-error
             const func = () => collection.intersect(1);
@@ -512,7 +512,7 @@ describe('ModelCollection', () => {
         });
 
         it('should check the argument\'s integrity before the method', () => {
-        // @ts-expect-error
+            // @ts-expect-error
             const func = () => collection.pad(4, 1);
             expect(func).toThrow(incompatibleElementsError);
         });

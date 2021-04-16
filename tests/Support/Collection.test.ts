@@ -63,7 +63,7 @@ describe('Collection', () => {
             let boolean = true;
 
             for (const item of collection) {
-                boolean = elements.includes(item) && boolean;
+                boolean = elements.includes(item as number) && boolean;
             }
 
             expect(boolean).toBe(true);
@@ -433,7 +433,7 @@ describe('Collection', () => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const mock = jest.fn((_collection: Collection<any>) => false);
             // @ts-expect-error
-            const mockWrapper = ((...args: any[]) => mock(...args)) as unknown as () => boolean;
+            const mockWrapper = ((...args: any[]) => mock(...args as number[])) as unknown as () => boolean;
 
             expect(collection.when(mockWrapper, coll => coll.nth(2))).toHaveLength(elements.length);
             expect(mock).toHaveBeenCalledWith(collection);
@@ -483,7 +483,7 @@ describe('Collection', () => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const mock = jest.fn((_collection: Collection<any>) => true);
             // @ts-expect-error
-            const mockWrapper = ((...args: any[]) => mock(...args)) as unknown as () => boolean;
+            const mockWrapper = ((...args: any[]) => mock(...args as number[])) as unknown as () => boolean;
 
             expect(collection.unless(mockWrapper, coll => coll.nth(2))).toHaveLength(elements.length);
             expect(mock).toHaveBeenCalledWith(collection);
@@ -1341,10 +1341,10 @@ describe('Collection', () => {
 
         describe('every()', () => {
             it('should assert that the given closure returns true for every item', () => {
-                expect(collection.every(elem => !isNaN(elem))).toBe(true);
+                expect(collection.every(elem => !isNaN(elem as number))).toBe(true);
 
                 collection.push('string');
-                expect(collection.every(elem => !isNaN(elem))).toBe(false);
+                expect(collection.every(elem => !isNaN(elem as number))).toBe(false);
             });
         });
 

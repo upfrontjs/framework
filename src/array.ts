@@ -75,7 +75,7 @@ if (!('collect' in Array)) {
 if (!('paginate' in Array.prototype)) {
     Object.defineProperty(Array.prototype, 'paginate', {
         value: function (): ReturnType<typeof paginate> {
-            return paginate(this);
+            return paginate(this as []);
         }
     });
 }

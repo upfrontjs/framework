@@ -44,7 +44,7 @@ describe('array helpers', () => {
             });
         });
 
-        it('should return an empty collection if no argument given', () => {
+        it('should return an empty array if no argument given', () => {
             expect(arr.wrap()).toStrictEqual([]);
         });
     });

@@ -36,7 +36,7 @@ export const buildResponse = (response?: any[] | Record<string, any> | string): 
 };
 
 export const mockUserModelResponse = (user: User): void => {
-    fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(user.getRawOriginal())));
+    fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(user.getRawAttributes())));
 };
 
 type FetchCall = {
@@ -58,16 +58,16 @@ export const getFetchCalls = (): FetchCall[] => {
     });
 };
 
-export const getLastFetchCall = (): FetchCall|undefined => {
+export const getLastFetchCall = (): FetchCall | undefined => {
     const calls = getFetchCalls();
 
     if (!calls.length) {
         return;
     }
 
-    const lastCall: NonNullable<any> = calls[calls.length - 1];
+    const lastCall = calls[calls.length - 1];
 
-    if ('body' in lastCall && typeof lastCall.body === 'string') {
+    if (lastCall && 'body' in lastCall && typeof lastCall.body === 'string') {
         try {
             lastCall.body = JSON.parse(lastCall.body);
             // eslint-disable-next-line no-empty

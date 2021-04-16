@@ -255,11 +255,11 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public where(column: string, operator: Operator|any, value?: any, boolean: BooleanOperator = 'and'): this {
+    public where(column: string, operator: Operator|unknown, value?: unknown, boolean: BooleanOperator = 'and'): this {
         return this.addWhereConstraint(
             column,
-            value ? operator : '=',
-            value ? value : operator,
+            arguments.length > 2 ? operator as Operator : '=',
+            arguments.length > 2 ? value : operator,
             boolean
         );
     }
@@ -268,7 +268,7 @@ export default class BuildsQuery extends HasAttributes {
      * The static version of the where method.
      *
      * @param {string} column
-     * @param {string} operator
+     * @param {any} operator
      * @param {any=} value
      * @param {'and'|'or'} boolean
      *
@@ -278,14 +278,14 @@ export default class BuildsQuery extends HasAttributes {
      */
     public static where(
         column: string,
-        operator: Operator|any,
-        value?: any,
+        operator: Operator|unknown,
+        value?: unknown,
         boolean: BooleanOperator = 'and'
     ): BuildsQuery {
         return BuildsQuery.newQuery().where(
             column,
-            value ? operator : '=',
-            value ? value : operator,
+            arguments.length > 2 ? operator as Operator : '=',
+            arguments.length > 2 ? value : operator,
             boolean
         );
     }

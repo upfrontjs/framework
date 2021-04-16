@@ -1,4 +1,5 @@
 import Collection from '../../src/Support/Collection';
+import { advanceTo } from 'jest-date-mock';
 
 let collection: Collection<any>;
 
@@ -62,7 +63,7 @@ describe('Collection', () => {
             let boolean = true;
 
             for (const item of collection) {
-                boolean = elements.includes(item) && boolean;
+                boolean = elements.includes(item as number) && boolean;
             }
 
             expect(boolean).toBe(true);
@@ -432,7 +433,7 @@ describe('Collection', () => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const mock = jest.fn((_collection: Collection<any>) => false);
             // @ts-expect-error
-            const mockWrapper = ((...args: any[]) => mock(...args)) as unknown as () => boolean;
+            const mockWrapper = ((...args: any[]) => mock(...args as number[])) as unknown as () => boolean;
 
             expect(collection.when(mockWrapper, coll => coll.nth(2))).toHaveLength(elements.length);
             expect(mock).toHaveBeenCalledWith(collection);
@@ -482,7 +483,7 @@ describe('Collection', () => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const mock = jest.fn((_collection: Collection<any>) => true);
             // @ts-expect-error
-            const mockWrapper = ((...args: any[]) => mock(...args)) as unknown as () => boolean;
+            const mockWrapper = ((...args: any[]) => mock(...args as number[])) as unknown as () => boolean;
 
             expect(collection.unless(mockWrapper, coll => coll.nth(2))).toHaveLength(elements.length);
             expect(mock).toHaveBeenCalledWith(collection);
@@ -693,8 +694,10 @@ describe('Collection', () => {
 
         it('should dumps to the console', () => {
             collection.dump();
+            const now = new Date;
+            advanceTo(now);
 
-            expect(console.groupCollapsed).toHaveBeenCalledWith(new Date().toLocaleTimeString() + ':');
+            expect(console.groupCollapsed).toHaveBeenCalledWith(now.toLocaleTimeString() + ':');
             elements.forEach((elem, index) => {
                 expect(console.log).toHaveBeenNthCalledWith(index + 1, `${index}:`, elem);
             });
@@ -703,8 +706,10 @@ describe('Collection', () => {
 
         it('should dump with a message', () => {
             collection.dump('test');
+            const now = new Date;
+            advanceTo(now);
 
-            expect(console.groupCollapsed).toHaveBeenCalledWith(new Date().toLocaleTimeString() + ' (test):');
+            expect(console.groupCollapsed).toHaveBeenCalledWith(now.toLocaleTimeString() + ' (test):');
         });
 
         it('should return a collection ready for chaining', () => {
@@ -1336,10 +1341,10 @@ describe('Collection', () => {
 
         describe('every()', () => {
             it('should assert that the given closure returns true for every item', () => {
-                expect(collection.every(elem => !isNaN(elem))).toBe(true);
+                expect(collection.every(elem => !isNaN(elem as number))).toBe(true);
 
                 collection.push('string');
-                expect(collection.every(elem => !isNaN(elem))).toBe(false);
+                expect(collection.every(elem => !isNaN(elem as number))).toBe(false);
             });
         });
 

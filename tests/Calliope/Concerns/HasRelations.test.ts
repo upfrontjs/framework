@@ -169,7 +169,7 @@ describe('HasRelations', () => {
         });
 
         it('should be able to add a relation even if just the attributes or array of attributes are given', () => {
-            const team = hasRelations.team;
+            const team = hasRelations.team as Team;
             hasRelations.removeRelation('team');
 
             expect(hasRelations.relationLoaded('team')).toBe(false);
@@ -236,21 +236,23 @@ describe('HasRelations', () => {
 
             // hasOne
             fetchMock.mockResponseOnce(async () => Promise.resolve(
-                buildResponse((Contract.factory().create() as Model).getRawOriginal())
+                buildResponse(Contract.factory().raw())
             ));
             await hasRelations.load('contract');
             expect(hasRelations.contract).toBeInstanceOf(Contract);
 
             // belongsTo
+            const team = Team.factory().create() as Team;
             fetchMock.mockResponseOnce(async () => Promise.resolve(
-                buildResponse((Team.factory().create() as Model).getRawOriginal())
+                buildResponse(team.getRawOriginal())
             ));
+            hasRelations.setAttribute('teamId', team.getKey());
             await hasRelations.load('team');
             expect(hasRelations.team).toBeInstanceOf(Team);
 
             // morphOne
             fetchMock.mockResponseOnce(async () => Promise.resolve(
-                buildResponse((FileModel.factory().create() as Model).getRawOriginal())
+                buildResponse(FileModel.factory().raw())
             ));
             await hasRelations.load('file');
             expect(hasRelations.file).toBeInstanceOf(FileModel);
@@ -348,7 +350,7 @@ describe('HasRelations', () => {
 
     describe('for()', () => {
         it('should set the endpoint for the given models', () => {
-            expect(hasRelations.for(hasRelations.team).getEndpoint())
+            expect(hasRelations.for(hasRelations.team as Team).getEndpoint())
                 .toBe(String(hasRelations.team.getEndpoint()) + '/' + String(hasRelations.team.getKey()) + '/users');
 
             const contract = Contract.factory().create() as Contract;

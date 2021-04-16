@@ -122,7 +122,7 @@ export default class User extends Model {
 
 #### setCasts
 
-The `setCasts` method sets the cats for the model, replacing the existing configuration.
+The `setCasts` method sets the casts for the model, replacing the existing configuration.
 
 ```js
 import User from '@upfrontjs/framework';

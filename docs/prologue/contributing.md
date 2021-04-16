@@ -53,6 +53,10 @@ Commit messages are integral to navigating version control, be it by a human or 
     added graceful error handling
     Resolves upfrontjs/framework#99, upfrontjs/framework#100
 ```
+- `chore: ` - commit for code maintenance pull request e.g.:
+```git
+    chore: Updated dependencies
+```
  - `wip: ` - commit for a work-in-progress branch e.g.:
 ```git
     wip: Started building the GraphQL driver

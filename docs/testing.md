@@ -280,7 +280,7 @@ FactoryBuilder is a class that you can access by the [factory](./helpers/readme.
 
 #### times
 
-The `times` method sets the amount of models that is returned by the builder. The builder by default returns `1` model. Setting this amount to more than `1` will cause the builder to return a [ModelCollection](./calliope/model-collection.md).
+The `times` method sets the amount of models that is returned by the builder. The builder by default returns `1` model. Setting this amount to more than `1` will cause the builder to return a [ModelCollection](./calliope/model-collection.md). Floats are rounded to the nearest value.
 ```js
 User.factory().times(3).create() // ModelCollection
 ```

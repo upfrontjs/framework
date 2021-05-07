@@ -276,7 +276,7 @@ With the factory defined you're ready to start creating models. by either the [f
 
 ## FactoryBuilder
  
-FactoryBuilder is a class that you can access by the [factory](./helpers/readme.md#factory) helper method or by calling the `factory` method on your model constructor. This utility enables us to fluently build models. It offers a couple methods to that extent. 
+FactoryBuilder is a class that you can access by the [factory](./helpers/readme.md#factory) helper method or by calling the [factory](./calliope/readme.md#factory) method on your model constructor. This utility enables us to fluently build models. It offers a couple methods to that extent. 
 
 #### times
 

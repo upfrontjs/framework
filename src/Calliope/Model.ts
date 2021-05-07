@@ -117,8 +117,8 @@ export default class Model extends SoftDeletes implements HasFactory {
     /**
      * Call the factory fluently from the model.
      */
-    public static factory<T extends Model>(): FactoryBuilder<T> {
-        return new FactoryBuilder(this as unknown as new (attributes?: Attributes) => T);
+    public static factory<T extends Model>(times = 1): FactoryBuilder<T> {
+        return new FactoryBuilder(this as unknown as new (attributes?: Attributes) => T).times(times);
     }
 
     /**

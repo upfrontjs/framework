@@ -19,6 +19,9 @@ tests/cache/
 *.sln
 *.sw?
 
+# cache
+.eslintcache
+
 # logs
 *.log
 tsconfig.tsbuildinfo

@@ -7,10 +7,6 @@ updates:
     interval: weekly
     time: '00:00'
   open-pull-requests-limit: 10
-  reviewers:
-    - nandor kraszlan
-  assignees:
-    - nandor kraszlan
   commit-message:
     prefix: fix
     prefix-development: chore
@@ -23,10 +19,6 @@ updates:
     interval: weekly
     time: '00:00'
   open-pull-requests-limit: 10
-  reviewers:
-    - nandor kraszlan
-  assignees:
-    - nandor kraszlan
   commit-message:
     prefix: fix
     prefix-development: chore

@@ -139,7 +139,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @param {object=} data
      *
-     * @see {CallsApi.prototype.get}
+     * @see CallsApi.prototype.get
      */
     public static async get(data?: Record<string, unknown>): Promise<Model | ModelCollection<Model>> {
         return new this().get(data);
@@ -215,7 +215,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @param {object} data
      *
-     * @see {patch}
+     * @see CallsApi.prototype.patch
      */
     public async update(data: Attributes): Promise<Model> {
         return this.setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()))

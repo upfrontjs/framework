@@ -130,6 +130,11 @@ describe('Model', () => {
         it('should return the factory builder', () => {
             expect(User.factory()).toBeInstanceOf(FactoryBuilder);
         });
+
+        it('should optionally set the amount if given as argument', () => {
+            expect(User.factory(2).create()).toBeInstanceOf(ModelCollection);
+            expect(User.factory(2).create()).toHaveLength(2);
+        });
     });
 
     describe('find()', () => {

@@ -1011,7 +1011,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      *
-     * @see {BuildsQuery.prototype.offset}
+     * @see BuildsQuery.prototype.offset
      */
     public skip(count: number): this {
         return this.offset(count);

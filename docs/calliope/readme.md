@@ -109,12 +109,14 @@ userCopy.getAttribute(userCopy.getCreatedAtColumn()); // undefined
 
 #### factory
 <Badge text="static" type="warning"/>
-The `factory` is a method that returns a [Factory](../testing.md#factorybuilder) instance.
+
+The `factory` is a method that returns a [Factory](../testing.md#factorybuilder) instance. Optionally it takes a number argument which is a shorthand for the [times](../testing.md#times) method.
 
 ```js
 import User from '@Models/User';
 
-const user = User.factory().create();
+const user = User.factory().create(); // User
+const users = User.factory(2).create(); // ModelCollection
 ```
 
 #### all

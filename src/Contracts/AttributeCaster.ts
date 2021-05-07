@@ -4,7 +4,7 @@ import type { Attributes } from '../Calliope/Concerns/HasAttributes';
  * Interface describes what's expected to be implemented
  * by a class that is tasked with value casting.
  *
- * @see {CastsAttributes.prototype.implementsCaster}
+ * @see CastsAttributes.prototype.implementsCaster
  */
 export default interface AttributeCaster {
     /**

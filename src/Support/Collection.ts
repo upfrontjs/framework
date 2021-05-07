@@ -4,14 +4,14 @@ import type Jsonable from '../Contracts/Jsonable';
 
 export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, ArrayLike<T> {
     /**
-     * Allow indexing by number
+     * Allow indexing by number.
      */
     [index: number]: T;
 
     /**
      * The constructor.
      *
-     * @param {any[]} items
+     * @param {any=} items
      *
      */
     public constructor(items?: T | T[]) {
@@ -35,7 +35,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * The length of the collection
+     * The length of the collection.
      *
      * @type {number}
      */
@@ -796,7 +796,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.map}
+     * @see Array.prototype.map
      *
      * @return {this}
      */
@@ -805,7 +805,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.reverse}
+     * @see Array.prototype.reverse
      *
      * @return {this}
      */
@@ -814,7 +814,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.concat}
+     * @see Array.prototype.concat
      *
      * @return {this}
      */
@@ -823,7 +823,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.sort}
+     * @see Array.prototype.sort
      *
      * @return {this}
      */
@@ -832,7 +832,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.splice}
+     * @see Array.prototype.splice
      *
      * @return {Collection}
      */
@@ -846,7 +846,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.slice}
+     * @see Array.prototype.slice
      *
      * @return {this}
      */
@@ -855,7 +855,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.filter}
+     * @see Array.prototype.filter
      *
      * @return {this}
      */
@@ -864,7 +864,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.flat}
+     * @see Array.prototype.flat
      *
      * @return {Collection}
      */
@@ -891,7 +891,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.flatMap}
+     * @see Array.prototype.flatMap
      *
      * @return {Collection}
      */
@@ -903,7 +903,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.shift}
+     * @see Array.prototype.shift
      *
      * @return {any}
      */
@@ -920,7 +920,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.unshift}
+     * @see Array.prototype.unshift
      *
      * @return {number}
      */
@@ -931,7 +931,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.pop}
+     * @see Array.prototype.pop
      *
      * @return {any}
      */
@@ -944,7 +944,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.push}
+     * @see Array.prototype.push
      *
      * @return {number}
      */
@@ -963,7 +963,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.fill}
+     * @see Array.prototype.fill
      *
      * @return {this}
      */
@@ -974,7 +974,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.copyWithin}
+     * @see Array.prototype.copyWithin
      *
      * @return {this}
      */
@@ -983,7 +983,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.every}
+     * @see Array.prototype.every
      *
      * @return {boolean}
      */
@@ -992,7 +992,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.some}
+     * @see Array.prototype.some
      *
      * @return {boolean}
      */
@@ -1001,7 +1001,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.find}
+     * @see Array.prototype.find
      *
      * @return {any}
      */
@@ -1010,7 +1010,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.findIndex}
+     * @see Array.prototype.findIndex
      *
      * @return {number}
      */
@@ -1019,7 +1019,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.indexOf}
+     * @see Array.prototype.indexOf
      *
      * @return {boolean}
      */
@@ -1028,7 +1028,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.join}
+     * @see Array.prototype.join
      *
      * @return {string}
      */
@@ -1037,7 +1037,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.toString}
+     * @see Array.prototype.toString
      *
      * @return {string}
      */
@@ -1046,7 +1046,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.lastIndexOf}
+     * @see Array.prototype.lastIndexOf
      *
      * @return {number}
      */
@@ -1059,7 +1059,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.reduce}
+     * @see Array.prototype.reduce
      *
      * @return {any}
      */
@@ -1075,7 +1075,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
-     * @see {Array.prototype.reduceRight}
+     * @see Array.prototype.reduceRight
      *
      * @return {any}
      */

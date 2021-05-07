@@ -35,8 +35,6 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
             return !!iterable.length && iterable.every(item => ModelCollection._isModel(item));
         }
 
-        // the below instanceof check is not redundant
-        // once this is transformed into javascript
         return this.every(item => ModelCollection._isModel(item));
     }
 
@@ -392,7 +390,6 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
     ): [U] extends [Model] ? ModelCollection<U> : Collection<U> {
         const results = super.map(callback, thisArg);
 
-        // todo - remove expect errors once https://github.com/microsoft/TypeScript/pull/43183 merged in/released
         if (results.every(result => ModelCollection._isModel(result))) {
             // @ts-expect-error
             return new (this.constructor as typeof ModelCollection)(results.toArray());

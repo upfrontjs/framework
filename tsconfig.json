@@ -3,6 +3,7 @@
         "declaration": true,
         "declarationDir": "types",
         "declarationMap": true,
+        "importHelpers": true,
         "module": "ESNext",
         "rootDir": "src",
         "sourceMap": true,

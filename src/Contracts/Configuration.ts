@@ -6,7 +6,7 @@ import type HandlesApiResponse from './HandlesApiResponse';
  *
  * @link {GlobalConfig.configuration}
  */
-export default interface Configuration extends Record<string, any> {
+export default interface Configuration {
     /**
      * The ApiCaller constructor.
      *

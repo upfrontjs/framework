@@ -176,7 +176,7 @@ export default class Model extends SoftDeletes implements HasFactory {
     /**
      * The static version of the find method.
      *
-     * @see {Model.prototype.find}
+     * @see Model.prototype.find
      */
     public static async find(id: number | string): Promise<Model> {
         return new this().find(id);
@@ -203,7 +203,7 @@ export default class Model extends SoftDeletes implements HasFactory {
     /**
      * The static version of the findMany method.
      *
-     * @see {Model.prototype.findMany}
+     * @see Model.prototype.findMany
      */
     public static async findMany(ids: (number|string)[]): Promise<ModelCollection<Model>> {
         return new this().findMany(ids);

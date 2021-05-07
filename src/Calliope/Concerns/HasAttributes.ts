@@ -107,6 +107,8 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @param {string} key
      *
+     * @see attributeCasing
+     *
      * @protected
      *
      * @return {string}

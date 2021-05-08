@@ -97,7 +97,7 @@ export default class HasRelations extends CallsApi {
      *
      * @return {Model|ModelCollection}
      */
-    public getRelation(name: string): Model | ModelCollection<Model> {
+    public getRelation<T extends Model>(name: string): ModelCollection<T> | T {
         name = this.removeRelationPrefix(name);
 
         if (!this.relationDefined(name)) {
@@ -110,7 +110,7 @@ export default class HasRelations extends CallsApi {
             );
         }
 
-        return cloneDeep(this.relations[name]!);
+        return cloneDeep(this.relations[name]!) as ModelCollection<T> | T;
     }
 
     /**
@@ -140,7 +140,7 @@ export default class HasRelations extends CallsApi {
      *
      * @protected
      *
-     * @return {'belongsTo'|'belongsToMany'|'hasOne'|'hasMany'|'morphs'|'morphTo'|'morphMany'|'morphOne'}
+     * @return {Relation}
      */
     protected getRelationType(name: string): Relation {
         name = start(name, this.relationMethodPrefix);

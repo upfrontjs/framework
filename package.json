@@ -1,6 +1,6 @@
 {
     "name": "@upfrontjs/framework",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "Data handling framework complementary to backend model systems.",
     "main": "index.min.js",
     "module": "index.es.min.js",
@@ -61,7 +61,7 @@
         "test:coverage": "npm run test -- --coverage",
         "lint": "eslint . --fix --ext .ts",
         "build": "rollup -c && tsc --emitDeclarationOnly",
-        "docs:api": "[ ! -d './types' ] && tsc --emitDeclarationOnly || echo './types folder exists' && npx typedoc",
+        "docs:api": "npx typedoc",
         "prepare": "husky install"
     },
     "dependencies": {

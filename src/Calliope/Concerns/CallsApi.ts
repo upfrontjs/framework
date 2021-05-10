@@ -265,10 +265,8 @@ export default class CallsApi extends BuildsQuery {
             const collection = new ModelCollection();
 
             data.forEach(attributes => {
-                if (isObjectLiteral(attributes)) {
-                    const model = new (this.constructor as typeof Model)();
-                    collection.push(model.forceFill(attributes).syncOriginal().setLastSyncedAt());
-                }
+                const model = new (this.constructor as typeof Model)();
+                collection.push(model.forceFill(attributes).syncOriginal().setLastSyncedAt());
             });
 
             result = collection;

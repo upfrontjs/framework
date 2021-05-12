@@ -338,7 +338,7 @@ describe('HasRelations', () => {
             expect(hasRelations.getRelationType('team')).toBe('belongsTo');
         });
 
-        it('should throw an error if method nor using the expected relation type', () => {
+        it('should throw an error if method not using the expected relation type', () => {
             // @ts-expect-error
             const failingFunc = jest.fn(() => hasRelations.getRelationType('invalidRelationDefinition'));
 

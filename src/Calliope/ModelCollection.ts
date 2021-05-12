@@ -291,7 +291,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
             return false;
         }
 
-        return this.prototype._isModelArray(value) && value instanceof ModelCollection;
+        return value instanceof ModelCollection && this.prototype._isModelArray(value);
     }
 
     /**

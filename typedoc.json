@@ -1,10 +1,11 @@
 {
-  "entryPoints": [
-    "types/index.d.ts"
-  ],
-  "tsconfig": "api-docs.tsconfig.json",
-  "out": "api-docs",
-  "name": "UpfrontJs",
-  "readme": "./README.md",
-  "plugin": []
+    "entryPoints": [
+        "src/index.ts"
+    ],
+    "tsconfig": "tsconfig.json",
+    "out": "api-docs",
+    "name": "UpfrontJs",
+    "readme": "./README.md",
+    "plugin": [],
+    "includeVersion": true
 }

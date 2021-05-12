@@ -6,6 +6,7 @@ Models have been given powerful tools to manage data without involved logic and 
  - [Guarding](#guarding)
  - [Mutators/Accessors](#mutatorsaccessors)
  - [Attribute management](#attribute-management)
+ - [Tracking changes](#tracking-changes)
 
 ## Casting
 
@@ -420,6 +421,7 @@ import User from '@Models/User';
 
 const user = new User({ name: 'John Doe' });
 user.name; // 'John Doe'
+user.getAttribute('name'); // 'John Doe'
 ```
 
 Optionally the method takes a second argument which is returned if the key cannot be resolved.
@@ -533,8 +535,7 @@ const user = new User({ name: 'John Doe' });
 user.addRelation('shifts', new Shift({ shiftAttr: 1 })).toJson(); // {"name":"John Doe","shifts":[{"shiftAttr":1}]}
 ```
 
-### Tracking changes
----
+## Tracking changes
 
 To determine and manage the data's state on the model, and to examine the difference between the original data, and the data the model has been constructed with, a couple of helper methods have been added to that end.
 

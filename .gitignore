@@ -21,10 +21,10 @@ tests/cache/
 
 # cache
 .eslintcache
+tsconfig.tsbuildinfo
 
 # logs
 *.log
-tsconfig.tsbuildinfo
 
 # dependencies
 node_modules

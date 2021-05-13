@@ -11,6 +11,9 @@ Released under ${pkg.license} License
 ================================== */
 `;
 
+/**
+ * @type {import('rollup/dist/rollup').InputOptions}
+ */
 const commonConfig = {
     external: [
         ...Object.keys(pkg.dependencies ?? {}),
@@ -20,7 +23,7 @@ const commonConfig = {
     plugins: [
         // it doesn't find the config by default and doesn't emit interface files
         // todo - https://github.com/rollup/plugins/pull/791/files#diff-77ceb76f06466d761730b952567396e6b5c292cc4044441cdfdf048b4614881dR83 check those tests
-        typescript({ tsconfig: './tsconfig.json' }),
+        typescript({ tsconfig: './tsconfig.json', incremental: false }),
         terser({
             format: {
                 comments: (node, comment) => {
@@ -93,7 +96,7 @@ const rollupConfig = [
             }
         ],
         ...commonConfig
-    },
+    }
 ];
 
 export default rollupConfig;

@@ -125,7 +125,8 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {any}
      */
-    public getAttribute(key: string, defaultVal?: any): any {
+    public getAttribute<T>(key: string, defaultVal?: T): T
+    public getAttribute(key: string, defaultVal?: unknown): unknown {
         // If attribute exists
         if (key in this.attributes) {
             // If it has an accessor, call it.
@@ -374,7 +375,9 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {any}
      */
-    public getOriginal<T>(key?: string, defaultValue?: T): Attributes | T {
+    public getOriginal(key?: undefined, defaultValue?: undefined): Attributes
+    public getOriginal<T>(key?: string, defaultValue?: T): T
+    public getOriginal(key?: string, defaultValue?: unknown): unknown {
         const getOriginalValue = (attributeKey: string, rawAttributes: Attributes) => {
             if (this.hasGetAccessor(attributeKey)) {
                 return (this[`get${pascal(attributeKey)}Attribute`] as CallableFunction)(
@@ -407,9 +410,11 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {any}
      */
-    public getRawOriginal<T>(key?: string, defaultValue?: T): Attributes | T {
+    public getRawOriginal(key?: undefined, defaultValue?: undefined): Attributes
+    public getRawOriginal<T>(key?: string, defaultValue?: T): T
+    public getRawOriginal(key?: string, defaultValue?: unknown): unknown {
         if (key) {
-            return this.original.hasOwnProperty(key) ? cloneDeep(this.original[key]) as T : defaultValue!;
+            return this.original.hasOwnProperty(key) ? cloneDeep(this.original[key]) : defaultValue;
         }
 
         return cloneDeep(this.original);

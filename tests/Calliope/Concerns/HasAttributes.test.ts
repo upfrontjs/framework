@@ -135,7 +135,7 @@ describe('HasAttributes', () => {
                 }
             }
 
-            expect(hasAttributes.getAttribute('myAttr').key).toBe(1);
+            expect(hasAttributes.myAttr.key).toBe(1);
         });
     });
 

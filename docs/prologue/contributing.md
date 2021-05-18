@@ -6,7 +6,7 @@ Hi there! I'm thrilled that you'd like to contribute to this project. Your help 
 
 If you have suggestions for how this project could be improved, or want to report a bug, open an issue! I'd love all and any contributions. If you have questions, I'd love to hear them, that might just mean that the documentation is lacking.
 
-I'd also love PRs. If you're thinking of a large PR, I advise opening up an issue first to talk about it, though! Look at the links below if you're not sure how to open a PR.
+I'd also love PRs. If you're thinking of a large PR, I advise opening up an issue first to talk about it though! Look at the links below if you're not sure how to open a PR.
 
 ## Which branch
 
@@ -90,16 +90,3 @@ ln -sf /absolute/path/to/upfrontjs/framework/docs/* /absolute/path/to/upfrontjs/
 - [Using Pull Requests](https://help.github.com/articles/about-pull-requests/)
 - [Commit message best practices](https://gist.github.com/robertpainsi/b632364184e70900af4ab688decf6f53)
 - [GitHub Help](https://help.github.com)
-
-
-## Appendices
-
-#### Setup script
-
- This script will set up the following:
-
- `pre-commit` git hook:
-    - ensure that the code passes linting
-
- `commit-msg` git hook:
-    - ensure the commit message adheres to the [commit message formats](#commit-message-formats)

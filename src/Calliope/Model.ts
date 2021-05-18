@@ -99,6 +99,8 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @param {any} model
      *
+     * @see Model.prototype.is
+     *
      * @return {boolean}
      */
     public isNot(model: unknown): model is Exclude<typeof model, Model> {
@@ -208,7 +210,6 @@ export default class Model extends SoftDeletes implements HasFactory {
     public static async findMany(ids: (number|string)[]): Promise<ModelCollection<Model>> {
         return new this().findMany(ids);
     }
-
 
     /**
      * Refresh the attributes from the backend.

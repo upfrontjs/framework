@@ -21,6 +21,8 @@ tests/cache/
 
 # cache
 .eslintcache
+tsconfig.tsbuildinfo
+.rollup.cache
 
 # logs
 *.log

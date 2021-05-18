@@ -1,6 +1,6 @@
 {
     "name": "@upfrontjs/framework",
-    "version": "0.2.1",
+    "version": "0.2.0",
     "description": "Data handling framework complementary to backend model systems.",
     "main": "index.min.js",
     "module": "index.es.min.js",
@@ -61,7 +61,7 @@
         "test:coverage": "npm run test -- --coverage",
         "lint": "eslint . --fix --ext .ts",
         "build": "rollup -c && tsc --emitDeclarationOnly",
-        "docs:api": "npx typedoc",
+        "docs:api": "[ ! -d './types' ] && tsc --emitDeclarationOnly || echo './types folder exists' && npx typedoc",
         "prepare": "husky install"
     },
     "dependencies": {
@@ -86,7 +86,7 @@
         "jest": "^26.6.3",
         "jest-date-mock": "^1.0.8",
         "jest-fetch-mock": "^3.0.3",
-        "lint-staged": "^11.0.0",
+        "lint-staged": "^10.5.4",
         "rollup": "^2.35.1",
         "rollup-plugin-bundle-size": "^1.0.3",
         "rollup-plugin-terser": "^7.0.2",

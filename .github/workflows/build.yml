@@ -1,0 +1,27 @@
+name: Build
+
+on:
+  pull_request:
+    types: [ready_for_review, opened, synchronize, reopened]
+    paths:
+      - 'tsconfig.json'
+      - 'rollup.config.js'
+      - 'src/**/*.ts'
+      - 'package-lock.json'
+    branches:
+      - 'release/*'
+
+jobs:
+  build:
+    if: github.event.pull_request.draft == false
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 15
+          check-latest: true
+      - run: npm ci
+      - name: Rollup
+        run: npm run build

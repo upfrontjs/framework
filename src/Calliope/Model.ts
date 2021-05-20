@@ -28,11 +28,11 @@ export default class Model extends SoftDeletes implements HasFactory {
         const lastSyncedAt = '_' + this.setStringCase('last_synced_at');
 
         if (boolean && this.usesTimestamps()) {
-            boolean = !!this.getAttribute(this.getCreatedAtColumn(), false);
+            boolean = !!this.getAttribute(this.getCreatedAtColumn());
         }
 
         if (boolean && this.usesSoftDeletes()) {
-            boolean = !this.getAttribute(this.getDeletedAtColumn(), false);
+            boolean = !this.getAttribute(this.getDeletedAtColumn());
         }
 
         return boolean && lastSyncedAt in this && !!this[lastSyncedAt];

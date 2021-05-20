@@ -232,7 +232,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @internal
      */
-    protected throwIfDoesntExists(methodName: string): never | void {
+    protected throwIfDoesntExists(methodName: string): void {
         if (!this.exists) {
             throw new LogicException(
                 'Attempted to call ' + methodName + ' on \'' + this.getName()

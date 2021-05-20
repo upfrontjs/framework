@@ -113,7 +113,7 @@ export default class CastsAttributes {
         value: any,
         attributes?: Attributes,
         method: keyof AttributeCaster = 'get'
-    ): never | unknown {
+    ): unknown {
         value = cloneDeep(value);
 
         if (!this.hasCast(key)) {
@@ -189,7 +189,7 @@ export default class CastsAttributes {
      *
      * @protected
      */
-    protected getDateTimeLibInstance(value: unknown): never | unknown {
+    protected getDateTimeLibInstance(value: unknown): unknown {
         const dateTimeLib = new GlobalConfig().get('datetime');
 
         if (!dateTimeLib || !(dateTimeLib instanceof Function)) { // class and function are both of type Function
@@ -215,7 +215,7 @@ export default class CastsAttributes {
      *
      * @return {number}
      */
-    private castToNumber(key: string, value: any): never | number {
+    private castToNumber(key: string, value: any): number {
         const number = Number(value);
 
         if (isNaN(number)) {
@@ -237,7 +237,7 @@ export default class CastsAttributes {
      *
      * @return {boolean}
      */
-    private castToBoolean(key: string, value: any): boolean | never {
+    private castToBoolean(key: string, value: any): boolean {
         const string = String(value).toLowerCase();
         let boolean;
 
@@ -268,7 +268,7 @@ export default class CastsAttributes {
      *
      * @return {any}
      */
-    private castToDateTime(_key: string, value: any): never | unknown {
+    private castToDateTime(_key: string, value: any): unknown {
         return this.getDateTimeLibInstance(value);
     }
 

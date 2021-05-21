@@ -1,6 +1,6 @@
 import User from '../../mock/Models/User';
 import fetchMock from 'jest-fetch-mock';
-import { buildResponse, getLastFetchCall } from '../../test-helpers';
+import { buildResponse, getLastRequest } from '../../test-helpers';
 import { advanceBy } from 'jest-date-mock';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import { config } from '../../setupTests';
@@ -46,8 +46,8 @@ describe('HasTimestamps', () => {
         it('should send a PATCH request', async () => {
             await hasTimestamps.touch();
 
-            expect(getLastFetchCall()?.method).toBe('patch');
-            expect(getLastFetchCall()?.url)
+            expect(getLastRequest()?.method).toBe('patch');
+            expect(getLastRequest()?.url)
                 .toContain(finish(hasTimestamps.getEndpoint(), '/') + String(hasTimestamps.getKey()));
         });
 
@@ -81,7 +81,7 @@ describe('HasTimestamps', () => {
             });
 
             await expect(hasTimestamps.touch()).resolves.toStrictEqual(hasTimestamps);
-            expect(getLastFetchCall()).toBeUndefined();
+            expect(getLastRequest()).toBeUndefined();
 
             Object.defineProperty(hasTimestamps, 'timestamps', {
                 value: true
@@ -102,8 +102,8 @@ describe('HasTimestamps', () => {
         it('should send a GET request with the selected columns', async () => {
             await hasTimestamps.freshTimestamps();
 
-            expect(getLastFetchCall()?.method).toBe('get');
-            expect(getLastFetchCall()?.url).toBe(
+            expect(getLastRequest()?.method).toBe('get');
+            expect(getLastRequest()?.url).toBe(
                 String(config.get('baseEndPoint'))
                 + finish(start(hasTimestamps.getEndpoint(), '/'), '/' + String(hasTimestamps.getKey()))
                 + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=1&wheres[][boolean]=and'
@@ -166,7 +166,7 @@ describe('HasTimestamps', () => {
             });
 
             await expect(hasTimestamps.freshTimestamps()).resolves.toStrictEqual(hasTimestamps);
-            expect(getLastFetchCall()).toBeUndefined();
+            expect(getLastRequest()).toBeUndefined();
 
             Object.defineProperty(hasTimestamps, 'timestamps', {
                 value: true

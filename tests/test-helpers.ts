@@ -39,31 +39,29 @@ export const mockUserModelResponse = (user: User): void => {
     fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(user.getRawAttributes())));
 };
 
-type FetchCall = {
+interface RequestDescriptor {
     url: string;
     method: 'delete' | 'get' | 'patch' | 'post' | 'put';
     headers: Headers;
     body?: any;
-};
+}
 
 /**
  * Arrange information into an object.
  */
-export const getFetchCalls = (): FetchCall[] => {
+export const getRequests = (): RequestDescriptor[] => {
     // @ts-expect-error
     const calls = fetch.mock.calls;
 
-    return calls.map((array: [string, Partial<FetchCall>]) => {
+    return calls.map((array: [string, Partial<RequestDescriptor>]) => {
         return Object.assign(array[1], { url: array[0] });
     });
 };
 
-export const getLastFetchCall = (): FetchCall | undefined => {
-    const calls = getFetchCalls();
+export const getLastRequest = (): RequestDescriptor | undefined => {
+    const calls = getRequests();
 
-    if (!calls.length) {
-        return;
-    }
+    if (!calls.length) return;
 
     const lastCall = calls[calls.length - 1];
 

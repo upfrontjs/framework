@@ -1,7 +1,7 @@
 import Model from '../../src/Calliope/Model';
 import User from '../mock/Models/User';
 import FactoryBuilder from '../../src/Calliope/Factory/FactoryBuilder';
-import { buildResponse, getLastFetchCall, mockUserModelResponse } from '../test-helpers';
+import { buildResponse, getLastRequest, mockUserModelResponse } from '../test-helpers';
 import fetchMock from 'jest-fetch-mock';
 import ModelCollection from '../../src/Calliope/ModelCollection';
 import LogicException from '../../src/Exceptions/LogicException';
@@ -142,8 +142,8 @@ describe('Model', () => {
             mockUserModelResponse(user);
             await user.find(String(user.getKey()));
 
-            expect(getLastFetchCall()?.method).toBe('get');
-            expect(getLastFetchCall()?.url).toContain('/' + String(user.getKey()));
+            expect(getLastRequest()?.method).toBe('get');
+            expect(getLastRequest()?.url).toContain('/' + String(user.getKey()));
         });
 
         it('should return a model', async () => {
@@ -166,8 +166,8 @@ describe('Model', () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().times(2).create())));
             await user.findMany([2, 3]);
 
-            expect(getLastFetchCall()?.method).toBe('get');
-            expect(getLastFetchCall()?.url).toContain(
+            expect(getLastRequest()?.method).toBe('get');
+            expect(getLastRequest()?.url).toContain(
                 'wheres[][column]=id' +
                 '&wheres[][operator]=in' +
                 '&wheres[][value][]=2&wheres[][value][]=3' +
@@ -199,8 +199,8 @@ describe('Model', () => {
             mockUserModelResponse(user);
             await user.refresh();
 
-            expect(getLastFetchCall()?.method).toBe('get');
-            expect(getLastFetchCall()?.url).toContain(finish(user.getEndpoint(), '/') + String(user.getKey()));
+            expect(getLastRequest()?.method).toBe('get');
+            expect(getLastRequest()?.url).toContain(finish(user.getEndpoint(), '/') + String(user.getKey()));
         });
 
         it('should refresh only the attributes that the model already has', async () => {
@@ -211,7 +211,7 @@ describe('Model', () => {
                 return previous + '&columns[]=' + next;
             });
 
-            expect(getLastFetchCall()?.url).toContain(params);
+            expect(getLastRequest()?.url).toContain(params);
         });
 
         it('should return the model itself', async () => {
@@ -246,7 +246,7 @@ describe('Model', () => {
             mockUserModelResponse(user);
             await User.all();
 
-            expect(getLastFetchCall()?.method).toBe('get');
+            expect(getLastRequest()?.method).toBe('get');
         });
 
         it('should return all the models the backend has', async () => {
@@ -265,7 +265,7 @@ describe('Model', () => {
             const model = await user.save();
 
             expect(model).toBeInstanceOf(User);
-            expect(getLastFetchCall()).toBeUndefined();
+            expect(getLastRequest()).toBeUndefined();
         });
 
         it('should save the given attributes', async () => {
@@ -290,8 +290,8 @@ describe('Model', () => {
 
             await user.save({ name: 'new name' });
 
-            expect(getLastFetchCall()?.method).toBe('patch');
-            expect(getLastFetchCall()?.url).toContain(finish(user.getEndpoint(), '/') + String(user.getKey()));
+            expect(getLastRequest()?.method).toBe('patch');
+            expect(getLastRequest()?.url).toContain(finish(user.getEndpoint(), '/') + String(user.getKey()));
         });
 
         it('should send a POST request if the model not yet exists', async () => {
@@ -301,7 +301,7 @@ describe('Model', () => {
 
             await user.save({});
 
-            expect(getLastFetchCall()?.method).toBe('post');
+            expect(getLastRequest()?.method).toBe('post');
         });
 
         it('should send all attributes if model doesn\'t exist', async () => {
@@ -311,7 +311,7 @@ describe('Model', () => {
             await thisUser.save({ customAttr: 1 });
 
 
-            expect(getLastFetchCall()?.body).toStrictEqual({
+            expect(getLastRequest()?.body).toStrictEqual({
                 /* eslint-disable @typescript-eslint/naming-convention */
                 my_attr: 1,
                 custom_attr: 1,

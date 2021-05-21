@@ -2,7 +2,7 @@ import LogicException from '../../../src/Exceptions/LogicException';
 import fetchMock from 'jest-fetch-mock';
 import API from '../../../src/Services/API';
 import ApiResponseHandler from '../../../src/Services/ApiResponseHandler';
-import { buildResponse, getLastFetchCall, mockUserModelResponse } from '../../test-helpers';
+import { buildResponse, getLastRequest, mockUserModelResponse } from '../../test-helpers';
 import User from '../../mock/Models/User';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
 import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
@@ -36,7 +36,7 @@ describe('CallsApi', () => {
             await caller.call('post', { someValue: 1 });
 
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            expect(getLastFetchCall()?.body).toStrictEqual({ some_value: 1 });
+            expect(getLastRequest()?.body).toStrictEqual({ some_value: 1 });
         });
 
         it('should recursively cast the keys to any depth', async () => {
@@ -49,7 +49,7 @@ describe('CallsApi', () => {
             });
 
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            expect(getLastFetchCall()?.body).toStrictEqual({ some_value: { another_value: 1 } });
+            expect(getLastRequest()?.body).toStrictEqual({ some_value: { another_value: 1 } });
         });
 
         it('should get the serverAttributeCasing from the extending model', async () => {
@@ -72,7 +72,7 @@ describe('CallsApi', () => {
                 }
             });
 
-            expect(getLastFetchCall()?.body).toStrictEqual({ someValue: { anotherValue: 1 } });
+            expect(getLastRequest()?.body).toStrictEqual({ someValue: { anotherValue: 1 } });
         });
 
         it('should not cast keys for form data', async () => {
@@ -83,8 +83,8 @@ describe('CallsApi', () => {
             // @ts-expect-error
             await caller.call('post', formData);
 
-            expect((getLastFetchCall()?.body as FormData).has('my_field')).toBe(true);
-            expect((getLastFetchCall()?.body as FormData).has('myField')).toBe(false);
+            expect((getLastRequest()?.body as FormData).has('my_field')).toBe(true);
+            expect((getLastRequest()?.body as FormData).has('myField')).toBe(false);
         });
     });
 
@@ -124,8 +124,8 @@ describe('CallsApi', () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse()));
             // @ts-expect-error
             await caller.call('get');
-            expect(getLastFetchCall()?.headers.has('custom')).toBe(true);
-            expect(getLastFetchCall()?.headers.get('custom')).toBe('header');
+            expect(getLastRequest()?.headers.has('custom')).toBe(true);
+            expect(getLastRequest()?.headers.get('custom')).toBe('header');
         });
 
         it('should get the HandlesApiResponse from the Configuration if set',  async () => {
@@ -345,7 +345,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(user);
 
             await caller.get();
-            expect(getLastFetchCall()?.method).toBe('get');
+            expect(getLastRequest()?.method).toBe('get');
         });
 
         it('should return a promise with new model or model collection', async () => {
@@ -380,7 +380,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(User.factory().create() as User);
             await caller.get({ myParam: 1 });
 
-            expect(getLastFetchCall()?.url)
+            expect(getLastRequest()?.url)
                 .toBe(`${config.get('baseEndPoint')!}/${caller.getEndpoint()}?${snake('myParam')}=1`);
         });
 
@@ -388,7 +388,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(User.factory().create() as User);
             await caller.whereKey(43).get();
 
-            expect(getLastFetchCall()?.url).toBe(
+            expect(getLastRequest()?.url).toBe(
                 String(config.get('baseEndPoint')) + '/'
                 + caller.getEndpoint()
                 + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=43&wheres[][boolean]=and'
@@ -410,7 +410,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(caller);
             await caller.post({ key: 'value' });
 
-            expect(getLastFetchCall()?.method).toBe('post');
+            expect(getLastRequest()?.method).toBe('post');
         });
 
         it('should return this or new model depending on the response', async () => {
@@ -458,7 +458,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(User.factory().create() as User);
             await caller.post({ key: 'value' });
 
-            expect(getLastFetchCall()?.body).toStrictEqual({
+            expect(getLastRequest()?.body).toStrictEqual({
                 key: 'value',
                 wheres: [
                     {
@@ -477,7 +477,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(caller);
             await caller.put({ key: 'value' });
 
-            expect(getLastFetchCall()?.method).toBe('put');
+            expect(getLastRequest()?.method).toBe('put');
         });
 
         it('should return this or new model depending on the response', async () => {
@@ -525,7 +525,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(User.factory().create() as User);
             await caller.put({ key: 'value' });
 
-            expect(getLastFetchCall()?.body).toStrictEqual({
+            expect(getLastRequest()?.body).toStrictEqual({
                 key: 'value',
                 wheres: [
                     {
@@ -544,7 +544,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(caller);
             await caller.patch({ key: 'value' });
 
-            expect(getLastFetchCall()?.method).toBe('patch');
+            expect(getLastRequest()?.method).toBe('patch');
         });
 
         it('should return this or new model depending on the response', async () => {
@@ -592,7 +592,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(User.factory().create() as User);
             await caller.patch({ key: 'value' });
 
-            expect(getLastFetchCall()?.body).toStrictEqual({
+            expect(getLastRequest()?.body).toStrictEqual({
                 key: 'value',
                 wheres: [
                     {
@@ -620,7 +620,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(caller);
 
             await caller.update({ key: 'value' });
-            expect(getLastFetchCall()?.url).toContain(caller.getEndpoint() + '/' + String(caller.getKey()));
+            expect(getLastRequest()?.url).toContain(caller.getEndpoint() + '/' + String(caller.getKey()));
         });
     });
 
@@ -629,14 +629,14 @@ describe('CallsApi', () => {
             mockUserModelResponse(caller);
             await caller.delete();
 
-            expect(getLastFetchCall()?.method).toBe('delete');
+            expect(getLastRequest()?.method).toBe('delete');
         });
 
         it('should send information in the request body', async () => {
             mockUserModelResponse(caller);
             await caller.delete({ key: 'value' });
 
-            expect(getLastFetchCall()?.body).toStrictEqual({ key: 'value' });
+            expect(getLastRequest()?.body).toStrictEqual({ key: 'value' });
         });
 
         it('should return this or new model depending on the response', async () => {
@@ -686,7 +686,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(User.factory().create() as User);
             await caller.delete();
 
-            expect(getLastFetchCall()?.body).toStrictEqual({
+            expect(getLastRequest()?.body).toStrictEqual({
                 wheres: [
                     {
                         boolean: 'and',

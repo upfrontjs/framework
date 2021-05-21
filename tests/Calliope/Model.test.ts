@@ -249,14 +249,22 @@ describe('Model', () => {
             expect(getLastRequest()?.method).toBe('get');
         });
 
-        it('should return all the models the backend has', async () => {
+        it('should return a ModelCollection', async () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(
                 buildResponse(User.factory().raw())
             ));
 
-            const response = await User.all();
-
+            let response = await User.all();
             expect(response).toBeInstanceOf(ModelCollection);
+            expect(response).toHaveLength(1);
+
+            fetchMock.mockResponseOnce(async () => Promise.resolve(
+                buildResponse(User.factory(2).raw())
+            ));
+
+            response = await User.all();
+            expect(response).toBeInstanceOf(ModelCollection);
+            expect(response).toHaveLength(2);
         });
     });
 

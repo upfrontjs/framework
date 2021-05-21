@@ -1,6 +1,7 @@
 import type { MockResponseInit } from 'jest-fetch-mock';
 import { cloneDeep } from 'lodash';
 import { isObjectLiteral } from '../src/Support/function';
+import Collection from '../src/Support/Collection';
 import type User from './mock/Models/User';
 import fetchMock from 'jest-fetch-mock';
 
@@ -23,6 +24,8 @@ export const buildResponse = (response?: any[] | Record<string, any> | string): 
         responseObject.body = JSON.stringify(value);
     } else if (Array.isArray(response)) {
         responseObject.body = JSON.stringify(response);
+    } else if (Collection.isCollection(response)) {
+        responseObject.body = JSON.stringify(response.toArray());
     } else if (isObjectLiteral(response)) {
         if (!response.body) {
             responseObject.body = JSON.stringify(response);
@@ -43,7 +46,7 @@ interface RequestDescriptor {
     url: string;
     method: 'delete' | 'get' | 'patch' | 'post' | 'put';
     headers: Headers;
-    body?: any;
+    body?: unknown;
 }
 
 /**

@@ -1,6 +1,6 @@
 # Attributes
 
-Models have been given powerful tools to manage data without involved logic and decision trees. There are 4 main parts to be considered when using a model:
+Models have been given powerful tools to manage data without involved logic and decision trees. There are 5 main parts to be considered when using a model:
 
  - [Casting](#casting)
  - [Guarding](#guarding)

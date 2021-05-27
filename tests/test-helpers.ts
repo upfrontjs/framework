@@ -95,5 +95,10 @@ export const types = [
     BigInt,
     Function,
     Boolean,
-    Number
+    Number,
+    Array,
+    Map,
+    Set,
+    WeakSet,
+    Date
 ];

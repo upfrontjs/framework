@@ -50,7 +50,7 @@ interface RequestDescriptor {
 }
 
 /**
- * Arrange information into an object.
+ * Arrange information into an array of objects.
  */
 export const getRequests = (): RequestDescriptor[] => {
     // @ts-expect-error

@@ -89,7 +89,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {Collection<number|string>}
      */
-    public modelKeys(): Collection<number|string|undefined> {
+    public modelKeys(): Collection<number | string | undefined> {
         this._throwIfNotModels();
         return this.map(model => model.getKey());
     }
@@ -103,7 +103,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      * @return {Model|ModelCollection|undefined|any}
      */
     public findByKey(
-        key: (number|string)[]|number|string,
+        key: (number | string)[] | number | string,
         defaultVal?: ModelCollection<T> | T
     ): T | any | this | undefined {
         this._throwIfNotModels();
@@ -140,7 +140,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {this}
      */
-    public unique(key?: string|((model: T) => any)): this {
+    public unique(key?: string | ((model: T) => any)): this {
         this._throwIfNotModels();
         const modelArray: T[] = [];
 
@@ -188,7 +188,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {this}
      */
-    public duplicates<U>(key?: string|((model: T) => U)): this {
+    public duplicates<U>(key?: string | ((model: T) => U)): this {
         this._throwIfNotModels();
 
         const array: T[] = this.toArray();
@@ -235,7 +235,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {this}
      */
-    public diff(models: T|T[]): this {
+    public diff(models: T | T[]): this {
         this._throwIfNotModels();
         const modelCollection = ModelCollection.isModelCollection<T>(models)
             ? models
@@ -302,7 +302,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {this}
      */
-    public intersect(models: T|T[]): this {
+    public intersect(models: T | T[]): this {
         models = ModelCollection.isModelCollection<T>(models)
             ? models.toArray()
             : Array.isArray(models) ? models : [models];

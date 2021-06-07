@@ -189,7 +189,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @param {string[]|number[]} ids
      */
-    public async findMany(ids: (number|string)[]): Promise<ModelCollection<Model>> {
+    public async findMany(ids: (number | string)[]): Promise<ModelCollection<Model>> {
         let response = await this
             .resetQueryParameters()
             .whereKey(ids)
@@ -207,7 +207,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @see Model.prototype.findMany
      */
-    public static async findMany(ids: (number|string)[]): Promise<ModelCollection<Model>> {
+    public static async findMany(ids: (number | string)[]): Promise<ModelCollection<Model>> {
         return new this().findMany(ids);
     }
 

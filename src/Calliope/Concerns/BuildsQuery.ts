@@ -2,8 +2,8 @@ import InvalidArgumentException from '../../Exceptions/InvalidArgumentException'
 import HasAttributes from './HasAttributes';
 import type Model from '../Model';
 
-type BooleanOperator = 'and'|'or';
-type Direction = 'asc'|'desc';
+type BooleanOperator = 'and' | 'or';
+type Direction = 'asc' | 'desc';
 type Operator = '!=' | '<' | '<=' | '=' | '>' | '>=' | 'between' | 'in' | 'like' | 'notBetween' | 'notIn';
 type WhereDescription = {
     column: string;
@@ -255,7 +255,12 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public where(column: string, operator: Operator|unknown, value?: unknown, boolean: BooleanOperator = 'and'): this {
+    public where(
+        column: string,
+        operator: Operator | unknown,
+        value?: unknown,
+        boolean: BooleanOperator = 'and'
+    ): this {
         return this.addWhereConstraint(
             column,
             arguments.length > 2 ? operator as Operator : '=',
@@ -278,7 +283,7 @@ export default class BuildsQuery extends HasAttributes {
      */
     public static where(
         column: string,
-        operator: Operator|unknown,
+        operator: Operator | unknown,
         value?: unknown,
         boolean: BooleanOperator = 'and'
     ): BuildsQuery {
@@ -299,7 +304,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public orWhere(column: string, operator: Operator|any, value?: any): this {
+    public orWhere(column: string, operator: Operator | any, value?: any): this {
         return this.where(column, value ? operator : '=', value ? value : operator, 'or');
     }
 
@@ -750,7 +755,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public select(columns: string[]|string): this {
+    public select(columns: string[] | string): this {
         this.columns.push(...Array.isArray(columns) ? columns : [columns]);
 
         return this;
@@ -765,7 +770,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.select
      */
-    public static select(columns: string[]|string): BuildsQuery {
+    public static select(columns: string[] | string): BuildsQuery {
         return BuildsQuery.newQuery().select(columns);
     }
 
@@ -776,7 +781,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public has(relations: string[]|string): this {
+    public has(relations: string[] | string): this {
         this.relationsExists.push(...Array.isArray(relations) ? relations : [relations]);
 
         return this;
@@ -791,7 +796,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.has
      */
-    public static has(relations: string[]|string): BuildsQuery {
+    public static has(relations: string[] | string): BuildsQuery {
         return BuildsQuery.newQuery().has(relations);
     }
 
@@ -802,7 +807,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public with(relations: string[]|string): this {
+    public with(relations: string[] | string): this {
         this.withs.push(...Array.isArray(relations) ? relations : [relations]);
 
         return this;
@@ -817,7 +822,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.with
      */
-    public static with(relations: string[]|string): BuildsQuery {
+    public static with(relations: string[] | string): BuildsQuery {
         return BuildsQuery.newQuery().with(relations);
     }
 
@@ -826,7 +831,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @param relations
      */
-    public without(relations: string[]|string): this {
+    public without(relations: string[] | string): this {
         this.withouts.push(...Array.isArray(relations) ? relations : [relations]);
 
         return this;
@@ -841,7 +846,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.without
      */
-    public static without(relations: string[]|string): BuildsQuery {
+    public static without(relations: string[] | string): BuildsQuery {
         return BuildsQuery.newQuery().without(relations);
     }
 
@@ -852,7 +857,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public scope(scopes: string[]|string): this {
+    public scope(scopes: string[] | string): this {
         this.scopes.push(...Array.isArray(scopes) ? scopes : [scopes]);
 
         return this;
@@ -867,7 +872,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.scope
      */
-    public static scope(scopes: string[]|string): BuildsQuery {
+    public static scope(scopes: string[] | string): BuildsQuery {
         return BuildsQuery.newQuery().scope(scopes);
     }
 
@@ -879,7 +884,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public orderBy(column: string, direction: 'asc'|'desc' = 'asc'): this {
+    public orderBy(column: string, direction: 'asc' | 'desc' = 'asc'): this {
         this.orders.push({
             column,
             direction
@@ -898,7 +903,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.orderBy
      */
-    public static orderBy(column: string, direction: 'asc'|'desc' = 'asc'): BuildsQuery {
+    public static orderBy(column: string, direction: 'asc' | 'desc' = 'asc'): BuildsQuery {
         return BuildsQuery.newQuery().orderBy(column, direction);
     }
 

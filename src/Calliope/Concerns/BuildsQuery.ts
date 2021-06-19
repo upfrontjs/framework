@@ -5,6 +5,7 @@ import type Model from '../Model';
 type BooleanOperator = 'and' | 'or';
 type Direction = 'asc' | 'desc';
 type Operator = '!=' | '<' | '<=' | '=' | '>' | '>=' | 'between' | 'in' | 'like' | 'notBetween' | 'notIn';
+type Order = { column: string; direction: Direction };
 type WhereDescription = {
     column: string;
     operator: Operator;
@@ -17,7 +18,7 @@ type QueryParams = Partial<{
     withs: string[];
     scopes: string[];
     relationsExists: string[];
-    orders: { column: string; direction: Direction }[];
+    orders: Order[];
     distinctOnly: boolean;
     offset: number;
     limit: number;
@@ -94,10 +95,11 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @type {object}
      */
-    protected orders: { column: string; direction: Direction }[] = [];
+    protected orders: Order[] = [];
 
     /**
-     * Flag indicating that only distinct values should be returned
+     * Flag indicating that only distinct values should be returned.
+     *
      * @protected
      *
      * @type {boolean}
@@ -129,7 +131,9 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @type {string[]}
      */
-    private readonly operators = ['=', '<', '>', '<=', '>=', '!=', 'like', 'in', 'notIn', 'between', 'notBetween'];
+    private readonly operators: Operator[] = [
+        '=', '<', '>', '<=', '>=', '!=', 'like', 'in', 'notIn', 'between', 'notBetween'
+    ];
 
     /**
      * Return the instantiated class.
@@ -884,7 +888,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public orderBy(column: string, direction: 'asc' | 'desc' = 'asc'): this {
+    public orderBy(column: string, direction: Direction = 'asc'): this {
         this.orders.push({
             column,
             direction
@@ -903,7 +907,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.orderBy
      */
-    public static orderBy(column: string, direction: 'asc' | 'desc' = 'asc'): BuildsQuery {
+    public static orderBy(column: string, direction: Direction = 'asc'): BuildsQuery {
         return BuildsQuery.newQuery().orderBy(column, direction);
     }
 

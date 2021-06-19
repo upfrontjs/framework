@@ -140,7 +140,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {this}
      */
-    public unique(key?: string | ((model: T) => any)): this {
+    public override unique(key?: string | ((model: T) => any)): this {
         this._throwIfNotModels();
         const modelArray: T[] = [];
 
@@ -175,7 +175,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {boolean}
      */
-    public hasDuplicates(key?: string): boolean {
+    public override hasDuplicates(key?: string): boolean {
         return !!new ModelCollection(this.toArray()).duplicates(key).length;
     }
 
@@ -188,7 +188,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {this}
      */
-    public duplicates<U>(key?: string | ((model: T) => U)): this {
+    public override duplicates<U>(key?: string | ((model: T) => U)): this {
         this._throwIfNotModels();
 
         const array: T[] = this.toArray();
@@ -235,7 +235,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {this}
      */
-    public diff(models: T | T[]): this {
+    public override diff(models: T | T[]): this {
         this._throwIfNotModels();
         const modelCollection = ModelCollection.isModelCollection<T>(models)
             ? models
@@ -302,7 +302,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {this}
      */
-    public intersect(models: T | T[]): this {
+    public override intersect(models: T | T[]): this {
         models = ModelCollection.isModelCollection<T>(models)
             ? models.toArray()
             : Array.isArray(models) ? models : [models];
@@ -323,7 +323,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @see Model#is
      */
-    public delete(model: T): this {
+    public override delete(model: T): this {
         this._throwIfNotModels();
 
         return this._newInstance(this.toArray().filter(item => !item.is(model)));
@@ -336,7 +336,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {this}
      */
-    public union(iterable: ModelCollection<T> | T[]): this {
+    public override union(iterable: ModelCollection<T> | T[]): this {
         this._throwIfNotModels(iterable);
 
         const collection = this._newInstance(this.toArray());
@@ -352,7 +352,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {boolean}
      */
-    public includes(model: T): boolean {
+    public override includes(model: T): boolean {
         this._throwIfNotModels();
         const id = this._getArgumentKeys(model)[0];
 
@@ -364,7 +364,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @param {...Model} items
      */
-    public push(...items: T[]): number {
+    public override push(...items: T[]): number {
         this._throwIfNotModels(Array.of(...items));
 
         return super.push(...items);
@@ -375,7 +375,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @param {...Model} items
      */
-    public unshift(...items: T[]): number {
+    public override unshift(...items: T[]): number {
         this._throwIfNotModels(Array.of(...items));
 
         return super.unshift(...items);
@@ -384,7 +384,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
     /**
      * @inheritDoc
      */
-    public map<U extends Model | unknown>(
+    public override map<U extends Model | unknown>(
         callback: (value: T, index: number, array: T[]) => U,
         thisArg?: any
     ): [U] extends [Model] ? ModelCollection<U> : Collection<U> {
@@ -402,7 +402,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
     /**
      * @inheritDoc
      */
-    public toJson(): string {
+    public override toJson(): string {
         return JSON.stringify(this.toArray().map(model => JSON.parse(model.toJson())));
     }
 }

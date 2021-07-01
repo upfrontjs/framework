@@ -62,7 +62,8 @@
         "lint": "eslint . --cache --fix --ext .ts",
         "build": "rollup -c && tsc --emitDeclarationOnly",
         "docs:api": "[ ! -d './types' ] && tsc --emitDeclarationOnly || echo './types folder exists' && npx typedoc",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "commit": "commit"
     },
     "dependencies": {
         "lodash": "^4.17.20",
@@ -71,6 +72,9 @@
         "uuid": "^8.3.2"
     },
     "devDependencies": {
+        "@commitlint/config-conventional": "^12.1.4",
+        "@commitlint/prompt-cli": "^12.1.4",
+        "@commitlint/types": "^12.1.4",
         "@rollup/plugin-typescript": "^8.1.0",
         "@types/jest": "^26.0.19",
         "@types/lodash": "^4.14.167",
@@ -79,6 +83,7 @@
         "@types/uuid": "^8.3.0",
         "@typescript-eslint/eslint-plugin": "^4.11.0",
         "@typescript-eslint/parser": "^4.11.0",
+        "commitlint": "^12.1.4",
         "eslint": "^7.16.0",
         "eslint-plugin-import": "^2.22.1",
         "eslint-plugin-jest": "^24.1.3",

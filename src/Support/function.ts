@@ -1,5 +1,5 @@
 /**
- * Determine whether the given value is a non-null object not including the array type or not.
+ * Determine whether the given value is a non-null object not including the array type.
  *
  * @param {any} value
  *
@@ -10,7 +10,7 @@ export function isObjectLiteral<T extends Record<any, any>>(value: any): value i
 }
 
 /**
- * Determine whether the given value is a class that can be called with the "new" keyword.
+ * Determine whether the given value is a user defined class that can be called with the "new" keyword.
  *
  * @param {any} value
  *

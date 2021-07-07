@@ -1,5 +1,5 @@
 import User from '../../mock/Models/User';
-import { buildResponse, getLastFetchCall, mockUserModelResponse } from '../../test-helpers';
+import { buildResponse, getLastRequest, mockUserModelResponse } from '../../test-helpers';
 import { advanceTo } from 'jest-date-mock';
 import { finish, snake } from '../../../src';
 import fetchMock from 'jest-fetch-mock';
@@ -50,7 +50,7 @@ describe('SoftDeletes', () => {
             softDeletes.setAttribute(softDeletes.getDeletedAtColumn(), new Date().toISOString());
             await softDeletes.delete();
 
-            expect(getLastFetchCall()).toBeUndefined();
+            expect(getLastRequest()).toBeUndefined();
         });
 
         it('should call the parent delete method if not using soft deletes', async () => {
@@ -62,7 +62,7 @@ describe('SoftDeletes', () => {
 
             await softDeletes.delete();
 
-            expect(getLastFetchCall()?.body).toBeUndefined();
+            expect(getLastRequest()?.body).toBeUndefined();
         });
 
         it('should send a DELETE request', async () => {
@@ -70,8 +70,8 @@ describe('SoftDeletes', () => {
 
             await softDeletes.delete();
 
-            expect(getLastFetchCall()?.method).toBe('delete');
-            expect(getLastFetchCall()?.url)
+            expect(getLastRequest()?.method).toBe('delete');
+            expect(getLastRequest()?.url)
                 .toContain(finish(softDeletes.getEndpoint(), '/') + String(softDeletes.getKey()));
         });
 
@@ -84,7 +84,7 @@ describe('SoftDeletes', () => {
 
             await softDeletes.delete();
 
-            expect(getLastFetchCall()?.body)
+            expect(getLastRequest()?.body)
                 .toStrictEqual({ [snake(softDeletes.getDeletedAtColumn())]: now.toISOString() });
         });
 
@@ -133,7 +133,7 @@ describe('SoftDeletes', () => {
 
             softDeletes = await softDeletes.restore();
 
-            expect(getLastFetchCall()).toBeUndefined();
+            expect(getLastRequest()).toBeUndefined();
         });
 
         it('should set the deleted at column to undefined', async () => {
@@ -153,9 +153,9 @@ describe('SoftDeletes', () => {
 
             softDeletes = await softDeletes.restore()!;
 
-            expect(getLastFetchCall()?.method).toBe('patch');
-            expect(getLastFetchCall()?.body).toStrictEqual({ [snake(softDeletes.getDeletedAtColumn())]: null });
-            expect(getLastFetchCall()?.url)
+            expect(getLastRequest()?.method).toBe('patch');
+            expect(getLastRequest()?.body).toStrictEqual({ [snake(softDeletes.getDeletedAtColumn())]: null });
+            expect(getLastRequest()?.url)
                 .toContain(finish(softDeletes.getEndpoint(), '/') + String(softDeletes.getKey()));
         });
 

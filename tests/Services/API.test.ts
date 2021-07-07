@@ -8,7 +8,7 @@ class APITester extends API {
     public getConfig(
         endpoint: string,
         method: 'delete' | 'get' | 'patch' | 'post' | 'put',
-        data?: Record<string, any>,
+        data?: FormData | Record<string, unknown>,
         customHeaders?: Record<string, string[] | string>
     ): { url: string; requestInit: RequestInit } {
         return this.initConfig(endpoint, method, data, customHeaders);

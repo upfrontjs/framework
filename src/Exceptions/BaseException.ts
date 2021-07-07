@@ -4,5 +4,7 @@ export default class BaseException extends Error {
      *
      * @type {string}
      */
-    public readonly name: string = this.constructor.name;
+    public get name(): string {
+        return this.constructor.name;
+    }
 }

@@ -20,7 +20,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
+      - uses: actions/cache@v2
         with:
+          key: npm-${{ hashFiles('./package-lock.json') }}
+          path: ~/.npm
+          restore-keys: |
+            npm-
           node-version: 15
           check-latest: true
       - run: npm ci

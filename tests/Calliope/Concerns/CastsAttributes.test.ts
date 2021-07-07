@@ -16,7 +16,7 @@ class CastingClass extends User {
         key: string,
         value: any,
         method: keyof AttributeCaster = 'get'
-    ): never | unknown {
+    ): unknown {
         return this.castAttribute(key, value, this.getRawAttributes(), method);
     }
 }

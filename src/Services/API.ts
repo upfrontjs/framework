@@ -63,7 +63,7 @@ export default class API implements ApiCaller {
         customHeaders?: Record<string, string[] | string>
     ): { url: string; requestInit: RequestInit } {
         const initOptions: RequestInit = { method: method.toLowerCase() };
-        const configHeaders = new Headers(new GlobalConfig().get('headers', undefined) as HeadersInit|undefined);
+        const configHeaders = new Headers(new GlobalConfig().get('headers', undefined) as HeadersInit | undefined);
 
         // merge in the user provided RequestInit object
         if (isObjectLiteral(this.requestOptions)) {

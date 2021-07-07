@@ -1,6 +1,7 @@
 import type { MockResponseInit } from 'jest-fetch-mock';
 import { cloneDeep } from 'lodash';
 import { isObjectLiteral } from '../src/Support/function';
+import Collection from '../src/Support/Collection';
 import type User from './mock/Models/User';
 import fetchMock from 'jest-fetch-mock';
 
@@ -23,6 +24,8 @@ export const buildResponse = (response?: any[] | Record<string, any> | string): 
         responseObject.body = JSON.stringify(value);
     } else if (Array.isArray(response)) {
         responseObject.body = JSON.stringify(response);
+    } else if (Collection.isCollection(response)) {
+        responseObject.body = JSON.stringify(response.toArray());
     } else if (isObjectLiteral(response)) {
         if (!response.body) {
             responseObject.body = JSON.stringify(response);
@@ -39,31 +42,29 @@ export const mockUserModelResponse = (user: User): void => {
     fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(user.getRawAttributes())));
 };
 
-type FetchCall = {
+interface RequestDescriptor {
     url: string;
     method: 'delete' | 'get' | 'patch' | 'post' | 'put';
     headers: Headers;
-    body?: any;
-};
+    body?: unknown;
+}
 
 /**
- * Arrange information into an object.
+ * Arrange information into an array of objects.
  */
-export const getFetchCalls = (): FetchCall[] => {
+export const getRequests = (): RequestDescriptor[] => {
     // @ts-expect-error
     const calls = fetch.mock.calls;
 
-    return calls.map((array: [string, Partial<FetchCall>]) => {
+    return calls.map((array: [string, Partial<RequestDescriptor>]) => {
         return Object.assign(array[1], { url: array[0] });
     });
 };
 
-export const getLastFetchCall = (): FetchCall | undefined => {
-    const calls = getFetchCalls();
+export const getLastRequest = (): RequestDescriptor | undefined => {
+    const calls = getRequests();
 
-    if (!calls.length) {
-        return;
-    }
+    if (!calls.length) return;
 
     const lastCall = calls[calls.length - 1];
 
@@ -94,5 +95,10 @@ export const types = [
     BigInt,
     Function,
     Boolean,
-    Number
+    Number,
+    Array,
+    Map,
+    Set,
+    WeakSet,
+    Date
 ];

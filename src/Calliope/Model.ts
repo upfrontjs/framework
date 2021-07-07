@@ -28,11 +28,11 @@ export default class Model extends SoftDeletes implements HasFactory {
         const lastSyncedAt = '_' + this.setStringCase('last_synced_at');
 
         if (boolean && this.usesTimestamps()) {
-            boolean = !!this.getAttribute(this.getCreatedAtColumn(), false);
+            boolean = !!this.getAttribute(this.getCreatedAtColumn());
         }
 
         if (boolean && this.usesSoftDeletes()) {
-            boolean = !this.getAttribute(this.getDeletedAtColumn(), false);
+            boolean = !this.getAttribute(this.getDeletedAtColumn());
         }
 
         return boolean && lastSyncedAt in this && !!this[lastSyncedAt];
@@ -189,7 +189,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @param {string[]|number[]} ids
      */
-    public async findMany(ids: (number|string)[]): Promise<ModelCollection<Model>> {
+    public async findMany(ids: (number | string)[]): Promise<ModelCollection<Model>> {
         let response = await this
             .resetQueryParameters()
             .whereKey(ids)
@@ -207,7 +207,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @see Model.prototype.findMany
      */
-    public static async findMany(ids: (number|string)[]): Promise<ModelCollection<Model>> {
+    public static async findMany(ids: (number | string)[]): Promise<ModelCollection<Model>> {
         return new this().findMany(ids);
     }
 
@@ -232,7 +232,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @internal
      */
-    protected throwIfDoesntExists(methodName: string): never | void {
+    protected throwIfDoesntExists(methodName: string): void {
         if (!this.exists) {
             throw new LogicException(
                 'Attempted to call ' + methodName + ' on \'' + this.getName()

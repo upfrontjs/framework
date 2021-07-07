@@ -53,6 +53,7 @@ The full typings for the possible values is the following:
 type BooleanOperator = 'and' | 'or';
 type Direction = 'asc' | 'desc';
 type Operator = '!=' | '<' | '<=' | '=' | '>' | '>=' | 'between' | 'in' | 'like' | 'notBetween' | 'notIn';
+type Order = { column: string; direction: Direction };
 type WhereDescription = {
     column: string;
     operator: Operator;
@@ -60,12 +61,12 @@ type WhereDescription = {
     boolean: BooleanOperator;
 };
 type QueryParams = Partial<{
-    wheres: WhereDescription[];
+    wheres: WhereDescription[]; // where the row tests true these conditions
     columns: string[]; // select only these columns
     withs: string[]; // return with these relations
     scopes: string[]; // apply these scopes
     relationsExists: string[]; // only return if these relations exists
-    orders: { column: string; direction: Direction }[]; // return records in this order
+    orders: Order[]; // return records in this order
     distinctOnly: boolean; // return unique records only
     offset: number; // skip this many records
     limit: number; // limit the number of records to this

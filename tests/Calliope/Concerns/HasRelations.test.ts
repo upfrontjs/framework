@@ -8,7 +8,7 @@ import type Model from '../../../src/Calliope/Model';
 import Contract from '../../mock/Models/Contract';
 import FileModel from '../../mock/Models/FileModel';
 import fetchMock from 'jest-fetch-mock';
-import { buildResponse, getLastFetchCall } from '../../test-helpers';
+import { buildResponse, getLastRequest } from '../../test-helpers';
 import { cloneDeep } from 'lodash';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import Collection from '../../../src/Support/Collection';
@@ -198,7 +198,7 @@ describe('HasRelations', () => {
 
             await hasRelations.load('file');
 
-            expect(getLastFetchCall()).toBeUndefined();
+            expect(getLastRequest()).toBeUndefined();
         });
 
         it('should throw an error if any of the relations are not defined',  async () => {
@@ -221,7 +221,7 @@ describe('HasRelations', () => {
         it('should query the related model if only 1 relation is required', async () => {
             await hasRelations.load(['team'], true);
 
-            expect(getLastFetchCall()?.url).toBe(
+            expect(getLastRequest()?.url).toBe(
                 String(config.get('baseEndPoint'))
                 + '/' + String(hasRelations.team.getEndpoint())
                 + '/' + String(hasRelations.team.getKey())
@@ -295,7 +295,7 @@ describe('HasRelations', () => {
             async () => {
                 await hasRelations.load(['file', 'files']);
 
-                expect(getLastFetchCall()?.url).toBe(
+                expect(getLastRequest()?.url).toBe(
                     String(config.get('baseEndPoint'))
                     + '/' + String(hasRelations.getEndpoint())
                     + '/' + String(hasRelations.getKey())

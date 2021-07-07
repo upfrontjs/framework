@@ -329,7 +329,7 @@ describe('Collection', () => {
             collection = new Collection(elements);
 
             expect(
-                collection.duplicates((obj: Record<string, number|string>) => String(obj.id) + String(obj.name))
+                collection.duplicates((obj: Record<string, number | string>) => String(obj.id) + String(obj.name))
             ).toHaveLength(2);
         });
     });

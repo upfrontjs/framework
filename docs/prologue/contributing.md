@@ -37,13 +37,19 @@ Work in Progress pull requests are also welcome to get feedback early on, or if 
 
 ## Commit Message Formats
 
-Commit messages are integral to navigating version control, be it by a human or automated tool. To attempt to standardise the messages please follow the below guidance on formatting your commit messages:
+Commit messages are integral to navigating version control, be it by a human or automated tool. To attempt to standardise the messages upfront uses [conventional commit messages](https://www.npmjs.com/package/@commitlint/config-conventional) e.g.:
  - `feat: ` - commit for a feature pull request e.g.:
 ```git
     feat: Add isEmpty method to the Collection class
     
     Added isEmpty method as previously discussed on
     https://github.com/....
+```
+```git
+    feat(graphql): Started building the GraphQL driver
+    
+    - Added response parsing support
+    - Added request compiling service
 ```
  - `fix: ` - commit for bug fixing pull request e.g.:
 ```git
@@ -57,13 +63,6 @@ Commit messages are integral to navigating version control, be it by a human or 
 ```git
     chore: Updated dependencies
 ```
- - `wip: ` - commit for a work-in-progress branch e.g.:
-```git
-    wip: Started building the GraphQL driver
-    
-    - Added response parsing support
-    - Added request compiling service
-```
  - `docs: ` - commit for a branch updating the documentation e.g.:
 ```git
     docs: Clarified testing helper's description
@@ -71,8 +70,7 @@ Commit messages are integral to navigating version control, be it by a human or 
 
 If your commit is related to a discussion/issue on github, please [link to it](https://docs.github.com/en/github/managing-your-work-on-github/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword) in your commit message.
 
-
-More guidance on commit messages can be found at the [resources](#resources) section.
+If need more guidance beyond the convntional format, you may use `npm run commit` which will help build a commit message. Additional help can be found at the [resources](#resources) section.
 
 ## Documentation
 

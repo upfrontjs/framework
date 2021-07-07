@@ -658,7 +658,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @throws {Error}
      */
-    public pluck(properties: string[] | string): Collection<any> | never {
+    public pluck(properties: string[] | string): Collection<any> {
         if (!this._allAreObjects()) {
             throw new TypeError('Every item needs to be an object to be able to access its properties');
         }

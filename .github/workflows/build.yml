@@ -1,18 +1,20 @@
-name: Lint
+name: Build
 
 on:
   pull_request:
     types: [ready_for_review, opened, synchronize, reopened]
     paths:
-      - '**/*.ts'
+      - 'tsconfig.json'
+      - 'rollup.config.js'
+      - 'src/**/*.ts'
+      - 'package-lock.json'
     branches:
-      - main
       - 'release/*'
 
 jobs:
   build:
     if: github.event.pull_request.draft == false
-    name: Lint
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -26,5 +28,5 @@ jobs:
           node-version: 15
           check-latest: true
       - run: npm ci
-      - name: ESLint
-        run: node node_modules/.bin/eslint . --ext .ts
+      - name: Rollup
+        run: npm run build

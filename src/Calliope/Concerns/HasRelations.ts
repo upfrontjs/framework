@@ -164,7 +164,7 @@ export default class HasRelations extends CallsApi {
      */
     public addRelation(
         name: string,
-        value: Attributes|Attributes[]|Collection<Attributes>|Model|ModelCollection<Model>
+        value: Attributes | Attributes[] | Collection<Attributes> | Model | ModelCollection<Model>
     ): this {
         name = this.removeRelationPrefix(name);
 
@@ -468,7 +468,7 @@ export default class HasRelations extends CallsApi {
      *
      * @param {string=} name
      */
-    protected getMorphs(name?: string): Record<'id'|'type', string> {
+    protected getMorphs(name?: string): Record<'id' | 'type', string> {
         name = name ?? finish((this as unknown as Model).getName().toLowerCase(), 'able');
 
         return { id: name + '_id', type: name + '_type' };

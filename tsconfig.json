@@ -5,7 +5,6 @@
         "declarationMap": true,
         "importHelpers": true,
         "module": "ESNext",
-        "rootDir": "src",
         "sourceMap": true,
         "downlevelIteration": true,
         "incremental": true,

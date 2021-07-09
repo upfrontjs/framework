@@ -28,7 +28,7 @@ describe('FactoryBuilder', () => {
         factoryBuilder = new FactoryBuilder(User);
     });
 
-    describe('states()', () => {
+    describe('state()', () => {
         const factoryName: string = new User().factory().constructor.name;
 
         it('should return the model with the states applied', () => {

@@ -20,7 +20,9 @@ module.exports = {
                 'factory',
                 'query-builder',
                 'timestamps', // soft-deletes can also go under timestamps
-                'relations'
+                'relations',
+                'deps',
+                'dev-deps'
             ]
         ],
     }

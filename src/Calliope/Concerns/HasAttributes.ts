@@ -72,7 +72,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
         if (attributes instanceof HasAttributes) {
             // if newing up with a constructor, we'll take the attributes
             // in their current state, not the original.
-            const allProperties = cloneDeep(attributes.getRawAttributes());
+            const allProperties = attributes.getRawAttributes();
 
             if (isObjectLiteral(attributes.relations)) {
                 Object.assign(allProperties, cloneDeep(attributes.relations));
@@ -605,7 +605,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
 
         const relations = (this as unknown as HasRelations).getRelations();
 
-        Object.keys(relations).forEach((relation) =>
+        Object.keys(relations).forEach(relation =>
             objectRepresentation[relation] = JSON.parse(relations[relation]!.toJson()));
 
         return JSON.stringify(objectRepresentation);

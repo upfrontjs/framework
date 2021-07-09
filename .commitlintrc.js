@@ -21,6 +21,7 @@ module.exports = {
                 'query-builder',
                 'timestamps', // soft-deletes can also go under timestamps
                 'relations',
+                'api-calls',
                 'deps',
                 'dev-deps'
             ]

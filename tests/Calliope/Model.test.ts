@@ -182,6 +182,14 @@ describe('Model', () => {
 
             expect(response).toBeInstanceOf(ModelCollection);
         });
+
+        it('should return a ModelCollection even if only one model returned', async () => {
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().create())));
+            const users = await user.findMany([1]);
+
+            expect(users).toBeInstanceOf(ModelCollection);
+            expect(users).toHaveLength(1);
+        });
     });
 
     describe('refresh()', () => {

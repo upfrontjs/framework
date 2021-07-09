@@ -135,7 +135,7 @@ export default class Model extends SoftDeletes implements HasFactory {
             response = new ModelCollection([response]);
         }
 
-        return Promise.resolve(response);
+        return response;
     }
 
     /**
@@ -147,7 +147,7 @@ export default class Model extends SoftDeletes implements HasFactory {
         const dataToSave = Object.assign({}, this.exists ? this.getChanges() : this.getRawAttributes(), data);
 
         if (!Object.keys(dataToSave).length) {
-            return Promise.resolve(this);
+            return this;
         }
 
         const model = await (
@@ -159,7 +159,7 @@ export default class Model extends SoftDeletes implements HasFactory {
             .syncOriginal()
             .setLastSyncedAt();
 
-        return Promise.resolve(this);
+        return this;
     }
 
     /**
@@ -199,7 +199,7 @@ export default class Model extends SoftDeletes implements HasFactory {
             response = new ModelCollection([response]);
         }
 
-        return Promise.resolve(response);
+        return response;
     }
 
     /**
@@ -220,7 +220,7 @@ export default class Model extends SoftDeletes implements HasFactory {
         this.throwIfDoesntExists('refresh');
         const model = await this.reset().select(this.getAttributeKeys()).find(this.getKey()!);
 
-        return Promise.resolve(this.forceFill(model.getRawAttributes()).syncOriginal().setLastSyncedAt());
+        return this.forceFill(model.getRawAttributes()).syncOriginal().setLastSyncedAt();
     }
 
     /**

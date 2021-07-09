@@ -45,7 +45,7 @@ export default class HasRelations extends CallsApi {
         });
 
         if (!relations.length) {
-            return Promise.resolve(this);
+            return this;
         }
 
         if (relations.length === 1) {
@@ -55,7 +55,7 @@ export default class HasRelations extends CallsApi {
 
             this.addRelation(relations[0]!, relation);
 
-            return Promise.resolve(this);
+            return this;
         }
 
         const returnedRelations = (
@@ -69,7 +69,7 @@ export default class HasRelations extends CallsApi {
             this.addRelation(returnedRelation, returnedRelations[returnedRelation]!);
         });
 
-        return Promise.resolve(this);
+        return this;
     }
 
     /**

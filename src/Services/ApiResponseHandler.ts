@@ -31,7 +31,7 @@ export default class ApiResponseHandler implements HandlesApiResponse {
             responseData = responseData.data;
         }
 
-        return Promise.resolve(responseData);
+        return responseData;
     }
 
     /**

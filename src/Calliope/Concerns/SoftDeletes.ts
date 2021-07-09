@@ -62,7 +62,7 @@ export default class SoftDeletes extends HasTimestamps {
         const deletedAt = this.getDeletedAtColumn();
 
         if (this.getAttribute(deletedAt)) {
-            return Promise.resolve(this as unknown as Model);
+            return this as unknown as Model;
         }
 
         // @ts-expect-error
@@ -85,7 +85,7 @@ export default class SoftDeletes extends HasTimestamps {
      */
     public async restore(): Promise<this> {
         if (!this.usesSoftDeletes() || !this.getAttribute(this.getDeletedAtColumn())) {
-            return Promise.resolve(this);
+            return this;
         }
 
         if (!(this as unknown as Model).getKey()) {

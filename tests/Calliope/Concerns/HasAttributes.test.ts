@@ -73,6 +73,26 @@ describe('HasAttributes', () => {
             expect(new User(hasAttributes).getOriginal())
                 .toStrictEqual(hasAttributes.getAttributes());
         });
+
+        it('should not set object values by reference', () => {
+            const attributes = {
+                value: 1,
+                level2: {
+                    value: 1
+                }
+            };
+
+            const user = new User(attributes);
+
+            expect(user.getAttribute('value')).toBe(1);
+            expect(user.getAttribute('level2')).toStrictEqual({ value: 1 });
+
+            attributes.value++;
+            attributes.level2.value++;
+
+            expect(user.getAttribute('value')).toBe(1);
+            expect(user.getAttribute('level2')).toStrictEqual({ value: 1 });
+        });
     });
 
     describe('[Symbol.iterator]()', () => {

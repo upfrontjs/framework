@@ -95,12 +95,17 @@ export default class CallsApi extends BuildsQuery {
         const handlesApiResponse = new (config.get('apiResponseHandler', ApiResponseHandler))!;
 
         if (data && isObjectLiteral<Attributes>(data) && !(data instanceof FormData)) {
-            const setStringCase = (key: string) => this.serverAttributeCasing === 'camel' ? camel(key) : snake(key);
+            /**
+             * Recursively format the keys according to serverAttributeCasing
+             *
+             * @see CallsApi.prototype.serverAttributeCasing
+             */
             const transformValues = (object: Attributes): Attributes => {
+                const setStringCase = (key: string) => this.serverAttributeCasing === 'camel' ? camel(key) : snake(key);
                 const dataWithKeyCasing: Attributes = {};
 
-                Object.keys(object).map(key => {
-                    dataWithKeyCasing[setStringCase(key)] = object[key] && isObjectLiteral(object[key])
+                Object.keys(object).forEach(key => {
+                    dataWithKeyCasing[setStringCase(key)] = isObjectLiteral(object[key])
                         ? transformValues(object[key] as Attributes)
                         : object[key];
                 });

@@ -79,7 +79,9 @@ export default class CallsApi extends BuildsQuery {
         data?: Attributes | FormData,
         customHeaders?: Record<string, string[] | string>
     ): Promise<any> {
-        if (!this.getEndpoint().length) {
+        const endpoint = this.getEndpoint();
+
+        if (!endpoint.length) {
             throw new LogicException(
                 'Endpoint is not defined when calling \''
                 + method + '\' method on \'' + (this as unknown as Model).getName() + '\'.'
@@ -88,7 +90,7 @@ export default class CallsApi extends BuildsQuery {
 
         const config = new GlobalConfig;
         const url = finish(String(config.get('baseEndPoint', '')), '/')
-            + (this.getEndpoint().startsWith('/') ? this.getEndpoint().slice(1) : this.getEndpoint());
+            + (endpoint.startsWith('/') ? endpoint.slice(1) : endpoint);
         const apiCaller = new (config.get('api', API))!;
         const handlesApiResponse = new (config.get('apiResponseHandler', ApiResponseHandler))!;
 

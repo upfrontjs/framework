@@ -193,6 +193,26 @@ describe('CallsApi', () => {
 
             jest.useRealTimers();
         });
+
+        it('should send all the given data', async () => {
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+            // @ts-expect-error
+            await caller.call('post', {
+                falsyKey1: null,
+                falsyKey2: undefined,
+                falsyKey3: false,
+                falsyKey4: 0
+            });
+
+            // undefined is filtered out by JSON.stringify() on the API service
+            expect(getLastRequest()?.body).toStrictEqual({
+                /* eslint-disable @typescript-eslint/naming-convention */
+                falsy_key_1: null,
+                falsy_key_3: false,
+                falsy_key_4: 0
+                /* eslint-enable @typescript-eslint/naming-convention */
+            });
+        });
     });
 
     describe('newInstanceFromResponseData()', () => {

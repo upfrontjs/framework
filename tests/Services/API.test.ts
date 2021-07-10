@@ -1,6 +1,7 @@
 import API from '../../src/Services/API';
 import { config as globalConfig } from '../setupTests';
 import { finish } from '../../src';
+import InvalidArgumentException from '../../src/Exceptions/InvalidArgumentException';
 
 const url = finish(String(globalConfig.get('baseEndPoint')), '/') + 'users';
 
@@ -150,21 +151,11 @@ describe('API', () => {
             expect(newConfig.headers.get('custom')).toBe(header.custom.join(', '));
         });
 
-        it('should only merge custom headers if their value is a string or string[]', () => {
+        it('should throw an error for value not of string type', () => {
             const header: Record<string, null[] | null> = { custom: null };
             // @ts-expect-error
-            const config = api.getConfig(url, 'post', undefined, header).requestInit;
-
-            // @ts-expect-error
-            expect(config.headers.has('custom')).toBe(false);
-
-            header.custom = [null];
-
-            // @ts-expect-error
-            const newConfig = api.getConfig(url, 'post', undefined, header).requestInit;
-
-            // @ts-expect-error
-            expect(newConfig.headers.has('custom')).toBe(false);
+            expect(() => api.getConfig(url, 'post', undefined, header))
+                .toThrow(new InvalidArgumentException('For \'custom\' expected type sting, got: object'));
         });
 
         it('should merge in headers from the config if set', () => {

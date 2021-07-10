@@ -3,6 +3,7 @@ import qs from 'qs';
 import { isObjectLiteral } from '../Support/function';
 import GlobalConfig from '../Support/GlobalConfig';
 import { finish } from '../Support/string';
+import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
 
 /**
  * The default ApiCaller class used by the package.
@@ -63,7 +64,7 @@ export default class API implements ApiCaller {
         customHeaders?: Record<string, string[] | string>
     ): { url: string; requestInit: RequestInit } {
         const initOptions: RequestInit = { method: method.toLowerCase() };
-        const configHeaders = new Headers(new GlobalConfig().get('headers', undefined) as HeadersInit | undefined);
+        const configHeaders = new Headers(new GlobalConfig().get('headers', undefined) );
 
         // merge in the user provided RequestInit object
         if (isObjectLiteral(this.requestOptions)) {
@@ -113,20 +114,21 @@ export default class API implements ApiCaller {
         // append passed in custom headers
         if (isObjectLiteral(customHeaders)) {
             Object.keys(customHeaders).forEach(header => {
-                const headerValue = customHeaders[header];
+                let headerValues = customHeaders[header]!;
 
-                if (Array.isArray(headerValue)) {
-                    headerValue.forEach(value => {
-                        // this isn't redundant once it's transpiled to js
-                        if (typeof value === 'string') {
-                            headers.append(header, value);
-                        }
-                    });
-                } else {
-                    if (typeof headerValue === 'string') {
-                        headers.append(header, headerValue);
-                    }
+                if (!Array.isArray(headerValues)) {
+                    headerValues = [headerValues];
                 }
+
+                headerValues.forEach(value => {
+                    if (typeof value !== 'string') {
+                        throw new InvalidArgumentException(
+                            'For \'' + header + '\' expected type sting, got: ' + typeof value
+                        );
+                    }
+
+                    headers.append(header, value);
+                });
             });
         }
 

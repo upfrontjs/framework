@@ -201,14 +201,14 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
         if (this.hasSetMutator(key)) {
             (this[`set${pascal(key)}Attribute`] as CallableFunction)(cloneDeep(value));
 
-            this.createDescriptors(key);
+            this.createDescriptor(key);
             return this;
         }
 
         if (this.hasCast(key)) {
             this.attributes[key] = this.castAttribute(key, value, this.getRawAttributes(), 'set');
 
-            this.createDescriptors(key);
+            this.createDescriptor(key);
             return this;
         }
 
@@ -227,7 +227,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
         }
 
         this.attributes[key] = cloneDeep(value);
-        this.createDescriptors(key);
+        this.createDescriptor(key);
 
         return this;
     }
@@ -239,7 +239,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {this}
      */
-    protected createDescriptors(keys: string[] | string): this {
+    protected createDescriptor(keys: string[] | string): this {
         keys = Array.isArray(keys) ? keys : [keys];
 
         keys.forEach(key => {

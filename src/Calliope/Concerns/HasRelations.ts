@@ -196,7 +196,7 @@ export default class HasRelations extends CallsApi {
             }
 
             this.relations[name] = value;
-            this.createDescriptors(name);
+            this.createDescriptor(name);
 
             return this;
         }
@@ -231,7 +231,7 @@ export default class HasRelations extends CallsApi {
         }
 
         this.relations[name] = relation;
-        this.createDescriptors(name);
+        this.createDescriptor(name);
 
         return this;
     }

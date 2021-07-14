@@ -283,10 +283,10 @@ describe('HasAttributes', () => {
         });
     });
 
-    describe('createDescriptors()', () => {
+    describe('createDescriptor()', () => {
         it('should create accessors and getters for the given key', () => {
             // @ts-expect-error
-            hasAttributes.createDescriptors('test');
+            hasAttributes.createDescriptor('test');
 
             const descriptor = Object.getOwnPropertyDescriptor(hasAttributes, 'test');
 
@@ -299,7 +299,7 @@ describe('HasAttributes', () => {
         it('should create accessors and getters for multiple keys', () => {
             const keys = ['multiple', 'keys'];
             // @ts-expect-error
-            hasAttributes.createDescriptors(keys);
+            hasAttributes.createDescriptor(keys);
 
             keys.forEach(key => {
                 const descriptor = Object.getOwnPropertyDescriptor(hasAttributes, key);

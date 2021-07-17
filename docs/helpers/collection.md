@@ -352,12 +352,12 @@ collection.tap(collectionCopy => collection.take(2)); // Collection([1, 2, 3, 4,
 
 #### pipe
 
-The `pipe` method executes the given function with the collection. The function mst return the collection.
+The `pipe` method executes the given function with the collection. The function must return the collection.
 ```js
 import { Collection } from '@upfrontjs/framework';
 
 const collection = new Collection([1, 2, 3, 4, 5]);
-collection.tap(collectionCopy => collection.take(2)); // Collection([1, 2])
+collection.pipe(collectionCopy => collection.take(2)); // Collection([1, 2])
 ```
 
 #### dump

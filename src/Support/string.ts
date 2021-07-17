@@ -20,7 +20,7 @@ export function ucFirst(str: string): string {
  *
  * @return {string}
  */
-export function isUuid(str: string): boolean {
+export function isUuid(str: unknown): boolean {
     return typeof str === 'string' && validate(str);
 }
 

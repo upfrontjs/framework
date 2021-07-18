@@ -132,6 +132,10 @@ export default class API implements ApiCaller {
             });
         }
 
+        if (!headers.has('Accept')) {
+            headers.set('Accept', 'application/json');
+        }
+
         initOptions.headers = headers;
 
         return { url: url, requestInit: initOptions };

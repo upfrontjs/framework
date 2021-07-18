@@ -171,6 +171,53 @@ describe('API', () => {
 
             globalConfig.unset('headers');
         });
+
+        it('should set the Accept header if not already set', () => {
+            /* eslint-disable @typescript-eslint/naming-convention */
+            let config = api.getConfig(url, 'post', {}).requestInit;
+
+            // @ts-expect-error
+            expect(config.headers.get('Accept')).toBe('application/json');
+
+            config = api.getConfig(url, 'post', {}, { 'Accept': 'myArgumentValue' }).requestInit;
+            // @ts-expect-error
+            expect(config.headers.get('Accept')).toBe('myArgumentValue');
+
+            globalConfig.set('headers', { 'Accept': 'myGlobalValue' });
+            config = api.getConfig(url, 'post', {}).requestInit;
+            // @ts-expect-error
+            expect(config.headers.get('Accept')).toBe('myGlobalValue');
+            globalConfig.unset('headers');
+
+            Object.defineProperty(api, 'requestOptions', {
+                value: {
+                    headers: { Accept: 'myRequestOptionValue' }
+                } as Partial<RequestInit>
+            });
+            config = api.getConfig(url, 'post', {}).requestInit;
+            // @ts-expect-error
+            expect(config.headers.get('Accept')).toBe('myRequestOptionValue');
+            delete api.myRequestOptionValue;
+
+            Object.defineProperty(api, 'initRequest', {
+                value: (
+                    _url: string,
+                    _method: 'delete' | 'get' | 'patch' | 'post' | 'put',
+                    _data?: FormData | Record<string, unknown>
+                ): Partial<RequestInit> => {
+                    return {
+                        headers: { Accept: 'myInitRequestValue' }
+                    };
+                },
+                configurable: true
+            });
+            config = api.getConfig(url, 'post', {}).requestInit;
+            // @ts-expect-error
+            expect(config.headers.get('Accept')).toBe('myInitRequestValue');
+            delete api.initRequest;
+
+            /* eslint-enable @typescript-eslint/naming-convention */
+        });
     });
 
     describe('call()', () => {

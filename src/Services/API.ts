@@ -99,13 +99,13 @@ export default class API implements ApiCaller {
                     headers.set('Content-Type', 'multipart/form-data');
                     initOptions.body = data;
                 } else {
-                    headers.set('Content-Type', 'application/json; charset=UTF-8');
+                    headers.set('Content-Type', 'application/json; charset="utf-8"');
                     initOptions.body = JSON.stringify(data);
                 }
             } else {
                 headers.set(
                     'Content-Type',
-                    'application/x-www-form-urlencoded; charset=' + String(this.getParamEncodingOptions.charset)
+                    'application/x-www-form-urlencoded; charset="' + String(this.getParamEncodingOptions.charset) + '"'
                 );
                 url = finish(url, '?') + qs.stringify(data, this.getParamEncodingOptions);
             }

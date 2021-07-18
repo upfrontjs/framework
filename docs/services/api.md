@@ -32,8 +32,10 @@ With the default settings, your api has to be ready to parse the requests with t
 
 A sample get request `User.whereKey(1).get()` will encode to the following:
 
-```apacheconf
-https://test-api-endpoint.com/users?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=1&wheres[][boolean]=and
+```http request
+GET https://test-api-endpoint.com/users?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=1&wheres[][boolean]=and
+Content-type: application/x-www-form-urlencoded, charset=utf-8
+Accept: application/json 
 ```
 
 Which is the equivalent of [baseEndPoint](../helpers#baseendpoint) + [endpoint](../calliope/api-calls.md#endpoint) + the following object in the get parameters:

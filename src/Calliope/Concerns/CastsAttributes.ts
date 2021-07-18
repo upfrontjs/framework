@@ -124,7 +124,7 @@ export default class CastsAttributes {
             case 'boolean':
                 return this.castToBoolean(key, value);
             case 'string':
-                return String(value);
+                return this.castToString(key, value);
             case 'number':
                 return this.castToNumber(key, value);
             case 'object':
@@ -207,6 +207,20 @@ export default class CastsAttributes {
         }
 
         return dateTimeLib(value);
+    }
+
+    /**
+     * Cast the given value to a string.
+     *
+     * @param {string} _key
+     * @param {any} value
+     *
+     * @private
+     *
+     * @return {string}
+     */
+    private castToString(_key: string, value: any): string {
+        return String(value);
     }
 
     /**

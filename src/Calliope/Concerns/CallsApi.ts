@@ -268,8 +268,6 @@ export default class CallsApi extends BuildsQuery {
             );
         }
 
-        let result: Model | ModelCollection<Model>;
-
         if (Array.isArray(data)) {
             const collection = new ModelCollection();
 
@@ -278,13 +276,11 @@ export default class CallsApi extends BuildsQuery {
                 collection.push(model.forceFill(attributes).syncOriginal().setLastSyncedAt());
             });
 
-            result = collection;
-        } else {
-            const model = new (this.constructor as typeof Model)();
-            result = model.forceFill(data).syncOriginal().setLastSyncedAt();
+            return collection;
         }
 
-        return result;
+        const model = new (this.constructor as typeof Model)();
+        return model.forceFill(data).syncOriginal().setLastSyncedAt();
     }
 
     /**

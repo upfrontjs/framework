@@ -150,11 +150,24 @@ export default class Model extends SoftDeletes implements HasFactory {
             return this;
         }
 
+        if ('relationType' in this
+            && typeof this.relationType === 'string'
+            && ['hasOne', 'hasMany'].includes(this.relationType)
+        ) {
+            this.wheres = this.wheres.filter(where => {
+                return where.operator === '='
+                    && where.boolean === 'and'
+                    && where.column === this.hasOneOrManyParentKeyName;
+            });
+        }
+
         const model = await (
             this.exists
                 ? this.setEndpoint(finish(this.getEndpoint(), '/') + String(this.getKey())).patch(dataToSave)
                 : this.post(dataToSave)
         );
+        this.hasOneOrManyParentKeyName = undefined;
+
         this.forceFill(Object.assign({}, model.getRawOriginal(), model.getRelations()))
             .syncOriginal()
             .setLastSyncedAt();

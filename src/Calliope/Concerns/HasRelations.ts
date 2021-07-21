@@ -24,6 +24,15 @@ export default class HasRelations extends CallsApi {
     }
 
     /**
+     * The key name of the parent of the hasOne or hasMany relation.
+     * This is used to remove the where query when saving
+     * a new entity like `parent.$child().save({});`
+     *
+     * @protected
+     */
+    protected hasOneOrManyParentKeyName: string | undefined;
+
+    /**
      * Load a relationships from remote.
      *
      * @param {string|string[]} relations
@@ -388,12 +397,14 @@ export default class HasRelations extends CallsApi {
      *
      * @return {Model}
      */
-    public hasOne<T extends Model>(related: new() => T, foreignKey?: string): T {
+    public hasOne<T extends Model>(related: new() => T, foreignKey: string = this.guessForeignKeyName()): T {
         const relatedModel = new related();
 
         HasRelations.configureRelationType(relatedModel, 'hasOne');
+        relatedModel.setAttribute(foreignKey, (this as unknown as Model).getKey());
+        this.hasOneOrManyParentKeyName = foreignKey;
 
-        return relatedModel.where(foreignKey ?? this.guessForeignKeyName(), '=', (this as unknown as Model).getKey());
+        return relatedModel.where(foreignKey, '=', (this as unknown as Model).getKey());
     }
 
     /**
@@ -404,12 +415,14 @@ export default class HasRelations extends CallsApi {
      *
      * @return {Model}
      */
-    public hasMany<T extends Model>(related: new() => T, foreignKey?: string): T {
+    public hasMany<T extends Model>(related: new() => T, foreignKey: string = this.guessForeignKeyName()): T {
         const relatedModel = new related();
 
         HasRelations.configureRelationType(relatedModel, 'hasMany');
+        relatedModel.setAttribute(foreignKey, (this as unknown as Model).getKey());
+        this.hasOneOrManyParentKeyName = foreignKey;
 
-        return relatedModel.where(foreignKey ?? this.guessForeignKeyName(), '=', (this as unknown as Model).getKey());
+        return relatedModel.where(foreignKey, '=', (this as unknown as Model).getKey());
     }
 
     /**

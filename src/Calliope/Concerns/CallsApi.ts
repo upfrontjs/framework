@@ -9,6 +9,8 @@ import type { Attributes } from './HasAttributes';
 import { isObjectLiteral } from '../../Support/function';
 import { finish, plural, snake, camel } from '../../Support/string';
 
+export type Method = 'delete' | 'get' | 'patch' | 'post' | 'put';
+
 export default class CallsApi extends BuildsQuery {
     /**
      * The basic endpoint that model queries.
@@ -75,7 +77,7 @@ export default class CallsApi extends BuildsQuery {
      * @return {Promise<object>}
      */
     protected async call(
-        method: 'delete' | 'get' | 'patch' | 'post' | 'put',
+        method: Method,
         data?: Attributes | FormData,
         customHeaders?: Record<string, string[] | string>
     ): Promise<any> {

@@ -4,6 +4,7 @@ import { isObjectLiteral } from '../Support/function';
 import GlobalConfig from '../Support/GlobalConfig';
 import { finish } from '../Support/string';
 import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
+import type { Method } from '../Calliope/Concerns/CallsApi';
 
 /**
  * The default ApiCaller class used by the package.
@@ -36,7 +37,7 @@ export default class API implements ApiCaller {
      */
     public async call(
         url: string,
-        method: 'delete' | 'get' | 'patch' | 'post' | 'put',
+        method: Method,
         data?: FormData | Record<string, any>,
         customHeaders?: Record<string, string[] | string>
     ): Promise<Response> {
@@ -59,7 +60,7 @@ export default class API implements ApiCaller {
      */
     protected initConfig(
         url: string,
-        method: 'delete' | 'get' | 'patch' | 'post' | 'put',
+        method: Method,
         data?: FormData | Record<string, any>,
         customHeaders?: Record<string, string[] | string>
     ): { url: string; requestInit: RequestInit } {

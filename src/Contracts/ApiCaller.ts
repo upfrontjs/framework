@@ -1,3 +1,5 @@
+import type { Method } from '../Calliope/Concerns/CallsApi';
+
 /**
  * Interface prescribes what's expected to be implemented
  * by an object that initiates api requests.
@@ -24,7 +26,7 @@ export default interface ApiCaller {
      */
     initRequest?: (
         url: string,
-        method: 'delete' | 'get' | 'patch' | 'post' | 'put',
+        method: Method,
         data?: FormData | Record<string, unknown>
     ) => Partial<RequestInit>;
 
@@ -40,7 +42,7 @@ export default interface ApiCaller {
      */
     call: (
         url: string,
-        method: 'delete' | 'get' | 'patch' | 'post' | 'put',
+        method: Method,
         data?: FormData | Record<string, unknown>,
         customHeaders?: Record<string, string[] | string>
     ) => Promise<Response>;

@@ -23,7 +23,7 @@ export default class API implements ApiCaller {
      * @protected
      */
     protected readonly getParamEncodingOptions: qs.IStringifyOptions = {
-        arrayFormat: 'brackets',
+        arrayFormat: 'brackets', // comma does not work currently https://github.com/ljharb/qs/issues/410
         strictNullHandling: true,
         indices: true,
         encodeValuesOnly: true,
@@ -38,10 +38,11 @@ export default class API implements ApiCaller {
     public async call(
         url: string,
         method: Method,
-        data?: FormData | Record<string, any>,
-        customHeaders?: Record<string, string[] | string>
+        data?: FormData | Record<string, unknown>,
+        customHeaders?: Record<string, string[] | string>,
+        queryParameters?: Record<string, unknown>
     ): Promise<Response> {
-        const config = this.initConfig(url, method, data, customHeaders);
+        const config = this.initConfig(url, method, data, customHeaders, queryParameters);
 
         return fetch(config.url, config.requestInit);
     }
@@ -53,19 +54,22 @@ export default class API implements ApiCaller {
      * @param {'get' | 'post' | 'delete' | 'patch' | 'put'} method - The method the request uses.
      * @param {object=} data - The optional data to send with the request.
      * @param {object=} customHeaders - Custom headers to merge into the request.
+     * @param {object=} queryParameters - The query parameters to append to the url
      *
-     * @return {Promise<Response>}
+     * @return {Request}
      *
      * @protected
      */
     protected initConfig(
         url: string,
         method: Method,
-        data?: FormData | Record<string, any>,
-        customHeaders?: Record<string, string[] | string>
+        data?: FormData | Record<string, unknown>,
+        customHeaders?: Record<string, string[] | string>,
+        queryParameters?: Record<string, unknown>
     ): { url: string; requestInit: RequestInit } {
         const initOptions: RequestInit = { method: method.toLowerCase() };
         const configHeaders = new Headers(new GlobalConfig().get('headers'));
+        queryParameters = queryParameters ?? {};
 
         // merge in the user provided RequestInit object
         if (isObjectLiteral(this.requestOptions)) {
@@ -74,7 +78,7 @@ export default class API implements ApiCaller {
 
         // merge in the user provided RequestInit object
         if (this.initRequest && this.initRequest instanceof Function) {
-            const initMethodValue = this.initRequest(url, method, data);
+            const initMethodValue = this.initRequest(url, method, data, queryParameters);
 
             if (isObjectLiteral(initMethodValue)) {
                 Object.assign(initOptions, initMethodValue);
@@ -86,8 +90,11 @@ export default class API implements ApiCaller {
             headers.append(name, value);
         });
 
-        // if explicitly or implicitly a GET method
-        if (!initOptions.method || initOptions.method === 'get') {
+        // ensure method is explicitly set if previously
+        // removed by initRequest or requestOptions
+        initOptions.method = initOptions.method ?? 'get';
+
+        if (initOptions.method === 'get') {
             // given if there was any body it was merged in above,
             // we delete it as GET cannot have a body
             delete initOptions.body;
@@ -104,12 +111,13 @@ export default class API implements ApiCaller {
                     initOptions.body = JSON.stringify(data);
                 }
             } else {
-                headers.set(
-                    'Content-Type',
-                    'application/x-www-form-urlencoded; charset="' + String(this.getParamEncodingOptions.charset) + '"'
-                );
-                url = finish(url, '?') + qs.stringify(data, this.getParamEncodingOptions);
+                // merge in any custom data for appending to the url
+                Object.assign(queryParameters, data);
             }
+        }
+
+        if (Object.keys(queryParameters).length) {
+            url = finish(url, '?') + qs.stringify(queryParameters, this.getParamEncodingOptions);
         }
 
         // append passed in custom headers

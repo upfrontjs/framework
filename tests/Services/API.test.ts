@@ -24,7 +24,7 @@ describe('API', () => {
     });
 
     describe('initConfig()', () => {
-        it('should encode get parameters', () => {
+        it('should encode get parameters correctly', () => {
             const config = api.getConfig(url, 'get', {
                 nested: {
                     objects: [
@@ -40,10 +40,6 @@ describe('API', () => {
                 + '?'
                 + 'nested[objects][][id]=1&nested[objects][][id]=2&array[]=1&array[]=2'
             );
-
-            // @ts-expect-error
-            expect(config.requestInit.headers.get('Content-Type'))
-                .toBe('application/x-www-form-urlencoded; charset=utf-8');
         });
 
         it('should merge in config into the RequestInit from requestOptions', () => {
@@ -133,7 +129,7 @@ describe('API', () => {
 
             expect(config.body).toBe(JSON.stringify(data));
             // @ts-expect-error
-            expect(config.headers.get('Content-Type')).toBe('application/json; charset=UTF-8');
+            expect(config.headers.get('Content-Type')).toBe('application/json; charset="utf-8"');
         });
 
         it('should process the given custom headers', () => {
@@ -192,12 +188,13 @@ describe('API', () => {
             Object.defineProperty(api, 'requestOptions', {
                 value: {
                     headers: { Accept: 'myRequestOptionValue' }
-                } as Partial<RequestInit>
+                } as Partial<RequestInit>,
+                configurable: true
             });
             config = api.getConfig(url, 'post', {}).requestInit;
             // @ts-expect-error
             expect(config.headers.get('Accept')).toBe('myRequestOptionValue');
-            delete api.myRequestOptionValue;
+            delete api.requestOptions;
 
             Object.defineProperty(api, 'initRequest', {
                 value: (
@@ -217,6 +214,35 @@ describe('API', () => {
             delete api.initRequest;
 
             /* eslint-enable @typescript-eslint/naming-convention */
+        });
+
+        it('should set the method to GET if it got removed', () => {
+            Object.defineProperty(api, 'requestOptions', {
+                value: {
+                    method: undefined
+                } as Partial<RequestInit>,
+                configurable: true
+            });
+            let config = api.getConfig(url, 'get', {}).requestInit;
+
+            expect(config.method).toBe('get');
+            delete api.requestOptions;
+
+            Object.defineProperty(api, 'initRequest', {
+                value: (
+                    _url: string,
+                    _method: 'delete' | 'get' | 'patch' | 'post' | 'put',
+                    _data?: FormData | Record<string, unknown>
+                ): Partial<RequestInit> => {
+                    return {
+                        method: undefined
+                    };
+                },
+                configurable: true
+            });
+            config = api.getConfig(url, 'post', {}).requestInit;
+            expect(config.method).toBe('get');
+            delete api.initRequest;
         });
     });
 

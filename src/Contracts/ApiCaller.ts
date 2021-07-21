@@ -27,7 +27,8 @@ export default interface ApiCaller {
     initRequest?: (
         url: string,
         method: Method,
-        data?: FormData | Record<string, unknown>
+        data?: FormData | Record<string, unknown>,
+        queryParameters?: Record<string, any>
     ) => Partial<RequestInit>;
 
     /**
@@ -44,6 +45,7 @@ export default interface ApiCaller {
         url: string,
         method: Method,
         data?: FormData | Record<string, unknown>,
-        customHeaders?: Record<string, string[] | string>
+        customHeaders?: Record<string, string[] | string>,
+        queryParameters?: Record<string, any>
     ) => Promise<Response>;
 }

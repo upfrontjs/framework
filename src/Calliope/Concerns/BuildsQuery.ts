@@ -249,13 +249,13 @@ export default class BuildsQuery extends HasAttributes {
             boolean
         };
 
-        const isDuplicate = this.wheres.findIndex(where => {
+        const isDuplicate = this.wheres.some(where => {
             return where.column === column
                 && where.operator === operator
                 && where.boolean === boolean
                 // eslint-disable-next-line eqeqeq
                 && where.value == value;
-        }) !== -1;
+        });
 
         if (isDuplicate) {
             return this;

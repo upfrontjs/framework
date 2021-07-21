@@ -4,6 +4,7 @@ import GlobalConfig from '../../Support/GlobalConfig';
 import API from '../../Services/API';
 import ApiResponseHandler from '../../Services/ApiResponseHandler';
 import type Model from '../Model';
+import type { QueryParams } from './BuildsQuery';
 import BuildsQuery from './BuildsQuery';
 import type { Attributes } from './HasAttributes';
 import { isObjectLiteral } from '../../Support/function';
@@ -82,6 +83,7 @@ export default class CallsApi extends BuildsQuery {
         customHeaders?: Record<string, string[] | string>
     ): Promise<any> {
         const endpoint = this.getEndpoint();
+        const queryParameters = this.compileQueryParameters();
 
         if (!endpoint.length) {
             throw new LogicException(
@@ -95,26 +97,25 @@ export default class CallsApi extends BuildsQuery {
             + (endpoint.startsWith('/') ? endpoint.slice(1) : endpoint);
         const apiCaller = new (config.get('api', API))!;
         const handlesApiResponse = new (config.get('apiResponseHandler', ApiResponseHandler))!;
+        /**
+         * Recursively format the keys according to serverAttributeCasing
+         *
+         * @see CallsApi.prototype.serverAttributeCasing
+         */
+        const transformValues = (object: Attributes): Attributes => {
+            const setStringCase = (key: string) => this.serverAttributeCasing === 'camel' ? camel(key) : snake(key);
+            const dataWithKeyCasing: Attributes = {};
+
+            Object.keys(object).forEach(key => {
+                dataWithKeyCasing[setStringCase(key)] = isObjectLiteral(object[key])
+                    ? transformValues(object[key] as Attributes)
+                    : object[key];
+            });
+
+            return dataWithKeyCasing;
+        };
 
         if (data && isObjectLiteral<Attributes>(data) && !(data instanceof FormData)) {
-            /**
-             * Recursively format the keys according to serverAttributeCasing
-             *
-             * @see CallsApi.prototype.serverAttributeCasing
-             */
-            const transformValues = (object: Attributes): Attributes => {
-                const setStringCase = (key: string) => this.serverAttributeCasing === 'camel' ? camel(key) : snake(key);
-                const dataWithKeyCasing: Attributes = {};
-
-                Object.keys(object).forEach(key => {
-                    dataWithKeyCasing[setStringCase(key)] = isObjectLiteral(object[key])
-                        ? transformValues(object[key] as Attributes)
-                        : object[key];
-                });
-
-                return dataWithKeyCasing;
-            };
-
             data = transformValues(data);
         }
 
@@ -122,7 +123,7 @@ export default class CallsApi extends BuildsQuery {
 
         return handlesApiResponse
             .handle(
-                apiCaller.call(url, method, data, customHeaders)
+                apiCaller.call(url, method, data, customHeaders, transformValues(queryParameters))
             )
             .finally(() => this.requestCount--);
     }
@@ -130,12 +131,12 @@ export default class CallsApi extends BuildsQuery {
     /**
      * Send a GET request to the endpoint.
      *
-     * @param {object=} data
+     * @param {object=} queryParameters} - append and/or overwrite query parameter values.
      *
      * @return {Promise<Model|ModelCollection<Model>>}
      */
-    public async get(data?: Record<string, unknown>): Promise<Model | ModelCollection<Model>> {
-        return this.call('get', Object.assign({}, data, this.compileQueryParameters()))
+    public async get(queryParameters?: QueryParams | Record<string, unknown>): Promise<Model | ModelCollection<Model>> {
+        return this.call('get', queryParameters)
             .then(responseData => {
                 this.resetEndpoint().resetQueryParameters();
 
@@ -146,12 +147,14 @@ export default class CallsApi extends BuildsQuery {
     /**
      * The get method made available as a static method.
      *
-     * @param {object=} data
+     * @param {object=} queryParameters - append and/or overwrite query parameter values.
      *
      * @see CallsApi.prototype.get
      */
-    public static async get(data?: Record<string, unknown>): Promise<Model | ModelCollection<Model>> {
-        return new this().get(data);
+    public static async get(
+        queryParameters?: QueryParams | Record<string, unknown>
+    ): Promise<Model | ModelCollection<Model>> {
+        return new this().get(queryParameters);
     }
 
     /**
@@ -162,7 +165,7 @@ export default class CallsApi extends BuildsQuery {
      * @return
      */
     public async post(data: FormData | Record<string, unknown>): Promise<Model> {
-        return this.call('post', Object.assign({}, data, this.compileQueryParameters()))
+        return this.call('post', data)
             .then(responseData => {
                 this.resetEndpoint().resetQueryParameters();
 
@@ -178,7 +181,7 @@ export default class CallsApi extends BuildsQuery {
      * @return
      */
     public async put(data: FormData | Record<string, unknown>): Promise<Model> {
-        return this.call('put', Object.assign({}, data, this.compileQueryParameters()))
+        return this.call('put', data)
             .then(responseData => {
                 this.resetEndpoint().resetQueryParameters();
 
@@ -194,7 +197,7 @@ export default class CallsApi extends BuildsQuery {
      * @return
      */
     public async patch(data: FormData | Record<string, unknown>): Promise<Model> {
-        return this.call('patch', Object.assign({}, data, this.compileQueryParameters()))
+        return this.call('patch', data)
             .then(responseData => {
                 this.resetEndpoint().resetQueryParameters();
 
@@ -211,7 +214,7 @@ export default class CallsApi extends BuildsQuery {
      * @return {Promise<boolean>}
      */
     public async delete(data?: FormData | Record<string, unknown>): Promise<Model> {
-        return this.call('delete', Object.assign({}, data, this.compileQueryParameters()))
+        return this.call('delete', data)
             .then(responseData => {
                 this.resetEndpoint().resetQueryParameters();
 
@@ -329,6 +332,7 @@ export default class CallsApi extends BuildsQuery {
      * @return {string}
      */
     public getEndpoint(): string {
+        // todo finish with '/'?
         return this.mutatedEndpoint;
     }
 

@@ -12,7 +12,7 @@ type WhereDescription = {
     value: any;
     boolean: BooleanOperator;
 };
-type QueryParams = Partial<{
+export type QueryParams = Partial<{
     wheres: WhereDescription[];
     columns: string[];
     withs: string[];

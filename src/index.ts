@@ -25,6 +25,7 @@ import type Configuration from './Contracts/Configuration';
 import type { Attributes } from './Calliope/Concerns/HasAttributes';
 import type FactoryHooks from './Contracts/FactoryHooks';
 import type { CastType } from './Calliope/Concerns/CastsAttributes';
+import type { QueryParams } from './Calliope/Concerns/BuildsQuery';
 
 export type {
     AttributeCaster,
@@ -33,7 +34,8 @@ export type {
     Configuration,
     Attributes,
     FactoryHooks,
-    CastType
+    CastType,
+    QueryParams
 };
 
 export * from './Support/array';

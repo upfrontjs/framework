@@ -404,6 +404,24 @@ describe('CallsApi', () => {
                 .toBe(`${config.get('baseEndPoint')!}/${caller.getEndpoint()}?${snake('myParam')}=1`);
         });
 
+        it('should overwrite query parameters from the builder', async () => {
+            mockUserModelResponse(User.factory().create() as User);
+            await caller.whereKey(1).get({
+                wheres: [
+                    {
+                        column: caller.getKeyName(),
+                        operator: '=',
+                        value: 2,
+                        boolean: 'and'
+                    }
+                ]
+            });
+
+            expect(getLastRequest()?.url)
+                .toBe(`${config.get('baseEndPoint')!}/${caller.getEndpoint()}`
+                    + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=2&wheres[][boolean]=and');
+        });
+
         it('should send query parameters in the request', async () => {
             mockUserModelResponse(User.factory().create() as User);
             await caller.whereKey(43).get();
@@ -472,23 +490,17 @@ describe('CallsApi', () => {
             expect(caller.compileQueryParameters().wheres).toBeUndefined();
         });
 
-        it('should send query parameters in the request', async () => {
+        it('should send query parameters in the url', async () => {
             caller.whereKey(43);
 
             mockUserModelResponse(User.factory().create() as User);
             await caller.post({ key: 'value' });
 
-            expect(getLastRequest()?.body).toStrictEqual({
-                key: 'value',
-                wheres: [
-                    {
-                        boolean: 'and',
-                        column: 'id',
-                        operator: '=',
-                        value: 43
-                    }
-                ]
-            });
+            expect(getLastRequest()?.body).toStrictEqual({ key: 'value' });
+            expect(getLastRequest()?.url).toBe(
+                `${config.get('baseEndPoint')!}/${caller.getEndpoint()}`
+                + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=43&wheres[][boolean]=and'
+            );
         });
     });
 
@@ -539,23 +551,17 @@ describe('CallsApi', () => {
             expect(caller.compileQueryParameters().wheres).toBeUndefined();
         });
 
-        it('should send query parameters in the request', async () => {
+        it('should send query parameters in the url', async () => {
             caller.whereKey(43);
 
             mockUserModelResponse(User.factory().create() as User);
             await caller.put({ key: 'value' });
 
-            expect(getLastRequest()?.body).toStrictEqual({
-                key: 'value',
-                wheres: [
-                    {
-                        boolean: 'and',
-                        column: 'id',
-                        operator: '=',
-                        value: 43
-                    }
-                ]
-            });
+            expect(getLastRequest()?.body).toStrictEqual({ key: 'value' });
+            expect(getLastRequest()?.url).toBe(
+                `${config.get('baseEndPoint')!}/${caller.getEndpoint()}`
+                + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=43&wheres[][boolean]=and'
+            );
         });
     });
 
@@ -606,23 +612,17 @@ describe('CallsApi', () => {
             expect(caller.compileQueryParameters().wheres).toBeUndefined();
         });
 
-        it('should send query parameters in the request', async () => {
+        it('should send query parameters in the url', async () => {
             caller.whereKey(43);
 
             mockUserModelResponse(User.factory().create() as User);
             await caller.patch({ key: 'value' });
 
-            expect(getLastRequest()?.body).toStrictEqual({
-                key: 'value',
-                wheres: [
-                    {
-                        boolean: 'and',
-                        column: 'id',
-                        operator: '=',
-                        value: 43
-                    }
-                ]
-            });
+            expect(getLastRequest()?.body).toStrictEqual({ key: 'value' });
+            expect(getLastRequest()?.url).toBe(
+                `${config.get('baseEndPoint')!}/${caller.getEndpoint()}`
+                + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=43&wheres[][boolean]=and'
+            );
         });
     });
 
@@ -700,22 +700,16 @@ describe('CallsApi', () => {
             expect(caller.compileQueryParameters().wheres).toBeUndefined();
         });
 
-        it('should send query parameters in the request', async () => {
+        it('should send query parameters in the url', async () => {
             caller.whereKey(43);
 
             mockUserModelResponse(User.factory().create() as User);
             await caller.delete();
 
-            expect(getLastRequest()?.body).toStrictEqual({
-                wheres: [
-                    {
-                        boolean: 'and',
-                        column: 'id',
-                        operator: '=',
-                        value: 43
-                    }
-                ]
-            });
+            expect(getLastRequest()?.url).toBe(
+                `${config.get('baseEndPoint')!}/${caller.getEndpoint()}`
+                + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=43&wheres[][boolean]=and'
+            );
         });
     });
 });

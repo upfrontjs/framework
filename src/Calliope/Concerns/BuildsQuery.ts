@@ -235,16 +235,33 @@ export default class BuildsQuery extends HasAttributes {
             throw new InvalidArgumentException('\'' + operator + '\' is not an expected type of operator.');
         }
 
-        if (!['and', 'or'].includes(boolean.toLowerCase())) {
+        // in case of a js user going rogue
+        boolean = boolean.toLowerCase() as BooleanOperator;
+
+        if (!['and', 'or'].includes(boolean)) {
             throw new InvalidArgumentException('\'' + boolean + '\' is not an expected type of operator.');
         }
 
-        this.wheres.push({
-            column: column,
-            operator: operator,
-            value: value,
-            boolean: boolean
-        });
+        const whereDescription: WhereDescription = {
+            column,
+            operator,
+            value,
+            boolean
+        };
+
+        const isDuplicate = this.wheres.findIndex(where => {
+            return where.column === column
+                && where.operator === operator
+                && where.boolean === boolean
+                // eslint-disable-next-line eqeqeq
+                && where.value == value;
+        }) !== -1;
+
+        if (isDuplicate) {
+            return this;
+        }
+
+        this.wheres.push(whereDescription);
 
         return this;
     }

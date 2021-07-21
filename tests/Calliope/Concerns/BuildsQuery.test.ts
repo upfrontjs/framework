@@ -65,6 +65,35 @@ describe('BuildsQuery', () => {
                 new InvalidArgumentException('\'boolean operator\' is not an expected type of operator.')
             );
         });
+
+        it('should ignore duplicate where descriptions', () => {
+            // @ts-expect-error
+            builder.addWhereConstraint('column', '=', 'value', 'or');
+            // @ts-expect-error
+            expect(builder.wheres).toHaveLength(1);
+
+            // @ts-expect-error
+            builder.addWhereConstraint('column', '=', 'value', 'or');
+            // @ts-expect-error
+            expect(builder.wheres).toHaveLength(1);
+
+            // @ts-expect-error
+            builder.addWhereConstraint('column', '!=', 'value', 'or');
+            // @ts-expect-error
+            expect(builder.wheres).toHaveLength(2);
+        });
+
+        it('should ignore duplicates when comparing numbers and numbers in string format', () => {
+            // @ts-expect-error
+            builder.addWhereConstraint('column', '=', '1', 'or');
+            // @ts-expect-error
+            expect(builder.wheres).toHaveLength(1);
+
+            // @ts-expect-error
+            builder.addWhereConstraint('column', '=', 1, 'or');
+            // @ts-expect-error
+            expect(builder.wheres).toHaveLength(1);
+        });
     });
 
     describe('where()', () => {

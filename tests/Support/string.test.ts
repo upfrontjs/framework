@@ -277,4 +277,10 @@ describe('string helpers', () => {
             expect(sentence.is('the * dog.', true)).toBe(true);
         });
     });
+
+    describe('uuid()', () => {
+        it('should return a valid uuid', () => {
+            expect(str.uuid()).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+        });
+    });
 });

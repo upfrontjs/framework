@@ -141,7 +141,7 @@ export default class Model extends SoftDeletes implements HasFactory {
     /**
      * Save or update the model.
      *
-     * @param data
+     * @param {object=} data
      */
     public async save(data?: Attributes): Promise<this> {
         const dataToSave = Object.assign({}, this.exists ? this.getChanges() : this.getRawAttributes(), data);
@@ -162,9 +162,7 @@ export default class Model extends SoftDeletes implements HasFactory {
         }
 
         const model = await (
-            this.exists
-                ? this.setEndpoint(finish(this.getEndpoint(), '/') + String(this.getKey())).patch(dataToSave)
-                : this.post(dataToSave)
+            this.exists ? this.update(dataToSave) : this.post(dataToSave)
         );
         this.hasOneOrManyParentKeyName = undefined;
 
@@ -173,6 +171,19 @@ export default class Model extends SoftDeletes implements HasFactory {
             .setLastSyncedAt();
 
         return this;
+    }
+
+    /**
+     * Set the correct endpoint and initiate a patch request.
+     *
+     * @param {object} data
+     *
+     * @see CallsApi.prototype.patch
+     */
+    public async update(data: Attributes): Promise<Model> {
+        this.throwIfDoesntExists('update');
+        return this.setEndpoint(finish(this.getEndpoint(), '/') + String(this.getKey()))
+            .patch(data);
     }
 
     /**

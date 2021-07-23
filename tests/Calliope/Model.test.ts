@@ -402,4 +402,33 @@ describe('Model', () => {
             });
         });
     });
+
+    describe('update()', () => {
+        it('should call the patch() method', async () => {
+            mockUserModelResponse(user);
+            await user.update({ key: 'value' });
+
+            expect(getLastRequest()?.method).toBe('patch');
+        });
+
+        it('should set the correct endpoint', async () => {
+            mockUserModelResponse(user);
+
+            await user.update({ key: 'value' });
+            expect(getLastRequest()?.url).toBe(
+                String(config.get('baseEndPoint')) + '/' + user.getEndpoint() + '/' + String(user.getKey())
+            );
+        });
+
+        it('should throw an error if the model not yet exists', async () => {
+            const nonExistentUser = User.factory().make() as User;
+
+            await expect(async () => nonExistentUser.update({ myAttrs: 1 })).rejects.toThrow(
+                new LogicException(
+                    'Attempted to call update on \'' + nonExistentUser.getName()
+                    + '\' when it has not been persisted yet or it has been soft deleted.'
+                )
+            );
+        });
+    });
 });

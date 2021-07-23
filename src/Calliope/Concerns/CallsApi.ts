@@ -223,18 +223,6 @@ export default class CallsApi extends BuildsQuery {
     }
 
     /**
-     * Set the correct endpoint and initiate a patch request.
-     *
-     * @param {object} data
-     *
-     * @see CallsApi.prototype.patch
-     */
-    public async update(data: Attributes): Promise<Model> {
-        return this.setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()))
-            .patch(data);
-    }
-
-    /**
      * Determine whether to return this or a new model from the response.
      *
      * @param {Model} defaultVal
@@ -332,7 +320,6 @@ export default class CallsApi extends BuildsQuery {
      * @return {string}
      */
     public getEndpoint(): string {
-        // todo finish with '/'?
         return this.mutatedEndpoint;
     }
 

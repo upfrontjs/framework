@@ -626,24 +626,6 @@ describe('CallsApi', () => {
         });
     });
 
-    describe('update()', () => {
-        it('should call the patch() method', async () => {
-            mockUserModelResponse(caller);
-            const spy = jest.spyOn(caller, 'patch');
-            await caller.update({ key: 'value' });
-
-            expect(spy).toHaveBeenCalledWith({ key: 'value' });
-            spy.mockRestore();
-        });
-
-        it('should set the correct endpoint', async () => {
-            mockUserModelResponse(caller);
-
-            await caller.update({ key: 'value' });
-            expect(getLastRequest()?.url).toContain(caller.getEndpoint() + '/' + String(caller.getKey()));
-        });
-    });
-
     describe('delete()', () => {
         it('should send a DELETE request', async () => {
             mockUserModelResponse(caller);

@@ -66,7 +66,7 @@ Casts the values to a [Collection](../helpers/collection.md) by calling the coll
 
 #### `'datetime'`
 
-Cast the values to the [given date time](../helpers/global-config.md#datetime) by calling the method or its constructor.
+Cast the values to the [given date time](../helpers/global-config.md#datetime) by calling the method or its constructor. If no date time defined in the config by default it will construct  a new [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object with the value.
 
 #### custom object
 

@@ -136,6 +136,11 @@ users; // ModelCollection[User, ...]
 
 The `save` method will update or save your model based on whether the model [exists](#exists) or not. If the model exists it will send a `PATCH` request containing the changes, and the optionally passed in attributes. If the model does not exists it will send a `POST` request. The method returns the same current user updated with the response data if any.
 
+#### update
+<Badge text="async" type="warning"/>
+
+The `update` method sets the correct endpoint then initiates a [patch](./api-calls.md#patch) request. If the model does not [exists](#exists) it will throw an error.
+
 ```js
 import User from '@Models/User';
 

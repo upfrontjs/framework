@@ -113,6 +113,27 @@ const user = await User.limit(1).get();
 const userComments = await user.$comments().get();
 ```
 
+::: tip
+[hasMany](#hasmany) and [hasOne](#hasone) methods also allows us to create related resources while automatically setting the related column value.
+
+```ts
+// User.ts
+export default class User extends Model {
+    public $grades(): Grade {
+        return this.hasMany(Grade);
+    }
+}
+
+// myScript.ts
+import User from '@models/User'
+
+const user = await User.limit(1).get();
+const grade = user.$grade().userId; // 1
+
+grade.save({ value: 'A+' }); // post body: { value: 'A+', user_id: 1 }
+```
+:::
+
 #### hasOne
 
 The `hasOne` method describes a 'has one' relationship in the database. It takes two arguments, the first being the related model's constructor, and the second optionally the foreign key name on the related model.

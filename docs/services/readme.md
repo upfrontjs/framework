@@ -11,6 +11,7 @@ ApiCaller an object with a `call` method defined which is utilized by all the aj
  - `method` - a string representing the http method
  - `data`*(optional)* - an object or [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData)
  - `customHeaders`*(optional)* - an object with string keys and string or array of strings value
+ - `queryParameters`*(optional)* - an object to send as query parameters in the url
 
 #### `HandlesApiResponse`
 HandlesApiResponse's task is to handle the parsing of the `Response` returned by [ApiCaller](#apicaller) and deal with any errors. It defines a `handle` method which takes a `Promise<Response>` and it should return a `Promise<any>`.

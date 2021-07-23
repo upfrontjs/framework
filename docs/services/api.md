@@ -22,8 +22,10 @@ The API prepares the `RequestInit` configuration in the following order:
  2. Merge the `requestOptions` property into the `RequestInit`
  3. Merge the `initRequest()` method's result into the `RequestInit`
  4. Merge in any headers from the [GlobalConfig](../helpers/global-config.md) into the `RequestInit`
- 5. Set the `Content-Type` header and update the `url` if it's a `GET` method based on what we have so far
- 6. Merge in the headers from the [`ApiCaller`](./readme.md#apicaller)'s `call` method's `customHeaders` argument into the `RequestInit`
+ 5. Set the `Content-Type` header to the appropriate value if not already set.
+ 6. Update the url with any query parameter if needed.
+ 7. Merge in the headers from the [`ApiCaller`](./readme.md#apicaller)'s `call` method's `customHeaders` argument into the `RequestInit`
+ 8. Set the `Accept` header to `application/json` if not already set.
 
 ## Shape of the request
 

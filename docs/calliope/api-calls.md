@@ -75,11 +75,6 @@ const user = new User;
 user.patch({ attribute: 1 });
 ```
 
-#### update
-<Badge text="async" type="warning"/>
-
-The `update` method sets the correct endpoint then initiates a [patch](#patch) request.
-
 #### delete
 <Badge text="async" type="warning"/>
 

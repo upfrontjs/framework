@@ -1,6 +1,6 @@
 {
     "name": "@upfrontjs/framework",
-    "version": "0.2.2",
+    "version": "0.3.0",
     "description": "Data handling framework complementary to backend model systems.",
     "main": "index.min.js",
     "module": "index.es.min.js",
@@ -32,11 +32,13 @@
         "model",
         "data handling",
         "object oriented",
+        "active record",
         "orm",
         "front end",
         "browser",
         "api",
         "rest",
+        "json",
         "framework",
         "factory",
         "collection",
@@ -76,14 +78,17 @@
         "@commitlint/prompt-cli": "^12.1.4",
         "@commitlint/types": "^12.1.4",
         "@rollup/plugin-typescript": "^8.1.0",
+        "@semantic-release/git": "^9.0.0",
         "@types/jest": "^26.0.19",
         "@types/lodash": "^4.14.167",
         "@types/pluralize": "^0.0.29",
         "@types/qs": "^6.9.5",
+        "@types/semantic-release": "^17.2.1",
         "@types/uuid": "^8.3.0",
         "@typescript-eslint/eslint-plugin": "^4.11.0",
         "@typescript-eslint/parser": "^4.11.0",
         "commitlint": "^12.1.4",
+        "conventional-changelog-conventionalcommits": "^4.6.0",
         "eslint": "^7.16.0",
         "eslint-plugin-import": "^2.22.1",
         "eslint-plugin-jest": "^24.1.3",
@@ -95,6 +100,7 @@
         "rollup": "^2.35.1",
         "rollup-plugin-bundle-size": "^1.0.3",
         "rollup-plugin-terser": "^7.0.2",
+        "semantic-release": "^17.4.4",
         "ts-jest": "^26.4.4",
         "tslib": "^2.2.0",
         "typedoc": "^0.21.0",
@@ -110,5 +116,11 @@
     },
     "lint-staged": {
         "*.ts": "eslint --cache --fix"
-    }
+    },
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/nandi95"
+        }
+    ]
 }

@@ -104,10 +104,14 @@ export default class API implements ApiCaller {
             // if not a GET method
             if (initOptions.method && initOptions.method !== 'get') {
                 if (data instanceof FormData) {
-                    headers.set('Content-Type', 'multipart/form-data');
+                    if (!headers.has('Content-Type')) {
+                        headers.set('Content-Type', 'multipart/form-data');
+                    }
                     initOptions.body = data;
                 } else {
-                    headers.set('Content-Type', 'application/json; charset="utf-8"');
+                    if (!headers.has('Content-Type')) {
+                        headers.set('Content-Type', 'application/json; charset="utf-8"');
+                    }
                     initOptions.body = JSON.stringify(data);
                 }
             } else {

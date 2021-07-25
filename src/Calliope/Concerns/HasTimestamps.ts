@@ -67,7 +67,7 @@ export default class HasTimestamps extends HasRelations {
         }
 
         // @ts-expect-error
-        (this as unknown as Model).throwIfDoesntExists('touch');
+        (this as unknown as Model).throwIfModelDoesntExistsWhenCalling('touch');
 
         const updatedAt = this.getUpdatedAtColumn();
 
@@ -93,7 +93,7 @@ export default class HasTimestamps extends HasRelations {
         }
 
         // @ts-expect-error
-        (this as unknown as Model).throwIfDoesntExists('freshTimestamps');
+        (this as unknown as Model).throwIfModelDoesntExistsWhenCalling('freshTimestamps');
 
         const createdAt = this.getCreatedAtColumn();
         const updatedAt = this.getUpdatedAtColumn();

@@ -23,7 +23,8 @@ module.exports = {
                 'relations',
                 'api-calls',
                 'deps',
-                'dev-deps'
+                'dev-deps',
+                'internal' // things that are not meant to be used outside of the package
             ]
         ],
     }

@@ -181,7 +181,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      * @see CallsApi.prototype.patch
      */
     public async update(data: Attributes): Promise<Model> {
-        this.throwIfDoesntExists('update');
+        this.throwIfModelDoesntExistsWhenCalling('update');
         return this.setEndpoint(finish(this.getEndpoint(), '/') + String(this.getKey()))
             .patch(data);
     }
@@ -241,14 +241,14 @@ export default class Model extends SoftDeletes implements HasFactory {
      * @return {Promise<Model>}
      */
     public async refresh(): Promise<Model> {
-        this.throwIfDoesntExists('refresh');
+        this.throwIfModelDoesntExistsWhenCalling('refresh');
         const model = await this.reset().select(this.getAttributeKeys()).find(this.getKey()!);
 
         return this.forceFill(model.getRawAttributes()).syncOriginal().setLastSyncedAt();
     }
 
     /**
-     * Throw an error if the model does not exists.
+     * Throw an error if the model does not exists before calling the specified method.
      *
      * @param {string} methodName
      *
@@ -256,7 +256,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @internal
      */
-    protected throwIfDoesntExists(methodName: string): void {
+    protected throwIfModelDoesntExistsWhenCalling(methodName: string): void {
         if (!this.exists) {
             throw new LogicException(
                 'Attempted to call ' + methodName + ' on \'' + this.getName()

@@ -10,11 +10,11 @@ I'd also love PRs. If you're thinking of a large PR, I advise opening up an issu
 
 ## Which branch
 
-**All** bug fixes should be sent to the latest stable branch. Bug fixes should never be sent to the main branch unless they fix features that exist only in the upcoming release.
+**Patch** bug fixes should be sent to the latest stable branch. Bug fixes should never be sent to the main branch unless they fix features that exist only in the upcoming release.
 
-**Minor** features that are fully backward compatible with the current release may be sent to the latest stable branch.
+**Minor** features that are fully backward compatible with the current release may be sent to the latest stable branch (`release/{version}.x`).
 
-**Major** new features should always be sent to the main branch, which contains the upcoming release.
+**Major** new features should always be sent to the `main` branch, which contains the upcoming release.
 
 ## Submitting a pull request
 
@@ -45,6 +45,7 @@ Commit messages are integral to navigating version control, be it by a human or 
     Added isEmpty method as previously discussed on
     https://github.com/....
 ```
+
 ```git
     feat(graphql): Started building the GraphQL driver
     
@@ -61,11 +62,15 @@ Commit messages are integral to navigating version control, be it by a human or 
 ```
 - `chore: ` - commit for code maintenance pull request e.g.:
 ```git
-    chore: Updated dependencies
+    chore(dev-deps): Updated dependencies
+    
+    - rollup
+    - typescript
+    - eslint
 ```
  - `docs: ` - commit for a branch updating the documentation e.g.:
 ```git
-    docs: Clarified testing helper's description
+    docs(helpers): Clarified testing helper's description
 ```
 
 If your commit is related to a discussion/issue on github, please [link to it](https://docs.github.com/en/github/managing-your-work-on-github/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword) in your commit message.

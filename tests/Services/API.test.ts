@@ -198,9 +198,11 @@ describe('API', () => {
 
             Object.defineProperty(api, 'initRequest', {
                 value: (
+                    /* eslint-disable @typescript-eslint/no-unused-vars */
                     _url: string,
                     _method: 'delete' | 'get' | 'patch' | 'post' | 'put',
                     _data?: FormData | Record<string, unknown>
+                    /* eslint-enable @typescript-eslint/no-unused-vars */
                 ): Partial<RequestInit> => {
                     return {
                         headers: { Accept: 'myInitRequestValue' }
@@ -230,9 +232,11 @@ describe('API', () => {
 
             Object.defineProperty(api, 'initRequest', {
                 value: (
+                    /* eslint-disable @typescript-eslint/no-unused-vars */
                     _url: string,
                     _method: 'delete' | 'get' | 'patch' | 'post' | 'put',
                     _data?: FormData | Record<string, unknown>
+                    /* eslint-enable @typescript-eslint/no-unused-vars */
                 ): Partial<RequestInit> => {
                     return {
                         method: undefined

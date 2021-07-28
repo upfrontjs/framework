@@ -88,7 +88,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {boolean}
      */
-    public is(model: unknown): model is Model {
+    public is<M extends Model>(model: unknown): model is M {
         return model instanceof Model
             && model.getKey() === this.getKey()
             && model.getName() === this.getName();
@@ -103,7 +103,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {boolean}
      */
-    public isNot(model: unknown): model is Exclude<typeof model, Model> {
+    public isNot<M extends Model>(model: unknown): model is Exclude<typeof model, M> {
         return !this.is(model);
     }
 

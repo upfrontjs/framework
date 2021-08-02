@@ -67,7 +67,7 @@ type WhereDescription = {
 type QueryParams = Partial<{
     wheres: WhereDescription[]; // where the row tests true these conditions
     columns: string[]; // select only these columns
-    withs: string[]; // return with these relations
+    with: string[]; // return with these relations
     scopes: string[]; // apply these scopes
     relationsExists: string[]; // only return if these relations exists
     orders: Order[]; // return records in this order

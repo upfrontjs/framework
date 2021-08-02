@@ -663,17 +663,17 @@ describe('BuildsQuery', () => {
         it('should set the distinct value', () => {
             builder.distinct();
 
-            expect(builder.compiledParams().distinct).toBe(true);
+            expect(builder.compiledParams().distinctOnly).toBe(true);
 
             builder.distinct(false);
 
-            expect(builder.compiledParams().distinct).toBeUndefined();
+            expect(builder.compiledParams().distinctOnly).toBeUndefined();
         });
 
         it('should be able to be called statically', () => {
             builder = BuildsQuery.distinct();
             // @ts-expect-error
-            expect(builder.compileQueryParameters().distinct).toBe(true);
+            expect(builder.compileQueryParameters().distinctOnly).toBe(true);
         });
     });
 
@@ -753,8 +753,9 @@ describe('BuildsQuery', () => {
     describe('without()', () => {
         it('should unset required relations', () => {
             expect(builder.without(['relation'])).toBeInstanceOf(BuildsQuery);
-            expect(builder.with(['relation1', 'relation2']).without(['relation1']).compiledParams().with)
-                .toStrictEqual(['relation2']);
+            expect(
+                builder.with(['relation1', 'relation2']).without(['relation1']).compiledParams().with
+            ).toStrictEqual(['relation2']);
         });
 
         it('should be able to be called statically', () => {

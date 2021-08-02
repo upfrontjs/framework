@@ -15,7 +15,7 @@ type WhereDescription = {
 export type QueryParams = Partial<{
     wheres: WhereDescription[];
     columns: string[];
-    withs: string[];
+    with: string[];
     scopes: string[];
     relationsExists: string[];
     orders: Order[];
@@ -152,7 +152,7 @@ export default class BuildsQuery extends HasAttributes {
      * @return {object}
      */
     protected compileQueryParameters(): QueryParams {
-        const params: Record<string, any> = {};
+        const params: QueryParams = {};
 
         if (this.wheres.length) {
             params.wheres = this.wheres;
@@ -188,7 +188,7 @@ export default class BuildsQuery extends HasAttributes {
         }
 
         if (this.distinctOnly) {
-            params.distinct = this.distinctOnly;
+            params.distinctOnly = this.distinctOnly;
         }
 
         if (this.offsetCount) {

@@ -163,10 +163,16 @@ export default class BuildsQuery extends HasAttributes {
         }
 
         const withRelations = this.withRelations.filter(relation => !this.withs.includes(relation));
-        const withs = this.withs.concat(withRelations).filter(relation => !this.withouts.includes(relation));
+        const withs = new Set(this.withs.concat(withRelations));
 
-        if (withs.length) {// todo - filters on relations?
-            params.with = withs;
+        withs.forEach(relationName => {
+            if (this.withouts.includes(relationName)) {
+                withs.delete(relationName);
+            }
+        });
+
+        if (withs.size) {// todo - filters on relations?
+            params.with = [...withs];
         }
 
         if (this.scopes.length) {

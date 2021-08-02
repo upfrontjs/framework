@@ -741,6 +741,13 @@ describe('BuildsQuery', () => {
             // @ts-expect-error
             expect(builder.compileQueryParameters().with).toStrictEqual(['relation']);
         });
+
+        it('should not allow duplicate values', () => {
+            builder = BuildsQuery.with(['relation', 'relation']);
+
+            // @ts-expect-error
+            expect(builder.compileQueryParameters().with).toStrictEqual(['relation']);
+        });
     });
 
     describe('without()', () => {

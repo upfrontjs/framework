@@ -153,13 +153,13 @@ export default class HasRelations extends CallsApi {
      */
     protected getRelationType(name: string): Relation {
         name = start(name, this.relationMethodPrefix);
-        const model = (this[name] as CallableFunction)() as Model & { relationType: Relation };
+        const model = (this[name] as CallableFunction)() as Model & { _relationType: Relation };
 
-        if (!model.relationType) {
+        if (!model._relationType) {
             throw new LogicException('\'' + name + '\' relation is not using any of the expected relation types.');
         }
 
-        return model.relationType;
+        return model._relationType;
     }
 
     /**
@@ -314,8 +314,8 @@ export default class HasRelations extends CallsApi {
     private static configureRelationType<T extends Model>(
         model: T,
         relationType: Relation
-    ): asserts model is T & { relationType: Readonly<Relation> } {
-        Object.defineProperty(model, 'relationType', {
+    ): asserts model is T & { _relationType: Readonly<Relation> } {
+        Object.defineProperty(model, '_relationType', {
             configurable: false,
             enumerable: false,
             writable: false,

@@ -150,9 +150,9 @@ export default class Model extends SoftDeletes implements HasFactory {
             return this;
         }
 
-        if ('relationType' in this
-            && typeof this.relationType === 'string'
-            && ['hasOne', 'hasMany'].includes(this.relationType)
+        if ('_relationType' in this
+            && typeof this._relationType === 'string'
+            && ['hasOne', 'hasMany'].includes(this._relationType)
         ) {
             this.wheres = this.wheres.filter(where => {
                 return where.operator === '='

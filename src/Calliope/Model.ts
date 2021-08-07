@@ -150,14 +150,16 @@ export default class Model extends SoftDeletes implements HasFactory {
             return this;
         }
 
+        // If the current model is an instantiated `hasOne` or `hasMany` child
+        // remove the where filter from the request
         if ('_relationType' in this
             && typeof this._relationType === 'string'
             && ['hasOne', 'hasMany'].includes(this._relationType)
         ) {
             this.wheres = this.wheres.filter(where => {
-                return where.operator === '='
+                return !(where.operator === '='
                     && where.boolean === 'and'
-                    && where.column === this.hasOneOrManyParentKeyName;
+                    && where.column === this.hasOneOrManyParentKeyName);
             });
         }
 

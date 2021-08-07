@@ -402,7 +402,7 @@ export default class HasRelations extends CallsApi {
 
         HasRelations.configureRelationType(relatedModel, 'hasOne');
         relatedModel.setAttribute(foreignKey, (this as unknown as Model).getKey());
-        this.hasOneOrManyParentKeyName = foreignKey;
+        relatedModel.hasOneOrManyParentKeyName = foreignKey;
 
         return relatedModel.where(foreignKey, '=', (this as unknown as Model).getKey());
     }
@@ -420,7 +420,7 @@ export default class HasRelations extends CallsApi {
 
         HasRelations.configureRelationType(relatedModel, 'hasMany');
         relatedModel.setAttribute(foreignKey, (this as unknown as Model).getKey());
-        this.hasOneOrManyParentKeyName = foreignKey;
+        relatedModel.hasOneOrManyParentKeyName = foreignKey;
 
         return relatedModel.where(foreignKey, '=', (this as unknown as Model).getKey());
     }

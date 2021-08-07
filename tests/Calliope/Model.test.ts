@@ -360,45 +360,47 @@ describe('Model', () => {
             expect(user._lastSyncedAt).not.toBe(lastSyncedAt);
         });
 
-        it('should send the id as part of the body without the get params ' +
-            'when using hasOne to instantiate model', async () => {
-            const contract = user.$contract();
+        describe('relations', () => {
+            it('should send the id as part of the body without the get params ' +
+                'when using hasOne to instantiate model', async () => {
+                const contract = user.$contract();
 
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({
-                myAttribute: 'value',
-                [user.guessForeignKeyName()]: user.getKey()
-            })));
+                fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({
+                    myAttribute: 'value',
+                    [user.guessForeignKeyName()]: user.getKey()
+                })));
 
-            await contract.save({ myAttribute: 'value' });
+                await contract.save({ myAttribute: 'value' });
 
-            const lastRequest = getLastRequest();
-            expect(lastRequest?.url).toBe(String(config.get('baseEndPoint')) + '/' + contract.getEndpoint());
-            expect(lastRequest?.method).toBe('post');
-            expect(lastRequest?.body).toStrictEqual({
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                my_attribute: 'value',
-                [snake(user.guessForeignKeyName())]: user.getKey()
+                const lastRequest = getLastRequest();
+                expect(lastRequest?.url).toBe(String(config.get('baseEndPoint')) + '/' + contract.getEndpoint());
+                expect(lastRequest?.method).toBe('post');
+                expect(lastRequest?.body).toStrictEqual({
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    my_attribute: 'value',
+                    [snake(user.guessForeignKeyName())]: user.getKey()
+                });
             });
-        });
 
-        it('should send the id as part of the body without the get params ' +
-            'when using hasMany to instantiate model', async () => {
-            const shift = user.$shifts();
+            it('should send the id as part of the body without the get params ' +
+                'when using hasMany to instantiate model', async () => {
+                const shift = user.$shifts();
 
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({
-                myAttribute: 'value',
-                [user.guessForeignKeyName()]: user.getKey()
-            })));
+                fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({
+                    myAttribute: 'value',
+                    [user.guessForeignKeyName()]: user.getKey()
+                })));
 
-            await shift.save({ myAttribute: 'value' });
+                await shift.save({ myAttribute: 'value' });
 
-            const lastRequest = getLastRequest();
-            expect(lastRequest?.url).toBe(String(config.get('baseEndPoint')) + '/' + shift.getEndpoint());
-            expect(lastRequest?.method).toBe('post');
-            expect(lastRequest?.body).toStrictEqual({
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                my_attribute: 'value',
-                [snake(user.guessForeignKeyName())]: user.getKey()
+                const lastRequest = getLastRequest();
+                expect(lastRequest?.url).toBe(String(config.get('baseEndPoint')) + '/' + shift.getEndpoint());
+                expect(lastRequest?.method).toBe('post');
+                expect(lastRequest?.body).toStrictEqual({
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    my_attribute: 'value',
+                    [snake(user.guessForeignKeyName())]: user.getKey()
+                });
             });
         });
     });

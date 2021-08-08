@@ -12,7 +12,7 @@ export type Attributes = Record<string, unknown>;
 
 export default class HasAttributes extends GuardsAttributes implements Jsonable, Iterable<any> {
     /**
-     * Allow a indexing by string.
+     * The model attribute.
      */
     [key: string]: any;
 

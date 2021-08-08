@@ -15,6 +15,7 @@ module.exports = {
                 'services',
                 'helpers',
                 'collection',
+                'model',
                 'model-collection',
                 'paginator',
                 'factory',

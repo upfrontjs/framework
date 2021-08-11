@@ -140,8 +140,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {BuildsQuery}
      */
-    public static newQuery(): BuildsQuery {
-        return new this();
+    public static newQuery<T extends Model>(): T {
+        return new this as T;
     }
 
     /**
@@ -313,8 +313,8 @@ export default class BuildsQuery extends HasAttributes {
         operator: Operator | unknown,
         value?: unknown,
         boolean: BooleanOperator = 'and'
-    ): BuildsQuery {
-        return BuildsQuery.newQuery().where(
+    ): Model {
+        return this.newQuery().where(
             column,
             arguments.length > 2 ? operator as Operator : '=',
             arguments.length > 2 ? value : operator,
@@ -363,8 +363,8 @@ export default class BuildsQuery extends HasAttributes {
      */
     public static whereKey(
         value: (number | string)[] | number | string, boolean: BooleanOperator = 'and'
-    ): BuildsQuery {
-        return BuildsQuery.newQuery().whereKey(value, boolean);
+    ): Model {
+        return this.newQuery().whereKey(value, boolean);
     }
 
     /**
@@ -406,8 +406,8 @@ export default class BuildsQuery extends HasAttributes {
      */
     public static whereKeyNot(
         value: (number | string)[] | number | string, boolean: BooleanOperator = 'and'
-    ): BuildsQuery {
-        return BuildsQuery.newQuery().whereKeyNot(value, boolean);
+    ): Model {
+        return this.newQuery().whereKeyNot(value, boolean);
     }
 
     /**
@@ -448,8 +448,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNull
      */
-    public static whereNull(columns: string[] | string): BuildsQuery {
-        return BuildsQuery.newQuery().whereNull(columns);
+    public static whereNull(columns: string[] | string): Model {
+        return this.newQuery().whereNull(columns);
     }
 
     /**
@@ -490,8 +490,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotNull
      */
-    public static whereNotNull(columns: string[] | string): BuildsQuery {
-        return BuildsQuery.newQuery().whereNotNull(columns);
+    public static whereNotNull(columns: string[] | string): Model {
+        return this.newQuery().whereNotNull(columns);
     }
 
     /**
@@ -527,8 +527,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereIn
      */
-    public static whereIn(column: string, values: any[], boolean: BooleanOperator = 'and'): BuildsQuery {
-        return BuildsQuery.newQuery().whereIn(column, values, boolean);
+    public static whereIn(column: string, values: any[], boolean: BooleanOperator = 'and'): Model {
+        return this.newQuery().whereIn(column, values, boolean);
     }
 
     /**
@@ -565,8 +565,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotIn
      */
-    public static whereNotIn(column: string, values: any[], boolean: BooleanOperator = 'and'): BuildsQuery {
-        return BuildsQuery.newQuery().whereNotIn(column, values, boolean);
+    public static whereNotIn(column: string, values: any[], boolean: BooleanOperator = 'and'): Model {
+        return this.newQuery().whereNotIn(column, values, boolean);
     }
 
     /**
@@ -608,8 +608,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereBetween
      */
-    public static whereBetween(column: string, values: any[], boolean: BooleanOperator = 'and'): BuildsQuery {
-        return BuildsQuery.newQuery().whereBetween(column, values, boolean);
+    public static whereBetween(column: string, values: any[], boolean: BooleanOperator = 'and'): Model {
+        return this.newQuery().whereBetween(column, values, boolean);
     }
 
     /**
@@ -651,8 +651,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotBetween
      */
-    public static whereNotBetween(column: string, values: any[], boolean: BooleanOperator = 'and'): BuildsQuery {
-        return BuildsQuery.newQuery().whereNotBetween(column, values, boolean);
+    public static whereNotBetween(column: string, values: any[], boolean: BooleanOperator = 'and'): Model {
+        return this.newQuery().whereNotBetween(column, values, boolean);
     }
 
     /**
@@ -689,8 +689,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.limit
      */
-    public static limit(count: number): BuildsQuery {
-        return BuildsQuery.newQuery().limit(count);
+    public static limit(count: number): Model {
+        return this.newQuery().limit(count);
     }
 
     /**
@@ -719,8 +719,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.when
      */
-    public static when(value: any, closure: (instance: BuildsQuery) => any): BuildsQuery {
-        return BuildsQuery.newQuery().when(value, closure);
+    public static when(value: any, closure: (instance: BuildsQuery) => any): Model {
+        return this.newQuery().when(value, closure);
     }
 
     /**
@@ -749,8 +749,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.unless
      */
-    public static unless(value: any, closure: (instance: BuildsQuery) => any): BuildsQuery {
-        return BuildsQuery.newQuery().unless(value, closure);
+    public static unless(value: any, closure: (instance: BuildsQuery) => any): Model {
+        return this.newQuery().unless(value, closure);
     }
 
     /**
@@ -771,8 +771,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.distinct
      */
-    public static distinct(boolean = true): BuildsQuery {
-        return BuildsQuery.newQuery().distinct(boolean);
+    public static distinct(boolean = true): Model {
+        return this.newQuery().distinct(boolean);
     }
 
     /**
@@ -797,8 +797,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.select
      */
-    public static select(columns: string[] | string): BuildsQuery {
-        return BuildsQuery.newQuery().select(columns);
+    public static select(columns: string[] | string): Model {
+        return this.newQuery().select(columns);
     }
 
     /**
@@ -823,8 +823,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.has
      */
-    public static has(relations: string[] | string): BuildsQuery {
-        return BuildsQuery.newQuery().has(relations);
+    public static has(relations: string[] | string): Model {
+        return this.newQuery().has(relations);
     }
 
     /**
@@ -849,8 +849,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.with
      */
-    public static with(relations: string[] | string): BuildsQuery {
-        return BuildsQuery.newQuery().with(relations);
+    public static with(relations: string[] | string): Model {
+        return this.newQuery().with(relations);
     }
 
     /**
@@ -873,8 +873,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.without
      */
-    public static without(relations: string[] | string): BuildsQuery {
-        return BuildsQuery.newQuery().without(relations);
+    public static without(relations: string[] | string): Model {
+        return this.newQuery().without(relations);
     }
 
     /**
@@ -899,8 +899,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.scope
      */
-    public static scope(scopes: string[] | string): BuildsQuery {
-        return BuildsQuery.newQuery().scope(scopes);
+    public static scope(scopes: string[] | string): Model {
+        return this.newQuery().scope(scopes);
     }
 
     /**
@@ -930,8 +930,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.orderBy
      */
-    public static orderBy(column: string, direction: Direction = 'asc'): BuildsQuery {
-        return BuildsQuery.newQuery().orderBy(column, direction);
+    public static orderBy(column: string, direction: Direction = 'asc'): Model {
+        return this.newQuery().orderBy(column, direction);
     }
 
     /**
@@ -954,8 +954,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.orderByDesc
      */
-    public static orderByDesc(column: string): BuildsQuery {
-        return BuildsQuery.newQuery().orderByDesc(column);
+    public static orderByDesc(column: string): Model {
+        return this.newQuery().orderByDesc(column);
     }
 
     /**
@@ -980,8 +980,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.latest
      */
-    public static latest(column?: string): BuildsQuery {
-        return BuildsQuery.newQuery().latest(column);
+    public static latest(column?: string): Model {
+        return this.newQuery().latest(column);
     }
 
     /**
@@ -1006,8 +1006,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.oldest
      */
-    public static oldest(column = 'created_at'): BuildsQuery {
-        return BuildsQuery.newQuery().oldest(column);
+    public static oldest(column = 'created_at'): Model {
+        return this.newQuery().oldest(column);
     }
 
     /**
@@ -1032,8 +1032,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.offset
      */
-    public static offset(count: number): BuildsQuery {
-        return BuildsQuery.newQuery().offset(count);
+    public static offset(count: number): Model {
+        return this.newQuery().offset(count);
     }
 
     /**
@@ -1058,7 +1058,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.skip
      */
-    public static skip(count: number): BuildsQuery {
-        return BuildsQuery.newQuery().skip(count);
+    public static skip(count: number): Model {
+        return this.newQuery().skip(count);
     }
 }

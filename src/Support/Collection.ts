@@ -321,7 +321,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    public withoutEmpty(): Collection<T> {
+    public withoutEmpty(): this {
         return this._newInstance(this.toArray().filter(item => item !== undefined && item !== null));
     }
 
@@ -731,7 +731,6 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
         return Array.from(this);
     }
 
-
     /**
      * @inheritDoc
      */
@@ -836,7 +835,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {Collection}
      */
-    public splice(start: number, deleteCount: number, ...items: T[]): Collection<T> {
+    public splice(start: number, deleteCount: number, ...items: T[]): this {
         const array = this.toArray();
         const removedElements = array.splice(start, deleteCount, ...items);
 
@@ -850,7 +849,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    public slice(start?: number, end?: number): Collection<T> {
+    public slice(start?: number, end?: number): this {
         return this._newInstance(this.toArray().slice(start, end));
     }
 
@@ -859,7 +858,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    public filter(predicate: (value: T, index: number, array: T[]) => boolean, thisArg?: any): Collection<T> {
+    public filter(predicate: (value: T, index: number, array: T[]) => boolean, thisArg?: any): this {
         return this._newInstance(this.toArray().filter(predicate, thisArg));
     }
 

@@ -86,10 +86,36 @@ export default class FactoryBuilder<T extends Model> {
     /**
      * Get all the attributes in an object format.
      *
-     * @param {object} attributes
+     * @param {object=} attributes
      */
     public raw(attributes: Attributes = {}): Attributes | Collection<Attributes> {
         return this.addRelations(this.rawAttributes(attributes), 'raw') as Attributes | Collection<Attributes>;
+    }
+
+    /**
+     * Get all the attributes in an object format
+     * while ensuring only a single object is returned.
+     *
+     * @param {object=} attributes
+     */
+    public rawOne(attributes?: Attributes): T {
+        return this.times(1).raw(attributes) as T;
+    }
+
+    /**
+     * Get all the attributes in an object format
+     * while ensuring that always a Collection is returned.
+     *
+     * @param {object=} attributes
+     */
+    public rawMany(attributes?: Attributes): Collection<Attributes> {
+        const rawAttributes = this.raw(attributes);
+
+        if (!(rawAttributes instanceof Collection)) {
+            return new Collection<Attributes>(rawAttributes);
+        }
+
+        return rawAttributes;
     }
 
     /**
@@ -109,6 +135,34 @@ export default class FactoryBuilder<T extends Model> {
         }
 
         return this.addRelations(modelOrCollection, 'make') as ModelCollection<T> | T;
+    }
+
+    /**
+     * Create a model.
+     *
+     * @param {object=} attributes
+     *
+     * @return {Model}
+     */
+    public makeOne(attributes?: Attributes): T {
+        return this.times(1).make(attributes) as T;
+    }
+
+    /**
+     * Create a model collection.
+     *
+     * @param {object=} attributes
+     *
+     * @return {ModelCollection}
+     */
+    public makeMany(attributes?: Attributes): ModelCollection<T> {
+        const models = this.make(attributes);
+
+        if (!(models instanceof ModelCollection)) {
+            return new ModelCollection(models);
+        }
+
+        return models;
     }
 
     /**
@@ -136,6 +190,34 @@ export default class FactoryBuilder<T extends Model> {
         }
 
         return this.addRelations(modelOrCollection, 'create') as ModelCollection<T> | T;
+    }
+
+    /**
+     * Create a model completed with timestamps and id if required.
+     *
+     * @param {object=} attributes
+     *
+     * @return {Model}
+     */
+    public createOne(attributes?: Attributes): T {
+        return this.times(1).create(attributes) as T;
+    }
+
+    /**
+     * Create a model collection completed with timestamps and id if required.
+     *
+     * @param {object=} attributes
+     *
+     * @return {ModelCollection<Model>}
+     */
+    public createMany(attributes?: Attributes): ModelCollection<T> {
+        const models = this.create(attributes);
+
+        if (!(models instanceof ModelCollection)) {
+            return new ModelCollection(models);
+        }
+
+        return models;
     }
 
     /**

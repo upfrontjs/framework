@@ -12,6 +12,35 @@ const morningWorkers = await User
     .get();
 ```
 
+Which will generate request url similar to the described [Shape of the request](../services/api.md#shape-of-the-request) the [API](../services/api.md) service class generates.
+
+### Customising the generated query string
+
+Given the above may not follow the desired namings for the parameters, you could customise the result by implementing the provided `FormatsQueryParameters` interface.
+
+```ts
+// User.ts
+import { Model, FormatsQueryParameters, QueryParams } from "@upfrontjs/framework";
+
+export default class User extends Model implements FormatsQueryParameters {
+    /**
+     * Transform the default query string keys.
+     *
+     * @param {QueryParams} parameters
+     */
+    public formatQueryParameters(parameters: QueryParams): Record<string, any> {
+        if (parameters.wheres) {
+            parameters.filters = parameters.wheres;
+            delete parameters.wheres;
+        }
+        
+        return parameters;
+    }
+}
+```
+
+With the above now instead of using the `wheres` keyword in the query string it will now be `filters`.
+
 ## Methods
 
 The below methods are all available both on the instance and statically on the models. Exceptions are the methods starting with `or`. They're only available on the instance.

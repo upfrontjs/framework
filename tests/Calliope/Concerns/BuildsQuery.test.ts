@@ -1,5 +1,7 @@
+import type { QueryParams } from '../../../src/Calliope/Concerns/BuildsQuery';
 import BuildsQuery from '../../../src/Calliope/Concerns/BuildsQuery';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
+import type FormatsQueryParameters from '../../../src/Contracts/FormatsQueryParameters';
 
 class TestClass extends BuildsQuery {
     public compiledParams(): Record<string, unknown> {
@@ -36,6 +38,34 @@ describe('BuildsQuery', () => {
     describe('newQuery()', () => {
         it('should returns an instantiated builder', () => {
             expect(BuildsQuery.newQuery()).toBeInstanceOf(BuildsQuery);
+        });
+    });
+
+    describe('compileQueryParameters', () => {
+        it('should call the formatQueryParameters if defined', () => {
+            const mockFn = jest.fn();
+            class FormatterClass extends TestClass implements FormatsQueryParameters {
+                public formatQueryParameters(attributes: QueryParams) {
+                    mockFn();
+                    return attributes;
+                }
+            }
+
+            const formatter = new FormatterClass();
+            formatter.compiledParams();
+            expect(mockFn).toHaveBeenCalledTimes(1);
+        });
+
+        it('should should use the returned object by the formatQueryParameters', () => {
+            class FormatterClass extends TestClass implements FormatsQueryParameters {
+                public formatQueryParameters(_attributes: QueryParams) {
+                    return { my: 'data' };
+                }
+            }
+
+            const formatter = new FormatterClass();
+            expect(formatter.compiledParams().my).not.toBeUndefined();
+            expect(formatter.compiledParams().my).toBe('data');
         });
     });
 

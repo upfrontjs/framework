@@ -1,6 +1,7 @@
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import HasAttributes from './HasAttributes';
 import type Model from '../Model';
+import type FormatsQueryParameters from '../../Contracts/FormatsQueryParameters';
 
 type BooleanOperator = 'and' | 'or';
 type Direction = 'asc' | 'desc';
@@ -199,7 +200,12 @@ export default class BuildsQuery extends HasAttributes {
             params.limit = this.limitCount;
         }
 
-        return params;
+        let parameters = params;
+        if ('formatQueryParameters' in this && this.formatQueryParameters instanceof Function) {
+            parameters = (this as unknown as FormatsQueryParameters).formatQueryParameters(params);
+        }
+
+        return parameters;
     }
 
     /**

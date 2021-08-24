@@ -29,7 +29,7 @@ The API prepares the `RequestInit` configuration in the following order:
 
 ## Shape of the request
 
-This part applies if you're not using a custom or customising the `API` service. Deviation from this, like adjusting the [getParamEncodingOptions](#getparamencodingoptions) or [implementing a custom service](./readme.md#using-custom-services) will cause different results.
+This part applies if you're not using a custom, customising the `API` service or [customising the query string in the builder](../calliope/query-building.md#customising-the-generated-query-string). Deviation from this, like adjusting the [getParamEncodingOptions](#getparamencodingoptions) or [implementing a custom service](./readme.md#using-custom-services) will cause different results.
 With the default settings, your api has to be ready to parse the requests with the following format.
 
 A sample get request `User.whereKey(1).get()` will encode to the following:

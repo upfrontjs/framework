@@ -1,5 +1,6 @@
 import Collection from '../../src/Support/Collection';
 import { advanceTo } from 'jest-date-mock';
+import LogicException from '../../src/Exceptions/LogicException';
 
 let collection: Collection<any>;
 
@@ -1057,6 +1058,137 @@ describe('Collection', () => {
         });
     });
 
+    describe('sum()', () => {
+        const elements = [1, 2, 3, 4, 5];
+
+        it('should return the total value', () => {
+            collection = new Collection(elements);
+
+            expect(collection.sum())
+                .toBe(elements.reduce((previousValue, currentValue) => previousValue + currentValue, 0));
+        });
+
+        it('should throw an error if the element cannot be casted to a number', () => {
+            collection = new Collection([1, 2, 'value']);
+
+            expect(() => collection.sum()).toThrow(new LogicException('Some values cannot be casted to numbers.'));
+
+            collection = new Collection([{ id: 'value' }]);
+
+            expect(() => collection.sum('id')).toThrow(new LogicException('Some values cannot be casted to numbers.'));
+        });
+
+        it('should return the total value of object properties when key given', () => {
+            collection = new Collection([{ id: 1 }, { id: 2 }]);
+
+            expect(collection.sum('id')).toBe(3);
+        });
+
+        it('should return the total value of object properties when getter function given', () => {
+            collection = new Collection([{ id: 1 }, { id: 2 }]);
+
+            expect(collection.sum((obj: { id: number }) => obj.id)).toBe(3);
+        });
+    });
+
+    describe('min()', () => {
+        const elements = [1, 2, 3, 4, 5];
+
+        it('should return the lowest value', () => {
+            collection = new Collection(elements);
+
+            expect(collection.min()).toBe(1);
+        });
+
+        it('should throw an error if the element cannot be casted to a number', () => {
+            collection = new Collection([1, 2, 'value']);
+
+            expect(() => collection.min()).toThrow(new LogicException('Some values cannot be casted to numbers.'));
+
+            collection = new Collection([{ id: 'value' }]);
+
+            expect(() => collection.min('id')).toThrow(new LogicException('Some values cannot be casted to numbers.'));
+        });
+
+        it('should return the lowest value of object properties when key given', () => {
+            collection = new Collection([{ id: 1 }, { id: 2 }]);
+
+            expect(collection.min('id')).toBe(1);
+        });
+
+        it('should return the lowest value of object properties when getter function given', () => {
+            collection = new Collection([{ id: 1 }, { id: 2 }]);
+
+            expect(collection.min((obj: { id: number }) => obj.id)).toBe(1);
+        });
+    });
+
+    describe('max()', () => {
+        const elements = [1, 2, 3, 4, 5];
+
+        it('should return the highest value', () => {
+            collection = new Collection(elements);
+
+            expect(collection.max()).toBe(5);
+        });
+
+        it('should throw an error if the element cannot be casted to a number', () => {
+            collection = new Collection([1, 2, 'value']);
+
+            expect(() => collection.max()).toThrow(new LogicException('Some values cannot be casted to numbers.'));
+
+            collection = new Collection([{ id: 'value' }]);
+
+            expect(() => collection.max('id')).toThrow(new LogicException('Some values cannot be casted to numbers.'));
+        });
+
+        it('should return the highest value of object properties when key given', () => {
+            collection = new Collection([{ id: 1 }, { id: 2 }]);
+
+            expect(collection.max('id')).toBe(2);
+        });
+
+        it('should return the highest value of object properties when getter function given', () => {
+            collection = new Collection([{ id: 1 }, { id: 2 }]);
+
+            expect(collection.max((obj: { id: number }) => obj.id)).toBe(2);
+        });
+    });
+
+    describe('average()', () => {
+        const elements = [1, 2, 3, 4, 5];
+
+        it('should return the average value', () => {
+            collection = new Collection(elements);
+
+            expect(collection.average()).toBe(3);
+        });
+
+        it('should throw an error if the element cannot be casted to a number', () => {
+            collection = new Collection([1, 2, 'value']);
+
+            expect(() => collection.average()).toThrow(new LogicException('Some values cannot be casted to numbers.'));
+
+            collection = new Collection([{ id: 'value' }]);
+
+            expect(() => collection.average('id')).toThrow(
+                new LogicException('Some values cannot be casted to numbers.')
+            );
+        });
+
+        it('should return the average value of object properties when key given', () => {
+            collection = new Collection([{ id: 1 }, { id: 2 }]);
+
+            expect(collection.average('id')).toBe(1.5);
+        });
+
+        it('should return the average value of object properties when getter function given', () => {
+            collection = new Collection([{ id: 1 }, { id: 2 }]);
+
+            expect(collection.average((obj: { id: number }) => obj.id)).toBe(1.5);
+        });
+    });
+
     describe('array-methods', () => {
         const elements = [1, 2, 3, 4, 5];
 
@@ -1197,7 +1329,7 @@ describe('Collection', () => {
 
         describe('splice()', () => {
             it('should return the spliced items', () => {
-                expect(collection.splice(0, 2)).toStrictEqual(new Collection(elements.splice(0, 2)));
+                expect(collection.splice(0, 2)).toStrictEqual(new Collection([...elements].splice(0, 2)));
             });
 
             it('should transform the original object', () => {
@@ -1335,7 +1467,7 @@ describe('Collection', () => {
         describe('copyWithin()', () => {
             it('should copy part of the array withing the array', () => {
                 expect(collection.copyWithin(0, 2, 4).toArray())
-                    .toStrictEqual(elements.copyWithin(0, 2, 4));
+                    .toStrictEqual([...elements].copyWithin(0, 2, 4));
             });
         });
 
@@ -1359,7 +1491,7 @@ describe('Collection', () => {
 
         describe('fill()', () => {
             it('should fill the collection with static values', () => {
-                expect(collection.fill(10, 2, 3).toArray()).toStrictEqual(elements.fill(10, 2, 3));
+                expect(collection.fill(10, 2, 3).toArray()).toStrictEqual([...elements].fill(10, 2, 3));
             });
         });
 
@@ -1395,6 +1527,7 @@ describe('Collection', () => {
 
         describe('toString()', () => {
             it('should return the string representation of the collection', () => {
+                // eslint-disable-next-line @typescript-eslint/no-base-to-string
                 expect(collection.toString()).toBe(elements.toString());
             });
         });

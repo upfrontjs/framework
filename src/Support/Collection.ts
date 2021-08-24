@@ -1,6 +1,7 @@
 import { isEqual, uniq } from 'lodash';
 import type Arrayable from '../Contracts/Arrayable';
 import type Jsonable from '../Contracts/Jsonable';
+import LogicException from '../Exceptions/LogicException';
 
 export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, ArrayLike<T> {
     /**
@@ -722,6 +723,68 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      */
     public keys(): string[] {
         return Object.keys(this).filter((propName: string) => !isNaN(Number(propName)));
+    }
+
+    /**
+     * The getter that returns the numeric values based
+     * on the given key or the getter function.
+     *
+     * @param {string|function} key
+     *
+     * @private
+     */
+    private getNumericValues(key?: string | ((item: T) => any)): number[] {
+        let numbers = this as Collection<any>;
+
+        if (key) {
+            numbers = typeof key === 'string' ? numbers.pluck(key) : numbers.map(key);
+        }
+
+        numbers = numbers.map(number => Number(number));
+
+        if (numbers.some((number: number) => isNaN(number))) {
+            throw new LogicException('Some values cannot be casted to numbers.');
+        }
+
+        return numbers.toArray();
+    }
+
+    /**
+     * Get the summative of the collection values.
+     *
+     * @param {string|function} key
+     */
+    public sum(key?: string | ((item: T) => any)): number {
+        return this.getNumericValues(key).reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+    }
+
+    /**
+     * Get the highest number in the collection.
+     *
+     * @param {string|function} key
+     */
+    public max(key?: string | ((item: T) => any)): number {
+        return this.getNumericValues(key)
+            .reduce((previousValue, nextValue) => previousValue > nextValue ? previousValue : nextValue);
+    }
+
+    /**
+     * Get the lowest number in the collection.
+     *
+     * @param {string|function} key
+     */
+    public min(key?: string | ((item: T) => any)): number {
+        return this.getNumericValues(key)
+            .reduce((previousValue, nextValue) => previousValue < nextValue ? previousValue : nextValue);
+    }
+
+    /**
+     * Get the average of values in the collection.
+     *
+     * @param {string|function} key
+     */
+    public average(key?: string | ((item: T) => any)): number {
+        return this.sum(key) / this.length;
     }
 
     /**

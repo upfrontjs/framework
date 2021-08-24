@@ -434,6 +434,21 @@ collection.include({ id: 2 }); // true
 collection.include(2); // false
 ```
 
+#### join
+
+The `join` method works the same way the base [join](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join), except when using a collection of object the first argument is can be a property key or getter function receiving the object.
+
+```js
+import { Collection } from '@upfrontjs/framework';
+
+const collection = new Collection([1, 2]);
+collection.join('-'); // '1-2'
+
+const objectCollection = new Collection([{ id: 1 }, { id: 2 }]);
+objectCollection.join('id', '-'); // '1-2'
+objectCollection.join(obj => obj.id + 1); // '2,3'
+```
+
 #### sum
 
 The `sum` method returns the summative the collection numbers while casting strings to numbers if possible otherwise throws an error. Optionally it takes a string for the property key or getter function receiving the item to return a single value.

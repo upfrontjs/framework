@@ -1094,7 +1094,17 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {string}
      */
-    public join(separator?: string): string {
+    public join(key?: string | ((item: T) => any), separator = key): string {
+        separator = typeof separator === 'string' ? separator : ',';
+
+        if (this._allAreObjects()) {
+            if (!key) {
+                return this.map(item => String(item)).join(separator);
+            }
+
+            return (typeof key === 'string' ? this.pluck(key) : this.map(key)).toArray().join(separator);
+        }
+
         return this.toArray().join(separator);
     }
 

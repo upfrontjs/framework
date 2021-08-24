@@ -1520,8 +1520,24 @@ describe('Collection', () => {
                 expect(collection.join('+')).toBe(elements.join('+'));
             });
 
-            it('should join the collection elements with the default "\'" string', () => {
+            it('should join the collection elements with the default "," string', () => {
                 expect(collection.join()).toBe(elements.join());
+            });
+
+            it('should join object elements on the specified key', () => {
+                collection = new Collection([{ id: 1 }, { id: 2 }]);
+
+                expect(collection.join('id', ' - ')).toBe('1 - 2');
+        });
+
+            it('should join the object on the getter function return value', () => {
+                collection = new Collection([{ id: 1 }, { id: 2 }]);
+                expect(collection.join((item: { id: number }) => item.id + 1))
+                    .toBe('2,3');
+            });
+
+            it('should accepts the first argument as separator if elements are not objects', () => {
+                expect(collection.join(':')).toBe(elements.join(':'));
             });
         });
 

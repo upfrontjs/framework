@@ -5,6 +5,7 @@ import GlobalConfig from '../Support/GlobalConfig';
 import { finish } from '../Support/string';
 import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
 import type { Method } from '../Calliope/Concerns/CallsApi';
+import type { ApiResponse } from '../Contracts/HandlesApiResponse';
 
 /**
  * The default ApiCaller class used by the package.
@@ -41,10 +42,14 @@ export default class API implements ApiCaller {
         data?: FormData | Record<string, unknown>,
         customHeaders?: Record<string, string[] | string>,
         queryParameters?: Record<string, unknown>
-    ): Promise<Response> {
+    ): Promise<ApiResponse> {
         const config = this.initConfig(url, method, data, customHeaders, queryParameters);
 
-        return fetch(config.url, config.requestInit);
+        return fetch(config.url, config.requestInit).then(resp => {
+            return Object.assign(resp, {
+                request: config.requestInit
+            }) as ApiResponse;
+        });
     }
 
     /**

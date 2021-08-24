@@ -1,4 +1,5 @@
 import type { Method } from '../Calliope/Concerns/CallsApi';
+import type { ApiResponse } from './HandlesApiResponse';
 
 /**
  * Interface prescribes what's expected to be implemented
@@ -39,7 +40,7 @@ export default interface ApiCaller {
      * @param {object=} data - The optional data to send with the request.
      * @param {object=} customHeaders - Custom headers to merge into the request.
      *
-     * @return {Promise<Response>}
+     * @return {Promise<ApiResponse>}
      */
     call: (
         url: string,
@@ -47,5 +48,5 @@ export default interface ApiCaller {
         data?: FormData | Record<string, unknown>,
         customHeaders?: Record<string, string[] | string>,
         queryParameters?: Record<string, any>
-    ) => Promise<Response>;
+    ) => Promise<ApiResponse>;
 }

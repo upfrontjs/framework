@@ -58,6 +58,7 @@ describe('BuildsQuery', () => {
 
         it('should should use the returned object by the formatQueryParameters', () => {
             class FormatterClass extends TestClass implements FormatsQueryParameters {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 public formatQueryParameters(_attributes: QueryParams) {
                     return { my: 'data' };
                 }

@@ -44,7 +44,7 @@ export default interface Configuration {
     randomDataGenerator?: any;
 
     /**
-     * Enable any arbitrary values in the config.
+     * Arbitrary value in the config.
      */
     [key: string]: any;
 }

@@ -538,7 +538,7 @@ describe('ModelCollection', () => {
     });
 
     describe('array-methods', () => {
-        describe('map', () => {
+        describe('map()', () => {
             it('should return a collection if not every item returned is model', () => {
                 expect(collection.map(user => user.getKey())).toBeInstanceOf(Collection);
                 expect(collection.map(user => user.getKey())).not.toBeInstanceOf(ModelCollection);

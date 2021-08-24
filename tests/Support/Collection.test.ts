@@ -1528,7 +1528,7 @@ describe('Collection', () => {
                 collection = new Collection([{ id: 1 }, { id: 2 }]);
 
                 expect(collection.join('id', ' - ')).toBe('1 - 2');
-        });
+            });
 
             it('should join the object on the getter function return value', () => {
                 collection = new Collection([{ id: 1 }, { id: 2 }]);

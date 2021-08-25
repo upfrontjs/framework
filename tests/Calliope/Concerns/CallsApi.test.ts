@@ -323,7 +323,7 @@ describe('CallsApi', () => {
             expect(caller.setLastSyncedAt()).toBeInstanceOf(User);
         });
 
-        it('should use itself with new date as defaults or set to the given values', () => {
+        it('should update the attribute with the new Date or the given value', () => {
             // freeze time
             advanceTo(new Date);
 
@@ -331,12 +331,10 @@ describe('CallsApi', () => {
             caller.setLastSyncedAt();
             expect(caller._lastSyncedAt).toStrictEqual(new Date);
 
-            const model = User.factory().create() as User;
-
             // @ts-expect-error
-            caller.setLastSyncedAt('my value', model);
+            caller.setLastSyncedAt('my value');
 
-            expect(model._lastSyncedAt).toBe('my value');
+            expect(caller._lastSyncedAt).toBe('my value');
         });
     });
 

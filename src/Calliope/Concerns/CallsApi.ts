@@ -278,21 +278,19 @@ export default class CallsApi extends BuildsQuery {
      * Set the last synced at attribute.
      *
      * @param {any} to
-     * @param {Model} model
      *
      * @protected
      *
      * @return {this}
      */
-    protected setLastSyncedAt(to: any = new Date, model?: Model): this {
-        model = model ?? (this as unknown as Model);
+    protected setLastSyncedAt(to: any = new Date): this {
         const key = '_' + this.setStringCase('last_synced_at');
 
-        if (key in model) {
-            delete model[key];
+        if (key in this) {
+            delete this[key];
         }
 
-        Object.defineProperty(model, key, {
+        Object.defineProperty(this, key, {
             get: () => to,
             configurable: true,
             enumerable: true

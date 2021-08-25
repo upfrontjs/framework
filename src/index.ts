@@ -27,6 +27,7 @@ import type FactoryHooks from './Contracts/FactoryHooks';
 import type { CastType } from './Calliope/Concerns/CastsAttributes';
 import type { QueryParams } from './Calliope/Concerns/BuildsQuery';
 import type FormatsQueryParameters from './Contracts/FormatsQueryParameters';
+import type { ApiResponse } from './Contracts/HandlesApiResponse';
 
 export type {
     AttributeCaster,
@@ -37,7 +38,8 @@ export type {
     FactoryHooks,
     CastType,
     QueryParams,
-    FormatsQueryParameters
+    FormatsQueryParameters,
+    ApiResponse
 };
 
 export * from './Support/array';

@@ -8,6 +8,7 @@ import LogicException from '../../src/Exceptions/LogicException';
 import { finish, snake } from '../../src/Support/string';
 import { advanceBy } from 'jest-date-mock';
 import Team from '../mock/Models/Team';
+import { config } from '../setupTests';
 
 let user: User;
 
@@ -182,6 +183,14 @@ describe('Model', () => {
 
             expect(response).toBeInstanceOf(ModelCollection);
         });
+
+        it('should return a ModelCollection even if only one model returned', async () => {
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().create())));
+            const users = await user.findMany([1]);
+
+            expect(users).toBeInstanceOf(ModelCollection);
+            expect(users).toHaveLength(1);
+        });
     });
 
     describe('refresh()', () => {
@@ -349,6 +358,79 @@ describe('Model', () => {
             await user.save();
 
             expect(user._lastSyncedAt).not.toBe(lastSyncedAt);
+        });
+
+        describe('relations', () => {
+            it('should send the id as part of the body without the get params ' +
+                'when using hasOne to instantiate model', async () => {
+                const contract = user.$contract();
+
+                fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({
+                    myAttribute: 'value',
+                    [user.guessForeignKeyName()]: user.getKey()
+                })));
+
+                await contract.save({ myAttribute: 'value' });
+
+                const lastRequest = getLastRequest();
+                expect(lastRequest?.url).toBe(String(config.get('baseEndPoint')) + '/' + contract.getEndpoint());
+                expect(lastRequest?.method).toBe('post');
+                expect(lastRequest?.body).toStrictEqual({
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    my_attribute: 'value',
+                    [snake(user.guessForeignKeyName())]: user.getKey()
+                });
+            });
+
+            it('should send the id as part of the body without the get params ' +
+                'when using hasMany to instantiate model', async () => {
+                const shift = user.$shifts();
+
+                fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({
+                    myAttribute: 'value',
+                    [user.guessForeignKeyName()]: user.getKey()
+                })));
+
+                await shift.save({ myAttribute: 'value' });
+
+                const lastRequest = getLastRequest();
+                expect(lastRequest?.url).toBe(String(config.get('baseEndPoint')) + '/' + shift.getEndpoint());
+                expect(lastRequest?.method).toBe('post');
+                expect(lastRequest?.body).toStrictEqual({
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    my_attribute: 'value',
+                    [snake(user.guessForeignKeyName())]: user.getKey()
+                });
+            });
+        });
+    });
+
+    describe('update()', () => {
+        it('should call the patch() method', async () => {
+            mockUserModelResponse(user);
+            await user.update({ key: 'value' });
+
+            expect(getLastRequest()?.method).toBe('patch');
+        });
+
+        it('should set the correct endpoint', async () => {
+            mockUserModelResponse(user);
+
+            await user.update({ key: 'value' });
+            expect(getLastRequest()?.url).toBe(
+                String(config.get('baseEndPoint')) + '/' + user.getEndpoint() + '/' + String(user.getKey())
+            );
+        });
+
+        it('should throw an error if the model not yet exists', async () => {
+            const nonExistentUser = User.factory().make() as User;
+
+            await expect(async () => nonExistentUser.update({ myAttrs: 1 })).rejects.toThrow(
+                new LogicException(
+                    'Attempted to call update on \'' + nonExistentUser.getName()
+                    + '\' when it has not been persisted yet or it has been soft deleted.'
+                )
+            );
         });
     });
 });

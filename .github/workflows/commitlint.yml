@@ -1,8 +1,12 @@
 name: Lint Commit Messages
-on: [pull_request]
+
+on:
+  pull_request:
+    types: [ready_for_review, opened, synchronize, reopened]
 
 jobs:
   commitlint:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

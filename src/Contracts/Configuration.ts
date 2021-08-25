@@ -36,7 +36,7 @@ export default interface Configuration {
     /**
      * The headers to be merged into request configuration.
      */
-    headers?: HeadersInit | Record<string, string[] | string> | string[][];
+    headers?: HeadersInit;
 
     /**
      * The randomisation library made available in the Factory classes if set.
@@ -44,7 +44,7 @@ export default interface Configuration {
     randomDataGenerator?: any;
 
     /**
-     * Enable any arbitrary values in the config.
+     * Arbitrary value in the config.
      */
     [key: string]: any;
 }

@@ -1,5 +1,7 @@
+import type { QueryParams } from '../../../src/Calliope/Concerns/BuildsQuery';
 import BuildsQuery from '../../../src/Calliope/Concerns/BuildsQuery';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
+import type FormatsQueryParameters from '../../../src/Contracts/FormatsQueryParameters';
 
 class TestClass extends BuildsQuery {
     public compiledParams(): Record<string, unknown> {
@@ -39,6 +41,35 @@ describe('BuildsQuery', () => {
         });
     });
 
+    describe('compileQueryParameters', () => {
+        it('should call the formatQueryParameters if defined', () => {
+            const mockFn = jest.fn();
+            class FormatterClass extends TestClass implements FormatsQueryParameters {
+                public formatQueryParameters(attributes: QueryParams) {
+                    mockFn();
+                    return attributes;
+                }
+            }
+
+            const formatter = new FormatterClass();
+            formatter.compiledParams();
+            expect(mockFn).toHaveBeenCalledTimes(1);
+        });
+
+        it('should should use the returned object by the formatQueryParameters', () => {
+            class FormatterClass extends TestClass implements FormatsQueryParameters {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                public formatQueryParameters(_attributes: QueryParams) {
+                    return { my: 'data' };
+                }
+            }
+
+            const formatter = new FormatterClass();
+            expect(formatter.compiledParams().my).not.toBeUndefined();
+            expect(formatter.compiledParams().my).toBe('data');
+        });
+    });
+
     describe('resetQueryParameters()', () => {
         it('should reset the params to the default values', () => {
             expect(builder.offset(10).compiledParams().offset).toBe(10);
@@ -64,6 +95,35 @@ describe('BuildsQuery', () => {
             expect(failingCall).toThrow(
                 new InvalidArgumentException('\'boolean operator\' is not an expected type of operator.')
             );
+        });
+
+        it('should ignore duplicate where descriptions', () => {
+            // @ts-expect-error
+            builder.addWhereConstraint('column', '=', 'value', 'or');
+            // @ts-expect-error
+            expect(builder.wheres).toHaveLength(1);
+
+            // @ts-expect-error
+            builder.addWhereConstraint('column', '=', 'value', 'or');
+            // @ts-expect-error
+            expect(builder.wheres).toHaveLength(1);
+
+            // @ts-expect-error
+            builder.addWhereConstraint('column', '!=', 'value', 'or');
+            // @ts-expect-error
+            expect(builder.wheres).toHaveLength(2);
+        });
+
+        it('should ignore duplicates when comparing numbers and numbers in string format', () => {
+            // @ts-expect-error
+            builder.addWhereConstraint('column', '=', '1', 'or');
+            // @ts-expect-error
+            expect(builder.wheres).toHaveLength(1);
+
+            // @ts-expect-error
+            builder.addWhereConstraint('column', '=', 1, 'or');
+            // @ts-expect-error
+            expect(builder.wheres).toHaveLength(1);
         });
     });
 
@@ -634,17 +694,17 @@ describe('BuildsQuery', () => {
         it('should set the distinct value', () => {
             builder.distinct();
 
-            expect(builder.compiledParams().distinct).toBe(true);
+            expect(builder.compiledParams().distinctOnly).toBe(true);
 
             builder.distinct(false);
 
-            expect(builder.compiledParams().distinct).toBeUndefined();
+            expect(builder.compiledParams().distinctOnly).toBeUndefined();
         });
 
         it('should be able to be called statically', () => {
             builder = BuildsQuery.distinct();
             // @ts-expect-error
-            expect(builder.compileQueryParameters().distinct).toBe(true);
+            expect(builder.compileQueryParameters().distinctOnly).toBe(true);
         });
     });
 
@@ -712,13 +772,21 @@ describe('BuildsQuery', () => {
             // @ts-expect-error
             expect(builder.compileQueryParameters().with).toStrictEqual(['relation']);
         });
+
+        it('should not allow duplicate values', () => {
+            builder = BuildsQuery.with(['relation', 'relation']);
+
+            // @ts-expect-error
+            expect(builder.compileQueryParameters().with).toStrictEqual(['relation']);
+        });
     });
 
     describe('without()', () => {
         it('should unset required relations', () => {
             expect(builder.without(['relation'])).toBeInstanceOf(BuildsQuery);
-            expect(builder.with(['relation1', 'relation2']).without(['relation1']).compiledParams().with)
-                .toStrictEqual(['relation2']);
+            expect(
+                builder.with(['relation1', 'relation2']).without(['relation1']).compiledParams().with
+            ).toStrictEqual(['relation2']);
         });
 
         it('should be able to be called statically', () => {

@@ -15,12 +15,17 @@ module.exports = {
                 'services',
                 'helpers',
                 'collection',
+                'model',
                 'model-collection',
                 'paginator',
                 'factory',
                 'query-builder',
                 'timestamps', // soft-deletes can also go under timestamps
-                'relations'
+                'relations',
+                'api-calls',
+                'deps',
+                'dev-deps',
+                'internal' // things that are not meant to be used outside of the package
             ]
         ],
     }

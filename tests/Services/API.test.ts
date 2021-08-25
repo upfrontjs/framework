@@ -1,6 +1,7 @@
 import API from '../../src/Services/API';
 import { config as globalConfig } from '../setupTests';
 import { finish } from '../../src';
+import InvalidArgumentException from '../../src/Exceptions/InvalidArgumentException';
 
 const url = finish(String(globalConfig.get('baseEndPoint')), '/') + 'users';
 
@@ -23,7 +24,7 @@ describe('API', () => {
     });
 
     describe('initConfig()', () => {
-        it('should encode get parameters', () => {
+        it('should encode get parameters correctly', () => {
             const config = api.getConfig(url, 'get', {
                 nested: {
                     objects: [
@@ -39,10 +40,6 @@ describe('API', () => {
                 + '?'
                 + 'nested[objects][][id]=1&nested[objects][][id]=2&array[]=1&array[]=2'
             );
-
-            // @ts-expect-error
-            expect(config.requestInit.headers.get('Content-Type'))
-                .toBe('application/x-www-form-urlencoded; charset=utf-8');
         });
 
         it('should merge in config into the RequestInit from requestOptions', () => {
@@ -132,7 +129,7 @@ describe('API', () => {
 
             expect(config.body).toBe(JSON.stringify(data));
             // @ts-expect-error
-            expect(config.headers.get('Content-Type')).toBe('application/json; charset=UTF-8');
+            expect(config.headers.get('Content-Type')).toBe('application/json; charset="utf-8"');
         });
 
         it('should process the given custom headers', () => {
@@ -150,21 +147,11 @@ describe('API', () => {
             expect(newConfig.headers.get('custom')).toBe(header.custom.join(', '));
         });
 
-        it('should only merge custom headers if their value is a string or string[]', () => {
+        it('should throw an error for value not of string type', () => {
             const header: Record<string, null[] | null> = { custom: null };
             // @ts-expect-error
-            const config = api.getConfig(url, 'post', undefined, header).requestInit;
-
-            // @ts-expect-error
-            expect(config.headers.has('custom')).toBe(false);
-
-            header.custom = [null];
-
-            // @ts-expect-error
-            const newConfig = api.getConfig(url, 'post', undefined, header).requestInit;
-
-            // @ts-expect-error
-            expect(newConfig.headers.has('custom')).toBe(false);
+            expect(() => api.getConfig(url, 'post', undefined, header))
+                .toThrow(new InvalidArgumentException('For \'custom\' expected type string, got: object'));
         });
 
         it('should merge in headers from the config if set', () => {
@@ -179,6 +166,87 @@ describe('API', () => {
             expect(initConfig.headers.get('custom-header')).toBe('value');
 
             globalConfig.unset('headers');
+        });
+
+        it('should set the Accept header if not already set', () => {
+            /* eslint-disable @typescript-eslint/naming-convention */
+            let config = api.getConfig(url, 'post', {}).requestInit;
+
+            // @ts-expect-error
+            expect(config.headers.get('Accept')).toBe('application/json');
+
+            config = api.getConfig(url, 'post', {}, { 'Accept': 'myArgumentValue' }).requestInit;
+            // @ts-expect-error
+            expect(config.headers.get('Accept')).toBe('myArgumentValue');
+
+            globalConfig.set('headers', { 'Accept': 'myGlobalValue' });
+            config = api.getConfig(url, 'post', {}).requestInit;
+            // @ts-expect-error
+            expect(config.headers.get('Accept')).toBe('myGlobalValue');
+            globalConfig.unset('headers');
+
+            Object.defineProperty(api, 'requestOptions', {
+                value: {
+                    headers: { Accept: 'myRequestOptionValue' }
+                } as Partial<RequestInit>,
+                configurable: true
+            });
+            config = api.getConfig(url, 'post', {}).requestInit;
+            // @ts-expect-error
+            expect(config.headers.get('Accept')).toBe('myRequestOptionValue');
+            delete api.requestOptions;
+
+            Object.defineProperty(api, 'initRequest', {
+                value: (
+                    /* eslint-disable @typescript-eslint/no-unused-vars */
+                    _url: string,
+                    _method: 'delete' | 'get' | 'patch' | 'post' | 'put',
+                    _data?: FormData | Record<string, unknown>
+                    /* eslint-enable @typescript-eslint/no-unused-vars */
+                ): Partial<RequestInit> => {
+                    return {
+                        headers: { Accept: 'myInitRequestValue' }
+                    };
+                },
+                configurable: true
+            });
+            config = api.getConfig(url, 'post', {}).requestInit;
+            // @ts-expect-error
+            expect(config.headers.get('Accept')).toBe('myInitRequestValue');
+            delete api.initRequest;
+
+            /* eslint-enable @typescript-eslint/naming-convention */
+        });
+
+        it('should set the method to GET if it got removed', () => {
+            Object.defineProperty(api, 'requestOptions', {
+                value: {
+                    method: undefined
+                } as Partial<RequestInit>,
+                configurable: true
+            });
+            let config = api.getConfig(url, 'get', {}).requestInit;
+
+            expect(config.method).toBe('get');
+            delete api.requestOptions;
+
+            Object.defineProperty(api, 'initRequest', {
+                value: (
+                    /* eslint-disable @typescript-eslint/no-unused-vars */
+                    _url: string,
+                    _method: 'delete' | 'get' | 'patch' | 'post' | 'put',
+                    _data?: FormData | Record<string, unknown>
+                    /* eslint-enable @typescript-eslint/no-unused-vars */
+                ): Partial<RequestInit> => {
+                    return {
+                        method: undefined
+                    };
+                },
+                configurable: true
+            });
+            config = api.getConfig(url, 'post', {}).requestInit;
+            expect(config.method).toBe('get');
+            delete api.initRequest;
         });
     });
 

@@ -88,6 +88,25 @@ describe('SoftDeletes', () => {
                 .toStrictEqual({ [snake(softDeletes.getDeletedAtColumn())]: now.toISOString() });
         });
 
+        it('should merge in the optional argument into the request', async () => {
+            mockUserModelResponse(softDeletes);
+
+            const now = new Date();
+
+            advanceTo(now);
+
+            await softDeletes.delete({
+                [softDeletes.getDeletedAtColumn()]: new Date(now.getTime() + 10).toISOString(),
+                key: 'value'
+            });
+
+            expect(getLastRequest()?.body)
+                .toStrictEqual({
+                    [snake(softDeletes.getDeletedAtColumn())]: new Date(now.getTime() + 10).toISOString(),
+                    key: 'value'
+                });
+        });
+
         it('should update the model\'s deleted at column', async () => {
             const now = new Date();
 
@@ -142,7 +161,7 @@ describe('SoftDeletes', () => {
             responseUser.deleteAttribute(responseUser.getDeletedAtColumn()).syncOriginal();
             mockUserModelResponse(responseUser);
 
-            softDeletes = await softDeletes.restore()!;
+            softDeletes = await softDeletes.restore();
 
             // but it's still set to null
             expect(softDeletes.getAttribute(softDeletes.getDeletedAtColumn())).toBeNull();
@@ -151,7 +170,7 @@ describe('SoftDeletes', () => {
         it('should send a PATCH request with the column set to null', async () => {
             mockUserModelResponse(softDeletes);
 
-            softDeletes = await softDeletes.restore()!;
+            softDeletes = await softDeletes.restore();
 
             expect(getLastRequest()?.method).toBe('patch');
             expect(getLastRequest()?.body).toStrictEqual({ [snake(softDeletes.getDeletedAtColumn())]: null });

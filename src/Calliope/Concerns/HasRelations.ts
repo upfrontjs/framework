@@ -24,6 +24,15 @@ export default class HasRelations extends CallsApi {
     }
 
     /**
+     * The key name of the parent of the hasOne or hasMany relation.
+     * This is used to remove the where query when saving
+     * a new entity like `parent.$child().save({});`
+     *
+     * @protected
+     */
+    protected hasOneOrManyParentKeyName: string | undefined;
+
+    /**
      * Load a relationships from remote.
      *
      * @param {string|string[]} relations
@@ -45,7 +54,7 @@ export default class HasRelations extends CallsApi {
         });
 
         if (!relations.length) {
-            return Promise.resolve(this);
+            return this;
         }
 
         if (relations.length === 1) {
@@ -55,7 +64,7 @@ export default class HasRelations extends CallsApi {
 
             this.addRelation(relations[0]!, relation);
 
-            return Promise.resolve(this);
+            return this;
         }
 
         const returnedRelations = (
@@ -69,7 +78,7 @@ export default class HasRelations extends CallsApi {
             this.addRelation(returnedRelation, returnedRelations[returnedRelation]!);
         });
 
-        return Promise.resolve(this);
+        return this;
     }
 
     /**
@@ -144,13 +153,13 @@ export default class HasRelations extends CallsApi {
      */
     protected getRelationType(name: string): Relation {
         name = start(name, this.relationMethodPrefix);
-        const model = (this[name] as CallableFunction)() as Model & { relationType: Relation };
+        const model = (this[name] as CallableFunction)() as Model & { _relationType: Relation };
 
-        if (!model.relationType) {
+        if (!model._relationType) {
             throw new LogicException('\'' + name + '\' relation is not using any of the expected relation types.');
         }
 
-        return model.relationType;
+        return model._relationType;
     }
 
     /**
@@ -196,7 +205,7 @@ export default class HasRelations extends CallsApi {
             }
 
             this.relations[name] = value;
-            this.createDescriptors(name);
+            this.createDescriptor(name);
 
             return this;
         }
@@ -231,7 +240,7 @@ export default class HasRelations extends CallsApi {
         }
 
         this.relations[name] = relation;
-        this.createDescriptors(name);
+        this.createDescriptor(name);
 
         return this;
     }
@@ -305,8 +314,8 @@ export default class HasRelations extends CallsApi {
     private static configureRelationType<T extends Model>(
         model: T,
         relationType: Relation
-    ): asserts model is T & { relationType: Readonly<Relation> } {
-        Object.defineProperty(model, 'relationType', {
+    ): asserts model is T & { _relationType: Readonly<Relation> } {
+        Object.defineProperty(model, '_relationType', {
             configurable: false,
             enumerable: false,
             writable: false,
@@ -388,12 +397,14 @@ export default class HasRelations extends CallsApi {
      *
      * @return {Model}
      */
-    public hasOne<T extends Model>(related: new() => T, foreignKey?: string): T {
+    public hasOne<T extends Model>(related: new() => T, foreignKey: string = this.guessForeignKeyName()): T {
         const relatedModel = new related();
 
         HasRelations.configureRelationType(relatedModel, 'hasOne');
+        relatedModel.setAttribute(foreignKey, (this as unknown as Model).getKey());
+        relatedModel.hasOneOrManyParentKeyName = foreignKey;
 
-        return relatedModel.where(foreignKey ?? this.guessForeignKeyName(), '=', (this as unknown as Model).getKey());
+        return relatedModel.where(foreignKey, '=', (this as unknown as Model).getKey());
     }
 
     /**
@@ -404,12 +415,14 @@ export default class HasRelations extends CallsApi {
      *
      * @return {Model}
      */
-    public hasMany<T extends Model>(related: new() => T, foreignKey?: string): T {
+    public hasMany<T extends Model>(related: new() => T, foreignKey: string = this.guessForeignKeyName()): T {
         const relatedModel = new related();
 
         HasRelations.configureRelationType(relatedModel, 'hasMany');
+        relatedModel.setAttribute(foreignKey, (this as unknown as Model).getKey());
+        relatedModel.hasOneOrManyParentKeyName = foreignKey;
 
-        return relatedModel.where(foreignKey ?? this.guessForeignKeyName(), '=', (this as unknown as Model).getKey());
+        return relatedModel.where(foreignKey, '=', (this as unknown as Model).getKey());
     }
 
     /**

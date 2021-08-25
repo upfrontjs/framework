@@ -1,6 +1,7 @@
 import { isEqual, uniq } from 'lodash';
 import type Arrayable from '../Contracts/Arrayable';
 import type Jsonable from '../Contracts/Jsonable';
+import LogicException from '../Exceptions/LogicException';
 
 export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, ArrayLike<T> {
     /**
@@ -321,7 +322,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    public withoutEmpty(): Collection<T> {
+    public withoutEmpty(): this {
         return this._newInstance(this.toArray().filter(item => item !== undefined && item !== null));
     }
 
@@ -725,12 +726,73 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
     }
 
     /**
+     * The getter that returns the numeric values based
+     * on the given key or the getter function.
+     *
+     * @param {string|function} key
+     *
+     * @private
+     */
+    private getNumericValues(key?: string | ((item: T) => any)): number[] {
+        let numbers = this as Collection<any>;
+
+        if (key) {
+            numbers = typeof key === 'string' ? numbers.pluck(key) : numbers.map(key);
+        }
+
+        numbers = numbers.map(number => Number(number));
+
+        if (numbers.some((number: number) => isNaN(number))) {
+            throw new LogicException('Some values cannot be casted to numbers.');
+        }
+
+        return numbers.toArray();
+    }
+
+    /**
+     * Get the summative of the collection values.
+     *
+     * @param {string|function} key
+     */
+    public sum(key?: string | ((item: T) => any)): number {
+        return this.getNumericValues(key).reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+    }
+
+    /**
+     * Get the highest number in the collection.
+     *
+     * @param {string|function} key
+     */
+    public max(key?: string | ((item: T) => any)): number {
+        return this.getNumericValues(key)
+            .reduce((previousValue, nextValue) => previousValue > nextValue ? previousValue : nextValue);
+    }
+
+    /**
+     * Get the lowest number in the collection.
+     *
+     * @param {string|function} key
+     */
+    public min(key?: string | ((item: T) => any)): number {
+        return this.getNumericValues(key)
+            .reduce((previousValue, nextValue) => previousValue < nextValue ? previousValue : nextValue);
+    }
+
+    /**
+     * Get the average of values in the collection.
+     *
+     * @param {string|function} key
+     */
+    public average(key?: string | ((item: T) => any)): number {
+        return this.sum(key) / this.length;
+    }
+
+    /**
      * @inheritDoc
      */
     public toArray(): T[] {
         return Array.from(this);
     }
-
 
     /**
      * @inheritDoc
@@ -836,7 +898,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {Collection}
      */
-    public splice(start: number, deleteCount: number, ...items: T[]): Collection<T> {
+    public splice(start: number, deleteCount: number, ...items: T[]): this {
         const array = this.toArray();
         const removedElements = array.splice(start, deleteCount, ...items);
 
@@ -850,7 +912,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    public slice(start?: number, end?: number): Collection<T> {
+    public slice(start?: number, end?: number): this {
         return this._newInstance(this.toArray().slice(start, end));
     }
 
@@ -859,7 +921,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    public filter(predicate: (value: T, index: number, array: T[]) => boolean, thisArg?: any): Collection<T> {
+    public filter(predicate: (value: T, index: number, array: T[]) => boolean, thisArg?: any): this {
         return this._newInstance(this.toArray().filter(predicate, thisArg));
     }
 
@@ -1032,7 +1094,17 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {string}
      */
-    public join(separator?: string): string {
+    public join(key?: string | ((item: T) => any), separator = key): string {
+        separator = typeof separator === 'string' ? separator : ',';
+
+        if (this._allAreObjects()) {
+            if (!key) {
+                return this.map(item => String(item)).join(separator);
+            }
+
+            return (typeof key === 'string' ? this.pluck(key) : this.map(key)).toArray().join(separator);
+        }
+
         return this.toArray().join(separator);
     }
 

@@ -124,7 +124,7 @@ export default class CastsAttributes {
             case 'boolean':
                 return this.castToBoolean(key, value);
             case 'string':
-                return String(value);
+                return this.castToString(key, value);
             case 'number':
                 return this.castToNumber(key, value);
             case 'object':
@@ -190,12 +190,17 @@ export default class CastsAttributes {
      * @protected
      */
     protected getDateTimeLibInstance(value: unknown): unknown {
-        const dateTimeLib = new GlobalConfig().get('datetime');
+        const dateTimeLib = new GlobalConfig().get('datetime', Date);
 
-        if (!dateTimeLib || !(dateTimeLib instanceof Function)) { // class and function are both of type Function
+        // class and function are both of type Function
+        if (!dateTimeLib || !(dateTimeLib instanceof Function)) {
             throw new InvalidArgumentException(
                 '\'datetime\' is not of expected type or has not been set in the ' + GlobalConfig.name + '.'
             );
+        }
+
+        if (Object.is(Date, dateTimeLib)) {
+            return new Date(value as number | string);
         }
 
         if (isConstructableUserClass(dateTimeLib)) {
@@ -203,6 +208,20 @@ export default class CastsAttributes {
         }
 
         return dateTimeLib(value);
+    }
+
+    /**
+     * Cast the given value to a string.
+     *
+     * @param {string} _key
+     * @param {any} value
+     *
+     * @private
+     *
+     * @return {string}
+     */
+    private castToString(_key: string, value: any): string {
+        return String(value);
     }
 
     /**

@@ -28,7 +28,7 @@ describe('FactoryBuilder', () => {
         factoryBuilder = new FactoryBuilder(User);
     });
 
-    describe('states()', () => {
+    describe('state()', () => {
         const factoryName: string = new User().factory().constructor.name;
 
         it('should return the model with the states applied', () => {
@@ -211,6 +211,40 @@ describe('FactoryBuilder', () => {
         });
     });
 
+    describe('makeOne', () => {
+        it('should only ever return one model', () => {
+            expect(factoryBuilder.times(2).makeOne()).toBeInstanceOf(User);
+        });
+
+        it('should not set the id and timestamps', () => {
+            const model = factoryBuilder.makeOne()!;
+
+            expect(model[model.getUpdatedAtColumn()]).toBeNull();
+            expect(model[model.getCreatedAtColumn()]).toBeNull();
+            expect(model[model.getDeletedAtColumn()]).toBeNull();
+            expect(model.getKey()).toBeUndefined();
+        });
+
+        it('should accept the attributes argument', () => {
+            expect(factoryBuilder.makeOne({ my: 'data' }).my).toBe('data');
+        });
+    });
+
+    describe('makeMany', () => {
+        it('should only ever return a ModelCollection', () => {
+            let models = factoryBuilder.makeMany();
+            expect(models).toBeInstanceOf(ModelCollection);
+            expect(models).toHaveLength(1);
+
+            models = factoryBuilder.times(2).makeMany();
+            expect(models).toHaveLength(2);
+        });
+
+        it('should accept the attributes argument', () => {
+            expect(factoryBuilder.makeMany({ my: 'data' }).every(model => model.my === 'data')).toBe(true);
+        });
+    });
+
     describe('afterMaking()', () => {
         it('should call the afterCreating with the created model or collection', () => {
             const mockFn = jest.fn();
@@ -275,6 +309,47 @@ describe('FactoryBuilder', () => {
             const team = teamFactoryBuilder.create() as Team;
 
             expect(team._lastSyncedAt).not.toBeUndefined();
+        });
+    });
+
+    describe('createOne', () => {
+        it('should only ever return one model', () => {
+            expect(factoryBuilder.times(2).createOne()).toBeInstanceOf(User);
+        });
+
+        it('should set the id and timestamps', () => {
+            const model = factoryBuilder.createOne();
+
+            expect(model[model.getUpdatedAtColumn()]).not.toBeNull();
+            expect(model[model.getCreatedAtColumn()]).not.toBeNull();
+            expect(model.getKey()).not.toBeUndefined();
+        });
+
+        it('should accept the attributes argument', () => {
+            expect(factoryBuilder.createOne({ my: 'data' }).my).toBe('data');
+        });
+    });
+
+    describe('createMany', () => {
+        it('should only ever return a ModelCollection', () => {
+            let models = factoryBuilder.createMany();
+            expect(models).toBeInstanceOf(ModelCollection);
+            expect(models).toHaveLength(1);
+
+            models = factoryBuilder.times(2).createMany();
+            expect(models).toHaveLength(2);
+        });
+
+        it('should set the id and timestamps', () => {
+            const models = factoryBuilder.createMany();
+
+            expect(models.every(model => {
+                return model.getKey() && model[model.getUpdatedAtColumn()] && model[model.getCreatedAtColumn()];
+            })).toBe(true);
+        });
+
+        it('should accept the attributes argument', () => {
+            expect(factoryBuilder.createMany({ my: 'data' }).every(model => model.my === 'data')).toBe(true);
         });
     });
 
@@ -474,6 +549,36 @@ describe('FactoryBuilder', () => {
             // fyi: checking a mock call kept being updated with the
             // full set of attributes as the object is passed
             // by reference, hence the inline expect
+        });
+    });
+
+    describe('rawOne', () => {
+        it('should only ever return one model', () => {
+            expect(factoryBuilder.times(2).rawOne()).toStrictEqual({
+                createdAt: null,
+                updatedAt: null,
+                deletedAt: null,
+                name: 'username 1'
+            });
+        });
+
+        it('should accept the attributes argument', () => {
+            expect(factoryBuilder.rawOne({ my: 'data' }).my).toBe('data');
+        });
+    });
+
+    describe('rawMany', () => {
+        it('should only ever return a ModelCollection', () => {
+            let attributes = factoryBuilder.rawMany();
+            expect(attributes).toBeInstanceOf(Collection);
+            expect(attributes).toHaveLength(1);
+
+            attributes = factoryBuilder.times(2).rawMany();
+            expect(attributes).toHaveLength(2);
+        });
+
+        it('should accept the attributes argument', () => {
+            expect(factoryBuilder.rawMany({ my: 'data' }).every(model => model.my === 'data')).toBe(true);
         });
     });
 

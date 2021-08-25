@@ -3,6 +3,9 @@ import qs from 'qs';
 import { isObjectLiteral } from '../Support/function';
 import GlobalConfig from '../Support/GlobalConfig';
 import { finish } from '../Support/string';
+import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
+import type { Method } from '../Calliope/Concerns/CallsApi';
+import type { ApiResponse } from '../Contracts/HandlesApiResponse';
 
 /**
  * The default ApiCaller class used by the package.
@@ -21,7 +24,7 @@ export default class API implements ApiCaller {
      * @protected
      */
     protected readonly getParamEncodingOptions: qs.IStringifyOptions = {
-        arrayFormat: 'brackets',
+        arrayFormat: 'brackets', // comma does not work currently https://github.com/ljharb/qs/issues/410
         strictNullHandling: true,
         indices: true,
         encodeValuesOnly: true,
@@ -35,13 +38,18 @@ export default class API implements ApiCaller {
      */
     public async call(
         url: string,
-        method: 'delete' | 'get' | 'patch' | 'post' | 'put',
-        data?: FormData | Record<string, any>,
-        customHeaders?: Record<string, string[] | string>
-    ): Promise<Response> {
-        const config = this.initConfig(url, method, data, customHeaders);
+        method: Method,
+        data?: FormData | Record<string, unknown>,
+        customHeaders?: Record<string, string[] | string>,
+        queryParameters?: Record<string, unknown>
+    ): Promise<ApiResponse> {
+        const config = this.initConfig(url, method, data, customHeaders, queryParameters);
 
-        return fetch(config.url, config.requestInit);
+        return fetch(config.url, config.requestInit).then(resp => {
+            return Object.assign(resp, {
+                request: config.requestInit
+            }) as ApiResponse;
+        });
     }
 
     /**
@@ -51,19 +59,22 @@ export default class API implements ApiCaller {
      * @param {'get' | 'post' | 'delete' | 'patch' | 'put'} method - The method the request uses.
      * @param {object=} data - The optional data to send with the request.
      * @param {object=} customHeaders - Custom headers to merge into the request.
+     * @param {object=} queryParameters - The query parameters to append to the url
      *
-     * @return {Promise<Response>}
+     * @return {object}
      *
      * @protected
      */
     protected initConfig(
         url: string,
-        method: 'delete' | 'get' | 'patch' | 'post' | 'put',
-        data?: FormData | Record<string, any>,
-        customHeaders?: Record<string, string[] | string>
+        method: Method,
+        data?: FormData | Record<string, unknown>,
+        customHeaders?: Record<string, string[] | string>,
+        queryParameters?: Record<string, unknown>
     ): { url: string; requestInit: RequestInit } {
         const initOptions: RequestInit = { method: method.toLowerCase() };
-        const configHeaders = new Headers(new GlobalConfig().get('headers', undefined) as HeadersInit | undefined);
+        const configHeaders = new Headers(new GlobalConfig().get('headers'));
+        queryParameters = queryParameters ?? {};
 
         // merge in the user provided RequestInit object
         if (isObjectLiteral(this.requestOptions)) {
@@ -72,7 +83,7 @@ export default class API implements ApiCaller {
 
         // merge in the user provided RequestInit object
         if (this.initRequest && this.initRequest instanceof Function) {
-            const initMethodValue = this.initRequest(url, method, data);
+            const initMethodValue = this.initRequest(url, method, data, queryParameters);
 
             if (isObjectLiteral(initMethodValue)) {
                 Object.assign(initOptions, initMethodValue);
@@ -84,8 +95,11 @@ export default class API implements ApiCaller {
             headers.append(name, value);
         });
 
-        // if explicitly or implicitly a GET method
-        if (!initOptions.method || initOptions.method === 'get') {
+        // ensure method is explicitly set if previously
+        // removed by initRequest or requestOptions
+        initOptions.method = initOptions.method ?? 'get';
+
+        if (initOptions.method === 'get') {
             // given if there was any body it was merged in above,
             // we delete it as GET cannot have a body
             delete initOptions.body;
@@ -95,39 +109,49 @@ export default class API implements ApiCaller {
             // if not a GET method
             if (initOptions.method && initOptions.method !== 'get') {
                 if (data instanceof FormData) {
-                    headers.set('Content-Type', 'multipart/form-data');
+                    if (!headers.has('Content-Type')) {
+                        headers.set('Content-Type', 'multipart/form-data');
+                    }
                     initOptions.body = data;
                 } else {
-                    headers.set('Content-Type', 'application/json; charset=UTF-8');
+                    if (!headers.has('Content-Type')) {
+                        headers.set('Content-Type', 'application/json; charset="utf-8"');
+                    }
                     initOptions.body = JSON.stringify(data);
                 }
             } else {
-                headers.set(
-                    'Content-Type',
-                    'application/x-www-form-urlencoded; charset=' + String(this.getParamEncodingOptions.charset)
-                );
-                url = finish(url, '?') + qs.stringify(data, this.getParamEncodingOptions);
+                // merge in any custom data for appending to the url
+                Object.assign(queryParameters, data);
             }
+        }
+
+        if (Object.keys(queryParameters).length) {
+            url = finish(url, '?') + qs.stringify(queryParameters, this.getParamEncodingOptions);
         }
 
         // append passed in custom headers
         if (isObjectLiteral(customHeaders)) {
             Object.keys(customHeaders).forEach(header => {
-                const headerValue = customHeaders[header];
+                let headerValues = customHeaders[header]!;
 
-                if (Array.isArray(headerValue)) {
-                    headerValue.forEach(value => {
-                        // this isn't redundant once it's transpiled to js
-                        if (typeof value === 'string') {
-                            headers.append(header, value);
-                        }
-                    });
-                } else {
-                    if (typeof headerValue === 'string') {
-                        headers.append(header, headerValue);
-                    }
+                if (!Array.isArray(headerValues)) {
+                    headerValues = [headerValues];
                 }
+
+                headerValues.forEach(value => {
+                    if (typeof value !== 'string') {
+                        throw new InvalidArgumentException(
+                            'For \'' + header + '\' expected type string, got: ' + typeof value
+                        );
+                    }
+
+                    headers.append(header, value);
+                });
             });
+        }
+
+        if (!headers.has('Accept')) {
+            headers.set('Accept', 'application/json');
         }
 
         initOptions.headers = headers;

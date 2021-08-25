@@ -62,16 +62,16 @@ export default class SoftDeletes extends HasTimestamps {
         const deletedAt = this.getDeletedAtColumn();
 
         if (this.getAttribute(deletedAt)) {
-            return Promise.resolve(this as unknown as Model);
+            return this as unknown as Model;
         }
 
         // @ts-expect-error
-        (this as unknown as Model).throwIfDoesntExists('delete');
+        (this as unknown as Model).throwIfModelDoesntExistsWhenCalling('delete');
 
         this.setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()));
         return super.delete({
-            ...data,
-            [deletedAt]: new Date().toISOString()
+            [deletedAt]: new Date().toISOString(),
+            ...data
         }).then(model => {
             return this.setAttribute(deletedAt, model.getAttribute(deletedAt))
                 .syncOriginal(deletedAt) as unknown as Model;
@@ -85,7 +85,7 @@ export default class SoftDeletes extends HasTimestamps {
      */
     public async restore(): Promise<this> {
         if (!this.usesSoftDeletes() || !this.getAttribute(this.getDeletedAtColumn())) {
-            return Promise.resolve(this);
+            return this;
         }
 
         if (!(this as unknown as Model).getKey()) {

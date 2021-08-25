@@ -4,10 +4,13 @@ import GlobalConfig from '../../Support/GlobalConfig';
 import API from '../../Services/API';
 import ApiResponseHandler from '../../Services/ApiResponseHandler';
 import type Model from '../Model';
+import type { QueryParams } from './BuildsQuery';
 import BuildsQuery from './BuildsQuery';
 import type { Attributes } from './HasAttributes';
 import { isObjectLiteral } from '../../Support/function';
 import { finish, plural, snake, camel } from '../../Support/string';
+
+export type Method = 'delete' | 'get' | 'patch' | 'post' | 'put';
 
 export default class CallsApi extends BuildsQuery {
     /**
@@ -75,11 +78,14 @@ export default class CallsApi extends BuildsQuery {
      * @return {Promise<object>}
      */
     protected async call(
-        method: 'delete' | 'get' | 'patch' | 'post' | 'put',
+        method: Method,
         data?: Attributes | FormData,
         customHeaders?: Record<string, string[] | string>
     ): Promise<any> {
-        if (!this.getEndpoint().length) {
+        const endpoint = this.getEndpoint();
+        const queryParameters = this.compileQueryParameters();
+
+        if (!endpoint.length) {
             throw new LogicException(
                 'Endpoint is not defined when calling \''
                 + method + '\' method on \'' + (this as unknown as Model).getName() + '\'.'
@@ -87,25 +93,29 @@ export default class CallsApi extends BuildsQuery {
         }
 
         const config = new GlobalConfig;
-        const url = finish(String(config.get('baseEndPoint', '')), '/')
-            + (this.getEndpoint().startsWith('/') ? this.getEndpoint().slice(1) : this.getEndpoint());
+        const url = (config.get('baseEndPoint') ? finish(config.get('baseEndPoint', '')!, '/') : '')
+            + (endpoint.startsWith('/') ? endpoint.slice(1) : endpoint);
         const apiCaller = new (config.get('api', API))!;
         const handlesApiResponse = new (config.get('apiResponseHandler', ApiResponseHandler))!;
+        /**
+         * Recursively format the keys according to serverAttributeCasing
+         *
+         * @see CallsApi.prototype.serverAttributeCasing
+         */
+        const transformValues = (object: Attributes): Attributes => {
+            const setStringCase = (key: string) => this.serverAttributeCasing === 'camel' ? camel(key) : snake(key);
+            const dataWithKeyCasing: Attributes = {};
+
+            Object.keys(object).forEach(key => {
+                dataWithKeyCasing[setStringCase(key)] = isObjectLiteral(object[key])
+                    ? transformValues(object[key] as Attributes)
+                    : object[key];
+            });
+
+            return dataWithKeyCasing;
+        };
 
         if (data && isObjectLiteral<Attributes>(data) && !(data instanceof FormData)) {
-            const setStringCase = (key: string) => this.serverAttributeCasing === 'camel' ? camel(key) : snake(key);
-            const transformValues = (object: Attributes): Attributes => {
-                const dataWithKeyCasing: Attributes = {};
-
-                Object.keys(object).map(key => {
-                    dataWithKeyCasing[setStringCase(key)] = object[key] && isObjectLiteral(object[key])
-                        ? transformValues(object[key] as Attributes)
-                        : object[key];
-                });
-
-                return dataWithKeyCasing;
-            };
-
             data = transformValues(data);
         }
 
@@ -113,7 +123,7 @@ export default class CallsApi extends BuildsQuery {
 
         return handlesApiResponse
             .handle(
-                apiCaller.call(url, method, data, customHeaders)
+                apiCaller.call(url, method, data, customHeaders, transformValues(queryParameters))
             )
             .finally(() => this.requestCount--);
     }
@@ -121,12 +131,12 @@ export default class CallsApi extends BuildsQuery {
     /**
      * Send a GET request to the endpoint.
      *
-     * @param {object=} data
+     * @param {object=} queryParameters} - append and/or overwrite query parameter values.
      *
      * @return {Promise<Model|ModelCollection<Model>>}
      */
-    public async get(data?: Record<string, unknown>): Promise<Model | ModelCollection<Model>> {
-        return this.call('get', Object.assign({}, data, this.compileQueryParameters()))
+    public async get(queryParameters?: QueryParams | Record<string, unknown>): Promise<Model | ModelCollection<Model>> {
+        return this.call('get', queryParameters)
             .then(responseData => {
                 this.resetEndpoint().resetQueryParameters();
 
@@ -137,12 +147,14 @@ export default class CallsApi extends BuildsQuery {
     /**
      * The get method made available as a static method.
      *
-     * @param {object=} data
+     * @param {object=} queryParameters - append and/or overwrite query parameter values.
      *
      * @see CallsApi.prototype.get
      */
-    public static async get(data?: Record<string, unknown>): Promise<Model | ModelCollection<Model>> {
-        return new this().get(data);
+    public static async get(
+        queryParameters?: QueryParams | Record<string, unknown>
+    ): Promise<Model | ModelCollection<Model>> {
+        return new this().get(queryParameters);
     }
 
     /**
@@ -153,7 +165,7 @@ export default class CallsApi extends BuildsQuery {
      * @return
      */
     public async post(data: FormData | Record<string, unknown>): Promise<Model> {
-        return this.call('post', Object.assign({}, data, this.compileQueryParameters()))
+        return this.call('post', data)
             .then(responseData => {
                 this.resetEndpoint().resetQueryParameters();
 
@@ -169,7 +181,7 @@ export default class CallsApi extends BuildsQuery {
      * @return
      */
     public async put(data: FormData | Record<string, unknown>): Promise<Model> {
-        return this.call('put', Object.assign({}, data, this.compileQueryParameters()))
+        return this.call('put', data)
             .then(responseData => {
                 this.resetEndpoint().resetQueryParameters();
 
@@ -185,7 +197,7 @@ export default class CallsApi extends BuildsQuery {
      * @return
      */
     public async patch(data: FormData | Record<string, unknown>): Promise<Model> {
-        return this.call('patch', Object.assign({}, data, this.compileQueryParameters()))
+        return this.call('patch', data)
             .then(responseData => {
                 this.resetEndpoint().resetQueryParameters();
 
@@ -202,24 +214,12 @@ export default class CallsApi extends BuildsQuery {
      * @return {Promise<boolean>}
      */
     public async delete(data?: FormData | Record<string, unknown>): Promise<Model> {
-        return this.call('delete', Object.assign({}, data, this.compileQueryParameters()))
+        return this.call('delete', data)
             .then(responseData => {
                 this.resetEndpoint().resetQueryParameters();
 
                 return this.getResponseModel(this as unknown as Model, responseData);
             });
-    }
-
-    /**
-     * Set the correct endpoint and initiate a patch request.
-     *
-     * @param {object} data
-     *
-     * @see CallsApi.prototype.patch
-     */
-    public async update(data: Attributes): Promise<Model> {
-        return this.setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()))
-            .patch(data);
     }
 
     /**
@@ -259,8 +259,6 @@ export default class CallsApi extends BuildsQuery {
             );
         }
 
-        let result: Model | ModelCollection<Model>;
-
         if (Array.isArray(data)) {
             const collection = new ModelCollection();
 
@@ -269,34 +267,30 @@ export default class CallsApi extends BuildsQuery {
                 collection.push(model.forceFill(attributes).syncOriginal().setLastSyncedAt());
             });
 
-            result = collection;
-        } else {
-            const model = new (this.constructor as typeof Model)();
-            result = model.forceFill(data).syncOriginal().setLastSyncedAt();
+            return collection;
         }
 
-        return result;
+        const model = new (this.constructor as typeof Model)();
+        return model.forceFill(data).syncOriginal().setLastSyncedAt();
     }
 
     /**
      * Set the last synced at attribute.
      *
      * @param {any} to
-     * @param {Model} model
      *
      * @protected
      *
      * @return {this}
      */
-    protected setLastSyncedAt(to: any = new Date, model?: Model): this {
-        model = model ?? (this as unknown as Model);
+    protected setLastSyncedAt(to: any = new Date): this {
         const key = '_' + this.setStringCase('last_synced_at');
 
-        if (key in model) {
-            delete model[key];
+        if (key in this) {
+            delete this[key];
         }
 
-        Object.defineProperty(model, key, {
+        Object.defineProperty(this, key, {
             get: () => to,
             configurable: true,
             enumerable: true

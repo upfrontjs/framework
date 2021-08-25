@@ -113,7 +113,7 @@ This value if set, will be used by to [cast values](../calliope/attributes.md#ca
 
 #### headers
 
-This value if set will be merged into the request headers by the [API](../services/api.md) service class if that service is used. This value has to match either `HeadersInit` or `Record<string, string[] | string>` or `string[][]`.
+This value if set will be merged into the request headers by the [API](../services/api.md) service class if that service is used. This value has to match the type of `HeadersInit`.
 
 #### baseEndPoint
 This is a `string` that the [model's endpoint](../calliope/api-calls.md#endpoint) will be prefixed by on requests. Example value would be: `'https://my-awesome-api.com'`.

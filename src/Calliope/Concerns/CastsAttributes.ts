@@ -192,7 +192,8 @@ export default class CastsAttributes {
     protected getDateTimeLibInstance(value: unknown): unknown {
         const dateTimeLib = new GlobalConfig().get('datetime', Date);
 
-        if (!dateTimeLib || !(dateTimeLib instanceof Function)) { // class and function are both of type Function
+        // class and function are both of type Function
+        if (!dateTimeLib || !(dateTimeLib instanceof Function)) {
             throw new InvalidArgumentException(
                 '\'datetime\' is not of expected type or has not been set in the ' + GlobalConfig.name + '.'
             );

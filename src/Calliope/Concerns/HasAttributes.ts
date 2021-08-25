@@ -53,8 +53,8 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     // This property placed here because extending classes are
     // not yet constructed therefore when HasAttributes
     // constructs it may ultimately references
-    // this.relations, and it wouldn't be
-    // set otherwise.
+    // this.relations, and it wouldn't
+    // be set otherwise.
     protected relations: Record<string, (Model | ModelCollection<Model>)> = {};
 
     /**

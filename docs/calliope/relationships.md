@@ -128,7 +128,8 @@ export default class User extends Model {
 import User from '@models/User'
 
 const user = await User.limit(1).get();
-const grade = user.$grade().userId; // 1
+const grade = user.$grade();
+grade.userId; // 1
 
 grade.save({ value: 'A+' }); // post body: { value: 'A+', user_id: 1 }
 ```

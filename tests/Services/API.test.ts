@@ -151,7 +151,7 @@ describe('API', () => {
             const header: Record<string, null[] | null> = { custom: null };
             // @ts-expect-error
             expect(() => api.getConfig(url, 'post', undefined, header))
-                .toThrow(new InvalidArgumentException('For \'custom\' expected type sting, got: object'));
+                .toThrow(new InvalidArgumentException('For \'custom\' expected type string, got: object'));
         });
 
         it('should merge in headers from the config if set', () => {

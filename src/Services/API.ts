@@ -61,7 +61,7 @@ export default class API implements ApiCaller {
      * @param {object=} customHeaders - Custom headers to merge into the request.
      * @param {object=} queryParameters - The query parameters to append to the url
      *
-     * @return {Request}
+     * @return {object}
      *
      * @protected
      */
@@ -141,7 +141,7 @@ export default class API implements ApiCaller {
                 headerValues.forEach(value => {
                     if (typeof value !== 'string') {
                         throw new InvalidArgumentException(
-                            'For \'' + header + '\' expected type sting, got: ' + typeof value
+                            'For \'' + header + '\' expected type string, got: ' + typeof value
                         );
                     }
 

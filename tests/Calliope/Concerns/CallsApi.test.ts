@@ -10,7 +10,7 @@ import { config } from '../../setupTests';
 import type Collection from '../../../src/Support/Collection';
 import type Model from '../../../src/Calliope/Model';
 import { advanceTo } from 'jest-date-mock';
-import { snake } from '../../../src';
+import { snake, finish } from '../../../src/Support/string';
 
 let caller: User;
 
@@ -99,6 +99,30 @@ describe('CallsApi', () => {
                     'Endpoint is not defined when calling \'get\' method on \'' + caller.constructor.name + '\'.'
                 )
             );
+        });
+
+        it('should get the endpoint from the model as expected', async () => {
+            const baseEndpoint = config.get('baseEndPoint');
+            fetchMock.mockResponse(async () => Promise.resolve(buildResponse()));
+            // @ts-expect-error
+            await caller.call('get');
+            // it adds the '/' between the baseEndPoint and the endpoint
+            expect(getLastRequest()?.url).toBe(finish(baseEndpoint!, '/') + caller.getEndpoint());
+
+            config.unset('baseEndPoint');
+            // @ts-expect-error
+            await caller.call('get');
+            // if no baseEndPoint is set, we have no leading '/'
+            expect(getLastRequest()?.url).toBe(caller.getEndpoint());
+
+            config.set('baseEndPoint', baseEndpoint);
+            caller.getEndpoint = () => 'https://test-domain.com/users';
+            // @ts-expect-error
+            await caller.call('get');
+            // it just appends the value regardless of if it's a valid url
+            expect(getLastRequest()?.url).toBe(finish(baseEndpoint!, '/') + caller.getEndpoint());
+
+            fetchMock.resetMocks();
         });
 
         it('should return a promise with the response',  async () => {

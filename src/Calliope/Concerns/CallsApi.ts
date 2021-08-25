@@ -93,7 +93,7 @@ export default class CallsApi extends BuildsQuery {
         }
 
         const config = new GlobalConfig;
-        const url = finish(String(config.get('baseEndPoint', '')), '/')
+        const url = (config.get('baseEndPoint') ? finish(config.get('baseEndPoint', '')!, '/') : '')
             + (endpoint.startsWith('/') ? endpoint.slice(1) : endpoint);
         const apiCaller = new (config.get('api', API))!;
         const handlesApiResponse = new (config.get('apiResponseHandler', ApiResponseHandler))!;

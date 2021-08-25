@@ -22,18 +22,22 @@ The API prepares the `RequestInit` configuration in the following order:
  2. Merge the `requestOptions` property into the `RequestInit`
  3. Merge the `initRequest()` method's result into the `RequestInit`
  4. Merge in any headers from the [GlobalConfig](../helpers/global-config.md) into the `RequestInit`
- 5. Set the `Content-Type` header and update the `url` if it's a `GET` method based on what we have so far
- 6. Merge in the headers from the [`ApiCaller`](./readme.md#apicaller)'s `call` method's `customHeaders` argument into the `RequestInit`
+ 5. Set the `Content-Type` header to the appropriate value if not already set.
+ 6. Update the url with any query parameter if needed.
+ 7. Merge in the headers from the [`ApiCaller`](./readme.md#apicaller)'s `call` method's `customHeaders` argument into the `RequestInit`
+ 8. Set the `Accept` header to `application/json` if not already set.
 
 ## Shape of the request
 
-This part applies if you're not using a custom or customising the `API` service. Deviation from this, like adjusting the [getParamEncodingOptions](#getparamencodingoptions) or [implementing a custom service](./readme.md#using-custom-services) will cause different results.
+This part applies if you're not using a custom, customising the `API` service or [customising the query string in the builder](../calliope/query-building.md#customising-the-generated-query-string). Deviation from this, like adjusting the [getParamEncodingOptions](#getparamencodingoptions) or [implementing a custom service](./readme.md#using-custom-services) will cause different results.
 With the default settings, your api has to be ready to parse the requests with the following format.
 
 A sample get request `User.whereKey(1).get()` will encode to the following:
 
-```apacheconf
-https://test-api-endpoint.com/users?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=1&wheres[][boolean]=and
+```http request
+GET https://test-api-endpoint.com/users?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=1&wheres[][boolean]=and
+Content-type: application/x-www-form-urlencoded, charset=utf-8
+Accept: application/json 
 ```
 
 Which is the equivalent of [baseEndPoint](../helpers#baseendpoint) + [endpoint](../calliope/api-calls.md#endpoint) + the following object in the get parameters:
@@ -63,7 +67,7 @@ type WhereDescription = {
 type QueryParams = Partial<{
     wheres: WhereDescription[]; // where the row tests true these conditions
     columns: string[]; // select only these columns
-    withs: string[]; // return with these relations
+    with: string[]; // return with these relations
     scopes: string[]; // apply these scopes
     relationsExists: string[]; // only return if these relations exists
     orders: Order[]; // return records in this order

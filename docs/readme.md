@@ -2,7 +2,7 @@
 home: true
 heroImage: https://raw.githubusercontent.com/upfrontjs/design/main/upfrontjs.png
 heroText: 
-tagline: Data handling framework complementary to backend model systems.
+tagline: Data handling framework complementary to backend active record systems.
 actionText: Get Started →
 actionLink: /getting-started/
 features:

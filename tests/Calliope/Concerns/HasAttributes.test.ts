@@ -73,6 +73,26 @@ describe('HasAttributes', () => {
             expect(new User(hasAttributes).getOriginal())
                 .toStrictEqual(hasAttributes.getAttributes());
         });
+
+        it('should not set object values by reference', () => {
+            const attributes = {
+                value: 1,
+                level2: {
+                    value: 1
+                }
+            };
+
+            const user = new User(attributes);
+
+            expect(user.getAttribute('value')).toBe(1);
+            expect(user.getAttribute('level2')).toStrictEqual({ value: 1 });
+
+            attributes.value++;
+            attributes.level2.value++;
+
+            expect(user.getAttribute('value')).toBe(1);
+            expect(user.getAttribute('level2')).toStrictEqual({ value: 1 });
+        });
     });
 
     describe('[Symbol.iterator]()', () => {
@@ -263,10 +283,10 @@ describe('HasAttributes', () => {
         });
     });
 
-    describe('createDescriptors()', () => {
+    describe('createDescriptor()', () => {
         it('should create accessors and getters for the given key', () => {
             // @ts-expect-error
-            hasAttributes.createDescriptors('test');
+            hasAttributes.createDescriptor('test');
 
             const descriptor = Object.getOwnPropertyDescriptor(hasAttributes, 'test');
 
@@ -279,7 +299,7 @@ describe('HasAttributes', () => {
         it('should create accessors and getters for multiple keys', () => {
             const keys = ['multiple', 'keys'];
             // @ts-expect-error
-            hasAttributes.createDescriptors(keys);
+            hasAttributes.createDescriptor(keys);
 
             keys.forEach(key => {
                 const descriptor = Object.getOwnPropertyDescriptor(hasAttributes, key);

@@ -10,7 +10,7 @@ import { config } from '../../setupTests';
 import type Collection from '../../../src/Support/Collection';
 import type Model from '../../../src/Calliope/Model';
 import { advanceTo } from 'jest-date-mock';
-import { snake } from '../../../src';
+import { snake, finish } from '../../../src/Support/string';
 
 let caller: User;
 
@@ -99,6 +99,30 @@ describe('CallsApi', () => {
                     'Endpoint is not defined when calling \'get\' method on \'' + caller.constructor.name + '\'.'
                 )
             );
+        });
+
+        it('should get the endpoint from the model as expected', async () => {
+            const baseEndpoint = config.get('baseEndPoint');
+            fetchMock.mockResponse(async () => Promise.resolve(buildResponse()));
+            // @ts-expect-error
+            await caller.call('get');
+            // it adds the '/' between the baseEndPoint and the endpoint
+            expect(getLastRequest()?.url).toBe(finish(baseEndpoint!, '/') + caller.getEndpoint());
+
+            config.unset('baseEndPoint');
+            // @ts-expect-error
+            await caller.call('get');
+            // if no baseEndPoint is set, we have no leading '/'
+            expect(getLastRequest()?.url).toBe(caller.getEndpoint());
+
+            config.set('baseEndPoint', baseEndpoint);
+            caller.getEndpoint = () => 'https://test-domain.com/users';
+            // @ts-expect-error
+            await caller.call('get');
+            // it just appends the value regardless of if it's a valid url
+            expect(getLastRequest()?.url).toBe(finish(baseEndpoint!, '/') + caller.getEndpoint());
+
+            fetchMock.resetMocks();
         });
 
         it('should return a promise with the response',  async () => {
@@ -193,6 +217,26 @@ describe('CallsApi', () => {
 
             jest.useRealTimers();
         });
+
+        it('should send all the given data', async () => {
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+            // @ts-expect-error
+            await caller.call('post', {
+                falsyKey1: null,
+                falsyKey2: undefined,
+                falsyKey3: false,
+                falsyKey4: 0
+            });
+
+            // undefined is filtered out by JSON.stringify() on the API service
+            expect(getLastRequest()?.body).toStrictEqual({
+                /* eslint-disable @typescript-eslint/naming-convention */
+                falsy_key_1: null,
+                falsy_key_3: false,
+                falsy_key_4: 0
+                /* eslint-enable @typescript-eslint/naming-convention */
+            });
+        });
     });
 
     describe('newInstanceFromResponseData()', () => {
@@ -279,7 +323,7 @@ describe('CallsApi', () => {
             expect(caller.setLastSyncedAt()).toBeInstanceOf(User);
         });
 
-        it('should use itself with new date as defaults or set to the given values', () => {
+        it('should update the attribute with the new Date or the given value', () => {
             // freeze time
             advanceTo(new Date);
 
@@ -287,12 +331,10 @@ describe('CallsApi', () => {
             caller.setLastSyncedAt();
             expect(caller._lastSyncedAt).toStrictEqual(new Date);
 
-            const model = User.factory().create() as User;
-
             // @ts-expect-error
-            caller.setLastSyncedAt('my value', model);
+            caller.setLastSyncedAt('my value');
 
-            expect(model._lastSyncedAt).toBe('my value');
+            expect(caller._lastSyncedAt).toBe('my value');
         });
     });
 
@@ -384,6 +426,24 @@ describe('CallsApi', () => {
                 .toBe(`${config.get('baseEndPoint')!}/${caller.getEndpoint()}?${snake('myParam')}=1`);
         });
 
+        it('should overwrite query parameters from the builder', async () => {
+            mockUserModelResponse(User.factory().create() as User);
+            await caller.whereKey(1).get({
+                wheres: [
+                    {
+                        column: caller.getKeyName(),
+                        operator: '=',
+                        value: 2,
+                        boolean: 'and'
+                    }
+                ]
+            });
+
+            expect(getLastRequest()?.url)
+                .toBe(`${config.get('baseEndPoint')!}/${caller.getEndpoint()}`
+                    + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=2&wheres[][boolean]=and');
+        });
+
         it('should send query parameters in the request', async () => {
             mockUserModelResponse(User.factory().create() as User);
             await caller.whereKey(43).get();
@@ -452,23 +512,17 @@ describe('CallsApi', () => {
             expect(caller.compileQueryParameters().wheres).toBeUndefined();
         });
 
-        it('should send query parameters in the request', async () => {
+        it('should send query parameters in the url', async () => {
             caller.whereKey(43);
 
             mockUserModelResponse(User.factory().create() as User);
             await caller.post({ key: 'value' });
 
-            expect(getLastRequest()?.body).toStrictEqual({
-                key: 'value',
-                wheres: [
-                    {
-                        boolean: 'and',
-                        column: 'id',
-                        operator: '=',
-                        value: 43
-                    }
-                ]
-            });
+            expect(getLastRequest()?.body).toStrictEqual({ key: 'value' });
+            expect(getLastRequest()?.url).toBe(
+                `${config.get('baseEndPoint')!}/${caller.getEndpoint()}`
+                + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=43&wheres[][boolean]=and'
+            );
         });
     });
 
@@ -519,23 +573,17 @@ describe('CallsApi', () => {
             expect(caller.compileQueryParameters().wheres).toBeUndefined();
         });
 
-        it('should send query parameters in the request', async () => {
+        it('should send query parameters in the url', async () => {
             caller.whereKey(43);
 
             mockUserModelResponse(User.factory().create() as User);
             await caller.put({ key: 'value' });
 
-            expect(getLastRequest()?.body).toStrictEqual({
-                key: 'value',
-                wheres: [
-                    {
-                        boolean: 'and',
-                        column: 'id',
-                        operator: '=',
-                        value: 43
-                    }
-                ]
-            });
+            expect(getLastRequest()?.body).toStrictEqual({ key: 'value' });
+            expect(getLastRequest()?.url).toBe(
+                `${config.get('baseEndPoint')!}/${caller.getEndpoint()}`
+                + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=43&wheres[][boolean]=and'
+            );
         });
     });
 
@@ -586,41 +634,17 @@ describe('CallsApi', () => {
             expect(caller.compileQueryParameters().wheres).toBeUndefined();
         });
 
-        it('should send query parameters in the request', async () => {
+        it('should send query parameters in the url', async () => {
             caller.whereKey(43);
 
             mockUserModelResponse(User.factory().create() as User);
             await caller.patch({ key: 'value' });
 
-            expect(getLastRequest()?.body).toStrictEqual({
-                key: 'value',
-                wheres: [
-                    {
-                        boolean: 'and',
-                        column: 'id',
-                        operator: '=',
-                        value: 43
-                    }
-                ]
-            });
-        });
-    });
-
-    describe('update()', () => {
-        it('should call the patch() method', async () => {
-            mockUserModelResponse(caller);
-            const spy = jest.spyOn(caller, 'patch');
-            await caller.update({ key: 'value' });
-
-            expect(spy).toHaveBeenCalledWith({ key: 'value' });
-            spy.mockRestore();
-        });
-
-        it('should set the correct endpoint', async () => {
-            mockUserModelResponse(caller);
-
-            await caller.update({ key: 'value' });
-            expect(getLastRequest()?.url).toContain(caller.getEndpoint() + '/' + String(caller.getKey()));
+            expect(getLastRequest()?.body).toStrictEqual({ key: 'value' });
+            expect(getLastRequest()?.url).toBe(
+                `${config.get('baseEndPoint')!}/${caller.getEndpoint()}`
+                + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=43&wheres[][boolean]=and'
+            );
         });
     });
 
@@ -680,22 +704,16 @@ describe('CallsApi', () => {
             expect(caller.compileQueryParameters().wheres).toBeUndefined();
         });
 
-        it('should send query parameters in the request', async () => {
+        it('should send query parameters in the url', async () => {
             caller.whereKey(43);
 
             mockUserModelResponse(User.factory().create() as User);
             await caller.delete();
 
-            expect(getLastRequest()?.body).toStrictEqual({
-                wheres: [
-                    {
-                        boolean: 'and',
-                        column: 'id',
-                        operator: '=',
-                        value: 43
-                    }
-                ]
-            });
+            expect(getLastRequest()?.url).toBe(
+                `${config.get('baseEndPoint')!}/${caller.getEndpoint()}`
+                + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=43&wheres[][boolean]=and'
+            );
         });
     });
 });

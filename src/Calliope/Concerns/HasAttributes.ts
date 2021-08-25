@@ -12,7 +12,7 @@ export type Attributes = Record<string, unknown>;
 
 export default class HasAttributes extends GuardsAttributes implements Jsonable, Iterable<any> {
     /**
-     * Allow a indexing by string.
+     * The model attribute.
      */
     [key: string]: any;
 
@@ -53,8 +53,8 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     // This property placed here because extending classes are
     // not yet constructed therefore when HasAttributes
     // constructs it may ultimately references
-    // this.relations, and it wouldn't be
-    // set otherwise.
+    // this.relations, and it wouldn't
+    // be set otherwise.
     protected relations: Record<string, (Model | ModelCollection<Model>)> = {};
 
     /**
@@ -72,7 +72,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
         if (attributes instanceof HasAttributes) {
             // if newing up with a constructor, we'll take the attributes
             // in their current state, not the original.
-            const allProperties = cloneDeep(attributes.getRawAttributes());
+            const allProperties = attributes.getRawAttributes();
 
             if (isObjectLiteral(attributes.relations)) {
                 Object.assign(allProperties, cloneDeep(attributes.relations));
@@ -201,14 +201,14 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
         if (this.hasSetMutator(key)) {
             (this[`set${pascal(key)}Attribute`] as CallableFunction)(cloneDeep(value));
 
-            this.createDescriptors(key);
+            this.createDescriptor(key);
             return this;
         }
 
         if (this.hasCast(key)) {
             this.attributes[key] = this.castAttribute(key, value, this.getRawAttributes(), 'set');
 
-            this.createDescriptors(key);
+            this.createDescriptor(key);
             return this;
         }
 
@@ -227,7 +227,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
         }
 
         this.attributes[key] = cloneDeep(value);
-        this.createDescriptors(key);
+        this.createDescriptor(key);
 
         return this;
     }
@@ -239,7 +239,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {this}
      */
-    protected createDescriptors(keys: string[] | string): this {
+    protected createDescriptor(keys: string[] | string): this {
         keys = Array.isArray(keys) ? keys : [keys];
 
         keys.forEach(key => {
@@ -605,7 +605,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
 
         const relations = (this as unknown as HasRelations).getRelations();
 
-        Object.keys(relations).forEach((relation) =>
+        Object.keys(relations).forEach(relation =>
             objectRepresentation[relation] = JSON.parse(relations[relation]!.toJson()));
 
         return JSON.stringify(objectRepresentation);

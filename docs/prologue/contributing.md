@@ -10,11 +10,11 @@ I'd also love PRs. If you're thinking of a large PR, I advise opening up an issu
 
 ## Which branch
 
-**All** bug fixes should be sent to the latest stable branch. Bug fixes should never be sent to the main branch unless they fix features that exist only in the upcoming release.
+**Patch** bug fixes should be sent to the latest stable branch. Bug fixes should never be sent to the main branch unless they fix features that exist only in the upcoming release.
 
-**Minor** features that are fully backward compatible with the current release may be sent to the latest stable branch.
+**Minor** features that are fully backward compatible with the current release may be sent to the latest stable branch (`release/{version}.x`).
 
-**Major** new features should always be sent to the main branch, which contains the upcoming release.
+**Major** new features should always be sent to the `main` branch, which contains the upcoming release.
 
 ## Submitting a pull request
 
@@ -37,14 +37,15 @@ Work in Progress pull requests are also welcome to get feedback early on, or if 
 
 ## Commit Message Formats
 
-Commit messages are integral to navigating version control, be it by a human or automated tool. To attempt to standardise the messages upfront uses [conventional commit messages](https://www.npmjs.com/package/@commitlint/config-conventional) e.g.:
+Commit messages are integral to navigating version control, be it by a human or automated tool. To attempt to standardise the messages, upfront uses [conventional commit messages](https://www.npmjs.com/package/@commitlint/config-conventional) e.g.:
  - `feat: ` - commit for a feature pull request e.g.:
 ```git
-    feat: Add isEmpty method to the Collection class
+    feat(collection): Add isEmpty method to the Collection class
     
     Added isEmpty method as previously discussed on
     https://github.com/....
 ```
+
 ```git
     feat(graphql): Started building the GraphQL driver
     
@@ -53,7 +54,7 @@ Commit messages are integral to navigating version control, be it by a human or 
 ```
  - `fix: ` - commit for bug fixing pull request e.g.:
 ```git
-    fix: Fixed the invalid query response handling logic
+    fix(query-builder): Fixed the invalid query response handling logic
     
     Updated handler to correctly parse response and
     added graceful error handling
@@ -61,16 +62,20 @@ Commit messages are integral to navigating version control, be it by a human or 
 ```
 - `chore: ` - commit for code maintenance pull request e.g.:
 ```git
-    chore: Updated dependencies
+    chore(dev-deps): Updated dependencies
+    
+    - rollup
+    - typescript
+    - eslint
 ```
  - `docs: ` - commit for a branch updating the documentation e.g.:
 ```git
-    docs: Clarified testing helper's description
+    docs(helpers): Clarified testing helper's description
 ```
 
 If your commit is related to a discussion/issue on github, please [link to it](https://docs.github.com/en/github/managing-your-work-on-github/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword) in your commit message.
 
-If need more guidance beyond the convntional format, you may use `npm run commit` which will help build a commit message. Additional help can be found at the [resources](#resources) section.
+If need more guidance beyond the conventional format, you may use `npm run commit` which will help build a commit message. Additional help can be found at the [resources](#resources) section.
 
 ## Documentation
 

@@ -19,9 +19,7 @@ module.exports = {
     },
     ignorePatterns: [
         'node_modules',
-        '.eslintrc.js',
-        'rollup.config.js',
-        'jest.config.js',
+        '*.js',
         '/types'
     ],
     rules: {

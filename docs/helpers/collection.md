@@ -352,12 +352,12 @@ collection.tap(collectionCopy => collection.take(2)); // Collection([1, 2, 3, 4,
 
 #### pipe
 
-The `pipe` method executes the given function with the collection. The function mst return the collection.
+The `pipe` method executes the given function with the collection. The function must return the collection.
 ```js
 import { Collection } from '@upfrontjs/framework';
 
 const collection = new Collection([1, 2, 3, 4, 5]);
-collection.tap(collectionCopy => collection.take(2)); // Collection([1, 2])
+collection.pipe(collectionCopy => collection.take(2)); // Collection([1, 2])
 ```
 
 #### dump
@@ -432,4 +432,95 @@ import { Collection } from '@upfrontjs/framework';
 const collection = new Collection([{ id: 1 }, { id: 2 }]);
 collection.include({ id: 2 }); // true
 collection.include(2); // false
+```
+
+#### join
+
+The `join` method works the same way the base [join](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join), except when using a collection of object the first argument is can be a property key or getter function receiving the object.
+
+```js
+import { Collection } from '@upfrontjs/framework';
+
+const collection = new Collection([1, 2]);
+collection.join('-'); // '1-2'
+
+const objectCollection = new Collection([{ id: 1 }, { id: 2 }]);
+objectCollection.join('id', '-'); // '1-2'
+objectCollection.join(obj => obj.id + 1); // '2,3'
+```
+
+#### sum
+
+The `sum` method returns the summative the collection numbers while casting strings to numbers if possible otherwise throws an error. Optionally it takes a string for the property key or getter function receiving the item to return a single value.
+
+```js
+import { Collection } from '@upfrontjs/framework';
+
+let collection = new Collection([1, 2]);
+
+collection.sum(); // 3
+
+collection = new Collection(['3', '4']);
+collection.sum(); // 7
+
+collection = new Collection([{ id: 1 }, { id: 2 }]);
+collection.sum('id'); // 3
+collection.sum(obj => obj.id); // 3
+```
+
+#### min
+
+The `min` method returns the lowest number from the collection while casting strings to numbers if possible otherwise throws an error. Optionally it takes a string for the property key or getter function receiving the item to return a single value.
+
+```js
+import { Collection } from '@upfrontjs/framework';
+
+let collection = new Collection([1, 2]);
+
+collection.min(); // 1
+
+collection = new Collection(['3', '4']);
+collection.min(); // 3
+
+collection = new Collection([{ id: 1 }, { id: 2 }]);
+collection.min('id'); // 1
+collection.min(obj => obj.id); // 1
+```
+
+#### max
+
+The `max` method returns the highest number from the collection while casting strings to numbers if possible otherwise throws an error. Optionally it takes a string for the property key or getter function receiving the item to return a single value.
+
+```js
+import { Collection } from '@upfrontjs/framework';
+
+let collection = new Collection([1, 2]);
+
+collection.max(); // 2
+
+collection = new Collection(['3', '4']);
+collection.max(); // 4
+
+collection = new Collection([{ id: 1 }, { id: 2 }]);
+collection.max('id'); // 2
+collection.max(obj => obj.id); // 2
+```
+
+#### average
+
+The `average` method returns the average of the number from the collection while casting strings to numbers if possible otherwise throws an error. Optionally it takes a string for the property key or getter function receiving the item to return a single value.
+
+```js
+import { Collection } from '@upfrontjs/framework';
+
+let collection = new Collection([1, 2]);
+
+collection.average(); // 1.5
+
+collection = new Collection(['3', '4']);
+collection.average(); // 3.5
+
+collection = new Collection([{ id: 1 }, { id: 2 }]);
+collection.average('id'); // 1.5
+collection.average(obj => obj.id); // 1.5
 ```

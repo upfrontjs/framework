@@ -63,11 +63,11 @@ export default class HasTimestamps extends HasRelations {
      */
     public async touch(): Promise<this> {
         if (!this.usesTimestamps()) {
-            return Promise.resolve(this);
+            return this;
         }
 
         // @ts-expect-error
-        (this as unknown as Model).throwIfDoesntExists('touch');
+        (this as unknown as Model).throwIfModelDoesntExistsWhenCalling('touch');
 
         const updatedAt = this.getUpdatedAtColumn();
 
@@ -83,17 +83,17 @@ export default class HasTimestamps extends HasRelations {
     }
 
     /**
-     * Refresh the timestamps only on the
+     * Refresh the timestamps from remote.
      *
      * @return {Promise<this>}
      */
     public async freshTimestamps(): Promise<this> {
         if (!this.usesTimestamps()) {
-            return Promise.resolve(this);
+            return this;
         }
 
         // @ts-expect-error
-        (this as unknown as Model).throwIfDoesntExists('freshTimestamps');
+        (this as unknown as Model).throwIfModelDoesntExistsWhenCalling('freshTimestamps');
 
         const createdAt = this.getCreatedAtColumn();
         const updatedAt = this.getUpdatedAtColumn();

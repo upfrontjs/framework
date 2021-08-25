@@ -1,4 +1,5 @@
 import type HandlesApiResponse from '../Contracts/HandlesApiResponse';
+import type { ApiResponse } from '../Contracts/HandlesApiResponse';
 import { isObjectLiteral } from '../Support/function';
 
 /**
@@ -10,9 +11,9 @@ export default class ApiResponseHandler implements HandlesApiResponse {
     /**
      * @inheritDoc
      */
-    public async handle(promise: Promise<Response>): Promise<any> {
+    public async handle(promise: Promise<ApiResponse>): Promise<any> {
         return promise
-            .then(async (response: Response) => this.handleSuccess(response))
+            .then(async (response: ApiResponse) => this.handleResponse(response))
             .catch(error => this.handleError(error))
             .finally(() => this.handleFinally());
     }
@@ -20,18 +21,20 @@ export default class ApiResponseHandler implements HandlesApiResponse {
     /**
      * Handle successful request.
      *
-     * @param {Response} response
+     * @param {ApiResponse} response
      *
      * @return {Promise<any>}
      */
-    public async handleSuccess(response: Response): Promise<any> {
+    public async handleResponse(response: ApiResponse): Promise<any> {
+        if (!response.json) return;
+
         let responseData = await response.json();
 
         if (isObjectLiteral(responseData) && 'data' in responseData) {
             responseData = responseData.data;
         }
 
-        return Promise.resolve(responseData);
+        return responseData;
     }
 
     /**

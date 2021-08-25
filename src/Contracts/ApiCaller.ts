@@ -1,3 +1,6 @@
+import type { Method } from '../Calliope/Concerns/CallsApi';
+import type { ApiResponse } from './HandlesApiResponse';
+
 /**
  * Interface prescribes what's expected to be implemented
  * by an object that initiates api requests.
@@ -24,8 +27,9 @@ export default interface ApiCaller {
      */
     initRequest?: (
         url: string,
-        method: 'delete' | 'get' | 'patch' | 'post' | 'put',
-        data?: FormData | Record<string, unknown>
+        method: Method,
+        data?: FormData | Record<string, unknown>,
+        queryParameters?: Record<string, any>
     ) => Partial<RequestInit>;
 
     /**
@@ -36,12 +40,13 @@ export default interface ApiCaller {
      * @param {object=} data - The optional data to send with the request.
      * @param {object=} customHeaders - Custom headers to merge into the request.
      *
-     * @return {Promise<Response>}
+     * @return {Promise<ApiResponse>}
      */
     call: (
         url: string,
-        method: 'delete' | 'get' | 'patch' | 'post' | 'put',
+        method: Method,
         data?: FormData | Record<string, unknown>,
-        customHeaders?: Record<string, string[] | string>
-    ) => Promise<Response>;
+        customHeaders?: Record<string, string[] | string>,
+        queryParameters?: Record<string, any>
+    ) => Promise<ApiResponse>;
 }

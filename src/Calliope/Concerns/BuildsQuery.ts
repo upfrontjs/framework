@@ -1,6 +1,7 @@
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import HasAttributes from './HasAttributes';
 import type Model from '../Model';
+import type FormatsQueryParameters from '../../Contracts/FormatsQueryParameters';
 
 type BooleanOperator = 'and' | 'or';
 type Direction = 'asc' | 'desc';
@@ -12,10 +13,10 @@ type WhereDescription = {
     value: any;
     boolean: BooleanOperator;
 };
-type QueryParams = Partial<{
+export type QueryParams = Partial<{
     wheres: WhereDescription[];
     columns: string[];
-    withs: string[];
+    with: string[];
     scopes: string[];
     relationsExists: string[];
     orders: Order[];
@@ -140,8 +141,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {BuildsQuery}
      */
-    public static newQuery(): BuildsQuery {
-        return new this();
+    public static newQuery<T extends Model>(): T {
+        return new this as T;
     }
 
     /**
@@ -152,7 +153,7 @@ export default class BuildsQuery extends HasAttributes {
      * @return {object}
      */
     protected compileQueryParameters(): QueryParams {
-        const params: Record<string, any> = {};
+        const params: QueryParams = {};
 
         if (this.wheres.length) {
             params.wheres = this.wheres;
@@ -163,10 +164,16 @@ export default class BuildsQuery extends HasAttributes {
         }
 
         const withRelations = this.withRelations.filter(relation => !this.withs.includes(relation));
-        const withs = this.withs.concat(withRelations).filter(relation => !this.withouts.includes(relation));
+        const withs = new Set(this.withs.concat(withRelations));
 
-        if (withs.length) {// todo - filters on relations?
-            params.with = withs;
+        withs.forEach(relationName => {
+            if (this.withouts.includes(relationName)) {
+                withs.delete(relationName);
+            }
+        });
+
+        if (withs.size) {// todo - filters on relations?
+            params.with = [...withs];
         }
 
         if (this.scopes.length) {
@@ -182,7 +189,7 @@ export default class BuildsQuery extends HasAttributes {
         }
 
         if (this.distinctOnly) {
-            params.distinct = this.distinctOnly;
+            params.distinctOnly = this.distinctOnly;
         }
 
         if (this.offsetCount) {
@@ -193,7 +200,12 @@ export default class BuildsQuery extends HasAttributes {
             params.limit = this.limitCount;
         }
 
-        return params;
+        let parameters = params;
+        if ('formatQueryParameters' in this && this.formatQueryParameters instanceof Function) {
+            parameters = (this as unknown as FormatsQueryParameters).formatQueryParameters(params);
+        }
+
+        return parameters;
     }
 
     /**
@@ -235,16 +247,33 @@ export default class BuildsQuery extends HasAttributes {
             throw new InvalidArgumentException('\'' + operator + '\' is not an expected type of operator.');
         }
 
-        if (!['and', 'or'].includes(boolean.toLowerCase())) {
+        // in case of a js user going rogue
+        boolean = boolean.toLowerCase() as BooleanOperator;
+
+        if (!['and', 'or'].includes(boolean)) {
             throw new InvalidArgumentException('\'' + boolean + '\' is not an expected type of operator.');
         }
 
-        this.wheres.push({
-            column: column,
-            operator: operator,
-            value: value,
-            boolean: boolean
+        const whereDescription: WhereDescription = {
+            column,
+            operator,
+            value,
+            boolean
+        };
+
+        const isDuplicate = this.wheres.some(where => {
+            return where.column === column
+                && where.operator === operator
+                && where.boolean === boolean
+                // eslint-disable-next-line eqeqeq
+                && where.value == value;
         });
+
+        if (isDuplicate) {
+            return this;
+        }
+
+        this.wheres.push(whereDescription);
 
         return this;
     }
@@ -290,8 +319,8 @@ export default class BuildsQuery extends HasAttributes {
         operator: Operator | unknown,
         value?: unknown,
         boolean: BooleanOperator = 'and'
-    ): BuildsQuery {
-        return BuildsQuery.newQuery().where(
+    ): Model {
+        return this.newQuery().where(
             column,
             arguments.length > 2 ? operator as Operator : '=',
             arguments.length > 2 ? value : operator,
@@ -340,8 +369,8 @@ export default class BuildsQuery extends HasAttributes {
      */
     public static whereKey(
         value: (number | string)[] | number | string, boolean: BooleanOperator = 'and'
-    ): BuildsQuery {
-        return BuildsQuery.newQuery().whereKey(value, boolean);
+    ): Model {
+        return this.newQuery().whereKey(value, boolean);
     }
 
     /**
@@ -383,8 +412,8 @@ export default class BuildsQuery extends HasAttributes {
      */
     public static whereKeyNot(
         value: (number | string)[] | number | string, boolean: BooleanOperator = 'and'
-    ): BuildsQuery {
-        return BuildsQuery.newQuery().whereKeyNot(value, boolean);
+    ): Model {
+        return this.newQuery().whereKeyNot(value, boolean);
     }
 
     /**
@@ -425,8 +454,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNull
      */
-    public static whereNull(columns: string[] | string): BuildsQuery {
-        return BuildsQuery.newQuery().whereNull(columns);
+    public static whereNull(columns: string[] | string): Model {
+        return this.newQuery().whereNull(columns);
     }
 
     /**
@@ -467,8 +496,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotNull
      */
-    public static whereNotNull(columns: string[] | string): BuildsQuery {
-        return BuildsQuery.newQuery().whereNotNull(columns);
+    public static whereNotNull(columns: string[] | string): Model {
+        return this.newQuery().whereNotNull(columns);
     }
 
     /**
@@ -504,8 +533,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereIn
      */
-    public static whereIn(column: string, values: any[], boolean: BooleanOperator = 'and'): BuildsQuery {
-        return BuildsQuery.newQuery().whereIn(column, values, boolean);
+    public static whereIn(column: string, values: any[], boolean: BooleanOperator = 'and'): Model {
+        return this.newQuery().whereIn(column, values, boolean);
     }
 
     /**
@@ -542,8 +571,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotIn
      */
-    public static whereNotIn(column: string, values: any[], boolean: BooleanOperator = 'and'): BuildsQuery {
-        return BuildsQuery.newQuery().whereNotIn(column, values, boolean);
+    public static whereNotIn(column: string, values: any[], boolean: BooleanOperator = 'and'): Model {
+        return this.newQuery().whereNotIn(column, values, boolean);
     }
 
     /**
@@ -585,8 +614,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereBetween
      */
-    public static whereBetween(column: string, values: any[], boolean: BooleanOperator = 'and'): BuildsQuery {
-        return BuildsQuery.newQuery().whereBetween(column, values, boolean);
+    public static whereBetween(column: string, values: any[], boolean: BooleanOperator = 'and'): Model {
+        return this.newQuery().whereBetween(column, values, boolean);
     }
 
     /**
@@ -628,8 +657,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotBetween
      */
-    public static whereNotBetween(column: string, values: any[], boolean: BooleanOperator = 'and'): BuildsQuery {
-        return BuildsQuery.newQuery().whereNotBetween(column, values, boolean);
+    public static whereNotBetween(column: string, values: any[], boolean: BooleanOperator = 'and'): Model {
+        return this.newQuery().whereNotBetween(column, values, boolean);
     }
 
     /**
@@ -666,8 +695,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.limit
      */
-    public static limit(count: number): BuildsQuery {
-        return BuildsQuery.newQuery().limit(count);
+    public static limit(count: number): Model {
+        return this.newQuery().limit(count);
     }
 
     /**
@@ -696,8 +725,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.when
      */
-    public static when(value: any, closure: (instance: BuildsQuery) => any): BuildsQuery {
-        return BuildsQuery.newQuery().when(value, closure);
+    public static when(value: any, closure: (instance: BuildsQuery) => any): Model {
+        return this.newQuery().when(value, closure);
     }
 
     /**
@@ -726,8 +755,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.unless
      */
-    public static unless(value: any, closure: (instance: BuildsQuery) => any): BuildsQuery {
-        return BuildsQuery.newQuery().unless(value, closure);
+    public static unless(value: any, closure: (instance: BuildsQuery) => any): Model {
+        return this.newQuery().unless(value, closure);
     }
 
     /**
@@ -748,8 +777,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.distinct
      */
-    public static distinct(boolean = true): BuildsQuery {
-        return BuildsQuery.newQuery().distinct(boolean);
+    public static distinct(boolean = true): Model {
+        return this.newQuery().distinct(boolean);
     }
 
     /**
@@ -774,8 +803,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.select
      */
-    public static select(columns: string[] | string): BuildsQuery {
-        return BuildsQuery.newQuery().select(columns);
+    public static select(columns: string[] | string): Model {
+        return this.newQuery().select(columns);
     }
 
     /**
@@ -800,8 +829,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.has
      */
-    public static has(relations: string[] | string): BuildsQuery {
-        return BuildsQuery.newQuery().has(relations);
+    public static has(relations: string[] | string): Model {
+        return this.newQuery().has(relations);
     }
 
     /**
@@ -826,8 +855,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.with
      */
-    public static with(relations: string[] | string): BuildsQuery {
-        return BuildsQuery.newQuery().with(relations);
+    public static with(relations: string[] | string): Model {
+        return this.newQuery().with(relations);
     }
 
     /**
@@ -850,8 +879,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.without
      */
-    public static without(relations: string[] | string): BuildsQuery {
-        return BuildsQuery.newQuery().without(relations);
+    public static without(relations: string[] | string): Model {
+        return this.newQuery().without(relations);
     }
 
     /**
@@ -876,8 +905,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.scope
      */
-    public static scope(scopes: string[] | string): BuildsQuery {
-        return BuildsQuery.newQuery().scope(scopes);
+    public static scope(scopes: string[] | string): Model {
+        return this.newQuery().scope(scopes);
     }
 
     /**
@@ -907,8 +936,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.orderBy
      */
-    public static orderBy(column: string, direction: Direction = 'asc'): BuildsQuery {
-        return BuildsQuery.newQuery().orderBy(column, direction);
+    public static orderBy(column: string, direction: Direction = 'asc'): Model {
+        return this.newQuery().orderBy(column, direction);
     }
 
     /**
@@ -931,8 +960,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.orderByDesc
      */
-    public static orderByDesc(column: string): BuildsQuery {
-        return BuildsQuery.newQuery().orderByDesc(column);
+    public static orderByDesc(column: string): Model {
+        return this.newQuery().orderByDesc(column);
     }
 
     /**
@@ -957,8 +986,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.latest
      */
-    public static latest(column?: string): BuildsQuery {
-        return BuildsQuery.newQuery().latest(column);
+    public static latest(column?: string): Model {
+        return this.newQuery().latest(column);
     }
 
     /**
@@ -983,8 +1012,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.oldest
      */
-    public static oldest(column = 'created_at'): BuildsQuery {
-        return BuildsQuery.newQuery().oldest(column);
+    public static oldest(column = 'created_at'): Model {
+        return this.newQuery().oldest(column);
     }
 
     /**
@@ -1009,8 +1038,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.offset
      */
-    public static offset(count: number): BuildsQuery {
-        return BuildsQuery.newQuery().offset(count);
+    public static offset(count: number): Model {
+        return this.newQuery().offset(count);
     }
 
     /**
@@ -1035,7 +1064,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.skip
      */
-    public static skip(count: number): BuildsQuery {
-        return BuildsQuery.newQuery().skip(count);
+    public static skip(count: number): Model {
+        return this.newQuery().skip(count);
     }
 }

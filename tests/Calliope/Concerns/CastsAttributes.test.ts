@@ -153,12 +153,22 @@ describe('CastsAttributes', () => {
             config.unset('datetime');
         });
 
+        it('should cast to a Date by default', () => {
+            const now = new Date();
+            advanceTo(now);
+            caster.mergeCasts({ test: 'datetime' });
+            config.set('datetime', Date);
+
+            expect(caster.publicCastAttribute('test', now)).toBeInstanceOf(Date);
+            expect((caster.publicCastAttribute('test', now) as Date).toUTCString()).toStrictEqual(now.toUTCString());
+            config.unset('datetime');
+        });
+
         it('should cast to a datetime when cast set to datetime and Configuration set to class', () => {
             const now = new Date();
             advanceTo(now);
             caster.mergeCasts({ test: 'datetime' });
             config.set('datetime', DateTime);
-
 
             expect(caster.publicCastAttribute('test', now)).toBeInstanceOf(DateTime);
             expect((caster.publicCastAttribute('test', now) as DateTime).value()).toStrictEqual(now);
@@ -168,11 +178,12 @@ describe('CastsAttributes', () => {
         it('should throw an error if the datetime is not the expected type in the config', () => {
             caster.mergeCasts({ test: 'datetime' });
             const failingFunc = jest.fn(() => caster.publicCastAttribute('test', 'value'));
-            config.unset('datetime');
+            config.set('datetime', undefined);
 
             expect(failingFunc).toThrow(new InvalidArgumentException(
                 '\'datetime\' is not of expected type or has not been set in the ' + config.constructor.name + '.'
             ));
+            config.unset('datetime');
         });
 
         it('should return the value untouched when using datetime on set', () => {

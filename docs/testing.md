@@ -314,12 +314,36 @@ User.factory().state(['admin', 'withTeam']).create()
 The following are the last methods to be called on the builder. These methods return the result of the build. 
 #### raw
 
-The `raw` method instruct the builder to construct your model(s). It will return the attributes in an object literal or a [Collection](./helpers/collection.md) of them depending on the [`times`](#times) method call or lack there of. This will not include any primary keys and [timestamps](./calliope/timestamps.md).
+The `raw` method instruct the builder to construct your model's or models' data. It will return the attributes in an object literal or a [Collection](./helpers/collection.md) of them depending on the [`times`](#times) method call or lack there of. This will not include any primary keys and [timestamps](./calliope/timestamps.md).
+
+#### rawOne
+
+The `rawOne` method instruct the builder the construct your model's attributes ignoring the specified [times](#times) setting and will always return the attributes object literal.
+
+#### rawMany
+
+The `rawMany` method instruct the builder the construct your model's attributes. This will always return a [Collection](./helpers/collection.md) regardless of the [times](#times) setting.
 
 #### make
 
 The `make` method instruct the builder to construct your model(s). It will return an instance of your model or a [ModelCollection](./calliope/model-collection.md) depending on the [`times`](#times) method call or lack there of. This will not include any primary keys and [timestamps](./calliope/timestamps.md).
 
+#### makeOne
+
+The `makeOne` method instruct the builder to construct your model. It will always return an instance of your model regardless of the [`times`](#times) setting. This will not include any primary keys and [timestamps](./calliope/timestamps.md).
+
+#### makeMany
+
+The `makeMany` method instruct the builder to construct your models. It will always return an instance of [ModelCollection](./calliope/model-collection.md) regardless of the [`times`](#times) setting. This will not include any primary keys and [timestamps](./calliope/timestamps.md).
+
 #### create
 
 The `create` method instruct the builder to construct your model(s). It will return an instance of your model or a [ModelCollection](./calliope/model-collection.md) depending on the [`times`](#times) method call or lack there of. This will include primary keys and [timestamps](./calliope/timestamps.md).
+
+#### createOne
+
+The `createOne` method instruct the builder to construct your model. It will always return an instance of your model regardless of the [`times`](#times) setting. This will include primary keys and [timestamps](./calliope/timestamps.md).
+
+#### createMany
+
+The `createMany` method instruct the builder to construct your model. It will always return an instance of a [ModelCollection](./calliope/model-collection.md) regardless of the [`times`](#times) setting. This will include primary keys and [timestamps](./calliope/timestamps.md).

@@ -88,7 +88,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {boolean}
      */
-    public is(model: unknown): model is Model {
+    public is<M extends Model>(model: unknown): model is M {
         return model instanceof Model
             && model.getKey() === this.getKey()
             && model.getName() === this.getName();
@@ -103,7 +103,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {boolean}
      */
-    public isNot(model: unknown): model is Exclude<typeof model, Model> {
+    public isNot<M extends Model>(model: unknown): model is Exclude<typeof model, M> {
         return !this.is(model);
     }
 
@@ -135,31 +135,57 @@ export default class Model extends SoftDeletes implements HasFactory {
             response = new ModelCollection([response]);
         }
 
-        return Promise.resolve(response);
+        return response;
     }
 
     /**
      * Save or update the model.
      *
-     * @param data
+     * @param {object=} data
      */
     public async save(data?: Attributes): Promise<this> {
         const dataToSave = Object.assign({}, this.exists ? this.getChanges() : this.getRawAttributes(), data);
 
         if (!Object.keys(dataToSave).length) {
-            return Promise.resolve(this);
+            return this;
+        }
+
+        // If the current model is an instantiated `hasOne` or `hasMany` child
+        // remove the where filter from the request
+        if ('_relationType' in this
+            && typeof this._relationType === 'string'
+            && ['hasOne', 'hasMany'].includes(this._relationType)
+        ) {
+            this.wheres = this.wheres.filter(where => {
+                return !(where.operator === '='
+                    && where.boolean === 'and'
+                    && where.column === this.hasOneOrManyParentKeyName);
+            });
         }
 
         const model = await (
-            this.exists
-                ? this.setEndpoint(finish(this.getEndpoint(), '/') + String(this.getKey())).patch(dataToSave)
-                : this.post(dataToSave)
+            this.exists ? this.update(dataToSave) : this.post(dataToSave)
         );
+        this.hasOneOrManyParentKeyName = undefined;
+
         this.forceFill(Object.assign({}, model.getRawOriginal(), model.getRelations()))
             .syncOriginal()
             .setLastSyncedAt();
 
-        return Promise.resolve(this);
+        return this;
+    }
+
+    /**
+     * Set the correct endpoint and initiate a patch request.
+     *
+     * @param {object} data
+     *
+     * @see CallsApi.prototype.patch
+     */
+    public async update(data: Attributes): Promise<Model> {
+        this.throwIfModelDoesntExistsWhenCalling('update');
+        return this.setEndpoint(finish(this.getEndpoint(), '/') + String(this.getKey()))
+            .patch(data);
     }
 
     /**
@@ -199,7 +225,7 @@ export default class Model extends SoftDeletes implements HasFactory {
             response = new ModelCollection([response]);
         }
 
-        return Promise.resolve(response);
+        return response;
     }
 
     /**
@@ -217,14 +243,14 @@ export default class Model extends SoftDeletes implements HasFactory {
      * @return {Promise<Model>}
      */
     public async refresh(): Promise<Model> {
-        this.throwIfDoesntExists('refresh');
+        this.throwIfModelDoesntExistsWhenCalling('refresh');
         const model = await this.reset().select(this.getAttributeKeys()).find(this.getKey()!);
 
-        return Promise.resolve(this.forceFill(model.getRawAttributes()).syncOriginal().setLastSyncedAt());
+        return this.forceFill(model.getRawAttributes()).syncOriginal().setLastSyncedAt();
     }
 
     /**
-     * Throw an error if the model does not exists.
+     * Throw an error if the model does not exists before calling the specified method.
      *
      * @param {string} methodName
      *
@@ -232,7 +258,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @internal
      */
-    protected throwIfDoesntExists(methodName: string): void {
+    protected throwIfModelDoesntExistsWhenCalling(methodName: string): void {
         if (!this.exists) {
             throw new LogicException(
                 'Attempted to call ' + methodName + ' on \'' + this.getName()

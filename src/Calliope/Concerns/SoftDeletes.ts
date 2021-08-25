@@ -70,8 +70,8 @@ export default class SoftDeletes extends HasTimestamps {
 
         this.setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()));
         return super.delete({
-            ...data,
-            [deletedAt]: new Date().toISOString()
+            [deletedAt]: new Date().toISOString(),
+            ...data
         }).then(model => {
             return this.setAttribute(deletedAt, model.getAttribute(deletedAt))
                 .syncOriginal(deletedAt) as unknown as Model;

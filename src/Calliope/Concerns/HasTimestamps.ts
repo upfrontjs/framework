@@ -83,7 +83,7 @@ export default class HasTimestamps extends HasRelations {
     }
 
     /**
-     * Refresh the timestamps only on the
+     * Refresh the timestamps from remote.
      *
      * @return {Promise<this>}
      */

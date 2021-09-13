@@ -5,7 +5,7 @@ updates:
   directory: '/'
   target-branch: release/0.x
   schedule:
-    interval: weekly
+    interval: monthly
     time: '00:00'
   open-pull-requests-limit: 10
   commit-message:
@@ -18,7 +18,7 @@ updates:
   directory: '/'
   target-branch: release/0.x
   schedule:
-    interval: weekly
+    interval: monthly
     time: '00:00'
   open-pull-requests-limit: 10
   commit-message:

@@ -23,6 +23,13 @@ export { config };
 
 [[toc]]
 
+## Properties
+
+#### usedAsReference
+<Badge text="static" type="warning"/>
+
+Given the [set](#set) and [get](#get) methods are cloning all values that are not of type `function`; `usedAsReference` static property has been added on the  `GlobalConfig` class as an escape hatch. All property names set in this array will be returned as is without cloning. If `'*'` is present in this array, all values will be returned as is.
+The default value is `['headers']` as no subtype of `HeadersInit` is of type `function`.
 ## Methods
 
 #### constructor
@@ -30,7 +37,25 @@ export { config };
 The class constructor takes a [configuration](#configuration) object which gets deep merged into the existing configuration if any.
 
 ::: warning
-All values that are not `typeof value === 'function'` will be cloned, therefore you cannot change object literals in the config by reference.
+To avoid triggering circular analysis when using the [set](#set) method, when using the constructor you should set an initial type.
+```ts
+import { GlobalConfig } from '@upfrontjs/framework';
+import type { Configuration } from '@upfrontjs/framework';
+
+const config: GlobalConfig<Configuration> = new GlobalConfig();
+
+config.set('key', 'value');
+```
+vs
+```ts
+import { GlobalConfig } from '@upfrontjs/framework';
+import type { Configuration } from '@upfrontjs/framework';
+
+const config = new GlobalConfig();
+
+config.set('key', 'value'); // TS2775: Assertions require every name in the call target to be declared with an explicit type annotation.
+```
+
 :::
 
 #### set
@@ -42,7 +67,7 @@ config.set('key', 'value');
 config.has('key'); // true
 ```
 ::: warning
-All values that are not `typeof value === 'function'` will be cloned, therefore you cannot change object literals in the config by reference.
+Values will be cloned subject to [usedAsReference](#usedasreference).
 :::
 
 #### get
@@ -56,7 +81,7 @@ config.get('nonExistentKey'); // undefined
 config.get('nonExistentKey', 1); // 1
 ```
 ::: warning
-All values that are not `typeof value === 'function'` will be cloned, therefore you cannot change object literals in the config by reference.
+Values will be cloned subject to [usedAsReference](#usedasreference).
 :::
 
 #### has

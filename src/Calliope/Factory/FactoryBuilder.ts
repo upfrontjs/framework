@@ -8,6 +8,7 @@ import Collection from '../../Support/Collection';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import { isConstructableUserClass } from '../../Support/function';
 import { plural, singular } from '../../Support/string';
+import Configuration from "../../Contracts/Configuration";
 
 export default class FactoryBuilder<T extends Model> {
     /**
@@ -487,7 +488,7 @@ export default class FactoryBuilder<T extends Model> {
      * @return {string|number}
      */
     protected getKey(): number | string {
-        const config: GlobalConfig<Record<'lastIds', Record<string, number>>> = new GlobalConfig();
+        const config: GlobalConfig<Configuration & Record<'lastIds', Record<string, number>>> = new GlobalConfig();
 
         const lastIds = config.get('lastIds', {});
 

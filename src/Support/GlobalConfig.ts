@@ -14,6 +14,11 @@ export default class GlobalConfig<T extends Configuration> {
     protected static configuration: Configuration = {};
 
     /**
+     * Keys marked for not be deeply cloned when setting and returning.
+     */
+    public static usedAsReference: (PropertyKey | keyof Configuration)[] = ['headers'];
+
+    /**
      * The config constructor.
      *
      * @param {object} configuration
@@ -38,6 +43,10 @@ export default class GlobalConfig<T extends Configuration> {
 
         const value = GlobalConfig.configuration[key];
 
+        if (GlobalConfig.usedAsReference.includes(key) || GlobalConfig.usedAsReference.includes('*')) {
+            return value;
+        }
+
         return typeof value === 'function' ? value : cloneDeep(value);
     }
 
@@ -59,7 +68,12 @@ export default class GlobalConfig<T extends Configuration> {
     public set<K extends string | keyof Configuration>(
         key: K,
         value: T[K]
-    ): asserts this is GlobalConfig<WithProperty<T, K>> {
+        if (GlobalConfig.usedAsReference.includes(key) || GlobalConfig.usedAsReference.includes('*')) {
+            GlobalConfig.configuration[key] = value;
+
+            return;
+        }
+
         GlobalConfig.configuration[key] = typeof value === 'function' ? value : cloneDeep(value);
     }
 

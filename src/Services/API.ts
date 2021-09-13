@@ -22,6 +22,8 @@ export default class API implements ApiCaller {
      * The settings for the parsing of the get parameters.
      *
      * @protected
+     *
+     * @see https://www.npmjs.com/package/qs
      */
     protected readonly getParamEncodingOptions: qs.IStringifyOptions = {
         arrayFormat: 'brackets', // comma does not work currently https://github.com/ljharb/qs/issues/410

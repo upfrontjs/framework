@@ -6,10 +6,17 @@ export interface ApiResponse extends TransformedResponse {
      * (in case the of libraries like axios)
      */
     data?: Record<string, any> | string | null;
+
     /**
      * The request that got this response.
      */
     request?: RequestInit;
+
+    /**
+     * The url the request was sent to.
+     */
+    url?: string;
+
     /**
      * Additional information.
      */

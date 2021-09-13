@@ -6,7 +6,7 @@ Services are classes that gets delegated some responsibility by upfront. With se
 Services have some interfaces that they need to implement on order to work.
 
 #### `ApiCaller`
-ApiCaller an object with a `call` method defined which is utilized by all the ajax requests initiated by upfront, and it is responsible for sending a request with the given data returning a `Promise<Response>`. The arguments the `call` method takes in order are:
+ApiCaller an object with a `call` method defined which is utilized by all the ajax requests initiated by upfront, and it is responsible for sending a request with the given data returning a `Promise<ApiResponse>`. The arguments the `call` method takes in order are:
  - `url` - a string
  - `method` - a string representing the http method
  - `data`*(optional)* - an object or [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData)
@@ -14,7 +14,11 @@ ApiCaller an object with a `call` method defined which is utilized by all the aj
  - `queryParameters`*(optional)* - an object to send as query parameters in the url
 
 #### `HandlesApiResponse`
-HandlesApiResponse's task is to handle the parsing of the `Response` returned by [ApiCaller](#apicaller) and deal with any errors. It defines a `handle` method which takes a `Promise<Response>` and it should return a `Promise<any>`.
+HandlesApiResponse's task is to handle the parsing of the `Response` returned by [ApiCaller](#apicaller) and deal with any errors. It defines a `handle` method which takes a `Promise<ApiResponse>` and it should return a `Promise<any>`.
+
+##### ApiResponse
+
+As you might have noticed in the above service interfaces they work with an object called `ApiResponse` as opposed to a [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response). This is because this interface is more generic and can easily be implemented if deciding to use something other than the [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) api.
 
 ---
 
@@ -41,7 +45,7 @@ import notification from 'notification-lib';
 export default class MyHandler {
     handle(promise) {
         return promise.then(response => {
-            if (response.status >= 300 && response.status <= 400) {
+            if (response.status >= 300 && response.status < 400) {
                 // etc...
             }
             // response handling

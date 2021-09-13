@@ -8,7 +8,7 @@ import Collection from '../../Support/Collection';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import { isConstructableUserClass } from '../../Support/function';
 import { plural, singular } from '../../Support/string';
-import Configuration from "../../Contracts/Configuration";
+import type Configuration from '../../Contracts/Configuration';
 
 export default class FactoryBuilder<T extends Model> {
     /**

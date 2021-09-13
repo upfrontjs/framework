@@ -143,10 +143,6 @@ describe('GlobalConfig', () => {
 
             expect(config.get('test').test).toBe(1);
         });
-
-        it('should treat values by reference if specified in GlobalConfig.usedAsReference', () => {
-
-        });
     });
 
     describe('unset()', () => {

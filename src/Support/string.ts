@@ -98,7 +98,7 @@ export function kebab(str: string): string {
 }
 
 /**
- * Get the plural form of the string.
+ * Get the plural form of the string using the [pluralize](https://www.npmjs.com/package/pluralize) package.
  *
  * @param {string} str
  *
@@ -109,7 +109,7 @@ export function plural(str: string): string {
 }
 
 /**
- * Get the singular form of the string.
+ * Get the singular form of the string using the [pluralize](https://www.npmjs.com/package/pluralize) package.
  *
  * @param {string} str
  *
@@ -247,7 +247,7 @@ export function includesAll(str: string, tokens: string[]): boolean {
 }
 
 /**
- * Generate a uuid of version 4.
+ * Generate a uuid of version 4 using the [uuid](https://www.npmjs.com/package/uuid) package.
  *
  * @return {string}
  */

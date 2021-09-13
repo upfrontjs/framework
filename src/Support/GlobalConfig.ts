@@ -11,14 +11,19 @@ export default class GlobalConfig<T extends Configuration> {
      *
      * @protected
      */
-    protected static configuration: Configuration = {};
+    protected static configuration: Configuration & Record<PropertyKey, any> = {};
+
+    /**
+     * Keys marked for not be deeply cloned when setting and returning.
+     */
+    public static usedAsReference: (PropertyKey | keyof Configuration)[] = ['headers'];
 
     /**
      * The config constructor.
      *
      * @param {object} configuration
      */
-    public constructor(configuration?: T) {
+    public constructor(configuration?: Record<PropertyKey, any> & T) {
         if (configuration) {
             merge(GlobalConfig.configuration, configuration);
         }
@@ -30,13 +35,18 @@ export default class GlobalConfig<T extends Configuration> {
      * @param {string} key
      * @param {any=}   defaultVal
      */
-    public get<K extends keyof T>(key: K, defaultVal?: T[K]): T[K];
-    public get<D>(key: string, defaultVal?: D): D {
+    public get<K extends keyof T>(key: K, defaultVal?: T[K]): T[K]
+    public get<D>(key: PropertyKey, defaultVal?: D): D
+    public get<D>(key: PropertyKey, defaultVal?: D): D {
         if (!this.has(key)) {
             return defaultVal!;
         }
 
-        const value = GlobalConfig.configuration[key];
+        const value = GlobalConfig.configuration[key as string];
+
+        if (GlobalConfig.usedAsReference.includes(key) || GlobalConfig.usedAsReference.includes('*')) {
+            return value;
+        }
 
         return typeof value === 'function' ? value : cloneDeep(value);
     }
@@ -46,7 +56,7 @@ export default class GlobalConfig<T extends Configuration> {
      *
      * @param {string} key
      */
-    public has<K extends string | keyof Configuration>(key: K): this is GlobalConfig<WithProperty<T, K>> {
+    public has<K extends PropertyKey | keyof T>(key: K): this is GlobalConfig<WithProperty<T, K>> {
         return GlobalConfig.configuration.hasOwnProperty(key);
     }
 
@@ -56,10 +66,15 @@ export default class GlobalConfig<T extends Configuration> {
      * @param {string} key
      * @param {any}    value
      */
-    public set<K extends string | keyof Configuration>(
-        key: K,
-        value: T[K]
-    ): asserts this is GlobalConfig<WithProperty<T, K>> {
+    public set<K extends PropertyKey | keyof T, V>(
+        key: K, value: K extends keyof T ? T[K] : V
+    ): asserts this is GlobalConfig<K extends keyof T ? WithProperty<T, K> : T & { [key in K]: V }> {
+        if (GlobalConfig.usedAsReference.includes(key) || GlobalConfig.usedAsReference.includes('*')) {
+            GlobalConfig.configuration[key] = value;
+
+            return;
+        }
+
         GlobalConfig.configuration[key] = typeof value === 'function' ? value : cloneDeep(value);
     }
 
@@ -68,7 +83,7 @@ export default class GlobalConfig<T extends Configuration> {
      *
      * @param {string} key
      */
-    public unset<K extends string | keyof Configuration>(key: K): asserts this is GlobalConfig<Omit<T, K>> {
+    public unset<K extends PropertyKey | keyof T>(key: K): asserts this is GlobalConfig<Omit<T, K>> {
         delete GlobalConfig.configuration[key];
     }
 

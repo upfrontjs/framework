@@ -7,5 +7,21 @@
     "name": "UpfrontJs",
     "readme": "./README.md",
     "plugin": [],
-    "includeVersion": true
+    "includeVersion": true,
+    "cleanOutputDir": true,
+    "intentionallyNotExported": [
+        "WhereDescription",
+        "Order",
+        "Method",
+        "Operator",
+        "Direction",
+        "Relation",
+        "WithProperty",
+        "BooleanOperator",
+        "BuiltInCastType"
+    ],
+    "validation": {
+        "notExported": true,
+        "invalidLink": false
+    }
 }

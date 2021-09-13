@@ -50,12 +50,12 @@ declare global {
         kebab: () => string;
 
         /**
-         * Get the plural form of the string.
+         * Get the plural form of the string using the [pluralize](https://www.npmjs.com/package/pluralize) package.
          */
         plural: () => string;
 
         /**
-         * Get the singular form of the string.
+         * Get the singular form of the string using the [pluralize](https://www.npmjs.com/package/pluralize) package.
          */
         singular: () => string;
 
@@ -129,7 +129,7 @@ declare global {
      */
     interface StringConstructor {
         /**
-         * Generate a uuid of version 4.
+         * Generate a uuid of version 4 using the [uuid](https://www.npmjs.com/package/uuid) package.
          */
         uuid: () => string;
 

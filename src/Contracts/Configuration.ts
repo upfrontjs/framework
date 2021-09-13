@@ -42,9 +42,4 @@ export default interface Configuration {
      * The randomisation library made available in the Factory classes if set.
      */
     randomDataGenerator?: any;
-
-    /**
-     * Arbitrary value in the config.
-     */
-    [key: string]: any;
 }

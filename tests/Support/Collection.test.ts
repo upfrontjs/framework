@@ -1401,7 +1401,6 @@ describe('Collection', () => {
                 collection = new Collection();
                 collection.push(1);
                 expect(collection[0]).toBe(1);
-                // @ts-expect-error
                 expect(collection.NaN).toBeUndefined();
             });
         });
@@ -1459,7 +1458,6 @@ describe('Collection', () => {
                 collection = new Collection();
                 collection.unshift(1);
                 expect(collection[0]).toBe(1);
-                // @ts-expect-error
                 expect(collection.NaN).toBeUndefined();
             });
         });

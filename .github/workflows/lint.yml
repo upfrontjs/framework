@@ -10,7 +10,8 @@ on:
       - 'release/*'
 
 jobs:
-  build:
+  lint:
+    timeout-minutes: 10
     if: github.event.pull_request.draft == false
     name: Lint
     runs-on: ubuntu-latest

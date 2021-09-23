@@ -2,6 +2,7 @@ import { isEqual, uniq } from 'lodash';
 import type Arrayable from '../Contracts/Arrayable';
 import type Jsonable from '../Contracts/Jsonable';
 import LogicException from '../Exceptions/LogicException';
+import { isObjectLiteral } from './function';
 
 export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T>, ArrayLike<T> {
     /**
@@ -1170,6 +1171,6 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      * @protected
      */
     protected _allAreObjects(): this is Collection<Record<string, any>> {
-        return this.every(item => typeof item === 'object' && item !== null);
+        return this.every(isObjectLiteral);
     }
 }

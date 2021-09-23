@@ -9,7 +9,6 @@ import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 import { config } from '../../setupTests';
 import type Collection from '../../../src/Support/Collection';
 import type Model from '../../../src/Calliope/Model';
-import { advanceTo } from 'jest-date-mock';
 import { snake, finish } from '../../../src/Support/string';
 
 let caller: User;
@@ -169,13 +168,9 @@ describe('CallsApi', () => {
         });
 
         it('should internally count the number of ongoing requests', async () => {
-            jest.useFakeTimers();
-            fetchMock.mockResponse(async () => new Promise( resolve =>
-                setTimeout(
-                    () => resolve(buildResponse((User.factory().create() as User).getRawOriginal())),
-                    100
-                )
-            ));
+            fetchMock.mockResponse(
+                async () => Promise.resolve(buildResponse((User.factory().create() as User).getRawOriginal()))
+            );
 
             // @ts-expect-error
             const promise1 = caller.call('get');
@@ -185,37 +180,25 @@ describe('CallsApi', () => {
             // @ts-expect-error
             expect(caller.requestCount).toBe(2);
 
-            jest.runAllTimers();
-
             await Promise.all([promise1, promise2]);
 
             // @ts-expect-error
             expect(caller.requestCount).toBe(0);
-
-            jest.useRealTimers();
         });
 
         it('should determine whether there is an ongoing request or not', async () => {
-            jest.useFakeTimers();
-            fetchMock.mockResponseOnce(async () => new Promise( resolve =>
-                setTimeout(
-                    () => resolve(buildResponse((User.factory().create() as User).getRawOriginal())),
-                    100
-                )
-            ));
+            fetchMock.mockResponseOnce(
+                async () => Promise.resolve(buildResponse((User.factory().create() as User).getRawOriginal()))
+            );
 
             // @ts-expect-error
             const promise = caller.call('get');
 
             expect(caller.loading).toBe(true);
 
-            jest.runAllTimers();
-
             await promise;
 
             expect(caller.loading).toBe(false);
-
-            jest.useRealTimers();
         });
 
         it('should send all the given data', async () => {
@@ -283,7 +266,6 @@ describe('CallsApi', () => {
         });
 
         it('should set _lastSyncedAt or _last_synced_at getter on the model or model collection', () => {
-            advanceTo(new Date);
             const userData = User.factory().raw() as Attributes;
 
             //@ts-expect-error
@@ -324,9 +306,6 @@ describe('CallsApi', () => {
         });
 
         it('should update the attribute with the new Date or the given value', () => {
-            // freeze time
-            advanceTo(new Date);
-
             // @ts-expect-error
             caller.setLastSyncedAt();
             expect(caller._lastSyncedAt).toStrictEqual(new Date);

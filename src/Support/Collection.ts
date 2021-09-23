@@ -3,7 +3,7 @@ import type Arrayable from '../Contracts/Arrayable';
 import type Jsonable from '../Contracts/Jsonable';
 import LogicException from '../Exceptions/LogicException';
 
-export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, ArrayLike<T> {
+export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T>, ArrayLike<T> {
     /**
      * Allow indexing by number.
      */

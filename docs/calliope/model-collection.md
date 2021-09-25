@@ -16,7 +16,7 @@ modelCollection.modelKeys(); // Collection[1, 2, 3, ...ids]
 
 #### findByKey
 
-The `findByKey` method returns the Model or ModelCollection depending on the argument. The method can take the ids as a single argument or as an array or collection. Optionally you may give it a second argument which will be returned is the id is not found in the model collection.
+The `findByKey` method returns the Model or ModelCollection depending on the argument. The method can take the ids as a single argument or as an array or collection. Optionally you may give it a second argument which will be returned if the id is not found in the model collection.
 ```js
 import User from '@Models/User';
 import { Model } from '@upfrontjs/framework';

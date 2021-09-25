@@ -6,7 +6,6 @@ import fetchMock from 'jest-fetch-mock';
 import ModelCollection from '../../src/Calliope/ModelCollection';
 import LogicException from '../../src/Exceptions/LogicException';
 import { finish, snake } from '../../src/Support/string';
-import { advanceBy } from 'jest-date-mock';
 import Team from '../mock/Models/Team';
 import { config } from '../setupTests';
 
@@ -243,7 +242,7 @@ describe('Model', () => {
             mockUserModelResponse(user);
             const lastSyncedAt = user._lastSyncedAt;
 
-            advanceBy(100);
+            jest.advanceTimersByTime(100);
             await user.refresh();
 
             expect(user._lastSyncedAt).not.toBe(lastSyncedAt);
@@ -354,7 +353,7 @@ describe('Model', () => {
             const lastSyncedAt = user._lastSyncedAt;
             user.name = 'new name';
 
-            advanceBy(100);
+            jest.advanceTimersByTime(100);
             await user.save();
 
             expect(user._lastSyncedAt).not.toBe(lastSyncedAt);

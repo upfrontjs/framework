@@ -1,6 +1,6 @@
 import Collection from '../../src/Support/Collection';
-import { advanceTo } from 'jest-date-mock';
 import LogicException from '../../src/Exceptions/LogicException';
+import { now } from '../setupTests';
 
 let collection: Collection<any>;
 
@@ -695,8 +695,6 @@ describe('Collection', () => {
 
         it('should dumps to the console', () => {
             collection.dump();
-            const now = new Date;
-            advanceTo(now);
 
             expect(console.groupCollapsed).toHaveBeenCalledWith(now.toLocaleTimeString() + ':');
             elements.forEach((elem, index) => {
@@ -707,8 +705,6 @@ describe('Collection', () => {
 
         it('should dump with a message', () => {
             collection.dump('test');
-            const now = new Date;
-            advanceTo(now);
 
             expect(console.groupCollapsed).toHaveBeenCalledWith(now.toLocaleTimeString() + ' (test):');
         });

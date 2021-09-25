@@ -30,7 +30,7 @@ export default interface ApiCaller {
         method: Method,
         data?: FormData | Record<string, unknown>,
         queryParameters?: Record<string, any>
-    ) => Partial<RequestInit>;
+    ) => Partial<RequestInit> | Promise<Partial<RequestInit>>;
 
     /**
      * The expected signature of the call method.

@@ -1,9 +1,9 @@
 import User from '../../mock/Models/User';
 import { buildResponse, getLastRequest, mockUserModelResponse } from '../../test-helpers';
-import { advanceTo } from 'jest-date-mock';
 import { finish, snake } from '../../../src';
 import fetchMock from 'jest-fetch-mock';
 import LogicException from '../../../src/Exceptions/LogicException';
+import { now } from '../../setupTests';
 
 let softDeletes: User;
 
@@ -78,10 +78,6 @@ describe('SoftDeletes', () => {
         it('should merge in the deleted at column into the optional parameters', async () => {
             mockUserModelResponse(softDeletes);
 
-            const now = new Date();
-
-            advanceTo(now);
-
             await softDeletes.delete();
 
             expect(getLastRequest()?.body)
@@ -90,10 +86,6 @@ describe('SoftDeletes', () => {
 
         it('should merge in the optional argument into the request', async () => {
             mockUserModelResponse(softDeletes);
-
-            const now = new Date();
-
-            advanceTo(now);
 
             await softDeletes.delete({
                 [softDeletes.getDeletedAtColumn()]: new Date(now.getTime() + 10).toISOString(),
@@ -108,14 +100,10 @@ describe('SoftDeletes', () => {
         });
 
         it('should update the model\'s deleted at column', async () => {
-            const now = new Date();
-
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({
                 ...softDeletes.getRawOriginal(),
                 [softDeletes.getDeletedAtColumn()]: now.toISOString()
             })));
-
-            advanceTo(now);
 
             await softDeletes.delete();
 

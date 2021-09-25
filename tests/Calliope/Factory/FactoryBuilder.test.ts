@@ -11,6 +11,7 @@ import Model from '../../../src/Calliope/Model';
 import Shift from '../../mock/Models/Shift';
 import Contract from '../../mock/Models/Contract';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
+import { now } from '../../setupTests';
 
 class FakeFactory extends Factory<User> {
     // @ts-expect-error
@@ -508,12 +509,10 @@ describe('FactoryBuilder', () => {
             // 1 - definition
             // 2 - states
             // 3 - arguments
-            const now = new Date().toISOString();
-
             expect(factoryBuilder.state('resolvedName')
                 .raw({
                     deletedAt: (attributes: Attributes) => {
-                        return attributes.deletegdAt ?? now;
+                        return attributes.deletedAt ?? now;
                     }
                 }))
                 .toStrictEqual({

@@ -1,6 +1,6 @@
 # Testing
 
-Upfront is fully tested to give as much confidence in the code as possible. To carry on this ethos in your application, upfront offers helpful tools to for testing with mock data and test outgoing requests.
+Upfront is fully tested to give as much confidence in the code as possible. To carry on this ethos in your application, upfront offers helpful tools for testing with mock data and test outgoing requests.
 
 ## Testing service implementations
 Swapping out [services](./services/readme.md) of upfront is easy as setting them in the [GlobalConfig](./helpers/global-config.md).
@@ -66,13 +66,13 @@ To define a factory what you need to do is extend upfront's `Factory` in you cla
 <code-block title="Javascript">
 ```js
 // UserFactory.js
-import { Factory } from '@upfrontjs/framework';
+import { Factory, uuid } from '@upfrontjs/framework';
 
 export default UserFactory extends Factory {
     definition(model, index) {
         return {
             name: 'user name',
-            resourceUuid: String.uuid()
+            resourceUuid: uuid()
         };
     }
 }
@@ -288,7 +288,7 @@ User.factory().times(3).create() // ModelCollection
 #### with
 The `with` method is a way to add [relations](./calliope/relationships.md) in line to the model. This is an alternative to adding it to the argument at the creation, and is the preferred way as it's more concise and provides type safety. You can pass he model constructor or FactoryBuilder instance to the method. You may pass an optional second argument to specify the relation's name with or without the [relation prefix](./calliope/relationships.md#relationmethodprefix)
 ```js
-User.factory().with(Contract).create().team // Contract
+User.factory().with(Contract).create().contract // Contract
 User.factory().with(Shift.factory().times(2)).create().shifts // ModelCollection
 ```
 

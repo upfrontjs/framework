@@ -115,11 +115,11 @@ const experiencedSafeDrivers = await User
 With the default [ApiCaller](./services#apicaller) and [HandlesApiRequest](./services#handlesapiresponse) implementations, you can interact with your api without the need for the models or any of their methods.
 
 ```js
-import { GlobalConfig } from '@upfrontjs/framework';
+import { GlobalConfig, API, ApiResponseHandler } from '@upfrontjs/framework';
 
 const config = new GlobalConfig;
-const handler = config.get('apiResponseHandler');
-const api = config.get('api');
+const handler = new ApiResponseHandler;
+const api = new API;
 
 const form = new FormData;
 // ... collect the form entries
@@ -137,7 +137,7 @@ const response = await handler.handle(
 
 #### Alias methods
 
-There may be some logic you frequently use, but it might not be apparent at the first glance what's happening or can be simpler to comprehend.
+There may be some logic you frequently use, but it might not be apparent at the first glance what's happening or can be made simpler to comprehend.
 
 For example, you may express that you want the first model like so:
 

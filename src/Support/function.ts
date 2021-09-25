@@ -5,7 +5,7 @@
  *
  * @return {boolean}
  */
-export function isObjectLiteral<T extends Record<any, any>>(value: any): value is NonNullable<T> {
+export function isObjectLiteral<T extends Record<PropertyKey, any>>(value: any): value is NonNullable<T> {
     return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 

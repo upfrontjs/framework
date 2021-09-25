@@ -25,7 +25,7 @@ The `currentPage` property is an integer value indicating the paginator's curren
 #### itemsPerPage
 <Badge text="read only" type="warning"/>
 
-The `currentPage` property indicates how many items are shown on a single page.
+The `itemsPerPage` property indicates how many items are shown on a single page.
 
 #### items
 
@@ -34,7 +34,7 @@ The `items` property contains the items on the current page. Navigating the pagi
 #### wrapsAround
 <Badge text="read only" type="warning"/>
 
-The `wrapsAround` property indicating whether the paginator should return to the first page when calling [next](#next) or [previous](#previous) page at the end of the paginator.
+The `wrapsAround` property indicating whether the paginator should return to the first page when calling [next](#next) on the last page and return the last page when calling [previous](#previous) on the first page.
 
 #### length
 <Badge text="read only" type="warning"/>

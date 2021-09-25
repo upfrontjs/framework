@@ -37,7 +37,7 @@ The default value is `['headers']` as no subtype of `HeadersInit` is of type `fu
 The class constructor takes a [configuration](#configuration) object which gets deep merged into the existing configuration if any.
 
 ::: warning
-To avoid triggering circular analysis when using the [set](#set) method, when using the constructor you should set an initial type.
+To avoid triggering circular analysis in typescript when using the [set](#set) method, when using the constructor you should set an initial type.
 ```ts
 import { GlobalConfig } from '@upfrontjs/framework';
 import type { Configuration } from '@upfrontjs/framework';

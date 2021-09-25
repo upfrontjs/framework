@@ -124,25 +124,16 @@ describe('HasAttributes', () => {
             expect(boolean).toBe(true);
         });
 
-        it('should return the attributes first then the relations.', async () => {
+        it('should return the attributes first then the relations.', () => {
             hasAttributes.addRelation('shifts', [new Shift]);
 
-            let attributeTouchTimestamp = 0;
-            let relationTouchTimestamp = 0;
+            let relationWasLast = false;
             for (const [item] of hasAttributes) {
                 // eslint-disable-next-line jest/no-if
-                if (item === hasAttributes.test) {
-                    attributeTouchTimestamp = new Date().getTime();
-                } else {
-                    relationTouchTimestamp = new Date().getTime();
-                }
-                await new Promise(r => setTimeout(r, 1));
+                relationWasLast = item !== hasAttributes.test;
             }
 
-            expect(relationTouchTimestamp).not.toBe(0);
-            expect(attributeTouchTimestamp).not.toBe(0);
-
-            expect(relationTouchTimestamp).toBeGreaterThan(attributeTouchTimestamp);
+            expect(relationWasLast).toBe(true);
         });
 
         it('should return deep copies', () => {

@@ -70,13 +70,12 @@ export default class Model extends SoftDeletes implements HasFactory {
         ];
 
         if (except) {
+            // make sure we only have unique values
             excluded = [...new Set([...excluded, ...Array.isArray(except) ? except : [except]])];
         }
 
         const attributes = { ...this.getRawAttributes(), ...this.getRelations() };
-        Object.keys(attributes)
-            .filter(key => excluded.includes(key))
-            .forEach(key => delete attributes[key]);
+        excluded.forEach(key => delete attributes[key]);
 
         return new (this.constructor as new (attributes?: Attributes) => this)(attributes);
     }

@@ -15,27 +15,36 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      * @protected
      */
     protected _throwIfNotModels(iterable?: any): void {
-        if (!this._isModelArray(iterable)) {
+        if (Collection.isCollection(iterable)) {
+            iterable = iterable.toArray();
+        }
+
+        if (!iterable) {
+            iterable = this.toArray();
+        }
+
+        if (Array.isArray(iterable) && !iterable.length) return;
+
+        if (!ModelCollection._isModelArray(iterable)) {
             throw new TypeError(this.constructor.name + ' can only handle Model values.');
         }
     }
 
     /**
-     * Determine if the given iterable or
-     * this is a an array of Models.
+     * Determine if the given array is a Model array.
      *
-     * @param {any[]} iterable
+     * @param {any} array
      *
      * @return {boolean}
      *
      * @protected
      */
-    protected _isModelArray(iterable?: any): iterable is Model[] {
-        if (iterable && Array.isArray(iterable)) {
-            return !!iterable.length && iterable.every(item => ModelCollection._isModel(item));
+    protected static _isModelArray(array: any): array is Model[] {
+        if (!Array.isArray(array)) {
+            return false;
         }
 
-        return this.every(item => ModelCollection._isModel(item));
+        return !!array.length && array.every(item => this._isModel(item));
     }
 
     /**
@@ -57,7 +66,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
     /**
      * Accepts ModelCollection, array of models, numbers and strings
      * in array format. All other values are discarded.
-     * Return a array of ids in a string format.
+     * Returns a collection of ids in a string format.
      *
      * @param {any} values
      *
@@ -291,7 +300,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
             return false;
         }
 
-        return value instanceof ModelCollection && this.prototype._isModelArray(value);
+        return value instanceof ModelCollection && this._isModelArray(value);
     }
 
     /**

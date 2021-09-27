@@ -201,6 +201,7 @@ export default class BuildsQuery extends HasAttributes {
         }
 
         let parameters = params;
+
         if ('formatQueryParameters' in this && this.formatQueryParameters instanceof Function) {
             parameters = (this as unknown as FormatsQueryParameters).formatQueryParameters(params);
         }

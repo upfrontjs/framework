@@ -6,7 +6,7 @@ import { isObjectLiteral } from './function';
 
 export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T>, ArrayLike<T> {
     /**
-     * Allow indexing by number.
+     * Collection item.
      */
     [index: number]: T;
 
@@ -14,7 +14,6 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      * The constructor.
      *
      * @param {any=} items
-     *
      */
     public constructor(items?: T | T[]) {
         if (!items) {

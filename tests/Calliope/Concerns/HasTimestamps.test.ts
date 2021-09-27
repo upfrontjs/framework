@@ -51,14 +51,12 @@ describe('HasTimestamps', () => {
         });
 
         it('should update the timestamps', async () => {
-
             const createdAt = hasTimestamps.getAttribute(hasTimestamps.getCreatedAtColumn());
             const updatedAt = hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtColumn());
 
             jest.advanceTimersByTime(1000);
             await hasTimestamps.touch();
 
-            console.log(hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtColumn()), updatedAt);
             expect(hasTimestamps.getAttribute(hasTimestamps.getCreatedAtColumn())).toBe(createdAt);
             expect(hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtColumn())).not.toBe(updatedAt);
         });

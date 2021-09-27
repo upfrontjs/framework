@@ -8,16 +8,12 @@ import type HandlesApiResponse from './HandlesApiResponse';
  */
 export default interface Configuration {
     /**
-     * The ApiCaller constructor.
-     *
-     * @type {ApiCaller}
+     * The ApiCaller used by the library.
      */
     api?: new () => ApiCaller;
 
     /**
-     * The HandlesApiResponse constructor.
-     *
-     * @type {HandlesApiResponse}
+     * The HandlesApiResponse used by the library.
      */
     apiResponseHandler?: new () => HandlesApiResponse;
 

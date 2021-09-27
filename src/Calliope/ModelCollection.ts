@@ -300,7 +300,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
             return false;
         }
 
-        return value instanceof ModelCollection && this._isModelArray(value);
+        return value instanceof ModelCollection && this._isModelArray(value.toArray());
     }
 
     /**

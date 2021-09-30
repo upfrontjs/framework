@@ -50,10 +50,6 @@ export default class User extends Model {
 
 The `exists` property is a getter on the model that returns a boolean which can be used to assert that the model has been persisted. It takes the [primary key](#getkey), [timestamps](./timestamps.md#timestamps) and [soft deletes](./timestamps.md#soft-deletes) into account.
 
-#### primaryKey
-
-The `primaryKey` is property is a getter that defines what is the primary identifier's key from the model attributes. The default value is `'id'`.
-
 ## Additional methods
 
 #### is

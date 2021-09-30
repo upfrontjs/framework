@@ -75,7 +75,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @protected
      *
-     * @return {Promise<object>}
+     * @return {Promise<any>}
      */
     protected async call(
         method: Method,
@@ -83,7 +83,6 @@ export default class CallsApi extends BuildsQuery {
         customHeaders?: Record<string, string[] | string>
     ): Promise<any> {
         const endpoint = this.getEndpoint();
-        const queryParameters = this.compileQueryParameters();
 
         if (!endpoint.length) {
             throw new LogicException(
@@ -92,11 +91,6 @@ export default class CallsApi extends BuildsQuery {
             );
         }
 
-        const config = new GlobalConfig;
-        const url = (config.get('baseEndPoint') ? finish(config.get('baseEndPoint', '')!, '/') : '')
-            + (endpoint.startsWith('/') ? endpoint.slice(1) : endpoint);
-        const apiCaller = new (config.get('api', API))!;
-        const handlesApiResponse = new (config.get('apiResponseHandler', ApiResponseHandler))!;
         /**
          * Recursively format the keys according to serverAttributeCasing
          *
@@ -115,15 +109,43 @@ export default class CallsApi extends BuildsQuery {
             return dataWithKeyCasing;
         };
 
+        let queryParameters = transformValues(this.compileQueryParameters());
+        const config = new GlobalConfig;
+        const url = (config.get('baseEndPoint') ? finish(config.get('baseEndPoint', '')!, '/') : '')
+            + (endpoint.startsWith('/') ? endpoint.slice(1) : endpoint);
+        const apiCaller = new (config.get('api', API));
+        const handlesApiResponse = new (config.get('apiResponseHandler', ApiResponseHandler))!;
+
         if (data && isObjectLiteral<Attributes>(data) && !(data instanceof FormData)) {
             data = transformValues(data);
+        }
+
+        const requestMiddleware = config.get('requestMiddleware');
+
+        if (requestMiddleware) {
+            const result = await requestMiddleware.handle(url, method, data, customHeaders, queryParameters);
+            // values are either undefined or objects
+            if ('data' in result && result.data === undefined
+                || isObjectLiteral(result.data)) {
+                data = result.data;
+            }
+
+            if ('customHeaders' in result && result.customHeaders === undefined
+                || isObjectLiteral(result.customHeaders)) {
+                customHeaders = result.customHeaders;
+            }
+
+            if ('queryParameters' in result && result.queryParameters === undefined
+                || isObjectLiteral(result.queryParameters)) {
+                queryParameters = result.queryParameters!;
+            }
         }
 
         this.requestCount++;
 
         return handlesApiResponse
             .handle(
-                apiCaller.call(url, method, data, customHeaders, transformValues(queryParameters))
+                apiCaller.call(url, method, data, customHeaders, queryParameters)
             )
             .finally(() => this.requestCount--);
     }

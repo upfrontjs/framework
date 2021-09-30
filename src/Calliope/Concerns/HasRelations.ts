@@ -330,13 +330,17 @@ export default class HasRelations extends CallsApi {
      *
      * @return this
      */
-    public for(models: Model | Model[]): this {
+    public for(models: (Model | (new () => Model))[] | Model | (new () => Model)): this {
         models = Array.isArray(models) ? models : [models];
 
         this.resetEndpoint();
         let endpoint = '';
 
-        models.forEach((model: Model) => {
+        models.forEach((model) => {
+            if (!(model instanceof CallsApi)) {
+                model = new model;
+            }
+
             endpoint += model.getEndpoint() + '/' + (model.getKey() ? String(model.getKey()) + '/' : '');
         });
 

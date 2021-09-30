@@ -366,7 +366,7 @@ describe('HasRelations', () => {
 
         });
 
-        it('should omit the key if undefined from the endpoint', () => {
+        it('should omit the key from the endpoint if undefined', () => {
             const contract = Contract.factory().make() as Contract;
 
             expect(hasRelations.for([hasRelations.team, contract]).getEndpoint())
@@ -376,6 +376,10 @@ describe('HasRelations', () => {
                     + '/' + String(contract.getEndpoint())
                     + '/users'
                 );
+        });
+
+        it('should accept model constructor(s) as argument', () => {
+            expect(hasRelations.for([Team, Contract]).getEndpoint()).toBe('teams/contracts/users');
         });
     });
 

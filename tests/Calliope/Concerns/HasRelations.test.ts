@@ -60,14 +60,14 @@ describe('HasRelations', () => {
             expect(hasRelations.relationLoaded('team')).toBe(true);
             expect(hasRelations.removeRelation('team').relationLoaded('team')).toBe(false);
             // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(hasRelations.$team).not.toBeUndefined();
+            expect(hasRelations.$team).toBeDefined();
         });
 
         it('should be able to remove with the defined prefix too', () => {
             expect(hasRelations.relationLoaded('$team')).toBe(true);
             expect(hasRelations.removeRelation('$team').relationLoaded('team')).toBe(false);
             // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(hasRelations.$team).not.toBeUndefined();
+            expect(hasRelations.$team).toBeDefined();
         });
     });
 

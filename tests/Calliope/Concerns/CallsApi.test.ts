@@ -392,12 +392,12 @@ describe('CallsApi', () => {
             // @ts-expect-error
             caller.setLastSyncedAt();
             expect(caller._last_synced_at).toBeUndefined();
-            expect(caller._lastSyncedAt).not.toBeUndefined();
+            expect(caller._lastSyncedAt).toBeDefined();
             Object.defineProperty(caller, 'attributeCasing', { get: () => 'snake' });
 
             // @ts-expect-error
             caller.setLastSyncedAt();
-            expect(caller._last_synced_at).not.toBeUndefined();
+            expect(caller._last_synced_at).toBeDefined();
             // if you update the string casing on the fly, that's on you
             // and you might end up with _lastSyncedAt and _last_synced_at
         });

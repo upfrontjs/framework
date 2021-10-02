@@ -29,6 +29,8 @@ import type { QueryParams } from './Calliope/Concerns/BuildsQuery';
 import type FormatsQueryParameters from './Contracts/FormatsQueryParameters';
 import type { ApiResponse } from './Contracts/HandlesApiResponse';
 
+import type { MaybeArray, RequireSome } from './Support/type';
+
 export type {
     AttributeCaster,
     ApiCaller,
@@ -39,7 +41,9 @@ export type {
     CastType,
     QueryParams,
     FormatsQueryParameters,
-    ApiResponse
+    ApiResponse,
+    MaybeArray,
+    RequireSome
 };
 
 export * from './Support/array';

@@ -8,6 +8,7 @@ import Collection from '../../Support/Collection';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import { finish, plural, snake, start } from '../../Support/string';
 import { cloneDeep } from 'lodash';
+import type { MaybeArray } from '../../Support/type';
 
 type Relation = 'belongsTo' | 'belongsToMany' | 'hasMany' | 'hasOne' | 'morphMany' | 'morphOne' | 'morphTo';
 
@@ -40,7 +41,7 @@ export default class HasRelations extends CallsApi {
      *
      * @return {Promise<this>}
      */
-    public async load(relations: string[] | string, forceReload = false): Promise<this> {
+    public async load(relations: MaybeArray<string>, forceReload = false): Promise<this> {
         if (!Array.isArray(relations)) {
             relations = [relations];
         }
@@ -173,7 +174,7 @@ export default class HasRelations extends CallsApi {
      */
     public addRelation(
         name: string,
-        value: Attributes | Attributes[] | Collection<Attributes> | Model | ModelCollection<Model>
+        value: Collection<Attributes> | MaybeArray<Attributes> | Model | ModelCollection<Model>
     ): this {
         name = this.removeRelationPrefix(name);
 
@@ -330,7 +331,7 @@ export default class HasRelations extends CallsApi {
      *
      * @return this
      */
-    public for(models: (Model | (new () => Model))[] | Model | (new () => Model)): this {
+    public for(models: MaybeArray<Model | (new () => Model)>): this {
         models = Array.isArray(models) ? models : [models];
 
         this.resetEndpoint();

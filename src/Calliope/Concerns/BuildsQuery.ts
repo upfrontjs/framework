@@ -2,6 +2,7 @@ import InvalidArgumentException from '../../Exceptions/InvalidArgumentException'
 import HasAttributes from './HasAttributes';
 import type Model from '../Model';
 import type FormatsQueryParameters from '../../Contracts/FormatsQueryParameters';
+import type { MaybeArray } from '../../Support/type';
 
 type BooleanOperator = 'and' | 'or';
 type Direction = 'asc' | 'desc';
@@ -350,7 +351,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public whereKey(value: (number | string)[] | number | string, boolean: BooleanOperator = 'and'): this {
+    public whereKey(value: MaybeArray<number | string>, boolean: BooleanOperator = 'and'): this {
         const column = (this as unknown as Model).getKeyName();
 
         if (Array.isArray(value)) {
@@ -369,7 +370,7 @@ export default class BuildsQuery extends HasAttributes {
      * @see BuildsQuery.prototype.whereKey
      */
     public static whereKey(
-        value: (number | string)[] | number | string, boolean: BooleanOperator = 'and'
+        value: MaybeArray<number | string>, boolean: BooleanOperator = 'and'
     ): Model {
         return this.newQuery().whereKey(value, boolean);
     }
@@ -381,7 +382,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public orWhereKey(value: (number | string)[] | number | string): this {
+    public orWhereKey(value: MaybeArray<number | string>): this {
         return this.whereKey(value, 'or');
     }
 
@@ -393,7 +394,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public whereKeyNot(value: (number | string)[] | number | string, boolean: BooleanOperator = 'and'): this {
+    public whereKeyNot(value: MaybeArray<number | string>, boolean: BooleanOperator = 'and'): this {
         const column = (this as unknown as Model).getKeyName();
 
         if (Array.isArray(value)) {
@@ -412,7 +413,7 @@ export default class BuildsQuery extends HasAttributes {
      * @see BuildsQuery.prototype.whereNotIn
      */
     public static whereKeyNot(
-        value: (number | string)[] | number | string, boolean: BooleanOperator = 'and'
+        value: MaybeArray<number | string>, boolean: BooleanOperator = 'and'
     ): Model {
         return this.newQuery().whereKeyNot(value, boolean);
     }
@@ -424,7 +425,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public orWhereKeyNot(value: (number | string)[] | number | string): this {
+    public orWhereKeyNot(value: MaybeArray<number | string>): this {
         return this.whereKeyNot(value, 'or');
     }
 
@@ -436,7 +437,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public whereNull(columns: string[] | string, boolean: BooleanOperator = 'and'): this {
+    public whereNull(columns: MaybeArray<string>, boolean: BooleanOperator = 'and'): this {
         if (!Array.isArray(columns)) {
             columns = [columns];
         }
@@ -455,7 +456,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNull
      */
-    public static whereNull(columns: string[] | string): Model {
+    public static whereNull(columns: MaybeArray<string>): Model {
         return this.newQuery().whereNull(columns);
     }
 
@@ -466,7 +467,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public orWhereNull(columns: string[] | string): this {
+    public orWhereNull(columns: MaybeArray<string>): this {
         return this.whereNull(columns, 'or');
     }
 
@@ -478,7 +479,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public whereNotNull(columns: string[] | string, boolean: BooleanOperator = 'and'): this {
+    public whereNotNull(columns: MaybeArray<string>, boolean: BooleanOperator = 'and'): this {
         if (!Array.isArray(columns)) {
             columns = [columns];
         }
@@ -497,7 +498,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotNull
      */
-    public static whereNotNull(columns: string[] | string): Model {
+    public static whereNotNull(columns: MaybeArray<string>): Model {
         return this.newQuery().whereNotNull(columns);
     }
 
@@ -508,7 +509,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public orWhereNotNull(columns: string[] | string): this {
+    public orWhereNotNull(columns: MaybeArray<string>): this {
         return this.whereNotNull(columns, 'or');
     }
 
@@ -789,7 +790,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public select(columns: string[] | string): this {
+    public select(columns: MaybeArray<string>): this {
         this.columns.push(...Array.isArray(columns) ? columns : [columns]);
 
         return this;
@@ -804,7 +805,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.select
      */
-    public static select(columns: string[] | string): Model {
+    public static select(columns: MaybeArray<string>): Model {
         return this.newQuery().select(columns);
     }
 
@@ -815,7 +816,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public has(relations: string[] | string): this {
+    public has(relations: MaybeArray<string>): this {
         this.relationsExists.push(...Array.isArray(relations) ? relations : [relations]);
 
         return this;
@@ -830,7 +831,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.has
      */
-    public static has(relations: string[] | string): Model {
+    public static has(relations: MaybeArray<string>): Model {
         return this.newQuery().has(relations);
     }
 
@@ -841,7 +842,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public with(relations: string[] | string): this {
+    public with(relations: MaybeArray<string>): this {
         this.withs.push(...Array.isArray(relations) ? relations : [relations]);
 
         return this;
@@ -856,7 +857,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.with
      */
-    public static with(relations: string[] | string): Model {
+    public static with(relations: MaybeArray<string>): Model {
         return this.newQuery().with(relations);
     }
 
@@ -865,7 +866,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @param relations
      */
-    public without(relations: string[] | string): this {
+    public without(relations: MaybeArray<string>): this {
         this.withouts.push(...Array.isArray(relations) ? relations : [relations]);
 
         return this;
@@ -880,7 +881,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.without
      */
-    public static without(relations: string[] | string): Model {
+    public static without(relations: MaybeArray<string>): Model {
         return this.newQuery().without(relations);
     }
 
@@ -891,7 +892,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public scope(scopes: string[] | string): this {
+    public scope(scopes: MaybeArray<string>): this {
         this.scopes.push(...Array.isArray(scopes) ? scopes : [scopes]);
 
         return this;
@@ -906,7 +907,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.scope
      */
-    public static scope(scopes: string[] | string): Model {
+    public static scope(scopes: MaybeArray<string>): Model {
         return this.newQuery().scope(scopes);
     }
 

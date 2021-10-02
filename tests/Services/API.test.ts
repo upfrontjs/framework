@@ -2,6 +2,7 @@ import API from '../../src/Services/API';
 import { config as globalConfig } from '../setupTests';
 import { finish } from '../../src';
 import InvalidArgumentException from '../../src/Exceptions/InvalidArgumentException';
+import type { MaybeArray } from '../../src/Support/type';
 
 const url = finish(String(globalConfig.get('baseEndPoint')), '/') + 'users';
 
@@ -10,7 +11,7 @@ class APITester extends API {
         endpoint: string,
         method: 'delete' | 'get' | 'patch' | 'post' | 'put',
         data?: FormData | Record<string, unknown>,
-        customHeaders?: Record<string, string[] | string>
+        customHeaders?: Record<string, MaybeArray<string>>
     ): Promise<{ url: string; requestInit: RequestInit }> {
         return this.initConfig(endpoint, method, data, customHeaders);
     }
@@ -141,7 +142,7 @@ describe('API', () => {
         });
 
         it('should process the given custom headers', async () => {
-            const header: Record<string, string[] | string> = { custom: 'header' };
+            const header: Record<string, MaybeArray<string>> = { custom: 'header' };
             const config = (await api.getConfig(url, 'post', undefined, header)).requestInit;
 
             // @ts-expect-error

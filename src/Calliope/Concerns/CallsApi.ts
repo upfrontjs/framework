@@ -9,6 +9,7 @@ import BuildsQuery from './BuildsQuery';
 import type { Attributes } from './HasAttributes';
 import { isObjectLiteral } from '../../Support/function';
 import { finish, plural, snake, camel } from '../../Support/string';
+import type { MaybeArray } from '../../Support/type';
 
 export type Method = 'delete' | 'get' | 'patch' | 'post' | 'put';
 
@@ -80,7 +81,7 @@ export default class CallsApi extends BuildsQuery {
     protected async call(
         method: Method,
         data?: Attributes | FormData,
-        customHeaders?: Record<string, string[] | string>
+        customHeaders?: Record<string, MaybeArray<string>>
     ): Promise<any> {
         const endpoint = this.getEndpoint();
 
@@ -269,7 +270,7 @@ export default class CallsApi extends BuildsQuery {
      * @return {Model}
      */
     protected newInstanceFromResponseData(
-        data: Attributes | Attributes[]
+        data: MaybeArray<Attributes>
     ): Model | ModelCollection<Model> {
         if (data === null
             || data === undefined

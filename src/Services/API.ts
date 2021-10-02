@@ -6,6 +6,7 @@ import { finish } from '../Support/string';
 import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
 import type { Method } from '../Calliope/Concerns/CallsApi';
 import type { ApiResponse } from '../Contracts/HandlesApiResponse';
+import type { MaybeArray } from '../Support/type';
 
 /**
  * The default ApiCaller class used by the package.
@@ -42,7 +43,7 @@ export default class API implements ApiCaller {
         url: string,
         method: Method,
         data?: FormData | Record<string, unknown>,
-        customHeaders?: Record<string, string[] | string>,
+        customHeaders?: Record<string, MaybeArray<string>>,
         queryParameters?: Record<string, unknown>
     ): Promise<ApiResponse> {
         const config = await this.initConfig(url, method, data, customHeaders, queryParameters);
@@ -71,7 +72,7 @@ export default class API implements ApiCaller {
         url: string,
         method: Method,
         data?: FormData | Record<string, unknown>,
-        customHeaders?: Record<string, string[] | string>,
+        customHeaders?: Record<string, MaybeArray<string>>,
         queryParameters?: Record<string, unknown>
     ): Promise<{ url: string; requestInit: RequestInit }> {
         const initOptions: RequestInit = { method: method.toLowerCase() };

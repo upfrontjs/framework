@@ -1,8 +1,9 @@
 import Collection from '../Support/Collection';
 import type Model from './Model';
+import type { MaybeArray } from '../Support/type';
 
 export default class ModelCollection<T extends Model> extends Collection<T> {
-    public constructor(models?: T | T[]) {
+    public constructor(models?: MaybeArray<T>) {
         super(models);
         this._throwIfNotModels();
     }
@@ -112,7 +113,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      * @return {Model|ModelCollection|undefined|any}
      */
     public findByKey(
-        key: (number | string)[] | number | string,
+        key: MaybeArray<number | string>,
         defaultVal?: ModelCollection<T> | T
     ): T | any | this | undefined {
         this._throwIfNotModels();
@@ -244,7 +245,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {this}
      */
-    public override diff(models: T | T[]): this {
+    public override diff(models: MaybeArray<T>): this {
         this._throwIfNotModels();
         const modelCollection = ModelCollection.isModelCollection<T>(models)
             ? models
@@ -266,7 +267,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {this}
      */
-    public only(values: any[] | any): this {
+    public only(values: MaybeArray<T>): this {
         this._throwIfNotModels();
         const modelKeys = this._getArgumentKeys(values);
 
@@ -280,7 +281,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {this}
      */
-    public except(values: any[] | any): this {
+    public except(values: MaybeArray<any>): this {
         this._throwIfNotModels();
         const modelKeys = this._getArgumentKeys(values);
 
@@ -311,7 +312,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {this}
      */
-    public override intersect(models: T | T[]): this {
+    public override intersect(models: MaybeArray<T>): this {
         models = ModelCollection.isModelCollection<T>(models)
             ? models.toArray()
             : Array.isArray(models) ? models : [models];

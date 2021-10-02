@@ -5,6 +5,7 @@ import type { Attributes } from './Concerns/HasAttributes';
 import ModelCollection from './ModelCollection';
 import LogicException from '../Exceptions/LogicException';
 import { finish, isUuid } from '../Support/string';
+import type { MaybeArray } from '../Support/type';
 
 export default class Model extends SoftDeletes implements HasFactory {
     /**
@@ -61,7 +62,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @param {string[]|string} except
      */
-    public replicate(except?: string[] | string): this {
+    public replicate(except?: MaybeArray<string>): this {
         let excluded = [
             this.getKeyName(),
             this.getCreatedAtColumn(),

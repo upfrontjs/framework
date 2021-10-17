@@ -33,7 +33,7 @@ Then you may query as:
 import User from '@Models/User';
 
 const user = new User({ id: 1 });
-const shiftsWithColleagues = user.$shifts().with('colleagues').get(); // ModelCollection
+const shiftsWithColleagues = await user.$shifts().with('colleagues').get(); // ModelCollection
 
 await user.load('contract');
 user.contract; // Contract

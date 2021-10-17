@@ -168,7 +168,7 @@ describe('HasRelations', () => {
             expect(hasRelations.addRelation('shifts', shifts).shifts).toBeInstanceOf(ModelCollection);
         });
 
-        it('should be able to add a relation even if just the attributes or array of attributes are given', () => {
+        it('should be able to add a relation when attributes or array of attributes are given', () => {
             const team = hasRelations.team as Team;
             hasRelations.removeRelation('team');
 

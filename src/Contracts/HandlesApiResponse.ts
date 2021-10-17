@@ -3,7 +3,7 @@ type TransformedResponse = Partial<Response> & Pick<Response, 'headers' | 'statu
 export interface ApiResponse extends TransformedResponse {
     /**
      * The parsed response content.
-     * (in case the of libraries like axios)
+     * (in case of libraries like axios)
      */
     data?: Record<string, any> | string | null;
 

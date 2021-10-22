@@ -6,6 +6,7 @@ import GlobalConfig from './Support/GlobalConfig';
 import Factory from './Calliope/Factory/Factory';
 import ApiResponseHandler from './Services/ApiResponseHandler';
 import API from './Services/API';
+import EventEmitter from './Support/EventEmitter';
 
 export {
     Model,
@@ -15,7 +16,8 @@ export {
     GlobalConfig,
     Factory,
     ApiResponseHandler,
-    API
+    API,
+    EventEmitter
 };
 
 import type AttributeCaster from './Contracts/AttributeCaster';
@@ -28,8 +30,7 @@ import type { CastType } from './Calliope/Concerns/CastsAttributes';
 import type { QueryParams } from './Calliope/Concerns/BuildsQuery';
 import type FormatsQueryParameters from './Contracts/FormatsQueryParameters';
 import type { ApiResponse } from './Contracts/HandlesApiResponse';
-
-import type { MaybeArray, RequireSome } from './Support/type';
+import type { Events, Listener } from './Support/EventEmitter';
 
 export type {
     AttributeCaster,
@@ -42,10 +43,11 @@ export type {
     QueryParams,
     FormatsQueryParameters,
     ApiResponse,
-    MaybeArray,
-    RequireSome
+    Events,
+    Listener
 };
 
+export * from './Support/type';
 export * from './Support/array';
 export * from './Support/string';
 export * from './Support/function';

@@ -57,7 +57,10 @@
         "esm",
         "pagination",
         "config",
-        "in memory store"
+        "in memory store",
+        "events",
+        "event bus",
+        "event emitter"
     ],
     "scripts": {
         "test": "jest",

@@ -177,6 +177,14 @@ describe('HasRelations', () => {
                 .toBeInstanceOf(ModelCollection);
             expect(hasRelations.addRelation('team', team.getRawOriginal()).team).toBeInstanceOf(Team);
         });
+
+        it('should be able to accept an array of models', () => {
+            hasRelations.removeRelation('shifts');
+
+            hasRelations.addRelation('shifts', shifts.toArray());
+            expect(hasRelations.shifts).toBeInstanceOf(ModelCollection);
+            expect(hasRelations.shifts).toHaveLength(shifts.length);
+        });
     });
 
     describe('load()', () => {

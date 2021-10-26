@@ -660,6 +660,8 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @throws {Error}
      */
+    public pluck(properties: string): Collection<any>
+    public pluck<Keys extends Readonly<string[]> | string[]>(properties: Keys): Collection<Record<Keys[number], any>>
     public pluck(properties: MaybeArray<string>): Collection<any> {
         if (!this._allAreObjects()) {
             throw new TypeError('Every item needs to be an object to be able to access its properties');

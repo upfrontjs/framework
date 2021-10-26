@@ -85,13 +85,18 @@ export const types = [
     (): void => {},
     Function,
     Symbol,
+    Symbol(),
     null,
     undefined,
     // eslint-disable-next-line @typescript-eslint/no-extraneous-class
     class C {},
     BigInt,
     Map,
+    new Map,
     Set,
+    new Set,
     WeakSet,
-    Date
+    new WeakSet,
+    Date,
+    new Date
 ];

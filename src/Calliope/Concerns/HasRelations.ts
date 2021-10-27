@@ -154,7 +154,7 @@ export default class HasRelations extends CallsApi {
      */
     protected getRelationType(name: string): Relation {
         name = start(name, this.relationMethodPrefix);
-        const model = (this[name] as CallableFunction)() as Model & { _relationType: Relation };
+        const model = (this[name] as CallableFunction)() as Model & { _relationType?: Relation };
 
         if (!model._relationType) {
             throw new LogicException('\'' + name + '\' relation is not using any of the expected relation types.');

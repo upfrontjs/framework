@@ -1,6 +1,6 @@
 import Collection from '../../src/Support/Collection';
-import { advanceTo } from 'jest-date-mock';
 import LogicException from '../../src/Exceptions/LogicException';
+import { now } from '../setupTests';
 
 let collection: Collection<any>;
 
@@ -19,7 +19,7 @@ describe('Collection', () => {
         });
 
         it('should be able to be indexed by numbers', () => {
-            expect(new Collection([1, 2])[0]).toStrictEqual(1);
+            expect(new Collection([1, 2])[0]).toBe(1);
         });
 
         it('should be able to be instantiated without arguments', () => {
@@ -695,8 +695,6 @@ describe('Collection', () => {
 
         it('should dumps to the console', () => {
             collection.dump();
-            const now = new Date;
-            advanceTo(now);
 
             expect(console.groupCollapsed).toHaveBeenCalledWith(now.toLocaleTimeString() + ':');
             elements.forEach((elem, index) => {
@@ -707,8 +705,6 @@ describe('Collection', () => {
 
         it('should dump with a message', () => {
             collection.dump('test');
-            const now = new Date;
-            advanceTo(now);
 
             expect(console.groupCollapsed).toHaveBeenCalledWith(now.toLocaleTimeString() + ' (test):');
         });
@@ -1029,7 +1025,7 @@ describe('Collection', () => {
         });
 
         it('should take a function to execute or other types', () => {
-            expect(Collection.times(5, 1).first()).toStrictEqual(1);
+            expect(Collection.times(5, 1).first()).toBe(1);
             expect(Collection.times(5, (i: number) => ({ id: i })).first()).toStrictEqual({ id: 1 });
             // eslint-disable-next-line @typescript-eslint/no-extraneous-class
             const test = class Test {};
@@ -1287,7 +1283,7 @@ describe('Collection', () => {
                 collection[1] = lastElement;
 
                 expect(collection.lastIndexOf(lastElement, 3))
-                    .toStrictEqual(1);
+                    .toBe(1);
             });
         });
 
@@ -1385,12 +1381,12 @@ describe('Collection', () => {
         describe('push()', () => {
             it('should add element to the end of the collection', () => {
                 collection.push(6);
-                expect(collection.last()).toStrictEqual(6);
+                expect(collection.last()).toBe(6);
             });
 
             it('should add multiple elements', () => {
                 collection.push(6, 7);
-                expect(collection.last()).toStrictEqual(7);
+                expect(collection.last()).toBe(7);
             });
 
             it('should return the new length of the collection', () => {
@@ -1440,13 +1436,13 @@ describe('Collection', () => {
         describe('unshift()', () => {
             it('should add elements to the beginning of the collection', () => {
                 collection.unshift('value');
-                expect(collection.first()).toStrictEqual('value');
+                expect(collection.first()).toBe('value');
                 expect(collection).toHaveLength(elements.length + 1);
             });
 
             it('should add multiple elements to the beginning of the collection', () => {
                 collection.unshift('multiple', 'values');
-                expect(collection.first()).toStrictEqual('multiple');
+                expect(collection.first()).toBe('multiple');
                 expect(collection).toHaveLength(elements.length + 2);
             });
 
@@ -1501,7 +1497,7 @@ describe('Collection', () => {
 
         describe('findIndex()', () => {
             it('should find item\'s index based on the given closure', () => {
-                expect(collection.findIndex(elem => elem === elements[0])).toStrictEqual(0);
+                expect(collection.findIndex(elem => elem === elements[0])).toBe(0);
             });
         });
 

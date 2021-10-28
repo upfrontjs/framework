@@ -7,7 +7,7 @@ It offers the following customisations if you decide to extend the service.
 This is an optional property on the API class which should have the value of `Partial<RequestInit>`. This is merged into the request if defined.
 
 ### `initRequest()`
-This is an optional method that returns `Partial<RequestInit>`. It takes 3 parameters, in order the `url` - the endpoint to send the request to; the `method` - the http method; and optionally the `data` - which is an object literal or `FormData`.
+This is an optional method that returns `Partial<RequestInit> | Promise<Partial<RequestInit>>`. It takes 3 parameters, in order the `url` - the endpoint to send the request to; the `method` - the http method; and optionally the `data` - which is an object literal or `FormData`.
 
 ### `getParamEncodingOptions`
 When the API receives some data to send as a request, it utilises the [qs](https://github.com/ljharb/qs) package to encode the object into query parameters. This object is the configuration ([`qs.IStringifyOptions`](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/0b5bfba2994c91a099cd5bcfd984f6c4c39228e5/types/qs/index.d.ts#L20)) object for the package. The typings for this package is an optional dependency of upfront, so you may choose not to include it in your development.

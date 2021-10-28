@@ -1,5 +1,6 @@
 import { isEqual, cloneDeep } from 'lodash';
 import InvalidOffsetException from '../Exceptions/InvalidOffsetException';
+import type { MaybeArray } from './type';
 
 /**
  * Utility to paginate data.
@@ -110,7 +111,7 @@ export default class Paginator<T> implements Iterable<T> {
      *
      * @return {this}
      */
-    public constructor(elements?: T | T[], itemsPerPage = 10, wrapsAround = false) {
+    public constructor(elements?: MaybeArray<T>, itemsPerPage = 10, wrapsAround = false) {
         elements = elements !== undefined ? cloneDeep(elements) : [];
         this.wrapsAround = wrapsAround;
         this.internalItemsPerPage = itemsPerPage;

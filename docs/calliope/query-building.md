@@ -14,7 +14,7 @@ const morningWorkers = await User
 
 Which will generate request url similar to the described [Shape of the request](../services/api.md#shape-of-the-request) the [API](../services/api.md) service class generates.
 
-### Customising the generated query string
+## Customising the generated query string
 
 Given the above may not follow the desired namings for the parameters, you could customise the result by implementing the provided `FormatsQueryParameters` interface.
 

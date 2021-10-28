@@ -1,0 +1,66 @@
+name: 🐞 Bug Report
+description: File a bug/issue
+labels: [ bug ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please read the contribution docs before creating a bug report
+        👉 https://upfrontjs.com/prologue/contributing.html#issues-and-prs
+  - type: checkboxes
+    id: has-searched-issues
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists for the bug you encountered.
+      options:
+        - label: I have searched the existing issues
+          required: true
+  - type: textarea
+    id: current-behaviour
+    attributes:
+      label: Current Behavior
+      description: A concise description of what you're experiencing.
+    validations:
+      required: false
+  - type: textarea
+    id: expected behaviour
+    attributes:
+      label: Expected Behavior
+      description: A concise description of what you expected to happen.
+    validations:
+      required: false
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: |
+        examples:
+          - **OS**: Ubuntu 20.04
+          - **Node**: 13.14.0
+          - **npm**: 7.6.3
+      value: |
+        - OS:
+        - Node:
+        - npm:
+      render: markdown
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else?
+      description: |
+        Links? References? Anything that will give more context about the issue you are encountering!
+
+        Tip: You can attach images or log files by clicking this area to highlight it and then dragging files in.
+    validations:
+      required: false
+  required: false
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Please provide a link to a repo that can reproduce the problem you ran into, unless the issue is obvious and easy to understand without more context. This will make sure your problem can be addressed faster. If a report is vague (e.g. just a generic error message) and has no reproduction, it will receive a "need reproduction" label. If no reproduction is provided it might get closed.
+      placeholder: Reproduction
+    validations:
+      required: false

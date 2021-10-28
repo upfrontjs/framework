@@ -6,6 +6,7 @@ import { finish } from '../Support/string';
 import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
 import type { Method } from '../Calliope/Concerns/CallsApi';
 import type { ApiResponse } from '../Contracts/HandlesApiResponse';
+import type { MaybeArray } from '../Support/type';
 
 /**
  * The default ApiCaller class used by the package.
@@ -42,10 +43,10 @@ export default class API implements ApiCaller {
         url: string,
         method: Method,
         data?: FormData | Record<string, unknown>,
-        customHeaders?: Record<string, string[] | string>,
+        customHeaders?: Record<string, MaybeArray<string>>,
         queryParameters?: Record<string, unknown>
     ): Promise<ApiResponse> {
-        const config = this.initConfig(url, method, data, customHeaders, queryParameters);
+        const config = await this.initConfig(url, method, data, customHeaders, queryParameters);
 
         return fetch(config.url, config.requestInit).then(resp => {
             return Object.assign(resp, {
@@ -67,13 +68,13 @@ export default class API implements ApiCaller {
      *
      * @protected
      */
-    protected initConfig(
+    protected async initConfig(
         url: string,
         method: Method,
         data?: FormData | Record<string, unknown>,
-        customHeaders?: Record<string, string[] | string>,
+        customHeaders?: Record<string, MaybeArray<string>>,
         queryParameters?: Record<string, unknown>
-    ): { url: string; requestInit: RequestInit } {
+    ): Promise<{ url: string; requestInit: RequestInit }> {
         const initOptions: RequestInit = { method: method.toLowerCase() };
         const configHeaders = new Headers(new GlobalConfig().get('headers'));
         queryParameters = queryParameters ?? {};
@@ -85,7 +86,7 @@ export default class API implements ApiCaller {
 
         // merge in the user provided RequestInit object
         if (this.initRequest && this.initRequest instanceof Function) {
-            const initMethodValue = this.initRequest(url, method, data, queryParameters);
+            const initMethodValue = await this.initRequest(url, method, data, queryParameters);
 
             if (isObjectLiteral(initMethodValue)) {
                 Object.assign(initOptions, initMethodValue);

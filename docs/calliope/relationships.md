@@ -33,7 +33,7 @@ Then you may query as:
 import User from '@Models/User';
 
 const user = new User({ id: 1 });
-const shiftsWithColleagues = user.$shifts().with('colleagues').get(); // ModelCollection
+const shiftsWithColleagues = await user.$shifts().with('colleagues').get(); // ModelCollection
 
 await user.load('contract');
 user.contract; // Contract
@@ -304,6 +304,7 @@ import User from '@Models/User';
 user.for(new Team({ id: 1 })); // 'teams/1/users'
 user.for([new Team({ id: 1 }), new Contract({ id: 1 })]); // 'teams/1/contracts/1/users'
 user.for([new Team, new Contract({ id: 1 })]); // 'teams/contracts/1/users'
+user.for([Team, Contract]); // teams/contracts/users
 ```
 
 ### Overwrites

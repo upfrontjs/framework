@@ -9,8 +9,8 @@ import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 import { config } from '../../setupTests';
 import type Collection from '../../../src/Support/Collection';
 import type Model from '../../../src/Calliope/Model';
-import { advanceTo } from 'jest-date-mock';
 import { snake, finish } from '../../../src/Support/string';
+import type RequestMiddleware from '../../../src/Contracts/RequestMiddleware';
 
 let caller: User;
 
@@ -169,13 +169,9 @@ describe('CallsApi', () => {
         });
 
         it('should internally count the number of ongoing requests', async () => {
-            jest.useFakeTimers();
-            fetchMock.mockResponse(async () => new Promise( resolve =>
-                setTimeout(
-                    () => resolve(buildResponse((User.factory().create() as User).getRawOriginal())),
-                    100
-                )
-            ));
+            fetchMock.mockResponse(
+                async () => Promise.resolve(buildResponse((User.factory().create() as User).getRawOriginal()))
+            );
 
             // @ts-expect-error
             const promise1 = caller.call('get');
@@ -185,37 +181,25 @@ describe('CallsApi', () => {
             // @ts-expect-error
             expect(caller.requestCount).toBe(2);
 
-            jest.runAllTimers();
-
             await Promise.all([promise1, promise2]);
 
             // @ts-expect-error
             expect(caller.requestCount).toBe(0);
-
-            jest.useRealTimers();
         });
 
         it('should determine whether there is an ongoing request or not', async () => {
-            jest.useFakeTimers();
-            fetchMock.mockResponseOnce(async () => new Promise( resolve =>
-                setTimeout(
-                    () => resolve(buildResponse((User.factory().create() as User).getRawOriginal())),
-                    100
-                )
-            ));
+            fetchMock.mockResponseOnce(
+                async () => Promise.resolve(buildResponse((User.factory().create() as User).getRawOriginal()))
+            );
 
             // @ts-expect-error
             const promise = caller.call('get');
 
             expect(caller.loading).toBe(true);
 
-            jest.runAllTimers();
-
             await promise;
 
             expect(caller.loading).toBe(false);
-
-            jest.useRealTimers();
         });
 
         it('should send all the given data', async () => {
@@ -235,6 +219,107 @@ describe('CallsApi', () => {
                 falsy_key_3: false,
                 falsy_key_4: 0
                 /* eslint-enable @typescript-eslint/naming-convention */
+            });
+        });
+
+        describe('requestMiddleware', () => {
+            it('should run the given request middleware if set in the configuration', async () => {
+                fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+                const mockFn = jest.fn();
+                const requestMiddleware: RequestMiddleware = {
+                    handle: (url, method, data, customHeaders, queryParameters) => {
+                        mockFn(url, method, data, customHeaders, queryParameters);
+                        return {
+                            data: {
+                                ...data,
+                                newKey: 'new value'
+                            },
+                            customHeaders: {
+                                ...customHeaders,
+                                newHeader: 'new value'
+                            },
+                            queryParameters: {
+                                ...queryParameters,
+                                key: 'value'
+                            }
+                        };
+                    }
+                };
+
+                config.set('requestMiddleware', requestMiddleware);
+
+                // @ts-expect-error
+                await caller.whereKey(1).call(
+                    'post',
+                    { key: 'value' },
+                    { header: 'value' }
+                );
+
+                expect(mockFn).toHaveBeenCalled();
+                expect(mockFn).toHaveBeenCalledWith(
+                    finish(config.get('baseEndPoint')!, '/') + caller.getEndpoint(),
+                    'post',
+                    { key: 'value' },
+                    { header: 'value' },
+                    { wheres: [{ boolean: 'and', column: 'id', operator: '=', value: 1 }] }
+                );
+                expect(getLastRequest()!.headers.get('header')).toBe('value');
+                expect(getLastRequest()!.headers.get('newHeader')).toBe('new value');
+                expect(getLastRequest()!.body).toStrictEqual({
+                    key: 'value',
+                    newKey: 'new value'
+                });
+                expect(getLastRequest()!.url).toBe(
+                    finish(config.get('baseEndPoint')!, '/') + caller.getEndpoint()
+                    + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=1&wheres[][boolean]=and&key=value'
+                );
+
+                config.unset('requestMiddleware');
+            });
+
+            it('should only override the values if the returned values' +
+                'either undefined or object literals', async () => {
+                let requestMiddleware: RequestMiddleware = {
+                    handle: () => ({ customHeaders: { header: 'new value' } })
+                };
+                config.set('requestMiddleware', requestMiddleware);
+
+                fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+                // @ts-expect-error
+                await caller.call(
+                    'post',
+                    { key: 'value' },
+                    { header: 'value' }
+                );
+
+                let lastRequest = getLastRequest();
+                expect(lastRequest!.body).toStrictEqual({ key: 'value' });
+                expect(lastRequest!.headers.get('header')).toBe('new value');
+
+                requestMiddleware = {
+                    handle: () => ({
+                        queryParameters: { key: 'new value' },
+                        customHeaders: undefined
+                    })
+                };
+                config.set('requestMiddleware', requestMiddleware);
+
+                fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+                // @ts-expect-error
+                await caller.call(
+                    'get',
+                    { key: 'value' },
+                    { header: 'value' }
+                );
+
+                lastRequest = getLastRequest();
+                expect(lastRequest!.body).toBeUndefined();
+                expect(lastRequest!.url).toBe(
+                    finish(config.get('baseEndPoint')!, '/') + caller.getEndpoint() + '?key=value'
+                );
+                expect(lastRequest!.headers.has('header')).toBe(false);
+
+                config.unset('requestMiddleware');
             });
         });
     });
@@ -283,7 +368,6 @@ describe('CallsApi', () => {
         });
 
         it('should set _lastSyncedAt or _last_synced_at getter on the model or model collection', () => {
-            advanceTo(new Date);
             const userData = User.factory().raw() as Attributes;
 
             //@ts-expect-error
@@ -308,12 +392,12 @@ describe('CallsApi', () => {
             // @ts-expect-error
             caller.setLastSyncedAt();
             expect(caller._last_synced_at).toBeUndefined();
-            expect(caller._lastSyncedAt).not.toBeUndefined();
+            expect(caller._lastSyncedAt).toBeDefined();
             Object.defineProperty(caller, 'attributeCasing', { get: () => 'snake' });
 
             // @ts-expect-error
             caller.setLastSyncedAt();
-            expect(caller._last_synced_at).not.toBeUndefined();
+            expect(caller._last_synced_at).toBeDefined();
             // if you update the string casing on the fly, that's on you
             // and you might end up with _lastSyncedAt and _last_synced_at
         });
@@ -324,9 +408,6 @@ describe('CallsApi', () => {
         });
 
         it('should update the attribute with the new Date or the given value', () => {
-            // freeze time
-            advanceTo(new Date);
-
             // @ts-expect-error
             caller.setLastSyncedAt();
             expect(caller._lastSyncedAt).toStrictEqual(new Date);

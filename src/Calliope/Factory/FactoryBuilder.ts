@@ -9,6 +9,7 @@ import InvalidArgumentException from '../../Exceptions/InvalidArgumentException'
 import { isConstructableUserClass } from '../../Support/function';
 import { plural, singular } from '../../Support/string';
 import type Configuration from '../../Contracts/Configuration';
+import type { MaybeArray } from '../../Support/type';
 
 export default class FactoryBuilder<T extends Model> {
     /**
@@ -61,7 +62,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {this}
      */
-    public state(states: string[] | string): this {
+    public state(states: MaybeArray<string>): this {
         this.states = Array.isArray(states) ? states : [states];
 
         return this;

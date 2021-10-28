@@ -7,6 +7,7 @@ import type ModelCollection from '../ModelCollection';
 import { isObjectLiteral } from '../../Support/function';
 import Collection from '../../Support/Collection';
 import { camel, pascal, snake } from '../../Support/string';
+import type { MaybeArray } from '../../Support/type';
 
 export type Attributes = Record<string, unknown>;
 
@@ -220,7 +221,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
         ) {
             (this as unknown as HasRelations).addRelation(
                 key,
-                value as Attributes | Attributes[] | Collection<Attributes> | Model | ModelCollection<Model>
+                value as Collection<Attributes> | MaybeArray<Attributes> | Model | ModelCollection<Model>
             );
 
             return this;
@@ -239,7 +240,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {this}
      */
-    protected createDescriptor(keys: string[] | string): this {
+    protected createDescriptor(keys: MaybeArray<string>): this {
         keys = Array.isArray(keys) ? keys : [keys];
 
         keys.forEach(key => {
@@ -336,7 +337,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {this}
      */
-    public syncOriginal(keys?: string[] | string): this {
+    public syncOriginal(keys?: MaybeArray<string>): this {
         if (keys) {
             keys = Array.isArray(keys) ? keys : [keys];
 
@@ -561,7 +562,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {object}
      */
-    public only(attributes: string[] | string): Attributes {
+    public only(attributes: MaybeArray<string>): Attributes {
         attributes = Array.isArray(attributes) ? attributes : [attributes];
         const result: Attributes = {};
 
@@ -581,7 +582,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {object}
      */
-    public except(attributes: string[] | string): Attributes {
+    public except(attributes: MaybeArray<string>): Attributes {
         const result: Attributes = {};
 
         attributes = Array.isArray(attributes) ? attributes : [attributes];

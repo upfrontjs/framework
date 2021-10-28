@@ -124,25 +124,16 @@ describe('HasAttributes', () => {
             expect(boolean).toBe(true);
         });
 
-        it('should return the attributes first then the relations.', async () => {
+        it('should return the attributes first then the relations.', () => {
             hasAttributes.addRelation('shifts', [new Shift]);
 
-            let attributeTouchTimestamp = 0;
-            let relationTouchTimestamp = 0;
+            let relationWasLast = false;
             for (const [item] of hasAttributes) {
                 // eslint-disable-next-line jest/no-if
-                if (item === hasAttributes.test) {
-                    attributeTouchTimestamp = new Date().getTime();
-                } else {
-                    relationTouchTimestamp = new Date().getTime();
-                }
-                await new Promise(r => setTimeout(r, 1));
+                relationWasLast = item !== hasAttributes.test;
             }
 
-            expect(relationTouchTimestamp).not.toBe(0);
-            expect(attributeTouchTimestamp).not.toBe(0);
-
-            expect(relationTouchTimestamp).toBeGreaterThan(attributeTouchTimestamp);
+            expect(relationWasLast).toBe(true);
         });
 
         it('should return deep copies', () => {
@@ -269,7 +260,7 @@ describe('HasAttributes', () => {
             hasAttributes.setAttribute('shifts', Shift.factory().times(2).create());
 
             // @ts-expect-error
-            expect(hasAttributes.relations.shifts).not.toBeUndefined();
+            expect(hasAttributes.relations.shifts).toBeDefined();
         });
 
         it('should return the class', () => {
@@ -291,9 +282,9 @@ describe('HasAttributes', () => {
             const descriptor = Object.getOwnPropertyDescriptor(hasAttributes, 'test');
 
             // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(descriptor?.get).not.toBeUndefined();
+            expect(descriptor?.get).toBeDefined();
             // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(descriptor?.set).not.toBeUndefined();
+            expect(descriptor?.set).toBeDefined();
         });
 
         it('should create accessors and getters for multiple keys', () => {
@@ -305,9 +296,9 @@ describe('HasAttributes', () => {
                 const descriptor = Object.getOwnPropertyDescriptor(hasAttributes, key);
 
                 // eslint-disable-next-line @typescript-eslint/unbound-method
-                expect(descriptor?.get).not.toBeUndefined();
+                expect(descriptor?.get).toBeDefined();
                 // eslint-disable-next-line @typescript-eslint/unbound-method
-                expect(descriptor?.set).not.toBeUndefined();
+                expect(descriptor?.set).toBeDefined();
             });
         });
     });
@@ -315,7 +306,7 @@ describe('HasAttributes', () => {
     describe('deleteAttribute()', () => {
         it('should delete the attribute and class property if defined', () => {
             expect(hasAttributes.test).toBe(1);
-            expect(Object.getOwnPropertyDescriptor(hasAttributes, 'test')).not.toBeUndefined();
+            expect(Object.getOwnPropertyDescriptor(hasAttributes, 'test')).toBeDefined();
 
             hasAttributes.deleteAttribute('test');
 
@@ -327,23 +318,23 @@ describe('HasAttributes', () => {
             hasAttributes.addRelation('shifts', new Shift);
 
             expect(hasAttributes.relationLoaded('shifts')).toBe(true);
-            expect(Object.getOwnPropertyDescriptor(hasAttributes, 'shifts')).not.toBeUndefined();
+            expect(Object.getOwnPropertyDescriptor(hasAttributes, 'shifts')).toBeDefined();
             expect(hasAttributes.deleteAttribute('shifts').relationLoaded('shifts')).toBe(false);
             expect(Object.getOwnPropertyDescriptor(hasAttributes, 'shifts')).toBeUndefined();
         });
 
         it('should not remove methods from the model', () => {
             hasAttributes.myFunc = () => true;
-            expect(hasAttributes.myFunc).not.toBeUndefined();
+            expect(hasAttributes.myFunc).toBeDefined();
             hasAttributes.deleteAttribute('myFunc');
-            expect(hasAttributes.myFunc).not.toBeUndefined();
+            expect(hasAttributes.myFunc).toBeDefined();
         });
 
         it('should not remove the original value', () => {
             hasAttributes.deleteAttribute('test');
 
             expect(hasAttributes.test).toBeUndefined();
-            expect(hasAttributes.getOriginal('test')).not.toBeUndefined();
+            expect(hasAttributes.getOriginal('test')).toBeDefined();
         });
     });
 

@@ -1,6 +1,7 @@
 import Collection from '../../src/Support/Collection';
 import ModelCollection from '../../src/Calliope/ModelCollection';
 import User from '../mock/Models/User';
+import { types } from '../test-helpers';
 
 let collection: ModelCollection<User>;
 const incompatibleElementsError = new TypeError(ModelCollection.name + ' can only handle Model values.');
@@ -35,9 +36,8 @@ describe('ModelCollection', () => {
         it('should assert that it\' a model collection', () => {
             expect(ModelCollection.isModelCollection(elements)).toBe(false);
             expect(ModelCollection.isModelCollection(new Collection(elements))).toBe(false);
-            const baseLanguageTypes = [1, 'string', null, undefined, NaN, true, () => {}, {}, []];
 
-            baseLanguageTypes.forEach(type => {
+            types.forEach(type => {
                 expect(ModelCollection.isModelCollection(type)).toBe(false);
             });
 

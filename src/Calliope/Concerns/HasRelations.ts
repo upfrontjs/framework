@@ -8,6 +8,7 @@ import Collection from '../../Support/Collection';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import { finish, plural, snake, start } from '../../Support/string';
 import { cloneDeep } from 'lodash';
+import type { MaybeArray } from '../../Support/type';
 
 type Relation = 'belongsTo' | 'belongsToMany' | 'hasMany' | 'hasOne' | 'morphMany' | 'morphOne' | 'morphTo';
 
@@ -40,7 +41,7 @@ export default class HasRelations extends CallsApi {
      *
      * @return {Promise<this>}
      */
-    public async load(relations: string[] | string, forceReload = false): Promise<this> {
+    public async load(relations: MaybeArray<string>, forceReload = false): Promise<this> {
         if (!Array.isArray(relations)) {
             relations = [relations];
         }
@@ -153,7 +154,7 @@ export default class HasRelations extends CallsApi {
      */
     protected getRelationType(name: string): Relation {
         name = start(name, this.relationMethodPrefix);
-        const model = (this[name] as CallableFunction)() as Model & { _relationType: Relation };
+        const model = (this[name] as CallableFunction)() as Model & { _relationType?: Relation };
 
         if (!model._relationType) {
             throw new LogicException('\'' + name + '\' relation is not using any of the expected relation types.');
@@ -173,7 +174,11 @@ export default class HasRelations extends CallsApi {
      */
     public addRelation(
         name: string,
-        value: Attributes | Attributes[] | Collection<Attributes> | Model | ModelCollection<Model>
+        value: Collection<Attributes>
+        | Collection<Model>
+        | MaybeArray<Attributes>
+        | MaybeArray<Model>
+        | ModelCollection<Model>
     ): this {
         name = this.removeRelationPrefix(name);
 
@@ -185,12 +190,27 @@ export default class HasRelations extends CallsApi {
 
         const relationType = this.getRelationType(name);
         const isSingularRelationType = ['belongsTo', 'hasOne', 'morphOne'].includes(relationType);
+        const isModelArray = Array.isArray(value) && value.every(entry => entry instanceof HasRelations);
+        /**
+         * Callback acting as user guard for collection of models.
+         * ModelCollection is a subclass of Collection.
+         */
+        const isCollectionWithModels = (val: any): val is Collection<Model> =>  Collection.isCollection(val)
+            && val.every(entry => entry instanceof HasRelations);
 
-        if (value instanceof HasRelations || ModelCollection.isModelCollection(value)) {
-            if (isSingularRelationType && ModelCollection.isModelCollection(value)) {
+        if (value instanceof HasRelations || isCollectionWithModels(value) || isModelArray) {
+            if (isSingularRelationType && (isCollectionWithModels(value) || isModelArray)) {
                 throw new InvalidArgumentException(
                     '\'' + name + '\' is a singular relation, received type: \'' + value.constructor.name + '\'.'
                 );
+            }
+
+            if (isCollectionWithModels(value) && !ModelCollection.isModelCollection(value)) {
+                value = new ModelCollection(value.toArray());
+            }
+
+            if (isModelArray) {
+                value = new ModelCollection(value as Model[]);
             }
 
             if (value instanceof HasRelations) {
@@ -204,7 +224,7 @@ export default class HasRelations extends CallsApi {
                 }
             }
 
-            this.relations[name] = value;
+            this.relations[name] = value as Model | ModelCollection<Model>;
             this.createDescriptor(name);
 
             return this;
@@ -330,13 +350,17 @@ export default class HasRelations extends CallsApi {
      *
      * @return this
      */
-    public for(models: Model | Model[]): this {
+    public for(models: MaybeArray<Model | (new () => Model)>): this {
         models = Array.isArray(models) ? models : [models];
 
         this.resetEndpoint();
         let endpoint = '';
 
-        models.forEach((model: Model) => {
+        models.forEach((model) => {
+            if (!(model instanceof CallsApi)) {
+                model = new model;
+            }
+
             endpoint += model.getEndpoint() + '/' + (model.getKey() ? String(model.getKey()) + '/' : '');
         });
 

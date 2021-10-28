@@ -1,3 +1,5 @@
+import type { MaybeArray } from './type';
+
 /**
  * Ensure the given value is an array.
  *
@@ -5,7 +7,7 @@
  *
  * @return {array};
  */
-export function wrap<T>(value?: T | T[]): T[] {
+export function wrap<T>(value?: MaybeArray<T>): T[] {
     if (!arguments.length) {
         return [];
     }

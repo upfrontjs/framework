@@ -60,14 +60,14 @@ describe('HasRelations', () => {
             expect(hasRelations.relationLoaded('team')).toBe(true);
             expect(hasRelations.removeRelation('team').relationLoaded('team')).toBe(false);
             // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(hasRelations.$team).not.toBeUndefined();
+            expect(hasRelations.$team).toBeDefined();
         });
 
         it('should be able to remove with the defined prefix too', () => {
             expect(hasRelations.relationLoaded('$team')).toBe(true);
             expect(hasRelations.removeRelation('$team').relationLoaded('team')).toBe(false);
             // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(hasRelations.$team).not.toBeUndefined();
+            expect(hasRelations.$team).toBeDefined();
         });
     });
 
@@ -168,7 +168,7 @@ describe('HasRelations', () => {
             expect(hasRelations.addRelation('shifts', shifts).shifts).toBeInstanceOf(ModelCollection);
         });
 
-        it('should be able to add a relation even if just the attributes or array of attributes are given', () => {
+        it('should be able to accept attributes or array of attributes', () => {
             const team = hasRelations.team as Team;
             hasRelations.removeRelation('team');
 
@@ -176,6 +176,39 @@ describe('HasRelations', () => {
             expect(hasRelations.addRelation('shifts', Shift.factory().times(1).raw()).shifts)
                 .toBeInstanceOf(ModelCollection);
             expect(hasRelations.addRelation('team', team.getRawOriginal()).team).toBeInstanceOf(Team);
+        });
+
+        it('should be able to accept a collection of attributes', () => {
+            hasRelations.removeRelation('shifts');
+
+            expect(hasRelations.relationLoaded('shifts')).toBe(false);
+            expect(hasRelations.addRelation('shifts', new Collection(Shift.factory().times(1).rawOne())).shifts)
+                .toBeInstanceOf(ModelCollection);
+            expect(hasRelations.relationLoaded('shifts')).toBe(true);
+        });
+
+        it('should be able to accept a model or array of models', () => {
+            hasRelations.removeRelation('shifts');
+
+            hasRelations.addRelation('shifts', shifts.toArray());
+            expect(hasRelations.shifts).toBeInstanceOf(ModelCollection);
+            expect(hasRelations.shifts).toHaveLength(shifts.length);
+        });
+
+        it('should be able to accept a collection of models', () => {
+            hasRelations.removeRelation('shifts');
+
+            hasRelations.addRelation('shifts', new Collection(shifts.toArray()));
+            expect(hasRelations.shifts).toBeInstanceOf(ModelCollection);
+            expect(hasRelations.shifts).toHaveLength(shifts.length);
+        });
+
+        it('should be able to accept a model collection of models', () => {
+            hasRelations.removeRelation('shifts');
+
+            hasRelations.addRelation('shifts', shifts);
+            expect(hasRelations.shifts).toBeInstanceOf(ModelCollection);
+            expect(hasRelations.shifts).toHaveLength(shifts.length);
         });
     });
 
@@ -366,7 +399,7 @@ describe('HasRelations', () => {
 
         });
 
-        it('should omit the key if undefined from the endpoint', () => {
+        it('should omit the key from the endpoint if undefined', () => {
             const contract = Contract.factory().make() as Contract;
 
             expect(hasRelations.for([hasRelations.team, contract]).getEndpoint())
@@ -376,6 +409,10 @@ describe('HasRelations', () => {
                     + '/' + String(contract.getEndpoint())
                     + '/users'
                 );
+        });
+
+        it('should accept model constructor(s) as argument', () => {
+            expect(hasRelations.for([Team, Contract]).getEndpoint()).toBe('teams/contracts/users');
         });
     });
 

@@ -65,7 +65,7 @@ describe('BuildsQuery', () => {
             }
 
             const formatter = new FormatterClass();
-            expect(formatter.compiledParams().my).not.toBeUndefined();
+            expect(formatter.compiledParams().my).toBeDefined();
             expect(formatter.compiledParams().my).toBe('data');
         });
     });
@@ -940,25 +940,25 @@ describe('BuildsQuery', () => {
 
     describe('offset()', () => {
         it('should set the offset of the required records', () => {
-            expect(builder.offset(10).compiledParams().offset).toStrictEqual(10);
+            expect(builder.offset(10).compiledParams().offset).toBe(10);
         });
 
         it('should be able to be called statically', () => {
             builder = BuildsQuery.offset(10);
             // @ts-expect-error
-            expect(builder.compileQueryParameters().offset).toStrictEqual(10);
+            expect(builder.compileQueryParameters().offset).toBe(10);
         });
     });
 
     describe('skip()', () => {
         it('should set the offset of the required records', () => {
-            expect(builder.skip(10).compiledParams().offset).toStrictEqual(10);
+            expect(builder.skip(10).compiledParams().offset).toBe(10);
         });
 
         it('should be able to be called statically', () => {
             builder = BuildsQuery.skip(10);
             // @ts-expect-error
-            expect(builder.compileQueryParameters().offset).toStrictEqual(10);
+            expect(builder.compileQueryParameters().offset).toBe(10);
         });
     });
 });

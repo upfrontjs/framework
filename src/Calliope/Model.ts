@@ -5,6 +5,7 @@ import type { Attributes } from './Concerns/HasAttributes';
 import ModelCollection from './ModelCollection';
 import LogicException from '../Exceptions/LogicException';
 import { finish, isUuid } from '../Support/string';
+import type { MaybeArray } from '../Support/type';
 
 export default class Model extends SoftDeletes implements HasFactory {
     /**
@@ -61,7 +62,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @param {string[]|string} except
      */
-    public replicate(except?: string[] | string): Model {
+    public replicate(except?: MaybeArray<string>): this {
         let excluded = [
             this.getKeyName(),
             this.getCreatedAtColumn(),
@@ -70,15 +71,14 @@ export default class Model extends SoftDeletes implements HasFactory {
         ];
 
         if (except) {
+            // make sure we only have unique values
             excluded = [...new Set([...excluded, ...Array.isArray(except) ? except : [except]])];
         }
 
         const attributes = { ...this.getRawAttributes(), ...this.getRelations() };
-        Object.keys(attributes)
-            .filter(key => excluded.includes(key))
-            .forEach(key => delete attributes[key]);
+        excluded.forEach(key => delete attributes[key]);
 
-        return new (this.constructor as typeof Model)(attributes);
+        return new (this.constructor as new (attributes?: Attributes) => this)(attributes);
     }
 
     /**
@@ -195,10 +195,10 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return
      */
-    public async find(id: number | string): Promise<Model> {
+    public async find(id: number | string): Promise<this> {
         return await this
             .setEndpoint(finish(this.getEndpoint(), '/') + String(id))
-            .get() as Model;
+            .get() as this;
     }
 
     /**

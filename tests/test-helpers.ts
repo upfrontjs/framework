@@ -11,17 +11,8 @@ export const buildResponse = (response?: any[] | Record<string, any> | string): 
         body: JSON.stringify({ data: 'value' })
     };
 
-    response = cloneDeep(response);
-
-    if (response && typeof response === 'string') {
-        let value = response;
-
-        try {
-            value = JSON.parse(value);
-            // eslint-disable-next-line no-empty
-        } catch (e: unknown) {}
-
-        responseObject.body = JSON.stringify(value);
+    if (typeof response === 'string') {
+        responseObject.body = response;
     } else if (Array.isArray(response)) {
         responseObject.body = JSON.stringify(response);
     } else if (Collection.isCollection(response)) {
@@ -30,8 +21,10 @@ export const buildResponse = (response?: any[] | Record<string, any> | string): 
         if (!response.body) {
             responseObject.body = JSON.stringify(response);
         } else {
-            response.body = JSON.stringify(response.body);
-            responseObject = Object.assign(responseObject, response);
+            responseObject = Object.assign(responseObject, cloneDeep(response));
+            if (isObjectLiteral(responseObject.body)) {
+                responseObject.body = JSON.stringify(responseObject.body);
+            }
         }
     }
 
@@ -80,25 +73,30 @@ export const getLastRequest = (): RequestDescriptor | undefined => {
 
 export const types = [
     1,
+    Number,
     true,
+    Boolean,
     'val',
+    String,
     [],
+    Array,
     {},
+    Object,
     (): void => {},
+    Function,
     Symbol,
+    Symbol(),
     null,
     undefined,
     // eslint-disable-next-line @typescript-eslint/no-extraneous-class
     class C {},
-    String,
-    Object,
     BigInt,
-    Function,
-    Boolean,
-    Number,
-    Array,
     Map,
+    new Map,
     Set,
+    new Set,
     WeakSet,
-    Date
+    new WeakSet,
+    Date,
+    new Date
 ];

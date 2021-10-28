@@ -12,6 +12,7 @@ module.exports = {
                 'attributes', // guarding and casting can also go under attributes
                 'global-config',
                 'exception',
+                'events',
                 'services',
                 'helpers',
                 'collection',

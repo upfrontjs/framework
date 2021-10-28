@@ -37,7 +37,7 @@ The default value is `['headers']` as no subtype of `HeadersInit` is of type `fu
 The class constructor takes a [configuration](#configuration) object which gets deep merged into the existing configuration if any.
 
 ::: warning
-To avoid triggering circular analysis when using the [set](#set) method, when using the constructor you should set an initial type.
+To avoid triggering circular analysis in typescript when using the [set](#set) method, when using the constructor you should set an initial type.
 ```ts
 import { GlobalConfig } from '@upfrontjs/framework';
 import type { Configuration } from '@upfrontjs/framework';
@@ -146,3 +146,16 @@ This is a `string` that the [model's endpoint](../calliope/api-calls.md#endpoint
 #### randomDataGenerator
 
 This value if set, it will be available for consuming in your [Factories](../testing.md#factories) under the member key [random](../testing.md#random).
+
+#### requestMiddleware
+
+The requestMiddleware is an object that implements the `RequestMiddleware` interface. This means it has a `handle` method which takes the following arguments:
+ - `url` (the target url of the request)
+ - `method` (the request method used)
+ - `data` (an optional form data or object that to be sent to the server)
+ - `customHeaders` (an optional object that includes the custom headers passed to the [call](../calliope/api-calls.md#call) method)
+ - `queryParameters` (an optional object that may include the result of the [query builder](../calliope/query-building.md))
+ 
+This `handle` method should return an object that may have the following properties `data`, `customHeaders`, `queryParameters`. These properties should be matching the initial types from the argument or be the value `undefined` (to remove the value). The method may or may not return a [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+
+This middleware allows tapping into the request for transforming it before it's passed along to the [ApiCaller](../services/readme.md#apicaller).

@@ -1,7 +1,6 @@
 import User from '../../mock/Models/User';
 import fetchMock from 'jest-fetch-mock';
 import { buildResponse, getLastRequest } from '../../test-helpers';
-import { advanceBy } from 'jest-date-mock';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import { config } from '../../setupTests';
 import { start, finish } from '../../../src';
@@ -55,7 +54,7 @@ describe('HasTimestamps', () => {
             const createdAt = hasTimestamps.getAttribute(hasTimestamps.getCreatedAtColumn());
             const updatedAt = hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtColumn());
 
-            advanceBy(1000);
+            jest.advanceTimersByTime(1000);
             await hasTimestamps.touch();
 
             expect(hasTimestamps.getAttribute(hasTimestamps.getCreatedAtColumn())).toBe(createdAt);
@@ -121,7 +120,7 @@ describe('HasTimestamps', () => {
             const createdAt = hasTimestamps.getAttribute(hasTimestamps.getCreatedAtColumn());
             const updatedAt = hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtColumn());
 
-            advanceBy(1000);
+            jest.advanceTimersByTime(1000);
             await hasTimestamps.freshTimestamps();
 
             expect(hasTimestamps.getAttribute(hasTimestamps.getCreatedAtColumn())).not.toBe(createdAt);

@@ -2,16 +2,17 @@ import API from '../../src/Services/API';
 import { config as globalConfig } from '../setupTests';
 import { finish } from '../../src';
 import InvalidArgumentException from '../../src/Exceptions/InvalidArgumentException';
+import type { MaybeArray } from '../../src/Support/type';
 
 const url = finish(String(globalConfig.get('baseEndPoint')), '/') + 'users';
 
 class APITester extends API {
-    public getConfig(
+    public async getConfig(
         endpoint: string,
         method: 'delete' | 'get' | 'patch' | 'post' | 'put',
         data?: FormData | Record<string, unknown>,
-        customHeaders?: Record<string, string[] | string>
-    ): { url: string; requestInit: RequestInit } {
+        customHeaders?: Record<string, MaybeArray<string>>
+    ): Promise<{ url: string; requestInit: RequestInit }> {
         return this.initConfig(endpoint, method, data, customHeaders);
     }
 }
@@ -24,8 +25,8 @@ describe('API', () => {
     });
 
     describe('initConfig()', () => {
-        it('should encode get parameters correctly', () => {
-            const config = api.getConfig(url, 'get', {
+        it('should encode get parameters correctly', async () => {
+            const config = await api.getConfig(url, 'get', {
                 nested: {
                     objects: [
                         { id: 1 },
@@ -42,31 +43,31 @@ describe('API', () => {
             );
         });
 
-        it('should merge in config into the RequestInit from requestOptions', () => {
+        it('should merge in config into the RequestInit from requestOptions', async () => {
             Object.defineProperty(api, 'requestOptions', {
                 value: {
                     body: 'merged value'
                 }
             });
 
-            const config = api.getConfig(url, 'post').requestInit;
+            const config = (await api.getConfig(url, 'post')).requestInit;
 
             expect(config.body).toBe('merged value');
         });
 
-        it('should override requestOptions.body if data is given', () => {
+        it('should override requestOptions.body if data is given', async () => {
             Object.defineProperty(api, 'requestOptions', {
                 value: {
                     body: 'merged value'
                 }
             });
 
-            const config = api.getConfig(url, 'post', { someAttribute: 'original value' }).requestInit;
+            const config = (await api.getConfig(url, 'post', { someAttribute: 'original value' })).requestInit;
 
             expect(config.body).toStrictEqual(JSON.stringify({ someAttribute: 'original value' }));
         });
 
-        it('should merge the initRequest method return value if defined', () => {
+        it('should merge the initRequest method return value if defined', async () => {
             Object.defineProperty(api, 'initRequest', {
                 value: {
                     body: 'merged value'
@@ -74,48 +75,56 @@ describe('API', () => {
                 writable: true
             });
 
-            let config = api.getConfig(url, 'post').requestInit;
+            let config = (await api.getConfig(url, 'post')).requestInit;
 
+            // only merge in if initRequest it is a function and it returns an object
             expect(config.body).toBeUndefined();
 
             api.initRequest = () => ({ body: 'merged value' });
 
-            config = api.getConfig(url, 'post').requestInit;
+            config = (await api.getConfig(url, 'post')).requestInit;
 
-            // only merge if initRequest it is a function and it returns an object
             expect(config.body).toBe('merged value');
         });
 
-        it('should parse out the headers if previously merged in', () => {
+        it('should merge the initRequest method return value if defined as async', async () => {
+            api.initRequest = async () => Promise.resolve({ body: 'merged value' });
+
+            const config = (await api.getConfig(url, 'post')).requestInit;
+
+            expect(config.body).toBe('merged value');
+        });
+
+        it('should parse out the headers if previously merged in', async () => {
             Object.defineProperty(api, 'requestOptions', {
                 value: {
                     headers: { custom: ['header'] }
                 }
             });
 
-            const config = api.getConfig(url, 'post').requestInit;
+            const config = (await api.getConfig(url, 'post')).requestInit;
 
             // @ts-expect-error
             expect(config.headers.has('custom')).toBe(true);
         });
 
-        it('should remove the merged in body if it is a get method', () => {
+        it('should remove the merged in body if it is a get method', async () => {
             Object.defineProperty(api, 'requestOptions', {
                 value: {
                     body: 'value'
                 }
             });
 
-            const config = api.getConfig(url, 'get').requestInit;
+            const config = (await api.getConfig(url, 'get')).requestInit;
 
             expect(config.body).toBeUndefined();
         });
 
-        it('should prepare FormData', () => {
+        it('should prepare FormData', async () => {
             const form = new FormData();
             form.append('key', 'value');
 
-            const config = api.getConfig(url, 'post', form).requestInit;
+            const config = (await api.getConfig(url, 'post', form)).requestInit;
 
             expect(config.body).toBeInstanceOf(FormData);
             expect((config.body as FormData).get('key')).toBe('value');
@@ -123,41 +132,42 @@ describe('API', () => {
             expect(config.headers.get('Content-Type')).toBe('multipart/form-data');
         });
 
-        it('should stringify the given data', () => {
+        it('should stringify the given data', async () => {
             const data = { custom: 'value' };
-            const config = api.getConfig(url, 'post', data).requestInit;
+            const config = (await api.getConfig(url, 'post', data)).requestInit;
 
             expect(config.body).toBe(JSON.stringify(data));
             // @ts-expect-error
             expect(config.headers.get('Content-Type')).toBe('application/json; charset="utf-8"');
         });
 
-        it('should process the given custom headers', () => {
-            const header: Record<string, string[] | string> = { custom: 'header' };
-            const config = api.getConfig(url, 'post', undefined, header).requestInit;
+        it('should process the given custom headers', async () => {
+            const header: Record<string, MaybeArray<string>> = { custom: 'header' };
+            const config = (await api.getConfig(url, 'post', undefined, header)).requestInit;
 
             // @ts-expect-error
             expect(config.headers.get('custom')).toBe('header');
 
             header.custom = ['multiple', 'values'];
 
-            const newConfig = api.getConfig(url, 'post', undefined, header).requestInit;
+            const newConfig = (await api.getConfig(url, 'post', undefined, header)).requestInit;
 
             // @ts-expect-error
             expect(newConfig.headers.get('custom')).toBe(header.custom.join(', '));
         });
 
-        it('should throw an error for value not of string type', () => {
+        it('should throw an error for value not of string type', async () => {
             const header: Record<string, null[] | null> = { custom: null };
             // @ts-expect-error
-            expect(() => api.getConfig(url, 'post', undefined, header))
+            await expect(async () => api.getConfig(url, 'post', undefined, header))
+                .rejects
                 .toThrow(new InvalidArgumentException('For \'custom\' expected type string, got: object'));
         });
 
-        it('should merge in headers from the config if set', () => {
+        it('should merge in headers from the config if set', async () => {
             globalConfig.set('headers', { 'custom-header': 'value' });
 
-            const initConfig = api.getConfig(url, 'post').requestInit;
+            const initConfig = (await api.getConfig(url, 'post')).requestInit;
 
             // @ts-expect-error
             expect(initConfig.headers.has('custom-header')).toBe(true);
@@ -168,19 +178,19 @@ describe('API', () => {
             globalConfig.unset('headers');
         });
 
-        it('should set the Accept header if not already set', () => {
+        it('should set the Accept header if not already set', async () => {
             /* eslint-disable @typescript-eslint/naming-convention */
-            let config = api.getConfig(url, 'post', {}).requestInit;
+            let config = (await api.getConfig(url, 'post', {})).requestInit;
 
             // @ts-expect-error
             expect(config.headers.get('Accept')).toBe('application/json');
 
-            config = api.getConfig(url, 'post', {}, { 'Accept': 'myArgumentValue' }).requestInit;
+            config = (await api.getConfig(url, 'post', {}, { 'Accept': 'myArgumentValue' })).requestInit;
             // @ts-expect-error
             expect(config.headers.get('Accept')).toBe('myArgumentValue');
 
             globalConfig.set('headers', { 'Accept': 'myGlobalValue' });
-            config = api.getConfig(url, 'post', {}).requestInit;
+            config = (await api.getConfig(url, 'post', {})).requestInit;
             // @ts-expect-error
             expect(config.headers.get('Accept')).toBe('myGlobalValue');
             globalConfig.unset('headers');
@@ -191,7 +201,7 @@ describe('API', () => {
                 } as Partial<RequestInit>,
                 configurable: true
             });
-            config = api.getConfig(url, 'post', {}).requestInit;
+            config = (await api.getConfig(url, 'post', {})).requestInit;
             // @ts-expect-error
             expect(config.headers.get('Accept')).toBe('myRequestOptionValue');
             delete api.requestOptions;
@@ -210,7 +220,7 @@ describe('API', () => {
                 },
                 configurable: true
             });
-            config = api.getConfig(url, 'post', {}).requestInit;
+            config = (await api.getConfig(url, 'post', {})).requestInit;
             // @ts-expect-error
             expect(config.headers.get('Accept')).toBe('myInitRequestValue');
             delete api.initRequest;
@@ -218,14 +228,14 @@ describe('API', () => {
             /* eslint-enable @typescript-eslint/naming-convention */
         });
 
-        it('should set the method to GET if it got removed', () => {
+        it('should set the method to GET if it got removed', async () => {
             Object.defineProperty(api, 'requestOptions', {
                 value: {
                     method: undefined
                 } as Partial<RequestInit>,
                 configurable: true
             });
-            let config = api.getConfig(url, 'get', {}).requestInit;
+            let config = (await api.getConfig(url, 'get', {})).requestInit;
 
             expect(config.method).toBe('get');
             delete api.requestOptions;
@@ -244,7 +254,7 @@ describe('API', () => {
                 },
                 configurable: true
             });
-            config = api.getConfig(url, 'post', {}).requestInit;
+            config = (await api.getConfig(url, 'post', {})).requestInit;
             expect(config.method).toBe('get');
             delete api.initRequest;
         });

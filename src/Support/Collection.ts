@@ -2,10 +2,12 @@ import { isEqual, uniq } from 'lodash';
 import type Arrayable from '../Contracts/Arrayable';
 import type Jsonable from '../Contracts/Jsonable';
 import LogicException from '../Exceptions/LogicException';
+import { isObjectLiteral } from './function';
+import type { MaybeArray } from './type';
 
-export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, ArrayLike<T> {
+export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T>, ArrayLike<T> {
     /**
-     * Allow indexing by number.
+     * Collection item.
      */
     [index: number]: T;
 
@@ -13,9 +15,8 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      * The constructor.
      *
      * @param {any=} items
-     *
      */
-    public constructor(items?: T | T[]) {
+    public constructor(items?: MaybeArray<T>) {
         if (!items) {
             return this;
         }
@@ -62,7 +63,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    protected _newInstance(items?: T | T[]): this {
+    protected _newInstance(items?: MaybeArray<T>): this {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         return new (this.constructor as any)(items);
     }
@@ -367,7 +368,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    public union(...iterables: (Collection<T> | T | T[])[]): this {
+    public union(...iterables: (Collection<T> | MaybeArray<T>)[]): this {
         const targetCollection = this._newInstance(this.toArray());
 
         Array.from(iterables).forEach(iterable => {
@@ -389,7 +390,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    public diff(values: T | T[]): this {
+    public diff(values: MaybeArray<T>): this {
         const argCollection = Collection.isCollection(values)
             ? values
             : new Collection(Array.isArray(values) ? values : [values]);
@@ -410,7 +411,7 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @return {this}
      */
-    public intersect(values: T | T[]): this {
+    public intersect(values: MaybeArray<T>): this {
         const argCollection = Collection.isCollection(values)
             ? values
             : new Collection(Array.isArray(values) ? values : [values]);
@@ -659,7 +660,9 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      *
      * @throws {Error}
      */
-    public pluck(properties: string[] | string): Collection<any> {
+    public pluck(properties: string): Collection<any>
+    public pluck<Keys extends Readonly<string[]> | string[]>(properties: Keys): Collection<Record<Keys[number], any>>
+    public pluck(properties: MaybeArray<string>): Collection<any> {
         if (!this._allAreObjects()) {
             throw new TypeError('Every item needs to be an object to be able to access its properties');
         }
@@ -1170,6 +1173,6 @@ export default class Collection<T> implements Arrayable, Jsonable, Iterable<T>, 
      * @protected
      */
     protected _allAreObjects(): this is Collection<Record<string, any>> {
-        return this.every(item => typeof item === 'object' && item !== null);
+        return this.every(isObjectLiteral);
     }
 }

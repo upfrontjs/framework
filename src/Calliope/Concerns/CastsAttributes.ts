@@ -192,15 +192,15 @@ export default class CastsAttributes {
     protected getDateTimeLibInstance(value: unknown): unknown {
         const dateTimeLib = new GlobalConfig().get('datetime', Date);
 
-        // class and function are both of type Function
-        if (!dateTimeLib || !(dateTimeLib instanceof Function)) {
+        // class and function are both of type function
+        if (typeof dateTimeLib !== 'function') {
             throw new InvalidArgumentException(
-                '\'datetime\' is not of expected type or has not been set in the ' + GlobalConfig.name + '.'
+                '\'datetime\' is not of expected type set in the ' + GlobalConfig.name + '.'
             );
         }
 
         if (Object.is(Date, dateTimeLib)) {
-            return new Date(value as number | string);
+            return new Date(value as Date | number | string);
         }
 
         if (isConstructableUserClass(dateTimeLib)) {

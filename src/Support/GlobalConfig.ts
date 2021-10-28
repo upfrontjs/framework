@@ -14,7 +14,7 @@ export default class GlobalConfig<T extends Configuration> {
     protected static configuration: Configuration & Record<PropertyKey, any> = {};
 
     /**
-     * Keys marked for not be deeply cloned when setting and returning.
+     * Keys marked for not be deeply cloned when setting and returning values.
      */
     public static usedAsReference: (PropertyKey | keyof Configuration)[] = ['headers'];
 

@@ -11,6 +11,7 @@ import Model from '../../../src/Calliope/Model';
 import Shift from '../../mock/Models/Shift';
 import Contract from '../../mock/Models/Contract';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
+import { now } from '../../setupTests';
 
 class FakeFactory extends Factory<User> {
     // @ts-expect-error
@@ -290,8 +291,8 @@ describe('FactoryBuilder', () => {
         it('should set the dates', () => {
             const userOne = factoryBuilder.create() as User;
 
-            expect(userOne.createdAt).not.toBeUndefined();
-            expect(userOne.updatedAt).not.toBeUndefined();
+            expect(userOne.createdAt).toBeDefined();
+            expect(userOne.updatedAt).toBeDefined();
             expect(userOne.deletedAt).toBeNull();
         });
 
@@ -308,7 +309,7 @@ describe('FactoryBuilder', () => {
             const teamFactoryBuilder = new FactoryBuilder(Team);
             const team = teamFactoryBuilder.create() as Team;
 
-            expect(team._lastSyncedAt).not.toBeUndefined();
+            expect(team._lastSyncedAt).toBeDefined();
         });
     });
 
@@ -322,7 +323,7 @@ describe('FactoryBuilder', () => {
 
             expect(model[model.getUpdatedAtColumn()]).not.toBeNull();
             expect(model[model.getCreatedAtColumn()]).not.toBeNull();
-            expect(model.getKey()).not.toBeUndefined();
+            expect(model.getKey()).toBeDefined();
         });
 
         it('should accept the attributes argument', () => {
@@ -382,7 +383,7 @@ describe('FactoryBuilder', () => {
 
     describe('with()', () => {
         it('should add the relation data to the result', () => {
-            expect((factoryBuilder.with(Contract.factory()).raw() as Attributes).contract).not.toBeUndefined();
+            expect((factoryBuilder.with(Contract.factory()).raw() as Attributes).contract).toBeDefined();
             expect((factoryBuilder.with(Contract.factory()).make() as User).contract).toBeInstanceOf(Contract);
 
             factoryBuilder.with(Shift.factory()).times(2).make().forEach((user: User) => {
@@ -410,7 +411,7 @@ describe('FactoryBuilder', () => {
         });
 
         it('should accept a model constructor as the first argument', () => {
-            expect((factoryBuilder.with(Contract).raw() as Attributes).contract).not.toBeUndefined();
+            expect((factoryBuilder.with(Contract).raw() as Attributes).contract).toBeDefined();
             expect((factoryBuilder.with(Contract).make() as User).contract).toBeInstanceOf(Contract);
 
             factoryBuilder.with(Shift).times(2).make().forEach((user: User) => {
@@ -508,12 +509,10 @@ describe('FactoryBuilder', () => {
             // 1 - definition
             // 2 - states
             // 3 - arguments
-            const now = new Date().toISOString();
-
             expect(factoryBuilder.state('resolvedName')
                 .raw({
                     deletedAt: (attributes: Attributes) => {
-                        return attributes.deletegdAt ?? now;
+                        return attributes.deletedAt ?? now;
                     }
                 }))
                 .toStrictEqual({

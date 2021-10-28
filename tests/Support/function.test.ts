@@ -2,7 +2,7 @@ import * as func from '../../src/Support/function';
 import { types } from '../test-helpers';
 
 describe('function helpers', () => {
-    describe('isObject()', () => {
+    describe('isObjectLiteral()', () => {
         const typesWithoutObjectLiteral = types.filter(t => !t
             || Object(t) !== t
             || t instanceof Function

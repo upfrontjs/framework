@@ -39,6 +39,7 @@ module.exports = {
         "comma-dangle": ["warn", "never"],
         "max-len": ["warn", 120],
         "eqeqeq": "error",
+        "no-restricted-imports": "off",
 
         // https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin#supported-rules
         '@typescript-eslint/object-curly-spacing': ['warn', 'always'],
@@ -85,6 +86,7 @@ module.exports = {
         "@typescript-eslint/no-loop-func": "off",
         "@typescript-eslint/no-confusing-void-expression": "off",
         "@typescript-eslint/array-type": "warn",
-        "@typescript-eslint/prefer-for-of": "off"
+        "@typescript-eslint/prefer-for-of": "off",
+        "@typescript-eslint/no-restricted-imports": "off"
     }
 }

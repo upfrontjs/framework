@@ -1,7 +1,6 @@
 import Collection from '../../../src/Support/Collection';
-import { config } from '../../setupTests';
+import { config, now } from '../../setupTests';
 import User from '../../mock/Models/User';
-import { advanceTo } from 'jest-date-mock';
 import { DateTime, dateTime } from '../../mock/Configuration/DateTime';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import type AttributeCaster from '../../../src/Contracts/AttributeCaster';
@@ -143,8 +142,6 @@ describe('CastsAttributes', () => {
         });
 
         it('should cast to a datetime when cast set to datetime and Configuration set to function', () => {
-            const now = new Date();
-            advanceTo(now);
             caster.mergeCasts({ test: 'datetime' });
             config.set('datetime', dateTime);
 
@@ -154,19 +151,16 @@ describe('CastsAttributes', () => {
         });
 
         it('should cast to a Date by default', () => {
-            const now = new Date();
-            advanceTo(now);
             caster.mergeCasts({ test: 'datetime' });
-            config.set('datetime', Date);
 
-            expect(caster.publicCastAttribute('test', now)).toBeInstanceOf(Date);
-            expect((caster.publicCastAttribute('test', now) as Date).toUTCString()).toStrictEqual(now.toUTCString());
-            config.unset('datetime');
+            // it seems the ClockDate coming from @sinon/fake-timers doesn't have the same prototype
+            expect(caster.publicCastAttribute('test', now.getTime())).toBeInstanceOf(now.constructor);
+            expect(
+                (caster.publicCastAttribute('test', now.getTime()) as Date).toUTCString()
+            ).toStrictEqual(now.toUTCString());
         });
 
         it('should cast to a datetime when cast set to datetime and Configuration set to class', () => {
-            const now = new Date();
-            advanceTo(now);
             caster.mergeCasts({ test: 'datetime' });
             config.set('datetime', DateTime);
 
@@ -181,7 +175,7 @@ describe('CastsAttributes', () => {
             config.set('datetime', undefined);
 
             expect(failingFunc).toThrow(new InvalidArgumentException(
-                '\'datetime\' is not of expected type or has not been set in the ' + config.constructor.name + '.'
+                '\'datetime\' is not of expected type set in the ' + config.constructor.name + '.'
             ));
             config.unset('datetime');
         });

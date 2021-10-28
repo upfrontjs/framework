@@ -39,7 +39,8 @@ const sidebar = [
         children: [
             '/helpers/collection',
             '/helpers/pagination',
-            'helpers/global-config'
+            '/helpers/global-config',
+            '/helpers/event-emitter'
         ]
     },
     {

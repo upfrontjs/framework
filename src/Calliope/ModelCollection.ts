@@ -267,7 +267,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {this}
      */
-    public only(values: MaybeArray<T>): this {
+    public only(values: MaybeArray<any>): this {
         this._throwIfNotModels();
         const modelKeys = this._getArgumentKeys(values);
 

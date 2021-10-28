@@ -168,7 +168,7 @@ describe('HasRelations', () => {
             expect(hasRelations.addRelation('shifts', shifts).shifts).toBeInstanceOf(ModelCollection);
         });
 
-        it('should be able to add a relation when attributes or array of attributes are given', () => {
+        it('should be able to accept attributes or array of attributes', () => {
             const team = hasRelations.team as Team;
             hasRelations.removeRelation('team');
 
@@ -178,10 +178,35 @@ describe('HasRelations', () => {
             expect(hasRelations.addRelation('team', team.getRawOriginal()).team).toBeInstanceOf(Team);
         });
 
-        it('should be able to accept an array of models', () => {
+        it('should be able to accept a collection of attributes', () => {
+            hasRelations.removeRelation('shifts');
+
+            expect(hasRelations.relationLoaded('shifts')).toBe(false);
+            expect(hasRelations.addRelation('shifts', new Collection(Shift.factory().times(1).rawOne())).shifts)
+                .toBeInstanceOf(ModelCollection);
+            expect(hasRelations.relationLoaded('shifts')).toBe(true);
+        });
+
+        it('should be able to accept a model or array of models', () => {
             hasRelations.removeRelation('shifts');
 
             hasRelations.addRelation('shifts', shifts.toArray());
+            expect(hasRelations.shifts).toBeInstanceOf(ModelCollection);
+            expect(hasRelations.shifts).toHaveLength(shifts.length);
+        });
+
+        it('should be able to accept a collection of models', () => {
+            hasRelations.removeRelation('shifts');
+
+            hasRelations.addRelation('shifts', new Collection(shifts.toArray()));
+            expect(hasRelations.shifts).toBeInstanceOf(ModelCollection);
+            expect(hasRelations.shifts).toHaveLength(shifts.length);
+        });
+
+        it('should be able to accept a model collection of models', () => {
+            hasRelations.removeRelation('shifts');
+
+            hasRelations.addRelation('shifts', shifts);
             expect(hasRelations.shifts).toBeInstanceOf(ModelCollection);
             expect(hasRelations.shifts).toHaveLength(shifts.length);
         });

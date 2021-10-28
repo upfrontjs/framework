@@ -174,7 +174,11 @@ export default class HasRelations extends CallsApi {
      */
     public addRelation(
         name: string,
-        value: Collection<Attributes> | MaybeArray<Attributes> | MaybeArray<Model> | ModelCollection<Model>
+        value: Collection<Attributes>
+        | Collection<Model>
+        | MaybeArray<Attributes>
+        | MaybeArray<Model>
+        | ModelCollection<Model>
     ): this {
         name = this.removeRelationPrefix(name);
 
@@ -187,12 +191,22 @@ export default class HasRelations extends CallsApi {
         const relationType = this.getRelationType(name);
         const isSingularRelationType = ['belongsTo', 'hasOne', 'morphOne'].includes(relationType);
         const isModelArray = Array.isArray(value) && value.every(entry => entry instanceof HasRelations);
+        /**
+         * Callback acting as user guard for collection of models.
+         * ModelCollection is a subclass of Collection.
+         */
+        const isCollectionWithModels = (val: any): val is Collection<Model> =>  Collection.isCollection(val)
+            && val.every(entry => entry instanceof HasRelations);
 
-        if (value instanceof HasRelations || ModelCollection.isModelCollection(value) || isModelArray) {
-            if (isSingularRelationType && (ModelCollection.isModelCollection(value) || isModelArray)) {
+        if (value instanceof HasRelations || isCollectionWithModels(value) || isModelArray) {
+            if (isSingularRelationType && (isCollectionWithModels(value) || isModelArray)) {
                 throw new InvalidArgumentException(
                     '\'' + name + '\' is a singular relation, received type: \'' + value.constructor.name + '\'.'
                 );
+            }
+
+            if (isCollectionWithModels(value) && !ModelCollection.isModelCollection(value)) {
+                value = new ModelCollection(value.toArray());
             }
 
             if (isModelArray) {

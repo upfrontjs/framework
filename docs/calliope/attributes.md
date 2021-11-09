@@ -300,7 +300,7 @@ export default class User extends Model {
     }
 
     setFullNameAttribute(name) {
-        return name.startsWith(this.title + ' ')
+        this.attributes.fullName = name.startsWith(this.title + ' ')
             ? name.slice(this.title.length + 1)
             : name;
     }

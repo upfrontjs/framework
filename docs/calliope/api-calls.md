@@ -118,7 +118,7 @@ import User from '@Models/User';
 
 const user = new User;
 user.setEndpoint('/something').getEndpoint(); // '/something'
-user.resetEndpoint('/something').getEndpoint(); // 'users'
+user.resetEndpoint().getEndpoint(); // 'users'
 ```
 
 #### appendToEndpoint

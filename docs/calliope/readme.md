@@ -141,7 +141,7 @@ The `update` method sets the correct endpoint then initiates a [patch](./api-cal
 import User from '@Models/User';
 
 const user = User.factory.make();
-user.save({ optionalExtra: 'data' });
+user.update({ optionalExtra: 'data' });
 ```
 
 #### find

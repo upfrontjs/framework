@@ -12,6 +12,7 @@ In the documentation simple and concise examples are favoured to avoid too much 
 - [Scope building](#scope-building)
 - [Sending requests without models](#sending-requests-without-models)
 - [Alias methods](#alias-methods)
+- [Extend query builder functionality](#extend-query-builder-functionality)
 
 #### Extend the collections to fit your needs.
 Don't be afraid of changing and overriding methods if that solves your problem. The aim is to make development a breeze.
@@ -167,3 +168,41 @@ const firstUser = await User.newQuery().first();
 // then you may also use it in normal query building
 const myFirstUser = await User.where('name', 'like', '%me%').first()
 ```
+
+#### Extend query builder functionality
+
+Extending/overwriting the model should not be a daunting task. If we wanted we could add an extra method to send data to the server. In this example we add a new field on the sent data which is called `appends` and we're expecting the server to append additional information on the model response data.
+
+```ts
+import type { FormatsQueryParameters, QueryParams } from '@upfrontjs/framework';
+import { Model as BaseModel } from '@upfrontjs/framework';
+
+export default class ModelWithAppends extends BaseModel implements FormatsQueryParameters {
+    protected appends: string[] = [];
+
+    public append(name: string): this {
+        this.appends.push(name);
+        return this;
+    }
+
+    public withoutAppend(name: string): this {
+        this.appends = this.appends.filter(appended => appended !== name);
+        return this;
+    }
+
+    public formatQueryParameters(parameters: QueryParams & Record<string, any>): Record<string, any> {
+        if (this.appends.length) {
+            parameters.appends = this.appends;
+        }
+
+        return parameters;
+    }
+
+    public resetQueryParameters(): this {
+        this.appends = [];
+        return super.resetQueryParameters();
+    }
+}
+```
+
+Now if our other models extend our own model they will have the option to set the `appends` field on the outgoing requests.

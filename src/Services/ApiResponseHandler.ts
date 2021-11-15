@@ -27,6 +27,13 @@ export default class ApiResponseHandler implements HandlesApiResponse {
      * @throws {ApiResponse}
      */
     public async handleResponse(response: ApiResponse): Promise<unknown | undefined> {
+        if (response.status >= 400) {
+            // eslint-disable-next-line @typescript-eslint/no-throw-literal
+            throw response;
+        }
+
+        if (!response.json || response.status < 200 || response.status > 299 || response.status === 204) return;
+
         if (typeof response.json === 'function') {
             return response.json();
         }

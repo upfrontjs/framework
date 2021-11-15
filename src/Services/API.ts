@@ -9,7 +9,7 @@ import type { ApiResponse } from '../Contracts/HandlesApiResponse';
 import type { MaybeArray } from '../Support/type';
 
 /**
- * The default ApiCaller class used by the package.
+ * The default ApiCaller implementation used by upfrontjs.
  *
  * @link {ApiCaller}
  */

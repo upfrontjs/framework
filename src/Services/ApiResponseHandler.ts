@@ -3,7 +3,7 @@ import type { ApiResponse } from '../Contracts/HandlesApiResponse';
 import { isObjectLiteral } from '../Support/function';
 
 /**
- * The default HandlesApiResponse class used by the package.
+ * The default HandlesApiResponse implementation used by upfrontjs.
  *
  * @link {HandlesApiResponse}
  */
@@ -11,11 +11,11 @@ export default class ApiResponseHandler implements HandlesApiResponse {
     /**
      * @inheritDoc
      */
-    public async handle(promise: Promise<ApiResponse>): Promise<any> {
+    public async handle<T = unknown | undefined>(promise: Promise<ApiResponse>): Promise<T> {
         return promise
             .then(async (response: ApiResponse) => this.handleResponse(response))
             .catch(error => this.handleError(error))
-            .finally(() => this.handleFinally());
+            .finally(() => this.handleFinally()) as Promise<T>;
     }
 
     /**

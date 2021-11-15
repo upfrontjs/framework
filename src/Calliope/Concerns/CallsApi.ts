@@ -78,11 +78,11 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Promise<any>}
      */
-    protected async call(
+    protected async call<T = any>(
         method: Method,
         data?: Attributes | FormData,
         customHeaders?: Record<string, MaybeArray<string>>
-    ): Promise<any> {
+    ): Promise<T | undefined> {
         const endpoint = this.getEndpoint();
 
         if (!endpoint.length) {
@@ -145,9 +145,9 @@ export default class CallsApi extends BuildsQuery {
         this.requestCount++;
 
         return handlesApiResponse
-            .handle(
-                apiCaller.call(url, method, data, customHeaders, queryParameters)
-            )
+            .handle<T>(apiCaller.call(url, method, data, customHeaders, queryParameters))
+            
+            
             .finally(() => this.requestCount--);
     }
 

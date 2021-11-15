@@ -1,6 +1,5 @@
 import type HandlesApiResponse from '../Contracts/HandlesApiResponse';
 import type { ApiResponse } from '../Contracts/HandlesApiResponse';
-import { isObjectLiteral } from '../Support/function';
 
 /**
  * The default HandlesApiResponse implementation used by upfrontjs.
@@ -24,17 +23,15 @@ export default class ApiResponseHandler implements HandlesApiResponse {
      * @param {ApiResponse} response
      *
      * @return {Promise<any>}
+     *
+     * @throws {ApiResponse}
      */
-    public async handleResponse(response: ApiResponse): Promise<any> {
-        if (!response.json) return;
-
-        let responseData = await response.json();
-
-        if (isObjectLiteral(responseData) && 'data' in responseData) {
-            responseData = responseData.data;
+    public async handleResponse(response: ApiResponse): Promise<unknown | undefined> {
+        if (typeof response.json === 'function') {
+            return response.json();
         }
 
-        return responseData;
+        return;
     }
 
     /**
@@ -45,7 +42,7 @@ export default class ApiResponseHandler implements HandlesApiResponse {
      * @return {void}
      */
     public handleError(rejectReason: unknown): never {
-        throw new Error('Request has failed with the following message:\n' + String(rejectReason));
+        throw rejectReason;
     }
 
     /**

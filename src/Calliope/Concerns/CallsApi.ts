@@ -146,8 +146,17 @@ export default class CallsApi extends BuildsQuery {
 
         return handlesApiResponse
             .handle<T>(apiCaller.call(url, method, data, customHeaders, queryParameters))
-            
-            
+            .then(response => {
+                if (response === undefined) {
+                    return;
+                }
+
+                if (isObjectLiteral<{ data: any }>(response) && 'data' in response) {
+                    response = response.data;
+                }
+
+                return response;
+            })
             .finally(() => this.requestCount--);
     }
 

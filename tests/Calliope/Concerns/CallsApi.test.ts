@@ -222,6 +222,15 @@ describe('CallsApi', () => {
             });
         });
 
+        it('should parse the response body if data wrapped', async () => {
+            const data = User.factory().raw();
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({ data })));
+            // @ts-expect-error
+            const parsedResponse = await caller.call('get');
+
+            expect(parsedResponse).toStrictEqual(data);
+        });
+
         describe('requestMiddleware', () => {
             it('should run the given request middleware if set in the configuration', async () => {
                 fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));

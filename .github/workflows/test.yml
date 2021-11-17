@@ -13,21 +13,14 @@ on:
       - 'release/*'
 
 jobs:
-  test:
+  jest:
     timeout-minutes: 10
     if: github.event.pull_request.draft == false
-    name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
-      - uses: actions/cache@v2
         with:
-          key: npm-${{ hashFiles('./package-lock.json') }}
-          path: ~/.npm
-          restore-keys: |
-            npm-
-          node-version: 15
-          check-latest: true
+          cache: 'npm'
       - run: npm ci
       - run: npm run test

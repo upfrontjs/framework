@@ -13,6 +13,7 @@ In the documentation simple and concise examples are favoured to avoid too much 
 - [Sending requests without models](#sending-requests-without-models)
 - [Alias methods](#alias-methods)
 - [Extend query builder functionality](#extend-query-builder-functionality)
+- [Send paginated requests](#send-paginated-requests)
 
 #### Extend the collections to fit your needs.
 Don't be afraid of changing and overriding methods if that solves your problem. The aim is to make development a breeze.
@@ -206,3 +207,38 @@ export default class ModelWithAppends extends BaseModel implements FormatsQueryP
 ```
 
 Now if our other models extend our own model they will have the option to set the `appends` field on the outgoing requests.
+
+#### Send paginated requests
+
+While it's nice to be able to [paginate locally](./helpers/pagination.md) it might not be desired to get too much data upfront. In this case a pagination can be implemented that will only get the pages in question on an explicit request.
+
+```ts
+// utils.ts
+import type { Model, ModelCollection } from '@upfrontjs/framework';
+import User from '@models/User';
+
+export interface PaginatedModels<T extends Model> {
+    data: ModelCollection<T>;
+    next: () => Promise<PaginatedModels<T>>;
+    previous: () => Promise<PaginatedModels<T>>;
+    page: (page: number) => Promise<PaginatedModels<T>>;
+}
+
+export async function paginateModels<T extends Model>(builder: T, page = 1, limit = 25): Promise<PaginatedModels<T>> {
+    const modelCollection = await builder.limit(limit).page(page).get() as unknown as ModelCollection<T>;
+    // or some other custom logic where the response `meta` and `links` keys (if any) are taken into account
+
+    return {
+        data: modelCollection,
+        next: async () => paginateModels(builder, page + 1, limit),
+        previous: async () => paginateModels(builder, page - 1, limit),
+        page: async (pageNumber: number) => paginateModels(builder, pageNumber, limit)
+    };
+}
+
+// paginate users where column has the value of 1
+const firstPage = await paginateModels(User.where('column', 1));
+const secondPage = await firstPage.next();
+```
+
+*Note: this isn't included in the framework by default because the package is back-end agnostic*

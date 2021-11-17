@@ -2,6 +2,7 @@ import type { QueryParams } from '../../../src/Calliope/Concerns/BuildsQuery';
 import BuildsQuery from '../../../src/Calliope/Concerns/BuildsQuery';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import type FormatsQueryParameters from '../../../src/Contracts/FormatsQueryParameters';
+import { types } from '../../test-helpers';
 
 class TestClass extends BuildsQuery {
     public compiledParams(): Record<string, unknown> {
@@ -67,6 +68,14 @@ describe('BuildsQuery', () => {
             const formatter = new FormatterClass();
             expect(formatter.compiledParams().my).toBeDefined();
             expect(formatter.compiledParams().my).toBe('data');
+        });
+
+        it('should only include valid numeric query parameters', () => {
+            const compiled = builder.offset(-1).page(-1).limit(-1).compiledParams();
+
+            expect(compiled).not.toHaveProperty('offset');
+            expect(compiled).not.toHaveProperty('page');
+            expect(compiled).not.toHaveProperty('limit');
         });
     });
 
@@ -640,6 +649,17 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().limit).toBeUndefined();
         });
+
+        it('should throw an error on non-numeric argument', () => {
+            const typesToTest = types.filter(type => typeof type !== 'number');
+
+            typesToTest.forEach(type => {
+                // @ts-expect-error
+                expect(() => builder.limit(type)).toThrow(
+                    new InvalidArgumentException('The limit method expects a number, got: ' + typeof type)
+                );
+            });
+        });
     });
 
     describe('page()', () => {
@@ -660,6 +680,17 @@ describe('BuildsQuery', () => {
             builder.page(10).page(0);
 
             expect(builder.compiledParams().page).toBeUndefined();
+        });
+
+        it('should throw an error on non-numeric argument', () => {
+            const typesToTest = types.filter(type => typeof type !== 'number');
+
+            typesToTest.forEach(type => {
+                // @ts-expect-error
+                expect(() => builder.page(type)).toThrow(
+                    new InvalidArgumentException('The page method expects a number, got: ' + typeof type)
+                );
+            });
         });
     });
 
@@ -968,6 +999,23 @@ describe('BuildsQuery', () => {
             builder = BuildsQuery.offset(10);
             // @ts-expect-error
             expect(builder.compileQueryParameters().offset).toBe(10);
+        });
+
+        it('should unset the value if 0 used as argument', () => {
+            builder.offset(10).offset(0);
+
+            expect(builder.compiledParams().offset).toBeUndefined();
+        });
+
+        it('should throw an error on non-numeric argument', () => {
+            const typesToTest = types.filter(type => typeof type !== 'number');
+
+            typesToTest.forEach(type => {
+                // @ts-expect-error
+                expect(() => builder.offset(type)).toThrow(
+                    new InvalidArgumentException('The offset method expects a number, got: ' + typeof type)
+                );
+            });
         });
     });
 

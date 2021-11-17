@@ -203,15 +203,15 @@ export default class BuildsQuery extends HasAttributes {
             params.distinctOnly = this.distinctOnly;
         }
 
-        if (this.offsetCount) {
+        if (this.offsetCount > 0) {
             params.offset = this.offsetCount;
         }
 
-        if (this.limitCount) {
+        if (this.limitCount > 0) {
             params.limit = this.limitCount;
         }
 
-        if (this.pageNumber) {
+        if (this.pageNumber > 0) {
             params.page = this.pageNumber;
         }
 
@@ -701,6 +701,10 @@ export default class BuildsQuery extends HasAttributes {
      * @param {number} count
      */
     public limit(count: number): this {
+        if (typeof count !== 'number') {
+            throw new InvalidArgumentException('The limit method expects a number, got: ' + typeof count);
+        }
+
         this.limitCount = count;
         return this;
     }
@@ -722,6 +726,10 @@ export default class BuildsQuery extends HasAttributes {
      * @param {number} pageNumber
      */
     public page(pageNumber: number): this {
+        if (typeof pageNumber !== 'number') {
+            throw new InvalidArgumentException('The page method expects a number, got: ' + typeof pageNumber);
+        }
+
         this.pageNumber = pageNumber;
         return this;
     }
@@ -1062,8 +1070,11 @@ export default class BuildsQuery extends HasAttributes {
      * @return {this}
      */
     public offset(count: number): this {
-        this.offsetCount = count;
+        if (typeof count !== 'number') {
+            throw new InvalidArgumentException('The offset method expects a number, got: ' + typeof count);
+        }
 
+        this.offsetCount = count;
         return this;
     }
 

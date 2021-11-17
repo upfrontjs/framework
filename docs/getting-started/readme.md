@@ -1,7 +1,7 @@
 # Introduction
 
 ## What is it?
-It's a model centric data handling solution. With it, you can write expressive, readable, concise syntax that you already know and love from back-end MVC frameworks. It provides an elegant structure to complex data with a plethora of features to manage the data, and additional helpers for common tasks like handling lists, pagination, string manipulation etc.
+It's a model centric data handling solution. With it, you can write expressive, readable, concise syntax that you already know and love from back-end MVC frameworks while staying back-end agnostic. It provides an elegant structure to complex data with a plethora of features to manage the data, and additional helpers for common tasks like handling lists, pagination, string manipulation etc.
 
 ```ts
 import User from '@models/User';

@@ -51,7 +51,7 @@ new GlobalConfig({
 
 ## Backend requirements
 
-There are 2-3 requirements that needs to be fulfilled by the server in order for this package to work as expected. These are the:
+Given UpfrontJS is back-end agnostic, there are 2-3 requirements that needs to be fulfilled by the server in order for this package to work as expected. These are the:
  - **Parsing the request**
    - Your server should be capable of parsing the query string or request body sent by upfront. The shape of the request depends on the used [ApiCaller](../services/readme.md#apicaller) implementation. Users with REST apis using the default [API](../services/api.md) service may also take a look at the [anatomy of the request](../services/api.md#shape-of-the-request) the service generates.
  - **Responding with appropriate data**

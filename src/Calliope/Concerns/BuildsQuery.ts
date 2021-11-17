@@ -24,6 +24,7 @@ export type QueryParams = Partial<{
     distinctOnly: boolean;
     offset: number;
     limit: number;
+    page: number;
 }>;
 
 export default class BuildsQuery extends HasAttributes {
@@ -122,9 +123,18 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @protected
      *
-     * @type {null|number}
+     * @type {number}
      */
     protected limitCount = 0;
+
+    /**
+     * The page number of the paginated models queried.
+     *
+     * @protected
+     *
+     * @type {number}
+     */
+    protected pageNumber = 0;
 
     /**
      * The available operators.
@@ -201,6 +211,10 @@ export default class BuildsQuery extends HasAttributes {
             params.limit = this.limitCount;
         }
 
+        if (this.pageNumber) {
+            params.page = this.pageNumber;
+        }
+
         let parameters = params;
 
         if ('formatQueryParameters' in this && this.formatQueryParameters instanceof Function) {
@@ -228,6 +242,7 @@ export default class BuildsQuery extends HasAttributes {
         this.distinctOnly = false;
         this.offsetCount = 0;
         this.limitCount = 0;
+        this.pageNumber = 0;
 
         return this;
     }
@@ -699,6 +714,27 @@ export default class BuildsQuery extends HasAttributes {
      */
     public static limit(count: number): Model {
         return this.newQuery().limit(count);
+    }
+
+    /**
+     * Set the page of the returned models for the next request.
+     *
+     * @param {number} pageNumber
+     */
+    public page(pageNumber: number): this {
+        this.pageNumber = pageNumber;
+        return this;
+    }
+
+    /**
+     * The static version of the page method.
+     *
+     * @param {number} pageNumber
+     *
+     * @see BuildsQuery.prototype.page
+     */
+    public static page(pageNumber: number): Model {
+        return this.newQuery().page(pageNumber);
     }
 
     /**

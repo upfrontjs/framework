@@ -642,6 +642,27 @@ describe('BuildsQuery', () => {
         });
     });
 
+    describe('page()', () => {
+        it('should add a limit to the params', () => {
+            builder.page(10);
+
+            expect(builder.compiledParams().page).toBe(10);
+        });
+
+        it('should be able to be called statically', () => {
+            builder = BuildsQuery.page(10);
+
+            // @ts-expect-error
+            expect(builder.compileQueryParameters().page).toBe(10);
+        });
+
+        it('should unset the value if 0 used as argument', () => {
+            builder.page(10).page(0);
+
+            expect(builder.compiledParams().page).toBeUndefined();
+        });
+    });
+
     describe('when()', () => {
         it('should call the given closure depending on the truthiness if the first argument', () => {
             builder.when(false, builderInstance => builderInstance.limit(10));

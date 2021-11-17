@@ -8,11 +8,11 @@ On top of the `HandlesApiResponse`'s `handle` method for the sake of brevity the
 
 #### handleSuccess
 
-The `handleSuccess` method attempts to parse the `Response` and returns its value. If The response is has a key `data` then the value of the data will be returned.
+The `handleSuccess` method attempts to parse the `ApiResponse` and returns its value.
 
 #### handleError
 
-The `handleError` method throws an error.
+The `handleError` method throws the given error.
 
 #### handleFinally
 

@@ -26,3 +26,13 @@ export type ExtractArguments<T> = [T] extends [(...args: infer U) => any]
 export type DeepPartial<T> = {
     [P in keyof T]?: DeepPartial<T[P]> | T[P];
 };
+
+/**
+ * Get the keys of the given type where the value matches the given argument.
+ */
+export type KeysMatching<T, V> = { [K in keyof T]: T[K] extends never ? V : K }[keyof T];
+
+/**
+ * Get the keys of the given type where the value doesn't match the given argument.
+ */
+export type KeysNotMatching<T, V> = { [K in keyof T]: T[K] extends V ? never : K }[keyof T];

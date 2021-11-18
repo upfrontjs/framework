@@ -185,6 +185,10 @@ export default class ModelWithAppends extends BaseModel implements FormatsQueryP
         this.appends.push(name);
         return this;
     }
+    
+    public static append(name: string): ModelWithAppends {
+        this.newQuery<ModelWithAppends>().append(name);
+    }
 
     public withoutAppend(name: string): this {
         this.appends = this.appends.filter(appended => appended !== name);

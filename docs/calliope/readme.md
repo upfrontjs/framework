@@ -123,8 +123,7 @@ The `all` method will initiate a request that returns a [ModelCollection](./mode
 ```js
 import User from '@Models/User';
 
-const users = await User.all();
-users; // ModelCollection[User, ...]
+const users = await User.all(); // ModelCollection[User, ...]
 ```
 
 #### save
@@ -140,8 +139,8 @@ The `update` method sets the correct endpoint then initiates a [patch](./api-cal
 ```js
 import User from '@Models/User';
 
-const user = User.factory.make();
-user.update({ optionalExtra: 'data' });
+const user = User.factory.createOne();
+await user.update({ optionalExtra: 'data' });
 ```
 
 #### find
@@ -152,7 +151,7 @@ The `find` method sends a `GET` request to the model [endpoint](./api-calls.md#g
 ```js
 import User from '@Models/User';
 
-const user = User.find('8934d792-4e4d-42a1-bb4b-45b34b1140b4');
+const user = await User.find('8934d792-4e4d-42a1-bb4b-45b34b1140b4');
 ```
 
 #### findMany
@@ -163,8 +162,7 @@ The `findMany` method similar to the [find](#find) method sends a `GET` request 
 ```js
 import User from '@Models/User';
 
-const users = User.findMany([1, 2]);
-users; // ModelCollection[User, User]
+const users = await User.findMany([1, 2]); // ModelCollection[User, User]
 ```
 
 #### refresh

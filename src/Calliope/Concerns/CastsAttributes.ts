@@ -3,7 +3,7 @@ import Collection from '../../Support/Collection';
 import { cloneDeep, merge } from 'lodash';
 import type AttributeCaster from '../../Contracts/AttributeCaster';
 import GlobalConfig from '../../Support/GlobalConfig';
-import type { Attributes } from './HasAttributes';
+import type { Attributes, AttributeKeys } from './HasAttributes';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import { isConstructableUserClass, isObjectLiteral } from '../../Support/function';
 import type Model from '../Model';
@@ -19,7 +19,7 @@ export default class CastsAttributes {
      *
      * @type {object}
      */
-    protected attributeCasts: Record<string, CastType> = this.casts;
+    protected attributeCasts = this.casts as Record<AttributeKeys<this> | string, CastType>;
 
     /**
      * The attributes that should be cast.
@@ -39,7 +39,7 @@ export default class CastsAttributes {
      *
      * @return {this}
      */
-    public mergeCasts(casts: Record<string, CastType>): this {
+    public mergeCasts(casts: Record<AttributeKeys<this> | string, CastType>): this {
         this.attributeCasts = merge(this.attributeCasts, casts);
 
         return this;
@@ -52,7 +52,7 @@ export default class CastsAttributes {
      *
      * @return {this}
      */
-    public setCasts(casts: Record<string, CastType>): this {
+    public setCasts(casts: Record<AttributeKeys<this> | string, CastType>): this {
         this.attributeCasts = casts;
 
         return this;
@@ -65,7 +65,7 @@ export default class CastsAttributes {
      *
      * @return {boolean}
      */
-    public hasCast(key: string): key is BuiltInCastType | 'object' {
+    public hasCast(key: AttributeKeys<this> | string): key is BuiltInCastType | 'object' {
         const cast = this.getCastType(key);
 
         if (!cast) return false;
@@ -82,7 +82,7 @@ export default class CastsAttributes {
      *
      * @return {string|undefined}
      */
-    protected getCastType(key: string): BuiltInCastType | 'object' | undefined {
+    protected getCastType(key: AttributeKeys<this> | string): BuiltInCastType | 'object' | undefined {
         const caster = this.attributeCasts[key];
 
         if (!caster) {
@@ -108,12 +108,12 @@ export default class CastsAttributes {
      *
      * @return {any}
      */
-    protected castAttribute(
-        key: string,
+    protected castAttribute<T>(
+        key: AttributeKeys<this> | string,
         value: any,
-        attributes?: Attributes,
+        attributes?: Attributes, // todo - replace this with this.getRawAttributes
         method: keyof AttributeCaster = 'get'
-    ): unknown {
+    ): T {
         value = cloneDeep(value);
 
         if (!this.hasCast(key)) {
@@ -122,37 +122,40 @@ export default class CastsAttributes {
 
         switch (this.getCastType(key)) {
             case 'boolean':
-                return this.castToBoolean(key, value);
+                value = this.castToBoolean(key, value);
+                break;
             case 'string':
-                return this.castToString(key, value);
+                value = this.castToString(key, value);
+                break;
             case 'number':
-                return this.castToNumber(key, value);
+                value = this.castToNumber(key, value);
+                break;
             case 'object':
-                return this.castWithObject(
+                value = this.castWithObject(
                     key,
                     value,
                     attributes ?? (this as unknown as Model).getRawAttributes(),
                     method
                 );
+                break;
             case 'collection':
                 if (method === 'set') {
                     if (Collection.isCollection(value)) {
                         // we don't want to wrap collection in a collection on every get
-                        return value.toArray();
+                        value = value.toArray();
                     }
-
-                    return value;
                 } else {
-                    return new Collection(value);
+                    value = new Collection(value);
                 }
+                break;
             case 'datetime':
                 if (method === 'set') {
                     // check if it throws
                     this.getDateTimeLibInstance(value);
-                    return value;
                 } else {
-                    return this.castToDateTime(key, value);
+                    value = this.castToDateTime(key, value);
                 }
+                break;
             default:
                 // either or both hasCast() and getCastType() has been overridden and hasCast()
                 // returns true while getCastType() returns a value that lands in this default case
@@ -160,6 +163,8 @@ export default class CastsAttributes {
                     'Impossible logic path reached. getCastType() returned unexpected value.'
                 );
         }
+
+        return value;
     }
 
     /**

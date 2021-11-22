@@ -1,12 +1,12 @@
 # Model
 
 The model is at the hearth of this package. It boasts a lot of features, so they have been broken down into the following sections:
- - [Attributes](./attributes.md)
- - [Api calls](./api-calls.md)
- - [Query Building](./query-building.md)
- - [Relationships](./relationships.md)
- - [Timestamps](./timestamps.md)
- - [Additional Methods](#additional-methods)
+- [Attributes](./attributes.md)
+- [Api calls](./api-calls.md)
+- [Query Building](./query-building.md)
+- [Relationships](./relationships.md)
+- [Timestamps](./timestamps.md)
+- [Additional Methods](#additional-methods)
 
 ## Creating Models
 
@@ -17,6 +17,18 @@ import { Model } from '@upfrontjs/framework';
 
 export default class User extends Model {}
 ```
+
+::: tip TIP (Typescript)
+Typescript users may benefit from better typing support if they defined keys and their types on the models
+```ts
+export default class User extends Model {
+    public is_admin?: boolean;
+    public age?: number;
+    public name?: string;
+}
+```
+This will typehint keys on the model when accessing the above keys like `user.age` and will get type hinted in various methods such as [getAttribute](./attributes.md#getattribute) where both the key, the default value and the return value will be type hinted.
+:::
 
 Then you can call your model in various way, for example
 ```js

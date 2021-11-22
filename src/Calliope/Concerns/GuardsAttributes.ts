@@ -1,5 +1,5 @@
 import CastsAttributes from './CastsAttributes';
-import type { Attributes } from './HasAttributes';
+import type { Attributes, AttributeKeys } from './HasAttributes';
 
 export default class GuardsAttributes extends CastsAttributes {
     /**
@@ -9,7 +9,7 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @type {string[]}
      */
-    protected fillableAttributes: string[] = this.fillable;
+    protected fillableAttributes: (AttributeKeys<this> | string)[] = this.fillable;
 
     /**
      * The attributes that aren't mass assignable
@@ -18,14 +18,14 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @type {string[]}
      */
-    protected guardedAttributes: string[] = this.guarded;
+    protected guardedAttributes: (AttributeKeys<this> | string)[] = this.guarded;
 
     /**
      * The attributes that are mass assignable.
      *
      * @type {string[]}
      */
-    public get fillable(): string[] {
+    public get fillable(): (AttributeKeys<this> | string)[] {
         return [];
     }
 
@@ -34,7 +34,7 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @type {string[]}
      */
-    public get guarded(): string[] {
+    public get guarded(): (AttributeKeys<this> | string)[] {
         return ['*'];
     }
 
@@ -43,7 +43,7 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @return {string[]}
      */
-    public getGuarded(): string[] {
+    public getGuarded(): (AttributeKeys<this> | string)[] {
         return this.guardedAttributes;
     }
 
@@ -52,7 +52,7 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @return {string[]}
      */
-    public getFillable(): string[] {
+    public getFillable(): (AttributeKeys<this> | string)[] {
         return this.fillableAttributes;
     }
 
@@ -63,7 +63,7 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @return {this}
      */
-    public mergeFillable(fillable: string[]): this {
+    public mergeFillable(fillable: (AttributeKeys<this> | string)[]): this {
         this.fillableAttributes = [...this.getFillable(), ...fillable];
 
         return this;
@@ -76,7 +76,7 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @return {this}
      */
-    public mergeGuarded(guarded: string[]): this {
+    public mergeGuarded(guarded: (AttributeKeys<this> | string)[]): this {
         this.guardedAttributes = [...this.getGuarded(), ...guarded];
 
         return this;
@@ -89,7 +89,7 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @return {this}
      */
-    public setFillable(fillable: string[]): this {
+    public setFillable(fillable: (AttributeKeys<this> | string)[]): this {
         this.fillableAttributes = fillable;
 
         return this;
@@ -102,7 +102,7 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @return {this}
      */
-    public setGuarded(guarded: string[]): this {
+    public setGuarded(guarded: (AttributeKeys<this> | string)[]): this {
         this.guardedAttributes = guarded;
 
         return this;
@@ -113,7 +113,7 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @param {string} key
      */
-    public isFillable(key: string): boolean {
+    public isFillable(key: AttributeKeys<this> | string): boolean {
         return this.getFillable().includes(key) || this.getFillable().includes('*');
     }
 
@@ -122,7 +122,7 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @param {string} key
      */
-    public isGuarded(key: string): boolean {
+    public isGuarded(key: AttributeKeys<this> | string): boolean {
         // if key is defined in both guarded and fillable, then fillable takes priority.
         return (this.getGuarded().includes(key) || this.getGuarded().includes('*')) && !this.isFillable(key);
     }

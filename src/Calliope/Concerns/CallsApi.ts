@@ -324,7 +324,7 @@ export default class CallsApi extends BuildsQuery {
         }
 
         Object.defineProperty(this, key, {
-            get: () => to,
+            get: () => to, // todo cast toDateTime?
             configurable: true,
             enumerable: true
         });

@@ -62,18 +62,21 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @param {string[]|string} except
      */
-    public replicate(except?: MaybeArray<AttributeKeys<this> | string>): this {
-        let excluded = [
+    public replicate(except?: MaybeArray<AttributeKeys<this> | string>): this
+    public replicate(except?: MaybeArray<string>): this {
+        const excluded = new Set([
             this.getKeyName(),
             this.getCreatedAtColumn(),
             this.getUpdatedAtColumn(),
             this.getDeletedAtColumn()
-        ];
+        ]);
 
         if (except) {
-            // todo - reduce the loops
-            // make sure we only have unique values
-            excluded = [...new Set([...excluded, ...Array.isArray(except) ? except : [except]]) as Set<string>];
+            if (Array.isArray(except)) {
+                except.forEach(key => excluded.add(key));
+            } else {
+                excluded.add(except);
+            }
         }
 
         const attributes = { ...this.getRawAttributes(), ...this.getRelations() };

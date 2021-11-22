@@ -5,7 +5,7 @@ type WithProperty<T, K extends PropertyKey> = T & {
     [P in K]: Exclude<P extends keyof T ? T[P] : unknown, undefined>
 };
 
-export default class GlobalConfig<T extends Configuration> {
+export default class GlobalConfig<T extends Configuration & Record<PropertyKey, any>> {
     /**
      * The configuration object.
      *
@@ -23,7 +23,7 @@ export default class GlobalConfig<T extends Configuration> {
      *
      * @param {object} configuration
      */
-    public constructor(configuration?: Record<PropertyKey, any> & T) {
+    public constructor(configuration?: T) {
         if (configuration) {
             merge(GlobalConfig.configuration, configuration);
         }

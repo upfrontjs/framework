@@ -34,7 +34,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     /**
      * The model attribute.
      */
-    [key: string]: any; // todo - update to unknown | undefined
+    [key: string]: unknown;
 
     /**
      * Property indicating how attributes and relation names should be casted by default.

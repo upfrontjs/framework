@@ -238,7 +238,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
         }
 
         if (this.hasCast(key)) {
-            this.attributes[key] = this.castAttribute(key, value, this.getRawAttributes(), 'set');
+            this.attributes[key] = this.castAttribute(key, value, 'set');
 
             this.createDescriptor(key);
             return this;
@@ -420,26 +420,23 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
         T extends K extends AttributeKeys<this> ? this[K] : unknown
     >(key?: K, defaultValue?: T): T
     public getOriginal(key?: string, defaultValue?: unknown): unknown {
-        const getOriginalValue = (attributeKey: string, rawAttributes: Attributes) => {
+        const getOriginalValue = (attributeKey: string) => {
             if (this.hasGetAccessor(attributeKey)) {
                 return (this[`get${pascal(attributeKey)}Attribute`] as CallableFunction)(
                     cloneDeep(this.original[attributeKey])
                 );
             }
 
-            return this.castAttribute(attributeKey, this.original[attributeKey], rawAttributes);
+            return this.castAttribute(attributeKey, this.original[attributeKey]);
         };
 
         if (key) {
-            return this.original.hasOwnProperty(key)
-                ? getOriginalValue(key, this.getRawAttributes())
-                : defaultValue;
+            return this.original.hasOwnProperty(key) ? getOriginalValue(key) : defaultValue;
         }
 
-        const rawAttributes = this.getRawAttributes();
         const result: Attributes = {};
 
-        Object.keys(this.original).forEach(name => result[name] = getOriginalValue(name, rawAttributes));
+        Object.keys(this.original).forEach(name => result[name] = getOriginalValue(name));
 
         return result;
     }
@@ -482,12 +479,11 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
             };
         }
 
-        const rawAttributes = this.getRawAttributes();
         const result: Attributes = {};
 
         Object.keys(this.attributes).forEach(name => {
             if (!isEqual(this.getRawOriginal(name), this.attributes[name])) {
-                result[name] = this.castAttribute(name, this.attributes[name], rawAttributes);
+                result[name] = this.castAttribute(name, this.attributes[name]);
             }
         });
 

@@ -101,17 +101,17 @@ export default class CastsAttributes {
      *
      * @param {string} key
      * @param {any} value
-     * @param {object} attributes
      * @param {string} method - The method to use when interacting with the AttributeCaster.
      *
      * @protected
+     *
+     * @internal
      *
      * @return {any}
      */
     protected castAttribute<T>(
         key: AttributeKeys<this> | string,
         value: any,
-        attributes?: Attributes, // todo - replace this with this.getRawAttributes
         method: keyof AttributeCaster = 'get'
     ): T {
         value = cloneDeep(value);
@@ -134,7 +134,7 @@ export default class CastsAttributes {
                 value = this.castWithObject(
                     key,
                     value,
-                    attributes ?? (this as unknown as Model).getRawAttributes(),
+                    (this as unknown as Model).getRawAttributes(),
                     method
                 );
                 break;

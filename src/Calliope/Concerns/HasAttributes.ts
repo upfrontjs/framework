@@ -24,7 +24,11 @@ export type AttributeKeys<T> = Exclude<KeysNotMatching<T, CallableFunction>, Int
  * The attributes the model is handling.
  */
 export type Attributes<T extends HasAttributes = HasAttributes> = Record<AttributeKeys<T> | string, unknown>;
-// todo - update usages to pass in `this`
+// todo - update type to specify value type so getAttributes().myKey will correctly typehint and not be unknown
+// export type Attributes<
+//     M extends HasAttributes = HasAttributes,
+//     K extends KeysNotMatching<M, CallableFunction> | string = KeysNotMatching<M, CallableFunction> | string>
+//     = Record<K, M[K]> & Record<string, unknown>;
 
 export default class HasAttributes extends GuardsAttributes implements Jsonable, Iterable<any> {
     /**
@@ -410,7 +414,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {any}
      */
-    public getOriginal(): Attributes
+    public getOriginal(): Attributes<this>
     public getOriginal<
         K extends AttributeKeys<this> | string,
         T extends K extends AttributeKeys<this> ? this[K] : unknown
@@ -448,7 +452,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {any}
      */
-    public getRawOriginal(): Attributes
+    public getRawOriginal(): Attributes<this>
     public getRawOriginal<K extends AttributeKeys<this> | string, T extends K extends AttributeKeys<this> ? this[K] : unknown>(key?: K, defaultValue?: T): T
     public getRawOriginal<T>(key?: string, defaultValue?: T): T
     public getRawOriginal(key?: string, defaultValue?: unknown): unknown {

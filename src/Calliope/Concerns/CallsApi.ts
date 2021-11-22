@@ -196,7 +196,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async post(data: FormData | Record<string, unknown>): Promise<Model> {
+    public async post(data: Attributes<this> | FormData): Promise<Model> {
         return this.call('post', data)
             .then(responseData => {
                 return this.resetEndpoint()
@@ -212,7 +212,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async put(data: FormData | Record<string, unknown>): Promise<Model> {
+    public async put(data: Attributes<this> | FormData): Promise<Model> {
         return this.call('put', data)
             .then(responseData => {
                 return this.resetEndpoint()
@@ -228,7 +228,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async patch(data: FormData | Record<string, unknown>): Promise<Model> {
+    public async patch(data: Attributes<this> | FormData): Promise<Model> {
         return this.call('patch', data)
             .then(responseData => {
                 return this.resetEndpoint()
@@ -245,7 +245,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Promise<boolean>}
      */
-    public async delete(data?: FormData | Record<string, unknown>): Promise<Model> {
+    public async delete(data?: Attributes<this> | FormData): Promise<Model> {
         return this.call('delete', data)
             .then(responseData => {
                 return this.resetEndpoint()

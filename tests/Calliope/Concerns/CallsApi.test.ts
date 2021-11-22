@@ -416,15 +416,10 @@ describe('CallsApi', () => {
             expect(caller.setLastSyncedAt()).toBeInstanceOf(User);
         });
 
-        it('should update the attribute with the new Date or the given value', () => {
+        it('should update the attribute with the new Date', () => {
             // @ts-expect-error
             caller.setLastSyncedAt();
             expect(caller._lastSyncedAt).toStrictEqual(new Date);
-
-            // @ts-expect-error
-            caller.setLastSyncedAt('my value');
-
-            expect(caller._lastSyncedAt).toBe('my value');
         });
     });
 

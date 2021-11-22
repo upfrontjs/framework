@@ -151,7 +151,7 @@ export default class CastsAttributes {
             case 'datetime':
                 if (method === 'set') {
                     // check if it throws
-                    this.getDateTimeLibInstance(value);
+                    this.castToDateTime(key, value);
                 } else {
                     value = this.castToDateTime(key, value);
                 }
@@ -185,34 +185,6 @@ export default class CastsAttributes {
             && value.set instanceof Function
             && 'get' in value
             && value.get instanceof Function;
-    }
-
-    /**
-     * Get the date time library from the config, throw error if library is invalid.
-     *
-     * @param {any} value
-     *
-     * @protected
-     */
-    protected getDateTimeLibInstance(value: unknown): unknown {
-        const dateTimeLib = new GlobalConfig().get('datetime', Date);
-
-        // class and function are both of type function
-        if (typeof dateTimeLib !== 'function') {
-            throw new InvalidArgumentException(
-                '\'datetime\' is not of expected type set in the ' + GlobalConfig.name + '.'
-            );
-        }
-
-        if (Object.is(Date, dateTimeLib)) {
-            return new Date(value as Date | number | string);
-        }
-
-        if (isConstructableUserClass(dateTimeLib)) {
-            return new dateTimeLib(value);
-        }
-
-        return dateTimeLib(value);
     }
 
     /**
@@ -285,15 +257,39 @@ export default class CastsAttributes {
     /**
      * Cast to date time using the configured library, throw error if it can't be casted.
      *
-     * @param {string} _key
+     * @param {string} key
      * @param {any} value
      *
      * @private
      *
      * @return {any}
      */
-    private castToDateTime(_key: string, value: any): unknown {
-        return this.getDateTimeLibInstance(value);
+    private castToDateTime(key: string, value: any): unknown {
+        const dateTimeLib = new GlobalConfig().get('datetime', Date);
+
+        // class and function are both of type function
+        if (typeof dateTimeLib !== 'function') {
+            throw new InvalidArgumentException(
+                '\'datetime\' is not of expected type set in the ' + GlobalConfig.name + '.'
+            );
+        }
+
+        if (Object.is(Date, dateTimeLib)) {
+            const date = new Date(value as Date | number | string);
+
+            if (isNaN(date.getTime())) {
+                throw new LogicException(
+                    '\'' + key + '\' is not castable to a date time in \''
+                    + (this as unknown as Model).getName() + '\'.'
+                );
+            }
+
+            return date;
+        } else if (isConstructableUserClass(dateTimeLib)) {
+            return new dateTimeLib(value);
+        } else {
+            return dateTimeLib(value);
+        }
     }
 
     /**

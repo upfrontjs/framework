@@ -41,8 +41,7 @@ describe('Model', () => {
         });
 
         it('should consider the _last_synced_at attribute', () => {
-            // @ts-expect-error
-            user.setLastSyncedAt(false);
+            delete user._lastSyncedAt;
             expect(user.exists).toBe(false);
         });
     });

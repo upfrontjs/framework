@@ -180,6 +180,15 @@ describe('CastsAttributes', () => {
             config.unset('datetime');
         });
 
+        it('should throw an error if the value cannot be casted to a Date when no datetime defined', () => {
+            caster.mergeCasts({ test: 'datetime' });
+            expect(() => caster.publicCastAttribute('test', 'invalid value')).toThrow(
+                new LogicException(
+                    '\'test\' is not castable to a date time in \'' + caster.getName() + '\'.'
+                )
+            );
+        });
+
         it('should return the value untouched when using datetime on set', () => {
             caster.mergeCasts({ test: 'datetime' });
             config.set('datetime', DateTime);

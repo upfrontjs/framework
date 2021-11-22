@@ -316,7 +316,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {this}
      */
-    protected setLastSyncedAt(to: any = new Date): this {
+    protected setLastSyncedAt(to: unknown = new Date): this {
         const key = '_' + this.setStringCase('last_synced_at');
 
         if (key in this) {
@@ -324,7 +324,8 @@ export default class CallsApi extends BuildsQuery {
         }
 
         Object.defineProperty(this, key, {
-            get: () => to, // todo cast toDateTime?
+            // @ts-expect-error
+            get: () => this.castToDateTime(key, to),
             configurable: true,
             enumerable: true
         });

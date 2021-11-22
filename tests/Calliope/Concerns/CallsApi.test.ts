@@ -421,6 +421,14 @@ describe('CallsApi', () => {
             caller.setLastSyncedAt();
             expect(caller._lastSyncedAt).toStrictEqual(new Date);
         });
+
+        it('should throw an error when invalid value given', () => {
+            // @ts-expect-error
+            caller.setLastSyncedAt('invalid value');
+            expect(() => caller._lastSyncedAt).toThrow(
+                new LogicException('\'_lastSyncedAt\' is not castable to a date time in \'' + caller.getName() + '\'.')
+            );
+        });
     });
 
     describe('setEndpoint()', () => {

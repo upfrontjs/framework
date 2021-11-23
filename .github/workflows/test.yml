@@ -8,6 +8,7 @@ on:
       - 'tests/**/*.ts'
       - 'src/**/*.ts'
       - 'jest.config.js'
+      - 'package-lock.json'
     branches:
       - main
       - 'release/*'

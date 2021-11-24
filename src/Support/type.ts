@@ -15,6 +15,7 @@ export type MaybeArray<T> = T | T[];
 /**
  * Get the type of the arguments for the given callable type into a tuple.
  */
+// todo - remove this in favour of the built in Parameters when type testing has been implemented
 export type ExtractArguments<T> = [T] extends [(...args: infer U) => any]
     ? U
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type

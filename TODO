@@ -1,5 +1,5 @@
 Todos which are not concerning a single unit of code:
 
 todo - arrange api-docs to be live
-todo - qs should not be a dependency if the user not using the API service
+todo - qs should not be a dependency if the user not using the API service (maybe interfaces and services should be separate packages?)
 todo - https://github.com/microsoft/TypeScript/issues/33079 figure out the package entries so user doesn't have to specify .es.min.js for string and array helpers and when using helpers in js the typings will be found

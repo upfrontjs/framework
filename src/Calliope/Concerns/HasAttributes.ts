@@ -26,9 +26,15 @@ export type AttributeKeys<T> = Exclude<KeysNotMatching<T, CallableFunction>, Int
 export type Attributes<T extends HasAttributes = HasAttributes> = Record<AttributeKeys<T> | string, unknown>;
 // todo - update type to specify value type so getAttributes().myKey will correctly typehint and not be unknown
 // export type Attributes<
-//     M extends HasAttributes = HasAttributes,
-//     K extends KeysNotMatching<M, CallableFunction> | string = KeysNotMatching<M, CallableFunction> | string>
-//     = Record<K, M[K]> & Record<string, unknown>;
+//     M extends HasAttributes = HasAttributes
+//     // string index falls back to the model index signature
+// > = { [P in keyof M extends AttributeKeys<M> ? keyof M : never]: M[P] };
+//
+//
+// export type KeysNotMatching<T, V> = KeysNotMatching2<keyof T, T, V>;
+// // Using this intermediate type to force distribution.
+// type KeysNotMatching2<Keys extends keyof T, T, V> = Keys extends unknown ? KeyIsAttribute<Keys, T, V> : never;
+// type KeyIsAttribute<Key extends keyof T, T, V> = T[Key] extends V ? never : Key;
 
 export default class HasAttributes extends GuardsAttributes implements Jsonable, Iterable<any> {
     /**
@@ -606,7 +612,8 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {object}
      */
-    public only(attributes: MaybeArray<AttributeKeys<this> | string>): Attributes
+    public only<K extends AttributeKeys<this> | string>(attributes: K): Pick<Attributes<this>, K> & Record<K, this[K]>
+    public only(attributes: MaybeArray<string>): Attributes
     public only(attributes: MaybeArray<string>): Attributes {
         attributes = Array.isArray(attributes) ? attributes : [attributes];
         const result: Attributes = {};
@@ -627,7 +634,8 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {object}
      */
-    public except(attributes: MaybeArray<AttributeKeys<this> | string>): Attributes
+    public except<K extends AttributeKeys<this> | string>(attributes: K): Record<Exclude<AttributeKeys<this>, K>, this[Exclude<AttributeKeys<this>, K>]> & Record<K, K extends AttributeKeys<this> ? never : unknown>
+    public except(attributes: MaybeArray<string>): Attributes
     public except(attributes: MaybeArray<string>): Attributes {
         const result: Attributes = {};
 

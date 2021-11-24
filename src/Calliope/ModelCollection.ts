@@ -162,7 +162,9 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
                     boolean = !modelArray.some(item => key(item) === key(model));
                 } else if (key in model && model[key] instanceof Function) {
                     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                    boolean = !modelArray.some(item => item[key]() === model[key]());
+                    boolean = !modelArray.some(item =>
+                        (item[key] as CallableFunction)() === (model[key] as CallableFunction)()
+                    );
                 } else {
                     boolean = !modelArray.some(item  => item[String(key)] === model[String(key)]);
                 }
@@ -215,9 +217,13 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
                 if (model[key] instanceof Function) {
                     boolean =
                         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                        !values.some(item => item[key]() === model[key]()) &&
+                        !values.some(item =>
+                            (item[key] as CallableFunction)() === (model[key] as CallableFunction)()
+                        ) &&
                         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                        array.filter(item => item[key]() === model[key]()).length > 1;
+                        array.filter(item =>
+                            (item[key] as CallableFunction)() === (model[key] as CallableFunction)()
+                        ).length > 1;
                 } else {
                     boolean =
                         !values.some(item => item[String(key)] === model[String(key)]) &&

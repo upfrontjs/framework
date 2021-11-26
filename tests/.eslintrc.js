@@ -33,7 +33,7 @@ module.exports = {
                 "toBeTruthy": 'Use toBe(true) instead to avoid unexpected type coercion.',
             }
         ],
-        "jest/lowercase-name": [
+        "jest/prefer-lowercase-title": [
             "error",
             {
                 "ignore": ["describe"]

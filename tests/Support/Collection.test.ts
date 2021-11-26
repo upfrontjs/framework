@@ -162,6 +162,7 @@ describe('Collection', () => {
     });
 
     describe('hasDuplicates()', () => {
+        // eslint-disable-next-line jest/require-hook
         let elements: any[] = [1, 2, 1, 4, 5];
 
         beforeEach(() => {
@@ -280,6 +281,7 @@ describe('Collection', () => {
     });
 
     describe('duplicates()', () => {
+        // eslint-disable-next-line jest/require-hook
         let elements: any[] = [1, 2, 1, '1', 2];
 
         beforeEach(() => {

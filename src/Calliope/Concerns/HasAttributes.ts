@@ -456,7 +456,9 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      * @return {any}
      */
     public getRawOriginal(): Attributes<this>
-    public getRawOriginal<K extends AttributeKeys<this> | string, T extends K extends AttributeKeys<this> ? this[K] : unknown>(key?: K, defaultValue?: T): T
+    public getRawOriginal<
+        K extends AttributeKeys<this> | string,
+        T extends K extends AttributeKeys<this> ? this[K] : unknown>(key?: K, defaultValue?: T): T
     public getRawOriginal<T>(key?: string, defaultValue?: T): T
     public getRawOriginal(key?: string, defaultValue?: unknown): unknown {
         if (key) {
@@ -634,7 +636,9 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {object}
      */
-    public except<K extends AttributeKeys<this> | string>(attributes: K): Record<Exclude<AttributeKeys<this>, K>, this[Exclude<AttributeKeys<this>, K>]> & Record<K, K extends AttributeKeys<this> ? never : unknown>
+    public except<K extends AttributeKeys<this> | string>(attributes: K):
+    Record<Exclude<AttributeKeys<this>, K>, this[Exclude<AttributeKeys<this>, K>]>
+    & Record<K, K extends AttributeKeys<this> ? never : unknown>
     public except(attributes: MaybeArray<string>): Attributes
     public except(attributes: MaybeArray<string>): Attributes {
         const result: Attributes = {};

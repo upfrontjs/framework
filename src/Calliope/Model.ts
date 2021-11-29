@@ -132,8 +132,8 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {Promise<Model|ModelCollection<Model>>}
      */
-    public static async all(): Promise<ModelCollection<Model>> {
-        let response = await new this().get();
+    public static async all<T extends Model>(): Promise<ModelCollection<T>> {
+        let response = await new this().get<T>();
 
         if (response instanceof Model) {
             response = new ModelCollection([response]);
@@ -186,7 +186,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @see CallsApi.prototype.patch
      */
-    public async update(data: Attributes<this>): Promise<Model> {
+    public async update(data: Attributes<this>): Promise<this> {
         this.throwIfModelDoesntExistsWhenCalling('update');
         return this.setEndpoint(finish(this.getEndpoint(), '/') + String(this.getKey()))
             .patch(data);
@@ -199,10 +199,10 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return
      */
-    public async find(id: number | string): Promise<this> {
+    public async find<T extends this>(id: number | string): Promise<T> {
         return await this
             .setEndpoint(finish(this.getEndpoint(), '/') + String(id))
-            .get() as this;
+            .get() as T;
     }
 
     /**
@@ -210,8 +210,8 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @see Model.prototype.find
      */
-    public static async find(id: number | string): Promise<Model> {
-        return new this().find(id);
+    public static async find<T extends Model>(id: number | string): Promise<T> {
+        return new this().find<T>(id);
     }
 
     /**
@@ -219,11 +219,11 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @param {string[]|number[]} ids
      */
-    public async findMany(ids: (number | string)[]): Promise<ModelCollection<Model>> {
+    public async findMany<T extends this>(ids: (number | string)[]): Promise<ModelCollection<T>> {
         let response = await this
             .resetQueryParameters()
             .whereKey(ids)
-            .get();
+            .get<T>();
 
         if (response instanceof Model) {
             response = new ModelCollection([response]);
@@ -237,8 +237,8 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @see Model.prototype.findMany
      */
-    public static async findMany(ids: (number | string)[]): Promise<ModelCollection<Model>> {
-        return new this().findMany(ids);
+    public static async findMany<T extends Model>(ids: (number | string)[]): Promise<ModelCollection<T>> {
+        return new this().findMany<T>(ids);
     }
 
     /**
@@ -246,7 +246,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {Promise<Model>}
      */
-    public async refresh(): Promise<Model> {
+    public async refresh(): Promise<this> {
         this.throwIfModelDoesntExistsWhenCalling('refresh');
         const model = await this.reset().select(this.getAttributeKeys()).find(this.getKey()!);
 

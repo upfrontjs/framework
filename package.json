@@ -78,7 +78,7 @@
         "uuid": "^8.3.2"
     },
     "devDependencies": {
-        "@commitlint/config-conventional": "^13.1.0",
+        "@commitlint/config-conventional": "^15.0.0",
         "@commitlint/prompt-cli": "^13.1.0",
         "@commitlint/types": "^13.1.0",
         "@rollup/plugin-typescript": "^8.1.0",

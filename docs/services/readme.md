@@ -20,6 +20,20 @@ HandlesApiResponse's task is to handle the parsing of the `Response` returned by
 
 As you might have noticed in the above service interfaces they work with an object called `ApiResponse` as opposed to a [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response). This is because this interface is more generic and can easily be implemented if deciding to use something other than the [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) api.
 
+::: tip
+Typescript users may use module augmentation to specify what their `ApiResponse` is actually look like:
+```ts
+// shims/upfront.d.ts
+import type { ApiResponse as BaseApiResponse } from '@upfrontjs/framework';
+
+declare module '@upfrontjs/framework' {
+    interface ApiResponse extends BaseApiResponse {
+        myKey?: string;
+    }
+}
+```
+:::
+
 ---
 
 Upfront provides the implementations for the above interfaces which should cover most use cases. If you don't set your own implementation, upfront will fall back to these default services. These classes are also available from the [global configuration]((../helpers/global-config.md)) anywhere in your application.

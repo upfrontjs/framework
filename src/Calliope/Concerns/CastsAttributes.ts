@@ -5,7 +5,7 @@ import type AttributeCaster from '../../Contracts/AttributeCaster';
 import GlobalConfig from '../../Support/GlobalConfig';
 import type { Attributes, AttributeKeys } from './HasAttributes';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
-import { isConstructableUserClass, isObjectLiteral } from '../../Support/function';
+import { isUserLandClass, isObjectLiteral } from '../../Support/function';
 import type Model from '../Model';
 
 type BuiltInCastType = 'boolean' | 'collection' | 'datetime' | 'number' | 'string';
@@ -285,7 +285,7 @@ export default class CastsAttributes {
             }
 
             return date;
-        } else if (isConstructableUserClass(dateTimeLib)) {
+        } else if (isUserLandClass(dateTimeLib)) {
             return new dateTimeLib(value);
         } else {
             return dateTimeLib(value);

@@ -6,7 +6,7 @@ import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
 import GlobalConfig from '../../Support/GlobalConfig';
 import Collection from '../../Support/Collection';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
-import { isConstructableUserClass } from '../../Support/function';
+import { isUserLandClass } from '../../Support/function';
 import { plural, singular } from '../../Support/string';
 import type Configuration from '../../Contracts/Configuration';
 import type { MaybeArray } from '../../Support/type';
@@ -233,7 +233,7 @@ export default class FactoryBuilder<T extends Model> {
     public with(relation: FactoryBuilder<Model> | (new () => Model), relationName?: string): this {
         if (relation instanceof FactoryBuilder) {
             relationName = relationName ?? relation.model.getName().toLowerCase();
-        } else if (isConstructableUserClass<typeof Model>(relation)) {
+        } else if (isUserLandClass<typeof Model>(relation)) {
             relationName = relationName ?? (new relation).getName().toLowerCase();
             relation = relation.factory();
         } else {

@@ -45,6 +45,20 @@ describe('ModelCollection', () => {
         });
     });
 
+    describe('_throwIfNotModels()', () => {
+        it('should accept a collection of models', () => {
+            // @ts-expect-error
+            expect(collection._throwIfNotModels(new Collection([user1, user2, user3]))).toBeUndefined();
+        });
+    });
+
+    describe('_isModelArray()', () => {
+        it('should return false if not an array given', () => {
+            // @ts-expect-error
+            expect(ModelCollection._isModelArray('not array')).toBe(false);
+        });
+    });
+
     describe('_getArgumentKeys()', () => {
         beforeEach(() => {
             collection = new ModelCollection();
@@ -534,6 +548,16 @@ describe('ModelCollection', () => {
 
         it('should return a model collection ready for chaining', () => {
             expect(ModelCollection.times(5, () => user1).toArray()).toHaveLength(5);
+        });
+    });
+
+    describe('toJson', () => {
+        it('should return a json representation of all the models in the collection', () => {
+            const json = JSON.parse(collection.toJson());
+
+
+            expect(json).toHaveLength(collection.length);
+            expect(json[0][user1.getKeyName()]).toBe(user1.getKey());
         });
     });
 

@@ -321,10 +321,6 @@ export default class CallsApi extends BuildsQuery {
     protected setLastSyncedAt(to: unknown = new Date): this {
         const key = '_' + this.setStringCase('last_synced_at');
 
-        if (key in this) {
-            delete this[key];
-        }
-
         Object.defineProperty(this, key, {
             // @ts-expect-error
             get: () => this.castToDateTime(key, to),

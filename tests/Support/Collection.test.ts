@@ -1532,6 +1532,11 @@ describe('Collection', () => {
                     .toBe('2,3');
             });
 
+            it('should join the object by casting them to string if no key is given', () => {
+                collection = new Collection([{ id: 1, toString: () => 'first' }, { id: 2 }]);
+                expect(collection.join()).toBe('first,[object Object]');
+            });
+
             it('should accepts the first argument as separator if elements are not objects', () => {
                 expect(collection.join(':')).toBe(elements.join(':'));
             });

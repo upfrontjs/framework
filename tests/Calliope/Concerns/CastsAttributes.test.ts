@@ -106,7 +106,7 @@ describe('CastsAttributes', () => {
             expect(caster.publicCastAttribute('test', undefined)).toBe('undefined');
             expect(caster.publicCastAttribute('test', false)).toBe('false');
             // calls the toString method
-            expect(caster.publicCastAttribute('test', caster)).toBe('[object Object]');
+            expect(caster.publicCastAttribute('test', {})).toBe('[object Object]');
             expect(caster.publicCastAttribute('test', transformsToString)).toBe('value');
         });
 

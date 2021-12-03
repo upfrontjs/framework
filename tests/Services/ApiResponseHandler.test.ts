@@ -64,6 +64,15 @@ describe('ApiResponseHandler', () => {
             expect(resp.status).toBe(503);
             expect(resp.statusText).toBe('Service Unavailable');
         });
+
+        it('should throw JSON error if returned data cannot be parsed', async () => {
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse('{"key":"value"')));
+            await expect(handler.handle(fetch('url')))
+                .rejects
+                .toThrowErrorMatchingInlineSnapshot(
+                    '"invalid json response body at  reason: Unexpected end of JSON input"'
+                );
+        });
     });
 
     it.each([
@@ -78,12 +87,9 @@ describe('ApiResponseHandler', () => {
         await expect(handler.handle(fetch('url')).catch(r => r)).resolves.toBeUndefined();
     });
 
-    it('should return undefined if returned data cannot be parsed', async () => {
-        fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse('{"key":"value"')));
-        await expect(handler.handle(fetch('url')))
-            .rejects
-            .toThrowErrorMatchingInlineSnapshot(
-                '"invalid json response body at  reason: Unexpected end of JSON input"'
-            );
+    it('should return undefined if it\'s a successful response but has no json parsing available', async () => {
+        await expect(handler.handle(
+            Promise.resolve({ status: 200, statusText: 'OK', headers: new Headers }))
+        ).resolves.toBeUndefined();
     });
 });

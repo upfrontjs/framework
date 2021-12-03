@@ -231,6 +231,12 @@ describe('CallsApi', () => {
             expect(parsedResponse).toStrictEqual(data);
         });
 
+        it('should return undefined if the response from the handler is undefined', async () => {
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(undefined, { status: 100 })));
+            // @ts-expect-error
+            await expect(caller.call('get')).resolves.toBeUndefined();
+        });
+
         describe('requestMiddleware', () => {
             it('should run the given request middleware if set in the configuration', async () => {
                 fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));

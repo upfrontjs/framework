@@ -4,7 +4,7 @@ import User from '../mock/Models/User';
 import { types } from '../test-helpers';
 
 let collection: ModelCollection<User>;
-const incompatibleElementsError = new TypeError(ModelCollection.name + ' can only handle Model values.');
+const incompatibleElementsError = new TypeError('ModelCollection can only handle Model values.');
 
 const user1 = User.factory().create() as User;
 const user2 = User.factory().create() as User;
@@ -572,5 +572,9 @@ describe('ModelCollection', () => {
                 expect(collection.map(user => user)).toBeInstanceOf(ModelCollection);
             });
         });
+    });
+
+    describe('toString()', () => {
+
     });
 });

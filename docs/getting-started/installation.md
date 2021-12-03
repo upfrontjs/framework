@@ -29,6 +29,8 @@ This way you can deliver the files with the correct optimisation to your audienc
 Instead of writing `'@upfrontjs/framework/src'` at every import you could choose to alias it to something shorter like `'@upfrontjs'` in the bundler of your choice. (If doing so, don't forget to add the aliases to your typescript and test runner configuration too if applicable.)
 :::
 
+You're now ready to [write your first model](../calliope/readme.md#creating-models).
+
 ## Optional steps
 Add your base [endpoint](../helpers/global-config.md#baseendpoint) to the [configuration](../helpers/global-config.md) in your entry file like so:
 ```js

@@ -27,7 +27,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
         if (Array.isArray(iterable) && !iterable.length) return;
 
         if (!ModelCollection._isModelArray(iterable)) {
-            throw new TypeError(this.constructor.name + ' can only handle Model values.');
+            throw new TypeError('ModelCollection can only handle Model values.');
         }
     }
 

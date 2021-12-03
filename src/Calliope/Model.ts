@@ -114,10 +114,13 @@ export default class Model extends SoftDeletes implements HasFactory {
     /**
      * Gets the current class' name.
      *
+     * For more information check the {@link https://upfrontjs.com/calliope/#getname|documentation}
+     *
      * @return {string}
      */
     public getName(): string {
-        return this.constructor.name;
+        // has to define because bundlers might rename the class names
+        throw new Error('Your model has to define the getName method.');
     }
 
     /**

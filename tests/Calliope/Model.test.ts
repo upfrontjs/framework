@@ -55,7 +55,12 @@ describe('Model', () => {
     describe('getName()', () => {
         it('should get the class name', () => {
             expect(user.getName()).toBe(User.name);
-            expect((new Model).getName()).toBe(Model.name);
+        });
+
+        it('should throw an error if class doesn\'t override', () => {
+            expect(() => (new Model).getName()).toThrow(
+                new Error('Your model has to define the getName method.')
+            );
         });
     });
 

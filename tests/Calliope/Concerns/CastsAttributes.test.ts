@@ -7,6 +7,10 @@ import type AttributeCaster from '../../../src/Contracts/AttributeCaster';
 import LogicException from '../../../src/Exceptions/LogicException';
 
 class CastingClass extends User {
+    public override getName(): string {
+        return 'CastingClass';
+    }
+
     public getCasts() {
         return this.attributeCasts;
     }

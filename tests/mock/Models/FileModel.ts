@@ -3,6 +3,10 @@ import type Factory from '../../../src/Calliope/Factory/Factory';
 import FileFactory from '../Factories/FileFactory';
 
 export default class FileModel extends Model {
+    public override getName(): string {
+        return 'FileModel';
+    }
+
     public factory(): Factory<this> {
         return new FileFactory;
     }

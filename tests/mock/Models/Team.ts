@@ -4,6 +4,10 @@ import type Factory from '../../../src/Calliope/Factory/Factory';
 import TeamFactory from '../Factories/TeamFactory';
 
 export default class Team extends Model {
+    public override getName(): string {
+        return 'Team';
+    }
+
     public get fillable(): string[] {
         return ['*'];
     }

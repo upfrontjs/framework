@@ -156,7 +156,7 @@ import { Model } from '@upfrontjs/framework';
 
 export default class User extends Model {
     async first() {
-        const users = await User.limit(1).get(); // ModelCollection[User]
+        const users = await this.limit(1).get(); // ModelCollection[User]
         
         return users.first();
     }
@@ -178,7 +178,7 @@ Extending/overwriting the model should not be a daunting task. If we wanted we c
 import type { FormatsQueryParameters, QueryParams } from '@upfrontjs/framework';
 import { Model as BaseModel } from '@upfrontjs/framework';
 
-export default class ModelWithAppends extends BaseModel implements FormatsQueryParameters {
+export default class Model extends BaseModel implements FormatsQueryParameters {
     protected appends: string[] = [];
 
     public append(name: string): this {

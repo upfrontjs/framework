@@ -35,7 +35,7 @@ export default class ApiResponseHandler implements HandlesApiResponse {
         if (response.status < 200 || response.status > 299 || response.status === 204) return;
 
         if (typeof response.json === 'function') {
-            return response.json();
+            return (response as Response).json();
         }
 
         return;

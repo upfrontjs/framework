@@ -1,6 +1,7 @@
-type TransformedResponse = Partial<Response> & Pick<Response, 'headers' | 'status' | 'statusText'>;
-
-export interface ApiResponse extends TransformedResponse {
+/**
+ * The http library agnostic response.
+ */
+export interface ApiResponse extends Pick<Response, 'headers' | 'status' | 'statusText'> {
     /**
      * The parsed response content.
      * (in case of libraries like axios)

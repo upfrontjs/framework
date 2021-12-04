@@ -40,7 +40,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @protected
      */
-    protected static _isModelArray(array: any): array is Model[] {
+    protected static _isModelArray<M extends Model>(array: any): array is M[] {
         if (!Array.isArray(array)) {
             return false;
         }
@@ -57,7 +57,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @protected
      */
-    protected static _isModel(arg: any): arg is Model {
+    protected static _isModel<M extends Model>(arg: any): arg is M {
         return typeof arg === 'object'
             && arg !== null
             && (arg as Record<string, any>).getKey instanceof Function

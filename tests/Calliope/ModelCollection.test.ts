@@ -551,10 +551,9 @@ describe('ModelCollection', () => {
         });
     });
 
-    describe('toJson', () => {
+    describe('toJSON', () => {
         it('should return a json representation of all the models in the collection', () => {
-            const json = JSON.parse(collection.toJson());
-
+            const json = collection.toJSON().elements;
 
             expect(json).toHaveLength(collection.length);
             expect(json[0][user1.getKeyName()]).toBe(user1.getKey());

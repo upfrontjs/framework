@@ -2,6 +2,7 @@ import User from '../../mock/Models/User';
 import Shift from '../../mock/Models/Shift';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
 import { isEqual } from 'lodash';
+import Contract from '../../mock/Models/Contract';
 
 let hasAttributes: User;
 
@@ -667,24 +668,24 @@ describe('HasAttributes', () => {
         });
     });
 
-    describe('toJson()', () => {
-        it('should stringify the attributes', () => {
-            expect(hasAttributes.toJson()).toStrictEqual(JSON.stringify({
+    describe('toJSON()', () => {
+        it('should jsonify the attributes', () => {
+            expect(hasAttributes.toJSON()).toStrictEqual({
                 test: hasAttributes.getAttribute('test')
-            }));
+            });
         });
 
-        it('should recursively stringify the relations', () => {
+        it('should recursively jsonify the relations', () => {
             const shift = new Shift();
             shift.setAttribute('shiftAttr', 1);
             hasAttributes.addRelation('shifts', shift);
 
-            expect(hasAttributes.toJson()).toBe(JSON.stringify({
+            expect(hasAttributes.toJSON()).toStrictEqual({
                 test: 1,
                 shifts: [
                     { shiftAttr: 1 }
                 ]
-            }));
+            });
         });
     });
 });

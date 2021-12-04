@@ -418,7 +418,9 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
     /**
      * @inheritDoc
      */
-    public override toJson(): string {
-        return JSON.stringify(this.toArray().map(model => JSON.parse(model.toJson())));
+    public override toJSON(): { elements: ReturnType<typeof JSON.parse>[] } {
+        // eslint-disable-next-line max-len
+        // https://security.stackexchange.com/questions/7001/how-should-web-app-developers-defend-against-json-hijacking/7003#7003
+        return { elements: this.toArray().map(model => model.toJSON()) };
     }
 }

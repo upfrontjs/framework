@@ -659,14 +659,20 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     /**
      * @inheritDoc
      */
-    public toJson(): string {
-        const objectRepresentation = this.getAttributes() as Attributes;
+    public toJSON(): ReturnType<typeof JSON.parse> {
+        const json = this.getAttributes() as Attributes;
 
         const relations = (this as unknown as HasRelations).getRelations();
 
-        Object.keys(relations).forEach(relation =>
-            objectRepresentation[relation] = JSON.parse(relations[relation]!.toJson()));
+        Object.keys(relations).forEach(relation => {
+            if (relations[relation] instanceof HasAttributes) {
+                json[relation] = relations[relation]!.toJSON();
+                return;
+            }
 
-        return JSON.stringify(objectRepresentation);
+            json[relation] = (relations[relation]! as ModelCollection<Model>).map(model => model.toJSON()).toArray();
+        });
+
+        return json;
     }
 }

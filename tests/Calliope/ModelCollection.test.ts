@@ -574,6 +574,8 @@ describe('ModelCollection', () => {
     });
 
     describe('toString()', () => {
-
+        it('should call the toString method on its members', () => {
+            expect(collection.toString()).toBe(elements.map(model => model.toString()).join());
+        });
     });
 });

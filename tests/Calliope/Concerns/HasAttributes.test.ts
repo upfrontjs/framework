@@ -688,4 +688,15 @@ describe('HasAttributes', () => {
             });
         });
     });
+
+    describe('toString()', () => {
+        it('should return a json with spacing', () => {
+            hasAttributes = User.factory<User>()
+                .with(Shift.factory(2))
+                .with(Contract)
+                .createOne({ key1: 1, key2: 2 });
+
+            expect(hasAttributes.toString()).toBe(JSON.stringify(hasAttributes.toJSON(), null, 4));
+        });
+    });
 });

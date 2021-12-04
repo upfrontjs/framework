@@ -675,4 +675,13 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
 
         return json;
     }
+
+    /**
+     * Show the model in a human-readable string representation.
+     *
+     * @return {string}
+     */
+    public toString(): string {
+        return JSON.stringify(this.toJSON(), null, 4);
+    }
 }

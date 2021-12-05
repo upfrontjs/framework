@@ -1,5 +1,3 @@
-import type { ExtractArguments } from './type';
-
 export type Listener<TArg = any> = (...args: TArg[]) => Promise<void> | void;
 export type Events = Record<string, Listener[]>;
 
@@ -44,7 +42,7 @@ export default class EventEmitter<TEvents extends Events = Events> {
      */
     public async emit<P extends keyof TEvents>(
         event: P,
-        ...args: ExtractArguments<TEvents[P][number]>
+        ...args: Parameters<TEvents[P][number]>
     ): Promise<this>;
     public async emit(event: string, ...args: unknown[]): Promise<this> {
         if (event in this.listenersOnce) {
@@ -114,12 +112,12 @@ export default class EventEmitter<TEvents extends Events = Events> {
      */
     public on<P extends keyof TEvents>(
         event: P,
-        listener: Listener<ExtractArguments<TEvents[P][number]>[number]>
+        listener: Listener<Parameters<TEvents[P][number]>[number]>
     ): this;
     public on(event: string, listener: CallableFunction): this;
     public on<P extends keyof TEvents>(
         event: P,
-        listener: Listener<ExtractArguments<TEvents[P][number]>[number]>
+        listener: Listener<Parameters<TEvents[P][number]>[number]>
     ): this {
         if (!Array.isArray(this.listeners[event])) {
             this.listeners[event as keyof TEvents] = [] as unknown as TEvents[keyof TEvents];
@@ -135,12 +133,12 @@ export default class EventEmitter<TEvents extends Events = Events> {
      */
     public once<P extends keyof TEvents>(
         event: P,
-        listener: Listener<ExtractArguments<TEvents[P][number]>[number]>
+        listener: Listener<Parameters<TEvents[P][number]>[number]>
     ): this;
     public once(event: string, listener: CallableFunction): this;
     public once<P extends keyof TEvents>(
         event: P,
-        listener: Listener<ExtractArguments<TEvents[P][number]>[number]>
+        listener: Listener<Parameters<TEvents[P][number]>[number]>
     ): this {
         if (!Array.isArray(this.listenersOnce[event])) {
             this.listenersOnce[event] = [] as unknown as TEvents[P];
@@ -156,12 +154,12 @@ export default class EventEmitter<TEvents extends Events = Events> {
      */
     public prependListener<P extends keyof TEvents>(
         event: P,
-        listener: Listener<ExtractArguments<TEvents[P][number]>[number]>
+        listener: Listener<Parameters<TEvents[P][number]>[number]>
     ): this;
     public prependListener(event: string, listener: CallableFunction): this;
     public prependListener<P extends keyof TEvents>(
         event: P,
-        listener: Listener<ExtractArguments<TEvents[P][number]>[number]>
+        listener: Listener<Parameters<TEvents[P][number]>[number]>
     ): this {
         if (!Array.isArray(this.listeners[event])) {
             this.listeners[event as keyof TEvents] = [] as unknown as TEvents[keyof TEvents];
@@ -177,12 +175,12 @@ export default class EventEmitter<TEvents extends Events = Events> {
      */
     public prependOnceListener<P extends keyof TEvents>(
         event: P,
-        listener: Listener<ExtractArguments<TEvents[P][number]>[number]>
+        listener: Listener<Parameters<TEvents[P][number]>[number]>
     ): this;
     public prependOnceListener(event: string, listener: CallableFunction): this;
     public prependOnceListener<P extends keyof TEvents>(
         event: P,
-        listener: Listener<ExtractArguments<TEvents[P][number]>[number]>
+        listener: Listener<Parameters<TEvents[P][number]>[number]>
     ): this {
         if (!Array.isArray(this.listenersOnce[event])) {
             this.listenersOnce[event] = [] as unknown as TEvents[P];

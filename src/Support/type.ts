@@ -13,15 +13,6 @@ export type RequireSome<T extends Record<PropertyKey, any>, K extends keyof T> =
 export type MaybeArray<T> = T | T[];
 
 /**
- * Get the type of the arguments for the given callable type into a tuple.
- */
-// todo - remove this in favour of the built in Parameters when type testing has been implemented
-export type ExtractArguments<T> = [T] extends [(...args: infer U) => any]
-    ? U
-    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-    : [T] extends [void] ? [] : [T];
-
-/**
  * Set every property nested or otherwise to optional.
  */
 export type DeepPartial<T> = {

@@ -24,17 +24,6 @@ export type AttributeKeys<T> = Exclude<KeysNotMatching<T, CallableFunction>, Int
  * The attributes the model is handling.
  */
 export type Attributes<T extends HasAttributes = HasAttributes> = Record<AttributeKeys<T> | string, unknown>;
-// todo - update type to specify value type so getAttributes().myKey will correctly typehint and not be unknown
-// export type Attributes<
-//     M extends HasAttributes = HasAttributes
-//     // string index falls back to the model index signature
-// > = { [P in keyof M extends AttributeKeys<M> ? keyof M : never]: M[P] };
-//
-//
-// export type KeysNotMatching<T, V> = KeysNotMatching2<keyof T, T, V>;
-// // Using this intermediate type to force distribution.
-// type KeysNotMatching2<Keys extends keyof T, T, V> = Keys extends unknown ? KeyIsAttribute<Keys, T, V> : never;
-// type KeyIsAttribute<Key extends keyof T, T, V> = T[Key] extends V ? never : Key;
 
 export default class HasAttributes extends GuardsAttributes implements Jsonable, Iterable<any> {
     /**

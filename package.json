@@ -91,7 +91,7 @@
         "@types/uuid": "^8.3.0",
         "@typescript-eslint/eslint-plugin": "^5.4.0",
         "@typescript-eslint/parser": "^5.4.0",
-        "commitlint": "^13.1.0",
+        "commitlint": "^15.0.0",
         "conventional-changelog-conventionalcommits": "4.6.0",
         "eslint": "^8.3.0",
         "eslint-plugin-import": "^2.22.1",

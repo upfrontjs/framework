@@ -28,3 +28,10 @@ export type KeysMatching<T, V> = { [K in keyof T]: T[K] extends never ? V : K }[
  * Get the keys of the given type where the value doesn't match the given argument.
  */
 export type KeysNotMatching<T, V> = { [K in keyof T]: T[K] extends V ? never : K }[keyof T];
+
+/**
+ * Make an intersection type from the given object type or interface union.
+ */
+export type UnionToIntersection<T extends Record<PropertyKey, any>> = (T extends any ? (x: T) => any : never) extends (
+    x: infer U
+) => any ? U : never;

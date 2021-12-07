@@ -1,12 +1,14 @@
 import type { MockResponseInit } from 'jest-fetch-mock';
-import { cloneDeep } from 'lodash';
 import { isObjectLiteral } from '../src/Support/function';
 import Collection from '../src/Support/Collection';
 import type User from './mock/Models/User';
 import fetchMock from 'jest-fetch-mock';
 
-export const buildResponse = (response?: any[] | Record<string, any> | string): MockResponseInit => {
-    let responseObject: MockResponseInit = {
+export const buildResponse = (
+    response?: any[] | Record<string, any> | string,
+    responseInit?: MockResponseInit & { body?: any }
+): MockResponseInit => {
+    const responseObject: MockResponseInit = {
         status: 200,
         body: JSON.stringify({ data: 'value' })
     };
@@ -17,14 +19,14 @@ export const buildResponse = (response?: any[] | Record<string, any> | string): 
         responseObject.body = JSON.stringify(response);
     } else if (Collection.isCollection(response)) {
         responseObject.body = JSON.stringify(response.toArray());
-    } else if (isObjectLiteral(response)) {
-        if (!response.body) {
-            responseObject.body = JSON.stringify(response);
-        } else {
-            responseObject = Object.assign(responseObject, cloneDeep(response));
-            if (isObjectLiteral(responseObject.body)) {
-                responseObject.body = JSON.stringify(responseObject.body);
-            }
+    } else if (isObjectLiteral(response) && !response.body) {
+        responseObject.body = JSON.stringify(response);
+    }
+
+    if (responseInit) {
+        Object.assign(responseObject, responseInit);
+        if (isObjectLiteral(responseObject.body)) {
+            responseObject.body = JSON.stringify(responseObject.body);
         }
     }
 

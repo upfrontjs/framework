@@ -4,7 +4,7 @@ import User from '../mock/Models/User';
 import { types } from '../test-helpers';
 
 let collection: ModelCollection<User>;
-const incompatibleElementsError = new TypeError(ModelCollection.name + ' can only handle Model values.');
+const incompatibleElementsError = new TypeError('ModelCollection can only handle Model values.');
 
 const user1 = User.factory().create() as User;
 const user2 = User.factory().create() as User;
@@ -42,6 +42,20 @@ describe('ModelCollection', () => {
             });
 
             expect(ModelCollection.isModelCollection(collection)).toBe(true);
+        });
+    });
+
+    describe('_throwIfNotModels()', () => {
+        it('should accept a collection of models', () => {
+            // @ts-expect-error
+            expect(collection._throwIfNotModels(new Collection([user1, user2, user3]))).toBeUndefined();
+        });
+    });
+
+    describe('_isModelArray()', () => {
+        it('should return false if not an array given', () => {
+            // @ts-expect-error
+            expect(ModelCollection._isModelArray('not array')).toBe(false);
         });
     });
 
@@ -537,6 +551,15 @@ describe('ModelCollection', () => {
         });
     });
 
+    describe('toJSON', () => {
+        it('should return a json representation of all the models in the collection', () => {
+            const json = collection.toJSON().elements;
+
+            expect(json).toHaveLength(collection.length);
+            expect(json[0][user1.getKeyName()]).toBe(user1.getKey());
+        });
+    });
+
     describe('array-methods', () => {
         describe('map()', () => {
             it('should return a collection if not every item returned is model', () => {
@@ -547,6 +570,12 @@ describe('ModelCollection', () => {
             it('should return a model collection if every item is still a model', () => {
                 expect(collection.map(user => user)).toBeInstanceOf(ModelCollection);
             });
+        });
+    });
+
+    describe('toString()', () => {
+        it('should call the toString method on its members', () => {
+            expect(collection.toString()).toBe(elements.map(model => model.toString()).join());
         });
     });
 });

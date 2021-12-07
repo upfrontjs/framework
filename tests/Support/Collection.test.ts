@@ -1,6 +1,7 @@
 import Collection from '../../src/Support/Collection';
 import LogicException from '../../src/Exceptions/LogicException';
 import { now } from '../setupTests';
+import { isObjectLiteral } from '../../src';
 
 let collection: Collection<any>;
 
@@ -162,6 +163,7 @@ describe('Collection', () => {
     });
 
     describe('hasDuplicates()', () => {
+        // eslint-disable-next-line jest/require-hook
         let elements: any[] = [1, 2, 1, 4, 5];
 
         beforeEach(() => {
@@ -206,7 +208,7 @@ describe('Collection', () => {
         });
     });
 
-    describe('toJson()', () => {
+    describe('toJSON()', () => {
         const elements = [1, 2, 3, 4, 5];
 
         beforeEach(() => {
@@ -214,11 +216,16 @@ describe('Collection', () => {
         });
 
         it('should return the collection as a json string', () => {
-            expect(typeof collection.toJson() === 'string').toBe(true);
+            expect(isObjectLiteral(collection.toJSON())).toBe(true);
         });
 
         it('should resolve to the same as an array json string', () => {
-            expect(collection.toJson()).toBe(JSON.stringify(elements));
+            expect(collection.toJSON().elements).toStrictEqual(elements);
+        });
+
+        it('should be an array wrapped in an object under the elements key', () => {
+            expect(collection.toJSON()).toHaveProperty('elements');
+            expect(collection.toJSON().elements).toHaveLength(elements.length);
         });
     });
 
@@ -280,6 +287,7 @@ describe('Collection', () => {
     });
 
     describe('duplicates()', () => {
+        // eslint-disable-next-line jest/require-hook
         let elements: any[] = [1, 2, 1, '1', 2];
 
         beforeEach(() => {
@@ -1528,6 +1536,11 @@ describe('Collection', () => {
                 collection = new Collection([{ id: 1 }, { id: 2 }]);
                 expect(collection.join((item: { id: number }) => item.id + 1))
                     .toBe('2,3');
+            });
+
+            it('should join the object by casting them to string if no key is given', () => {
+                collection = new Collection([{ id: 1, toString: () => 'first' }, { id: 2 }]);
+                expect(collection.join()).toBe('first,[object Object]');
             });
 
             it('should accepts the first argument as separator if elements are not objects', () => {

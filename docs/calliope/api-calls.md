@@ -18,12 +18,12 @@ The `serverAttributeCasing` is a getter which similarly to [attributeCasing](./a
 
 #### _lastSyncedAt
 
-The `_lastSyncedAt` or `_last_synced_at` (naming subject to [attributeCasing](./attributes.md#attributecasing)) attribute is a getter attribute that is set only when the model data has been fetched, [saved](./readme.md#save) or [refreshed](./readme.md#refresh). It is a javascript [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object indicating when was the last time the data has been loaded from the backend. 
+The `_lastSyncedAt` or `_last_synced_at` (naming subject to [attributeCasing](./attributes.md#attributecasing)) attribute is a getter attribute that is set only when the model data has been fetched, [saved](./readme.md#save) or [refreshed](./readme.md#refresh). It is type subject to the [datetime](./attributes.md#datetime) setting, with the value of when was the last time the data has been loaded from the backend.
 
 ## Methods
 
 ::: tip
-All request methods on success will call the [resetEndpoint](#resetendpoint) and will reset the all the [query parameters](./query-building.md).
+All request methods on success will call the [resetEndpoint](#resetendpoint) and will reset  all the [query parameters](./query-building.md).
 :::
 
 #### get
@@ -118,7 +118,7 @@ import User from '@Models/User';
 
 const user = new User;
 user.setEndpoint('/something').getEndpoint(); // '/something'
-user.resetEndpoint('/something').getEndpoint(); // 'users'
+user.resetEndpoint().getEndpoint(); // 'users'
 ```
 
 #### appendToEndpoint

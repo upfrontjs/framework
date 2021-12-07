@@ -8,7 +8,7 @@ import type { Attributes } from '../Calliope/Concerns/HasAttributes';
  */
 export default interface AttributeCaster {
     /**
-     * Transform the attribute from the underlying model value.
+     * Transform the attribute from the underlying model value and return it.
      *
      * @param {any} value - the value to return
      * @param {object} attributes - receives a clone of the raw attributes
@@ -18,12 +18,12 @@ export default interface AttributeCaster {
     get: (value: unknown, attributes: Attributes) => unknown;
 
     /**
-     * Transform the attribute to its underlying model values.
+     * Transform the attribute to its underlying model values and return it.
      *
      * @param {any} value - the value to set
      * @param {object} attributes - receives a clone of the raw attributes
      *
-     * @return {void}
+     * @return {any}
      */
-    set: (value: unknown, attributes: Attributes) => void;
+    set: (value: unknown, attributes: Attributes) => unknown;
 }

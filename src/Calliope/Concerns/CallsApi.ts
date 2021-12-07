@@ -8,7 +8,7 @@ import type { QueryParams } from './BuildsQuery';
 import BuildsQuery from './BuildsQuery';
 import type { Attributes } from './HasAttributes';
 import { isObjectLiteral } from '../../Support/function';
-import { finish, plural, snake, camel } from '../../Support/string';
+import { finish, plural } from '../../Support/string';
 import type { MaybeArray } from '../../Support/type';
 
 export type Method = 'delete' | 'get' | 'patch' | 'post' | 'put';
@@ -23,18 +23,6 @@ export default class CallsApi extends BuildsQuery {
      */
     protected get endpoint(): string {
         return '';
-    }
-
-    /**
-     * Property indicating how attributes and relation names
-     * should be casted by default when sent to the server.
-     *
-     * @type {'snake'|'camel'}
-     *
-     * @protected
-     */
-    protected get serverAttributeCasing(): 'camel' | 'snake' {
-        return 'snake';
     }
 
     /**
@@ -78,11 +66,11 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Promise<any>}
      */
-    protected async call(
+    public async call<T = any>(
         method: Method,
-        data?: Attributes | FormData,
+        data?: Attributes | FormData | QueryParams,
         customHeaders?: Record<string, MaybeArray<string>>
-    ): Promise<any> {
+    ): Promise<T | undefined> {
         const endpoint = this.getEndpoint();
 
         if (!endpoint.length) {
@@ -98,11 +86,10 @@ export default class CallsApi extends BuildsQuery {
          * @see CallsApi.prototype.serverAttributeCasing
          */
         const transformValues = (object: Attributes): Attributes => {
-            const setStringCase = (key: string) => this.serverAttributeCasing === 'camel' ? camel(key) : snake(key);
             const dataWithKeyCasing: Attributes = {};
 
             Object.keys(object).forEach(key => {
-                dataWithKeyCasing[setStringCase(key)] = isObjectLiteral(object[key])
+                dataWithKeyCasing[this.setServerStringCase(key)] = isObjectLiteral(object[key])
                     ? transformValues(object[key] as Attributes)
                     : object[key];
             });
@@ -145,10 +132,29 @@ export default class CallsApi extends BuildsQuery {
         this.requestCount++;
 
         return handlesApiResponse
-            .handle(
-                apiCaller.call(url, method, data, customHeaders, queryParameters)
-            )
-            .finally(() => this.requestCount--);
+            .handle<T>(apiCaller.call(url, method, data, customHeaders, queryParameters))
+            .finally(() => {
+                this.requestCount--;
+                this.resetEndpoint();
+                this.resetQueryParameters();
+            });
+    }
+
+    /**
+     * Access the data property if exists.
+     *
+     * @param {any} response
+     *
+     * @private
+     *
+     * @return {any}
+     */
+    private getDataFromResponse<T>(response: any): T {
+        if (isObjectLiteral<{ data: any }>(response) && 'data' in response) {
+            return response.data;
+        }
+
+        return response;
     }
 
     /**
@@ -158,13 +164,11 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Promise<Model|ModelCollection<Model>>}
      */
-    public async get(queryParameters?: QueryParams | Record<string, unknown>): Promise<Model | ModelCollection<Model>> {
+    public async get<T extends Model>(
+        queryParameters?: QueryParams | Record<string, unknown>
+    ): Promise<ModelCollection<T> | T> {
         return this.call('get', queryParameters)
-            .then(responseData => {
-                this.resetEndpoint().resetQueryParameters();
-
-                return this.newInstanceFromResponseData(responseData as Attributes);
-            });
+            .then(responseData => this.newInstanceFromResponseData<T>(this.getDataFromResponse(responseData)));
     }
 
     /**
@@ -174,10 +178,10 @@ export default class CallsApi extends BuildsQuery {
      *
      * @see CallsApi.prototype.get
      */
-    public static async get(
+    public static async get<T extends Model>(
         queryParameters?: QueryParams | Record<string, unknown>
-    ): Promise<Model | ModelCollection<Model>> {
-        return new this().get(queryParameters);
+    ): Promise<ModelCollection<T> | T> {
+        return new this().get<T>(queryParameters);
     }
 
     /**
@@ -187,13 +191,9 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async post(data: FormData | Record<string, unknown>): Promise<Model> {
+    public async post<T extends Model>(data: Attributes | FormData): Promise<T> {
         return this.call('post', data)
-            .then(responseData => {
-                this.resetEndpoint().resetQueryParameters();
-
-                return this.getResponseModel(this as unknown as Model, responseData);
-            });
+            .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
 
     /**
@@ -203,13 +203,9 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async put(data: FormData | Record<string, unknown>): Promise<Model> {
+    public async put<T extends Model>(data: Attributes | FormData): Promise<T> {
         return this.call('put', data)
-            .then(responseData => {
-                this.resetEndpoint().resetQueryParameters();
-
-                return this.getResponseModel(this as unknown as Model, responseData);
-            });
+            .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
 
     /**
@@ -219,13 +215,9 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async patch(data: FormData | Record<string, unknown>): Promise<Model> {
+    public async patch<T extends Model>(data: Attributes | FormData): Promise<T> {
         return this.call('patch', data)
-            .then(responseData => {
-                this.resetEndpoint().resetQueryParameters();
-
-                return this.getResponseModel(this as unknown as Model, responseData);
-            });
+            .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
 
     /**
@@ -236,28 +228,25 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Promise<boolean>}
      */
-    public async delete(data?: FormData | Record<string, unknown>): Promise<Model> {
+    public async delete<T extends Model>(data?: Attributes | FormData): Promise<T> {
         return this.call('delete', data)
-            .then(responseData => {
-                this.resetEndpoint().resetQueryParameters();
-
-                return this.getResponseModel(this as unknown as Model, responseData);
-            });
+            .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
 
     /**
      * Determine whether to return this or a new model from the response.
      *
-     * @param {Model} defaultVal
      * @param {object|any} responseData
      *
      * @private
      *
      * @return {Model|this}
      */
-    private getResponseModel(defaultVal: Model, responseData: Attributes | any): Model {
+    private getResponseModel<T extends Model>(responseData: Attributes | any): T {
         // returning a collection outside of GET is unexpected.
-        return isObjectLiteral(responseData) ? this.newInstanceFromResponseData(responseData) as Model : defaultVal;
+        return isObjectLiteral(responseData)
+            ? this.newInstanceFromResponseData(responseData) as T
+            : this as unknown as T;
     }
 
     /**
@@ -269,9 +258,9 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Model}
      */
-    protected newInstanceFromResponseData(
+    protected newInstanceFromResponseData<T extends Model>(
         data: MaybeArray<Attributes>
-    ): Model | ModelCollection<Model> {
+    ): ModelCollection<T> | T {
         if (data === null
             || data === undefined
             || typeof data !== 'object'
@@ -283,17 +272,17 @@ export default class CallsApi extends BuildsQuery {
         }
 
         if (Array.isArray(data)) {
-            const collection = new ModelCollection();
+            const collection = new ModelCollection<T>();
 
             data.forEach(attributes => {
-                const model = new (this.constructor as typeof Model)();
+                const model = new (this.constructor as new () => T)();
                 collection.push(model.forceFill(attributes).syncOriginal().setLastSyncedAt());
             });
 
             return collection;
         }
 
-        const model = new (this.constructor as typeof Model)();
+        const model = new (this.constructor as new () => T)();
         return model.forceFill(data).syncOriginal().setLastSyncedAt();
     }
 
@@ -306,15 +295,12 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {this}
      */
-    protected setLastSyncedAt(to: any = new Date): this {
+    protected setLastSyncedAt(to: unknown = new Date): this {
         const key = '_' + this.setStringCase('last_synced_at');
 
-        if (key in this) {
-            delete this[key];
-        }
-
         Object.defineProperty(this, key, {
-            get: () => to,
+            // @ts-expect-error
+            get: () => this.castToDateTime(key, to),
             configurable: true,
             enumerable: true
         });

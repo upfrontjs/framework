@@ -7,6 +7,10 @@ import Contract from './Contract';
 import FileModel from './FileModel';
 
 export default class User extends Model {
+    public override getName(): string {
+        return 'User';
+    }
+
     public get endpoint(): string {
         return 'users';
     }

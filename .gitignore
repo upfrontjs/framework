@@ -4,7 +4,7 @@ index.*.js*
 array.*.js*
 string.*.js*
 types
-.tgz
+*.tgz
 
 # testing
 tests/cache/

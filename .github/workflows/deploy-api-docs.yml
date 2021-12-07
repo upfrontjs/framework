@@ -1,0 +1,26 @@
+name: Deploy Api Docs
+
+on:
+  push:
+    paths:
+      - 'src/**/*.ts'
+    branches:
+      - main
+
+jobs:
+  deploy:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+      - name: Install dependencies
+        run: npm ci
+      - name: Build api docs
+        run: npm run docs:api
+      - name: Update gh-pages branch
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git add api-docs
+          git commit -m "Updates from ${{ github.ref }}"
+          git push -u origin gh-pages

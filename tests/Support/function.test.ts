@@ -20,14 +20,16 @@ describe('function helpers', () => {
 
     describe('isConstructableUserClass()', () => {
         const typesWithoutClass = types.filter(t => !/^\s*class\s+/.test(String(t)));
+        // eslint-disable-next-line jest/require-hook
+        typesWithoutClass.push('class MyClass {'); // see if it checks for more than just the toString()
 
         it('should correctly evaluate if types are user defined classes', () => {
             typesWithoutClass.forEach(type => {
-                expect(func.isConstructableUserClass(type)).toBe(false);
+                expect(func.isUserLandClass(type)).toBe(false);
             });
 
             // eslint-disable-next-line @typescript-eslint/no-extraneous-class
-            expect(func.isConstructableUserClass(class C {})).toBe(true);
+            expect(func.isUserLandClass(class C {})).toBe(true);
         });
     });
 });

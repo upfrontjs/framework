@@ -4,6 +4,10 @@ import ContractFactory from '../Factories/ContractFactory';
 import type Factory from '../../../src/Calliope/Factory/Factory';
 
 export default class Contract extends Model {
+    public override getName(): string {
+        return 'Contract';
+    }
+
     public get fillable(): string[] {
         return ['*'];
     }

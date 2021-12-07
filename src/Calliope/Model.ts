@@ -1,7 +1,7 @@
 import SoftDeletes from './Concerns/SoftDeletes';
 import FactoryBuilder from './Factory/FactoryBuilder';
 import type HasFactory from '../Contracts/HasFactory';
-import type { Attributes } from './Concerns/HasAttributes';
+import type { Attributes, AttributeKeys } from './Concerns/HasAttributes';
 import ModelCollection from './ModelCollection';
 import LogicException from '../Exceptions/LogicException';
 import { finish, isUuid } from '../Support/string';
@@ -54,7 +54,18 @@ export default class Model extends SoftDeletes implements HasFactory {
      * @return {string|number}
      */
     public getKey(): number | string | undefined {
-        return this.getAttribute(this.getKeyName());
+        return this.getAttribute(this.getKeyName()) as number | string | undefined;
+    }
+
+    /**
+     * Construct a new model from context.
+     *
+     * @param {object=} attributes
+     *
+     * @return {this}
+     */
+    public new(attributes?: Attributes | Attributes<this>): this {
+        return new (this.constructor as new (attributes?: Attributes | Attributes<this>) => this)(attributes);
     }
 
     /**
@@ -62,17 +73,21 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @param {string[]|string} except
      */
+    public replicate(except?: MaybeArray<AttributeKeys<this> | string>): this
     public replicate(except?: MaybeArray<string>): this {
-        let excluded = [
+        const excluded = new Set([
             this.getKeyName(),
             this.getCreatedAtColumn(),
             this.getUpdatedAtColumn(),
             this.getDeletedAtColumn()
-        ];
+        ]);
 
         if (except) {
-            // make sure we only have unique values
-            excluded = [...new Set([...excluded, ...Array.isArray(except) ? except : [except]])];
+            if (Array.isArray(except)) {
+                except.forEach(key => excluded.add(key));
+            } else {
+                excluded.add(except);
+            }
         }
 
         const attributes = { ...this.getRawAttributes(), ...this.getRelations() };
@@ -110,10 +125,13 @@ export default class Model extends SoftDeletes implements HasFactory {
     /**
      * Gets the current class' name.
      *
+     * For more information check the {@link https://upfrontjs.com/calliope/#getname|documentation}
+     *
      * @return {string}
      */
     public getName(): string {
-        return this.constructor.name;
+        // has to define because bundlers might rename the class names
+        throw new Error('Your model has to define the getName method.');
     }
 
     /**
@@ -128,8 +146,8 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {Promise<Model|ModelCollection<Model>>}
      */
-    public static async all(): Promise<ModelCollection<Model>> {
-        let response = await new this().get();
+    public static async all<T extends Model>(): Promise<ModelCollection<T>> {
+        let response = await new this().get<T>();
 
         if (response instanceof Model) {
             response = new ModelCollection([response]);
@@ -143,7 +161,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @param {object=} data
      */
-    public async save(data?: Attributes): Promise<this> {
+    public async save(data?: Attributes<this>): Promise<this> {
         const dataToSave = Object.assign({}, this.exists ? this.getChanges() : this.getRawAttributes(), data);
 
         if (!Object.keys(dataToSave).length) {
@@ -182,7 +200,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @see CallsApi.prototype.patch
      */
-    public async update(data: Attributes): Promise<Model> {
+    public async update(data: Attributes<this>): Promise<this> {
         this.throwIfModelDoesntExistsWhenCalling('update');
         return this.setEndpoint(finish(this.getEndpoint(), '/') + String(this.getKey()))
             .patch(data);
@@ -195,10 +213,10 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return
      */
-    public async find(id: number | string): Promise<this> {
+    public async find<T extends this>(id: number | string): Promise<T> {
         return await this
             .setEndpoint(finish(this.getEndpoint(), '/') + String(id))
-            .get() as this;
+            .get() as T;
     }
 
     /**
@@ -206,8 +224,8 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @see Model.prototype.find
      */
-    public static async find(id: number | string): Promise<Model> {
-        return new this().find(id);
+    public static async find<T extends Model>(id: number | string): Promise<T> {
+        return new this().find<T>(id);
     }
 
     /**
@@ -215,11 +233,11 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @param {string[]|number[]} ids
      */
-    public async findMany(ids: (number | string)[]): Promise<ModelCollection<Model>> {
+    public async findMany<T extends this>(ids: (number | string)[]): Promise<ModelCollection<T>> {
         let response = await this
             .resetQueryParameters()
             .whereKey(ids)
-            .get();
+            .get<T>();
 
         if (response instanceof Model) {
             response = new ModelCollection([response]);
@@ -233,8 +251,8 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @see Model.prototype.findMany
      */
-    public static async findMany(ids: (number | string)[]): Promise<ModelCollection<Model>> {
-        return new this().findMany(ids);
+    public static async findMany<T extends Model>(ids: (number | string)[]): Promise<ModelCollection<T>> {
+        return new this().findMany<T>(ids);
     }
 
     /**
@@ -242,7 +260,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {Promise<Model>}
      */
-    public async refresh(): Promise<Model> {
+    public async refresh(): Promise<this> {
         this.throwIfModelDoesntExistsWhenCalling('refresh');
         const model = await this.reset().select(this.getAttributeKeys()).find(this.getKey()!);
 

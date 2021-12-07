@@ -1,20 +1,15 @@
 import ApiResponseHandler from '../../src/Services/ApiResponseHandler';
+import type { MockResponseInit } from 'jest-fetch-mock';
 import fetchMock from 'jest-fetch-mock';
 import { buildResponse } from '../test-helpers';
 import User from '../mock/Models/User';
+import type { ApiResponse } from '../../src/Contracts/HandlesApiResponse';
 
 const handler = new ApiResponseHandler();
 
 describe('ApiResponseHandler', () => {
     beforeEach(() => {
         fetchMock.resetMocks();
-    });
-
-    it('should parse the body if data wrapped', async () => {
-        fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({ data: User.factory().raw() })));
-        const parsedResponse = await handler.handle(fetch('url'));
-
-        expect(parsedResponse).toStrictEqual(User.factory().raw());
     });
 
     it('should cast to boolean if only string boolean returned', async () => {
@@ -34,11 +29,67 @@ describe('ApiResponseHandler', () => {
         expect(mockFn).toHaveBeenCalled();
     });
 
-    it('should throw an error on error', async () => {
-        const error = new Error('Rejected response');
-        fetchMock.mockReject(error);
+    describe('errors', () => {
+        it('should throw an error on error', async () => {
+            const error = new Error('Rejected response');
+            fetchMock.mockRejectOnce(error);
 
-        await expect(handler.handle(fetch('url'))).rejects
-            .toStrictEqual(new Error('Request has failed with the following message:\n' + String(error)));
+            await expect(handler.handle(fetch('url'))).rejects.toStrictEqual(error);
+        });
+
+        it('should throw the response if the response is a client error', async () => {
+            const response: MockResponseInit = {
+                status: 404,
+                statusText: 'Not Found',
+                body: undefined
+            };
+            fetchMock.mockResponse(async () => Promise.resolve(buildResponse(undefined, response)));
+
+            await expect(handler.handle(fetch('url'))).rejects.toBeInstanceOf(Response);
+            const resp = await handler.handle<ApiResponse>(fetch('url')).catch(r => r);
+            expect(resp.status).toBe(404);
+            expect(resp.statusText).toBe('Not Found');
+        });
+
+        it('should throw the response if the response is a server error', async () => {
+            const response: MockResponseInit = {
+                status: 503,
+                statusText: 'Service Unavailable',
+                body: undefined
+            };
+            fetchMock.mockResponse(async () => Promise.resolve(buildResponse(undefined, response)));
+
+            await expect(handler.handle(fetch('url'))).rejects.toBeInstanceOf(Response);
+            const resp = await handler.handle<ApiResponse>(fetch('url')).catch(r => r);
+            expect(resp.status).toBe(503);
+            expect(resp.statusText).toBe('Service Unavailable');
+        });
+
+        it('should throw JSON error if returned data cannot be parsed', async () => {
+            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse('{"key":"value"')));
+            await expect(handler.handle(fetch('url')))
+                .rejects
+                .toThrowErrorMatchingInlineSnapshot(
+                    '"invalid json response body at  reason: Unexpected end of JSON input"'
+                );
+        });
+    });
+
+    it.each([
+        [204, 'has no content'],
+        [101, 'is an informational response'],
+        [302, 'as a redirect response']
+    ])('should return undefined if the response (%s) %s', async (status) => {
+        const response: MockResponseInit = { status, body: undefined };
+
+        fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(undefined, response)));
+
+        await expect(handler.handle(fetch('url')).catch(r => r)).resolves.toBeUndefined();
+    });
+
+    it('should return undefined if it\'s a successful response but has no json parsing available', async () => {
+        await expect(handler.handle(
+            Promise.resolve({ status: 200, statusText: 'OK', headers: new Headers }))
+        ).resolves.toBeUndefined();
     });
 });

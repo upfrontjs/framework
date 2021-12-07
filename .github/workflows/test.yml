@@ -8,26 +8,24 @@ on:
       - 'tests/**/*.ts'
       - 'src/**/*.ts'
       - 'jest.config.js'
+      - 'package-lock.json'
     branches:
       - main
       - 'release/*'
 
 jobs:
-  test:
+  jest:
     timeout-minutes: 10
     if: github.event.pull_request.draft == false
-    name: Test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [ 16, 17 ]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
-      - uses: actions/cache@v2
         with:
-          key: npm-${{ hashFiles('./package-lock.json') }}
-          path: ~/.npm
-          restore-keys: |
-            npm-
-          node-version: 15
-          check-latest: true
+          cache: 'npm'
+          node-version: ${{ matrix.node }}
       - run: npm ci
       - run: npm run test

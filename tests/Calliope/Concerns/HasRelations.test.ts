@@ -16,7 +16,7 @@ import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 import { config } from '../../setupTests';
 import { plural } from '../../../src/Support/string';
 
-let hasRelations: User;
+let hasRelations: User & { team?: Team };
 
 describe('HasRelations', () => {
     beforeEach(() => {
@@ -169,7 +169,7 @@ describe('HasRelations', () => {
         });
 
         it('should be able to accept attributes or array of attributes', () => {
-            const team = hasRelations.team as Team;
+            const team = hasRelations.team!;
             hasRelations.removeRelation('team');
 
             expect(hasRelations.relationLoaded('team')).toBe(false);
@@ -256,8 +256,8 @@ describe('HasRelations', () => {
 
             expect(getLastRequest()?.url).toBe(
                 String(config.get('baseEndPoint'))
-                + '/' + String(hasRelations.team.getEndpoint())
-                + '/' + String(hasRelations.team.getKey())
+                + '/' + String(hasRelations.team!.getEndpoint())
+                + '/' + String(hasRelations.team!.getKey())
             );
         });
 
@@ -352,16 +352,16 @@ describe('HasRelations', () => {
                 buildResponse({
                     ...hasRelations.getRawOriginal(),
                     file: (FileModel.factory().create() as Model).getRawOriginal(),
-                    team: cloneDeep(hasRelations.team.getRawOriginal())
+                    team: cloneDeep(hasRelations.team!.getRawOriginal())
                 })
             ));
 
-            const originalTeamName = cloneDeep(hasRelations.team.name);
-            hasRelations.team.name = 'updated team name';
+            const originalTeamName = cloneDeep(hasRelations.team!.name);
+            hasRelations.team!.name = 'updated team name';
 
             await hasRelations.load(['file', 'team'], true);
 
-            expect(hasRelations.team.name).toBe(originalTeamName);
+            expect(hasRelations.team!.name).toBe(originalTeamName);
         });
     });
 
@@ -383,15 +383,15 @@ describe('HasRelations', () => {
 
     describe('for()', () => {
         it('should set the endpoint for the given models', () => {
-            expect(hasRelations.for(hasRelations.team as Team).getEndpoint())
-                .toBe(String(hasRelations.team.getEndpoint()) + '/' + String(hasRelations.team.getKey()) + '/users');
+            expect(hasRelations.for(hasRelations.team!).getEndpoint())
+                .toBe(String(hasRelations.team!.getEndpoint()) + '/' + String(hasRelations.team!.getKey()) + '/users');
 
             const contract = Contract.factory().create() as Contract;
 
-            expect(hasRelations.for([hasRelations.team, contract]).getEndpoint())
+            expect(hasRelations.for([hasRelations.team!, contract]).getEndpoint())
                 .toBe(
-                    String(hasRelations.team.getEndpoint())
-                    + '/' + String(hasRelations.team.getKey())
+                    String(hasRelations.team!.getEndpoint())
+                    + '/' + String(hasRelations.team!.getKey())
                     + '/' + String(contract.getEndpoint())
                     + '/' + String(contract.getKey())
                     + '/users'
@@ -402,10 +402,10 @@ describe('HasRelations', () => {
         it('should omit the key from the endpoint if undefined', () => {
             const contract = Contract.factory().make() as Contract;
 
-            expect(hasRelations.for([hasRelations.team, contract]).getEndpoint())
+            expect(hasRelations.for([hasRelations.team!, contract]).getEndpoint())
                 .toBe(
-                    String(hasRelations.team.getEndpoint())
-                    + '/' + String(hasRelations.team.getKey())
+                    String(hasRelations.team!.getEndpoint())
+                    + '/' + String(hasRelations.team!.getKey())
                     + '/' + String(contract.getEndpoint())
                     + '/users'
                 );

@@ -41,8 +41,7 @@ describe('Model', () => {
         });
 
         it('should consider the _last_synced_at attribute', () => {
-            // @ts-expect-error
-            user.setLastSyncedAt(false);
+            delete user._lastSyncedAt;
             expect(user.exists).toBe(false);
         });
     });
@@ -56,7 +55,12 @@ describe('Model', () => {
     describe('getName()', () => {
         it('should get the class name', () => {
             expect(user.getName()).toBe(User.name);
-            expect((new Model).getName()).toBe(Model.name);
+        });
+
+        it('should throw an error if class doesn\'t override', () => {
+            expect(() => (new Model).getName()).toThrow(
+                new Error('Your model has to define the getName method.')
+            );
         });
     });
 
@@ -64,6 +68,13 @@ describe('Model', () => {
         it('should return the primary key for the model',  () => {
             expect(user.getKey()).toBe(1);
             expect(user.setAttribute('id', 'value').getKey()).toBe('value');
+        });
+    });
+
+    describe('new()', () => {
+        it('should give a new instance of the model', () => {
+            expect(user.new({ key: 'myString' })).toBeInstanceOf(User);
+            expect(user.is(user.new({ key: 'myString' }))).toBe(false);
         });
     });
 

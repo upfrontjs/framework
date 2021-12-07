@@ -390,7 +390,7 @@ User.skip(10);
 #### newQuery
 <Badge text="static only" type="warning"/>
 
-The `newQuery` is a static method that returns the builder. You're not expected to use it as all methods are already available statically as well.
+The `newQuery` is a static method that returns the builder. You're not expected to use this as builder all methods are already available statically as well. However, if you still find that there are methods not available statically (like your own methods) you can use this.
 
 ```js
 import User from '@Models/User';

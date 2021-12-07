@@ -16,6 +16,13 @@ body:
         - label: I have searched the existing issues
           required: true
   - type: textarea
+    id: search-terms
+    attributes:
+      label: Search terms
+      description: The terms you searched for in the issues before opening a new issue.
+    validations:
+      required: true
+  - type: textarea
     id: current-behaviour
     attributes:
       label: Current Behavior
@@ -55,7 +62,6 @@ body:
         Tip: You can attach images or log files by clicking this area to highlight it and then dragging files in.
     validations:
       required: false
-  required: false
   - type: textarea
     id: reproduction
     attributes:

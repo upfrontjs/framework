@@ -1,0 +1,33 @@
+# https://github.com/zeke/semantic-pull-requests#configuration
+
+# Always validate the PR title AND all the commits
+titleAndCommits: true
+
+# Allow use of Merge commits (eg on github: "Merge branch 'master' into feature/ride-unicorns")
+# this is only relevant when using commitsOnly: true (or titleAndCommits: true)
+allowMergeCommits: true
+
+# Allow use of Revert commits (eg on github: "Revert "feat: ride unicorns"")
+# this is only relevant when using commitsOnly: true (or titleAndCommits: true)
+allowRevertCommits: true
+
+# Scopes matching the ones defined in .commitlintrc.js file
+scopes:
+  - 'attributes' # guarding and casting can also go under attributes
+  - 'global-config'
+  - 'exception'
+  - 'events'
+  - 'services'
+  - 'helpers'
+  - 'collection'
+  - 'model'
+  - 'model-collection'
+  - 'paginator'
+  - 'factory'
+  - 'query-builder'
+  - 'timestamps' # soft-deletes can also go under timestamps
+  - 'relations'
+  - 'api-calls'
+  - 'deps'
+  - 'deps-dev'
+  - 'internal' # things that are not meant to be used outside of the package

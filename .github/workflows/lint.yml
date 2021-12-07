@@ -1,4 +1,4 @@
-name: Lint
+name: Lint Code
 
 on:
   pull_request:
@@ -10,22 +10,15 @@ on:
       - 'release/*'
 
 jobs:
-  lint:
+  eslint:
     timeout-minutes: 10
     if: github.event.pull_request.draft == false
-    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
-      - uses: actions/cache@v2
         with:
-          key: npm-${{ hashFiles('./package-lock.json') }}
-          path: ~/.npm
-          restore-keys: |
-            npm-
-          node-version: 15
-          check-latest: true
+          cache: 'npm'
       - run: npm ci
       - name: ESLint
         run: node node_modules/.bin/eslint . --ext .ts

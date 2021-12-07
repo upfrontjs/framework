@@ -1,19 +1,16 @@
 import type { QueryParams } from '../../../src/Calliope/Concerns/BuildsQuery';
-import BuildsQuery from '../../../src/Calliope/Concerns/BuildsQuery';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import type FormatsQueryParameters from '../../../src/Contracts/FormatsQueryParameters';
+import { types } from '../../test-helpers';
+import Model from '../../../src/Calliope/Model';
 
-class TestClass extends BuildsQuery {
-    public compiledParams(): Record<string, unknown> {
+class BuildsQuery extends Model {
+    public compiledParams(): QueryParams & Record<string, any> {
         return this.compileQueryParameters();
     }
 
-    public getKeyName(): string {
-        return 'id';
-    }
-
-    public getCreatedAtColumn(): string {
-        return 'created_at';
+    public getName(): string {
+        return 'BuildsQuery';
     }
 }
 
@@ -21,7 +18,7 @@ let builder: BuildsQuery;
 
 describe('BuildsQuery', () => {
     beforeEach(() => {
-        builder = new TestClass();
+        builder = new BuildsQuery();
     });
 
     describe('.withRelations', () => {
@@ -44,7 +41,7 @@ describe('BuildsQuery', () => {
     describe('compileQueryParameters', () => {
         it('should call the formatQueryParameters if defined', () => {
             const mockFn = jest.fn();
-            class FormatterClass extends TestClass implements FormatsQueryParameters {
+            class FormatterClass extends BuildsQuery implements FormatsQueryParameters {
                 public formatQueryParameters(attributes: QueryParams) {
                     mockFn();
                     return attributes;
@@ -57,7 +54,7 @@ describe('BuildsQuery', () => {
         });
 
         it('should should use the returned object by the formatQueryParameters', () => {
-            class FormatterClass extends TestClass implements FormatsQueryParameters {
+            class FormatterClass extends BuildsQuery implements FormatsQueryParameters {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 public formatQueryParameters(_attributes: QueryParams) {
                     return { my: 'data' };
@@ -67,6 +64,14 @@ describe('BuildsQuery', () => {
             const formatter = new FormatterClass();
             expect(formatter.compiledParams().my).toBeDefined();
             expect(formatter.compiledParams().my).toBe('data');
+        });
+
+        it('should only include valid numeric query parameters', () => {
+            const compiled = builder.offset(-1).page(-1).limit(-1).compiledParams();
+
+            expect(compiled).not.toHaveProperty('offset');
+            expect(compiled).not.toHaveProperty('page');
+            expect(compiled).not.toHaveProperty('limit');
         });
     });
 
@@ -640,6 +645,49 @@ describe('BuildsQuery', () => {
 
             expect(builder.compiledParams().limit).toBeUndefined();
         });
+
+        it('should throw an error on non-numeric argument', () => {
+            const typesToTest = types.filter(type => typeof type !== 'number');
+
+            typesToTest.forEach(type => {
+                // @ts-expect-error
+                expect(() => builder.limit(type)).toThrow(
+                    new InvalidArgumentException('The limit method expects a number, got: ' + typeof type)
+                );
+            });
+        });
+    });
+
+    describe('page()', () => {
+        it('should add a limit to the params', () => {
+            builder.page(10);
+
+            expect(builder.compiledParams().page).toBe(10);
+        });
+
+        it('should be able to be called statically', () => {
+            builder = BuildsQuery.page(10);
+
+            // @ts-expect-error
+            expect(builder.compileQueryParameters().page).toBe(10);
+        });
+
+        it('should unset the value if 0 used as argument', () => {
+            builder.page(10).page(0);
+
+            expect(builder.compiledParams().page).toBeUndefined();
+        });
+
+        it('should throw an error on non-numeric argument', () => {
+            const typesToTest = types.filter(type => typeof type !== 'number');
+
+            typesToTest.forEach(type => {
+                // @ts-expect-error
+                expect(() => builder.page(type)).toThrow(
+                    new InvalidArgumentException('The page method expects a number, got: ' + typeof type)
+                );
+            });
+        });
     });
 
     describe('when()', () => {
@@ -791,23 +839,23 @@ describe('BuildsQuery', () => {
 
         it('should be able to be called statically', () => {
             // @ts-expect-error
-            const originalWithRelations = TestClass.prototype.withRelations;
+            const originalWithRelations = BuildsQuery.prototype.withRelations;
             // @ts-expect-error
-            TestClass.prototype.withRelations = ['relations'];
+            BuildsQuery.prototype.withRelations = ['relations'];
             builder = BuildsQuery.without(['relation']);
 
             // @ts-expect-error
             expect(builder.compileQueryParameters().with).toBeUndefined();
 
             // @ts-expect-error
-            TestClass.prototype.withRelations = originalWithRelations;
+            BuildsQuery.prototype.withRelations = originalWithRelations;
         });
 
         it('should accept string and array of strings', () => {
             // @ts-expect-error
-            const originalWithRelations = TestClass.prototype.withRelations;
+            const originalWithRelations = BuildsQuery.prototype.withRelations;
             // @ts-expect-error
-            TestClass.prototype.withRelations = ['relations'];
+            BuildsQuery.prototype.withRelations = ['relations'];
             builder = BuildsQuery.without(['relation']);
 
             // @ts-expect-error
@@ -819,7 +867,7 @@ describe('BuildsQuery', () => {
             expect(builder.compileQueryParameters().with).toBeUndefined();
 
             // @ts-expect-error
-            TestClass.prototype.withRelations = originalWithRelations;
+            BuildsQuery.prototype.withRelations = originalWithRelations;
         });
     });
 
@@ -899,6 +947,7 @@ describe('BuildsQuery', () => {
 
         it('should be able to be called statically', () => {
             // it will be present when used from the model
+            // eslint-disable-next-line jest/unbound-method,@typescript-eslint/unbound-method
             BuildsQuery.prototype.getCreatedAtColumn = builder.getCreatedAtColumn;
 
             builder = BuildsQuery.latest();
@@ -924,6 +973,7 @@ describe('BuildsQuery', () => {
 
         it('should be able to be called statically', () => {
             // it will be present when used from the model
+            // eslint-disable-next-line jest/unbound-method,@typescript-eslint/unbound-method
             BuildsQuery.prototype.getCreatedAtColumn = builder.getCreatedAtColumn;
 
             builder = BuildsQuery.oldest();
@@ -947,6 +997,23 @@ describe('BuildsQuery', () => {
             builder = BuildsQuery.offset(10);
             // @ts-expect-error
             expect(builder.compileQueryParameters().offset).toBe(10);
+        });
+
+        it('should unset the value if 0 used as argument', () => {
+            builder.offset(10).offset(0);
+
+            expect(builder.compiledParams().offset).toBeUndefined();
+        });
+
+        it('should throw an error on non-numeric argument', () => {
+            const typesToTest = types.filter(type => typeof type !== 'number');
+
+            typesToTest.forEach(type => {
+                // @ts-expect-error
+                expect(() => builder.offset(type)).toThrow(
+                    new InvalidArgumentException('The offset method expects a number, got: ' + typeof type)
+                );
+            });
         });
     });
 

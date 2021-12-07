@@ -1,22 +1,48 @@
 # Model
 
 The model is at the hearth of this package. It boasts a lot of features, so they have been broken down into the following sections:
- - [Attributes](./attributes.md)
- - [Api calls](./api-calls.md)
- - [Query Building](./query-building.md)
- - [Relationships](./relationships.md)
- - [Timestamps](./timestamps.md)
- - [Additional Methods](#additional-methods)
+- [Attributes](./attributes.md)
+- [Api calls](./api-calls.md)
+- [Query Building](./query-building.md)
+- [Relationships](./relationships.md)
+- [Timestamps](./timestamps.md)
+- [Additional Methods](#additional-methods)
 
 ## Creating Models
 
-To create a model, you should first define your model class:
+To create a model, you should first define your model class and define the [getName](#getname) method:
+
+<code-group>
+
+<code-block title="Javascript">
+
 ```js
 // User.js
 import { Model } from '@upfrontjs/framework';
 
-export default class User extends Model {}
+export default class User extends Model {
+    getName() {
+        return 'User';
+    }
+}
 ```
+</code-block>
+
+<code-block title="Typescript">
+
+```ts
+// User.ts
+import { Model } from '@upfrontjs/framework';
+
+export default class User extends Model {
+    public override getName(): string {
+        return 'User';
+    }
+}
+```
+</code-block>
+
+</code-group>
 
 Then you can call your model in various way, for example
 ```js
@@ -28,6 +54,18 @@ User.find(1);
 new User({ my: attributes });
 // etc...
 ```
+
+::: tip TIP (Typescript)
+Typescript users may benefit from better typing support if they defined keys and their types on the models
+```ts
+export default class User extends Model {
+    public is_admin?: boolean;
+    public age?: number;
+    public name?: string;
+}
+```
+This will typehint keys on the model when accessing the above keys like `user.age` and will get type hinted in various methods such as [getAttribute](./attributes.md#getattribute) where both the key, the default value and the return value will be type hinted.
+:::
 
 ## Getters
 
@@ -83,7 +121,21 @@ The `getKeyName` method returns the [primaryKey](#primarykey) of the model.
 
 #### getName
 
-The `getName` method returns the current class' name. For example a class called `User` will return `'User'`.
+The `getName` method expected to return the current class' name. For example in a class called `User` it should return `'User'`.
+
+*Note: This is essential to add to every model as this is used throughout the framework.*
+::: danger
+This value cannot be `this.constructor.name` **if** you're minifying your code or in the minification options you haven't turned off the class rename or equivalent option.
+:::
+
+::: tip
+If you turn of the class renaming when the code gets mangled by the minifier or bundler of your choice, `this.constructor.name` would be an acceptable solution. This would allow you to have a base model you can extend from which can in turn implement the `getName` that returns `this.constructor.name`.
+
+Bundlers/minifier options examples:
+- [terser: keep_classnames](https://terser.org/docs/api-reference#minify-options)
+- [esbuild: keep-names](https://esbuild.github.io/api/#keep-names)
+- [babel-minify: keepClassName](https://babeljs.io/docs/en/babel-minify#node-api)
+  :::
 
 #### replicate
 
@@ -123,8 +175,7 @@ The `all` method will initiate a request that returns a [ModelCollection](./mode
 ```js
 import User from '@Models/User';
 
-const users = await User.all();
-users; // ModelCollection[User, ...]
+const users = await User.all(); // ModelCollection[User, ...]
 ```
 
 #### save
@@ -140,8 +191,8 @@ The `update` method sets the correct endpoint then initiates a [patch](./api-cal
 ```js
 import User from '@Models/User';
 
-const user = User.factory.make();
-user.save({ optionalExtra: 'data' });
+const user = User.factory.createOne();
+await user.update({ optionalExtra: 'data' });
 ```
 
 #### find
@@ -152,7 +203,7 @@ The `find` method sends a `GET` request to the model [endpoint](./api-calls.md#g
 ```js
 import User from '@Models/User';
 
-const user = User.find('8934d792-4e4d-42a1-bb4b-45b34b1140b4');
+const user = await User.find('8934d792-4e4d-42a1-bb4b-45b34b1140b4');
 ```
 
 #### findMany
@@ -163,8 +214,7 @@ The `findMany` method similar to the [find](#find) method sends a `GET` request 
 ```js
 import User from '@Models/User';
 
-const users = User.findMany([1, 2]);
-users; // ModelCollection[User, User]
+const users = await User.findMany([1, 2]); // ModelCollection[User, User]
 ```
 
 #### refresh

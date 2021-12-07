@@ -23,6 +23,30 @@ describe('HasTimestamps', () => {
         it('should return the createdAt column', () => {
             expect(hasTimestamps.getCreatedAtColumn()).toBe('createdAt');
         });
+
+        it('should return the createdAt column correctly if overridden', () => {
+            class MyUser extends User {
+                protected static readonly createdAt = 'my_created_at';
+            }
+            hasTimestamps = new MyUser;
+
+            expect(hasTimestamps.getCreatedAtColumn()).toBe('myCreatedAt');
+        });
+    });
+
+    describe('getUpdatedAtColumn', () => {
+        it('should return the updatedAt column', () => {
+            expect(hasTimestamps.getUpdatedAtColumn()).toBe('updatedAt');
+        });
+
+        it('should return the updatedAt column correctly if overridden', () => {
+            class MyUser extends User {
+                protected static readonly updatedAt = 'my_updated_at';
+            }
+            hasTimestamps = new MyUser;
+
+            expect(hasTimestamps.getUpdatedAtColumn()).toBe('myUpdatedAt');
+        });
     });
 
     describe('usesTimestamps()', () => {

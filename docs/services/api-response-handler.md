@@ -1,6 +1,6 @@
 # Api Response Handler
 
-ApiResponseHandler is responsible for handling the [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) That was returned by the [`ApiCaller`](./readme.md#apicaller). It is the implementation of the [`HandlesApiResponse`](./readme.md#handlesapiresponse) interface that is used by default.
+ApiResponseHandler is responsible for handling the [`ApiResponse`](./readme.md#apiresponse) that was returned by the [`ApiCaller`](./readme.md#apicaller). It is the implementation of the [`HandlesApiResponse`](./readme.md#handlesapiresponse) interface that is used by default.
 
 You may [override its methods](./readme.md#using-custom-services) to add or [customise its functionality](./readme.md#extending-services).
 
@@ -8,12 +8,12 @@ On top of the `HandlesApiResponse`'s `handle` method for the sake of brevity the
 
 #### handleSuccess
 
-The `handleSuccess` method attempts to parse the `Response` and returns its value. If The response is has a key `data` then the value of the data will be returned.
+The `handleSuccess` method attempts to parse the [`ApiResponse`](./readme.md#apiresponse) and returns its value.
 
 #### handleError
 
-The `handleError` method throws an error.
+The `handleError` method throws the captured error from [handleSuccess](#handlesuccess).
 
 #### handleFinally
 
-The `handleFinally` method is an empty function for the sake of type suggestion when customising.
+The `handleFinally` method is an empty function for the sake of type suggestion when customising with any logic after the requests. This runs regardless of whether an error was throw or not in the previous [handleError](#handleerror) method.

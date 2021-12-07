@@ -162,7 +162,7 @@ user.hasCast('test1'); // true
 
 ## Guarding
 
-With models there are option to mass assign attributes to the model though the constructor or the [fill](#fill) method. However, when you're constructing your attributes dynamically, you may come across scenarios where you may not want every attribute assigned to the model on mass assignment. For these, there is an option to white and black list attribute keys.
+With models there are option to mass assign attributes to the model though the constructor or the [fill](#fill) methods. However, when you're constructing your attributes dynamically, you may come across scenarios where you may not want every attribute assigned to the model on mass assignment. For these, there is an option to white and black list attribute keys.
 
 To define these rules, you create a `fillable` and/or `guarded` getter function which returns an array of strings.
 ```js
@@ -300,7 +300,7 @@ export default class User extends Model {
     }
 
     setFullNameAttribute(name) {
-        return name.startsWith(this.title + ' ')
+        this.attributes.fullName = name.startsWith(this.title + ' ')
             ? name.slice(this.title.length + 1)
             : name;
     }

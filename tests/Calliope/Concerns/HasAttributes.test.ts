@@ -2,6 +2,7 @@ import User from '../../mock/Models/User';
 import Shift from '../../mock/Models/Shift';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
 import { isEqual } from 'lodash';
+import Contract from '../../mock/Models/Contract';
 
 let hasAttributes: User;
 
@@ -146,7 +147,7 @@ describe('HasAttributes', () => {
                 }
             }
 
-            expect(hasAttributes.myAttr.key).toBe(1);
+            expect((hasAttributes.myAttr as { key: 1 }).key).toBe(1);
         });
     });
 
@@ -667,24 +668,35 @@ describe('HasAttributes', () => {
         });
     });
 
-    describe('toJson()', () => {
-        it('should stringify the attributes', () => {
-            expect(hasAttributes.toJson()).toStrictEqual(JSON.stringify({
+    describe('toJSON()', () => {
+        it('should jsonify the attributes', () => {
+            expect(hasAttributes.toJSON()).toStrictEqual({
                 test: hasAttributes.getAttribute('test')
-            }));
+            });
         });
 
-        it('should recursively stringify the relations', () => {
+        it('should recursively jsonify the relations', () => {
             const shift = new Shift();
             shift.setAttribute('shiftAttr', 1);
             hasAttributes.addRelation('shifts', shift);
 
-            expect(hasAttributes.toJson()).toBe(JSON.stringify({
+            expect(hasAttributes.toJSON()).toStrictEqual({
                 test: 1,
                 shifts: [
                     { shiftAttr: 1 }
                 ]
-            }));
+            });
+        });
+    });
+
+    describe('toString()', () => {
+        it('should return a json with spacing', () => {
+            hasAttributes = User.factory<User>()
+                .with(Shift.factory(2))
+                .with(Contract)
+                .createOne({ key1: 1, key2: 2 });
+
+            expect(hasAttributes.toString()).toBe(JSON.stringify(hasAttributes.toJSON(), null, 4));
         });
     });
 });

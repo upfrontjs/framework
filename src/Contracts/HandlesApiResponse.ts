@@ -1,6 +1,7 @@
-type TransformedResponse = Partial<Response> & Pick<Response, 'headers' | 'status' | 'statusText'>;
-
-export interface ApiResponse extends TransformedResponse {
+/**
+ * The http library agnostic response.
+ */
+export interface ApiResponse extends Pick<Response, 'headers' | 'status' | 'statusText'> {
     /**
      * The parsed response content.
      * (in case of libraries like axios)
@@ -35,5 +36,5 @@ export default interface HandlesApiResponse {
      *
      * @return {Promise<any>}
      */
-    handle: (promise: Promise<ApiResponse>) => Promise<any>;
+    handle: <T = unknown>(promise: Promise<ApiResponse>) => Promise<T>;
 }

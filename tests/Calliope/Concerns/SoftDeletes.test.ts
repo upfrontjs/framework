@@ -27,6 +27,15 @@ describe('SoftDeletes', () => {
         it('should return the deletedAt column', () => {
             expect(softDeletes.getDeletedAtColumn()).toBe('deletedAt');
         });
+
+        it('should return the deletedAt column correctly if overridden', () => {
+            class MyUser extends User {
+                protected static readonly deletedAt = 'my_deleted_at';
+            }
+            softDeletes = new MyUser;
+
+            expect(softDeletes.getDeletedAtColumn()).toBe('myDeletedAt');
+        });
     });
 
     describe('usesSoftDeletes', () => {

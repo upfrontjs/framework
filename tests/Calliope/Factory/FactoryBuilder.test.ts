@@ -386,7 +386,7 @@ describe('FactoryBuilder', () => {
             expect((factoryBuilder.with(Contract.factory()).raw() as Attributes).contract).toBeDefined();
             expect((factoryBuilder.with(Contract.factory()).make() as User).contract).toBeInstanceOf(Contract);
 
-            factoryBuilder.with(Shift.factory()).times(2).make().forEach((user: User) => {
+            factoryBuilder.with(Shift.factory()).times(2).makeMany().forEach((user: User) => {
                 expect(user.shifts).toBeInstanceOf(ModelCollection);
             });
         });
@@ -414,7 +414,7 @@ describe('FactoryBuilder', () => {
             expect((factoryBuilder.with(Contract).raw() as Attributes).contract).toBeDefined();
             expect((factoryBuilder.with(Contract).make() as User).contract).toBeInstanceOf(Contract);
 
-            factoryBuilder.with(Shift).times(2).make().forEach((user: User) => {
+            factoryBuilder.with(Shift).times(2).makeMany().forEach((user: User) => {
                 expect(user.shifts).toBeInstanceOf(ModelCollection);
             });
         });

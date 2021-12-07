@@ -6,7 +6,7 @@ import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
 import GlobalConfig from '../../Support/GlobalConfig';
 import Collection from '../../Support/Collection';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
-import { isConstructableUserClass } from '../../Support/function';
+import { isUserLandClass } from '../../Support/function';
 import { plural, singular } from '../../Support/string';
 import type Configuration from '../../Contracts/Configuration';
 import type { MaybeArray } from '../../Support/type';
@@ -51,7 +51,7 @@ export default class FactoryBuilder<T extends Model> {
      */
     protected relations: Record<string, FactoryBuilder<Model>> = {};
 
-    public constructor(modelConstructor: new (attributes?: Attributes) => T) {
+    public constructor(modelConstructor: new (attributes?: Attributes<T>) => T) {
         this.model = new modelConstructor;
     }
 
@@ -90,7 +90,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @param {object=} attributes
      */
-    public raw(attributes: Attributes = {}): Attributes | Collection<Attributes> {
+    public raw(attributes?: Attributes<T>): Attributes | Collection<Attributes> {
         return this.addRelations(this.rawAttributes(attributes), 'raw') as Attributes | Collection<Attributes>;
     }
 
@@ -100,7 +100,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @param {object=} attributes
      */
-    public rawOne(attributes?: Attributes): T {
+    public rawOne(attributes?: Attributes<T>): T {
         return this.times(1).raw(attributes) as T;
     }
 
@@ -110,7 +110,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @param {object=} attributes
      */
-    public rawMany(attributes?: Attributes): Collection<Attributes> {
+    public rawMany(attributes?: Attributes<T>): Collection<Attributes> {
         const rawAttributes = this.raw(attributes);
 
         if (!(rawAttributes instanceof Collection)) {
@@ -127,7 +127,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {Model|ModelCollection<Model>}
      */
-    public make(attributes?: Attributes): ModelCollection<T> | T {
+    public make(attributes?: Attributes<T>): ModelCollection<T> | T {
         const modelOrCollection = this.compileRaw(attributes);
 
         const factory = this.getFactory();
@@ -146,7 +146,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {Model}
      */
-    public makeOne(attributes?: Attributes): T {
+    public makeOne(attributes?: Attributes<T>): T {
         return this.times(1).make(attributes) as T;
     }
 
@@ -157,7 +157,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {ModelCollection}
      */
-    public makeMany(attributes?: Attributes): ModelCollection<T> {
+    public makeMany(attributes?: Attributes<T>): ModelCollection<T> {
         const models = this.make(attributes);
 
         if (!(models instanceof ModelCollection)) {
@@ -174,7 +174,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {Model|ModelCollection<Model>}
      */
-    public create(attributes?: Attributes): ModelCollection<T> | T {
+    public create(attributes?: Attributes<T>): ModelCollection<T> | T {
         const modelOrCollection = this.compileRaw(attributes);
 
         if (ModelCollection.isModelCollection<T>(modelOrCollection)) {
@@ -201,7 +201,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {Model}
      */
-    public createOne(attributes?: Attributes): T {
+    public createOne(attributes?: Attributes<T>): T {
         return this.times(1).create(attributes) as T;
     }
 
@@ -212,7 +212,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {ModelCollection<Model>}
      */
-    public createMany(attributes?: Attributes): ModelCollection<T> {
+    public createMany(attributes?: Attributes<T>): ModelCollection<T> {
         const models = this.create(attributes);
 
         if (!(models instanceof ModelCollection)) {
@@ -233,7 +233,7 @@ export default class FactoryBuilder<T extends Model> {
     public with(relation: FactoryBuilder<Model> | (new () => Model), relationName?: string): this {
         if (relation instanceof FactoryBuilder) {
             relationName = relationName ?? relation.model.getName().toLowerCase();
-        } else if (isConstructableUserClass<typeof Model>(relation)) {
+        } else if (isUserLandClass<typeof Model>(relation)) {
             relationName = relationName ?? (new relation).getName().toLowerCase();
             relation = relation.factory();
         } else {
@@ -341,7 +341,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {Model|ModelCollection<Model>}
      */
-    protected compileRaw(attributes?: Attributes): ModelCollection<T> | T {
+    protected compileRaw(attributes?: Attributes<T>): ModelCollection<T> | T {
         const compiledAttributes = this.rawAttributes(attributes);
 
         if (Collection.isCollection<Attributes>(compiledAttributes)) {

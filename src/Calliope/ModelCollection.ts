@@ -27,7 +27,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
         if (Array.isArray(iterable) && !iterable.length) return;
 
         if (!ModelCollection._isModelArray(iterable)) {
-            throw new TypeError(this.constructor.name + ' can only handle Model values.');
+            throw new TypeError('ModelCollection can only handle Model values.');
         }
     }
 
@@ -40,7 +40,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @protected
      */
-    protected static _isModelArray(array: any): array is Model[] {
+    protected static _isModelArray<M extends Model>(array: any): array is M[] {
         if (!Array.isArray(array)) {
             return false;
         }
@@ -57,7 +57,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @protected
      */
-    protected static _isModel(arg: any): arg is Model {
+    protected static _isModel<M extends Model>(arg: any): arg is M {
         return typeof arg === 'object'
             && arg !== null
             && (arg as Record<string, any>).getKey instanceof Function
@@ -162,7 +162,9 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
                     boolean = !modelArray.some(item => key(item) === key(model));
                 } else if (key in model && model[key] instanceof Function) {
                     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                    boolean = !modelArray.some(item => item[key]() === model[key]());
+                    boolean = !modelArray.some(item =>
+                        (item[key] as CallableFunction)() === (model[key] as CallableFunction)()
+                    );
                 } else {
                     boolean = !modelArray.some(item  => item[String(key)] === model[String(key)]);
                 }
@@ -215,9 +217,13 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
                 if (model[key] instanceof Function) {
                     boolean =
                         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                        !values.some(item => item[key]() === model[key]()) &&
+                        !values.some(item =>
+                            (item[key] as CallableFunction)() === (model[key] as CallableFunction)()
+                        ) &&
                         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                        array.filter(item => item[key]() === model[key]()).length > 1;
+                        array.filter(item =>
+                            (item[key] as CallableFunction)() === (model[key] as CallableFunction)()
+                        ).length > 1;
                 } else {
                     boolean =
                         !values.some(item => item[String(key)] === model[String(key)]) &&
@@ -412,7 +418,9 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
     /**
      * @inheritDoc
      */
-    public override toJson(): string {
-        return JSON.stringify(this.toArray().map(model => JSON.parse(model.toJson())));
+    public override toJSON(): { elements: ReturnType<typeof JSON.parse>[] } {
+        // eslint-disable-next-line max-len
+        // https://security.stackexchange.com/questions/7001/how-should-web-app-developers-defend-against-json-hijacking/7003#7003
+        return { elements: this.toArray().map(model => model.toJSON()) };
     }
 }

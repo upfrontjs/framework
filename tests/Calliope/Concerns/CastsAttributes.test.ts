@@ -7,6 +7,10 @@ import type AttributeCaster from '../../../src/Contracts/AttributeCaster';
 import LogicException from '../../../src/Exceptions/LogicException';
 
 class CastingClass extends User {
+    public override getName(): string {
+        return 'CastingClass';
+    }
+
     public getCasts() {
         return this.attributeCasts;
     }
@@ -16,7 +20,7 @@ class CastingClass extends User {
         value: any,
         method: keyof AttributeCaster = 'get'
     ): unknown {
-        return this.castAttribute(key, value, this.getRawAttributes(), method);
+        return this.castAttribute(key, value, method);
     }
 }
 
@@ -106,7 +110,7 @@ describe('CastsAttributes', () => {
             expect(caster.publicCastAttribute('test', undefined)).toBe('undefined');
             expect(caster.publicCastAttribute('test', false)).toBe('false');
             // calls the toString method
-            expect(caster.publicCastAttribute('test', caster)).toBe('[object Object]');
+            expect(caster.publicCastAttribute('test', {})).toBe('[object Object]');
             expect(caster.publicCastAttribute('test', transformsToString)).toBe('value');
         });
 
@@ -178,6 +182,15 @@ describe('CastsAttributes', () => {
                 '\'datetime\' is not of expected type set in the ' + config.constructor.name + '.'
             ));
             config.unset('datetime');
+        });
+
+        it('should throw an error if the value cannot be casted to a Date when no datetime defined', () => {
+            caster.mergeCasts({ test: 'datetime' });
+            expect(() => caster.publicCastAttribute('test', 'invalid value')).toThrow(
+                new LogicException(
+                    '\'test\' is not castable to a date time in \'' + caster.getName() + '\'.'
+                )
+            );
         });
 
         it('should return the value untouched when using datetime on set', () => {

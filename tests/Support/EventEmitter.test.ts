@@ -178,6 +178,7 @@ describe('EventEmitter', () => {
             emitter.on('myEvent', myEventCb);
             emitter.on('myEvent', otherMyEventCb);
             await emitter.emit('myEvent');
+            emitter.once('myEvent', myEventCb);
             emitter.off('myEvent', myEventCb);
             await emitter.emit('myEvent');
 
@@ -185,21 +186,23 @@ describe('EventEmitter', () => {
             expect(secondMock).toHaveBeenCalledTimes(2);
         });
 
-        it('should remove all the listeners that match the given listener if no event name given', async () => {
-            const myEventCb = jest.fn();
-            const secondMock = jest.fn();
-            const otherMyEventCb = () => secondMock();
-            const emitter = EventEmitter.getInstance<MyEvents>();
+        it('should remove always and once running listeners that match the given listener if no event name given',
+            async () => {
+                const myEventCb = jest.fn();
+                const secondMock = jest.fn();
+                const otherMyEventCb = () => secondMock();
+                const emitter = EventEmitter.getInstance<MyEvents>();
 
-            emitter.on('myEvent', myEventCb);
-            emitter.on('myEvent', otherMyEventCb);
-            await emitter.emit('myEvent');
-            emitter.off(undefined, myEventCb);
-            await emitter.emit('myEvent');
+                emitter.on('myEvent', myEventCb);
+                emitter.on('myEvent', otherMyEventCb);
+                await emitter.emit('myEvent');
+                emitter.once('myEvent', myEventCb);
+                emitter.off(undefined, myEventCb);
+                await emitter.emit('myEvent');
 
-            expect(myEventCb).toHaveBeenCalledTimes(1);
-            expect(secondMock).toHaveBeenCalledTimes(2);
-        });
+                expect(myEventCb).toHaveBeenCalledTimes(1);
+                expect(secondMock).toHaveBeenCalledTimes(2);
+            });
     });
 
     describe('emit()', () => {
@@ -290,7 +293,7 @@ describe('EventEmitter', () => {
         it('should determine if there are event listeners for the given event that match the given function', () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
 
-            emitter.on('myEvent', () => {});
+            emitter.once('myEvent', () => {});
             emitter.on('myEvent', () => 1);
             expect(emitter.has('myEvent', () => {})).toBe(true);
             expect(emitter.has('myEvent', () => 2)).toBe(false);
@@ -300,7 +303,10 @@ describe('EventEmitter', () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
 
             emitter.once('myEvent', () => 1);
+            emitter.on('myEvent', () => 2);
             expect(emitter.has(undefined, () => 1)).toBe(true);
+            expect(emitter.has(undefined, () => 2)).toBe(true);
+            expect(emitter.has(undefined, () => 3)).toBe(false);
         });
     });
 

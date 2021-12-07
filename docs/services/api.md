@@ -74,6 +74,7 @@ type QueryParams = Partial<{
     distinctOnly: boolean; // return unique records only
     offset: number; // skip this many records
     limit: number; // limit the number of records to this
+    page: number; // return the records from this page in pagination
 }>;
 ```
 

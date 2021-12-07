@@ -1,6 +1,7 @@
 export default interface Jsonable {
     /**
-     * Convert object into JSON string.
+     * Convert object into JSON.
      */
-    toJson: () => string;
+    // https://github.com/microsoft/TypeScript/issues/1897
+    toJSON: () => ReturnType<typeof JSON.parse>;
 }

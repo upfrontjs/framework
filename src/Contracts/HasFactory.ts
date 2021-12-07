@@ -12,5 +12,5 @@ export default interface HasFactory {
     /**
      * The implementer should allow indexing by string.
      */
-    [factory: string]: (() => Factory<Model>) | undefined;
+    [factory: string]: unknown | (() => Factory<Model>);
 }

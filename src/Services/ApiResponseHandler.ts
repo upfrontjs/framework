@@ -1,9 +1,8 @@
 import type HandlesApiResponse from '../Contracts/HandlesApiResponse';
 import type { ApiResponse } from '../Contracts/HandlesApiResponse';
-import { isObjectLiteral } from '../Support/function';
 
 /**
- * The default HandlesApiResponse class used by the package.
+ * The default HandlesApiResponse implementation used by upfrontjs.
  *
  * @link {HandlesApiResponse}
  */
@@ -11,11 +10,11 @@ export default class ApiResponseHandler implements HandlesApiResponse {
     /**
      * @inheritDoc
      */
-    public async handle(promise: Promise<ApiResponse>): Promise<any> {
+    public async handle<T = unknown | undefined>(promise: Promise<ApiResponse>): Promise<T> {
         return promise
             .then(async (response: ApiResponse) => this.handleResponse(response))
             .catch(error => this.handleError(error))
-            .finally(() => this.handleFinally());
+            .finally(() => this.handleFinally()) as Promise<T>;
     }
 
     /**
@@ -24,17 +23,22 @@ export default class ApiResponseHandler implements HandlesApiResponse {
      * @param {ApiResponse} response
      *
      * @return {Promise<any>}
+     *
+     * @throws {ApiResponse}
      */
-    public async handleResponse(response: ApiResponse): Promise<any> {
-        if (!response.json) return;
-
-        let responseData = await response.json();
-
-        if (isObjectLiteral(responseData) && 'data' in responseData) {
-            responseData = responseData.data;
+    public async handleResponse(response: ApiResponse): Promise<unknown | undefined> {
+        if (response.status >= 400) {
+            // eslint-disable-next-line @typescript-eslint/no-throw-literal
+            throw response;
         }
 
-        return responseData;
+        if (response.status < 200 || response.status > 299 || response.status === 204) return;
+
+        if (typeof response.json === 'function') {
+            return (response as Response).json();
+        }
+
+        return;
     }
 
     /**
@@ -45,7 +49,7 @@ export default class ApiResponseHandler implements HandlesApiResponse {
      * @return {void}
      */
     public handleError(rejectReason: unknown): never {
-        throw new Error('Request has failed with the following message:\n' + String(rejectReason));
+        throw rejectReason;
     }
 
     /**

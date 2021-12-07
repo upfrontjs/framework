@@ -14,11 +14,28 @@ ApiCaller an object with a `call` method defined which is utilized by all the aj
  - `queryParameters`*(optional)* - an object to send as query parameters in the url
 
 #### `HandlesApiResponse`
-HandlesApiResponse's task is to handle the parsing of the `Response` returned by [ApiCaller](#apicaller) and deal with any errors. It defines a `handle` method which takes a `Promise<ApiResponse>` and it should return a `Promise<any>`.
+HandlesApiResponse's task is to handle the parsing of the [ApiResponse](#apiresponse) returned by [ApiCaller](#apicaller) and deal with any errors. It defines a `handle` method which takes a `Promise<ApiResponse>` and it should return a `Promise<any>`.
 
 ##### ApiResponse
 
-As you might have noticed in the above service interfaces they work with an object called `ApiResponse` as opposed to a [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response). This is because this interface is more generic and can easily be implemented if deciding to use something other than the [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) api.
+As you might have noticed in the above service interfaces they work with an object called `ApiResponse` as opposed to a [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response). This is because this interface is more generic and can easily be implemented if deciding to use something other than the [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) api. The only keys always available on the object are the following properties:
+ - [status](https://developer.mozilla.org/en-US/docs/Web/API/Response/status)
+ - [statusText](https://developer.mozilla.org/en-US/docs/Web/API/Response/statusText)
+ - [headers](https://developer.mozilla.org/en-US/docs/Web/API/Response/headers)
+
+::: tip
+Typescript users may use [module augmentation](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation) to specify what their `ApiResponse` is actually look like:
+```ts
+// shims/upfront.d.ts
+import type { ApiResponse as BaseApiResponse } from '@upfrontjs/framework';
+
+declare module '@upfrontjs/framework' {
+    interface ApiResponse extends BaseApiResponse {
+        myKey?: string;
+    }
+}
+```
+:::
 
 ---
 

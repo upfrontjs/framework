@@ -8,7 +8,7 @@ import type { QueryParams } from './BuildsQuery';
 import BuildsQuery from './BuildsQuery';
 import type { Attributes } from './HasAttributes';
 import { isObjectLiteral } from '../../Support/function';
-import { finish, plural, snake, camel } from '../../Support/string';
+import { finish, plural } from '../../Support/string';
 import type { MaybeArray } from '../../Support/type';
 
 export type Method = 'delete' | 'get' | 'patch' | 'post' | 'put';
@@ -23,18 +23,6 @@ export default class CallsApi extends BuildsQuery {
      */
     protected get endpoint(): string {
         return '';
-    }
-
-    /**
-     * Property indicating how attributes and relation names
-     * should be casted by default when sent to the server.
-     *
-     * @type {'snake'|'camel'}
-     *
-     * @protected
-     */
-    protected get serverAttributeCasing(): 'camel' | 'snake' {
-        return 'snake';
     }
 
     /**
@@ -98,11 +86,10 @@ export default class CallsApi extends BuildsQuery {
          * @see CallsApi.prototype.serverAttributeCasing
          */
         const transformValues = (object: Attributes): Attributes => {
-            const setStringCase = (key: string) => this.serverAttributeCasing === 'camel' ? camel(key) : snake(key);
             const dataWithKeyCasing: Attributes = {};
 
             Object.keys(object).forEach(key => {
-                dataWithKeyCasing[setStringCase(key)] = isObjectLiteral(object[key])
+                dataWithKeyCasing[this.setServerStringCase(key)] = isObjectLiteral(object[key])
                     ? transformValues(object[key] as Attributes)
                     : object[key];
             });

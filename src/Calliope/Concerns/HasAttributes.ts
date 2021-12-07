@@ -43,6 +43,18 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     }
 
     /**
+     * Property indicating how attributes and relation names
+     * should be casted by default when sent to the server.
+     *
+     * @type {'snake'|'camel'}
+     *
+     * @protected
+     */
+    protected get serverAttributeCasing(): 'camel' | 'snake' {
+        return 'snake';
+    }
+
+    /**
      * The attributes.
      *
      * @protected
@@ -131,6 +143,22 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     protected setStringCase(key: AttributeKeys<this> | string): string
     protected setStringCase(key: string): string {
         return this.attributeCasing === 'camel' ? camel(key) : snake(key);
+    }
+
+    /**
+     * Utility to cast the given string to the serverAttributeCasing's case.
+     *
+     * @param {string} key
+     *
+     * @see serverAttributeCasing
+     *
+     * @protected
+     *
+     * @return {string}
+     */
+    protected setServerStringCase(key: AttributeKeys<this> | string): string
+    protected setServerStringCase(key: string): string{
+        return this.serverAttributeCasing === 'camel' ? camel(key) : snake(key);
     }
 
     /**

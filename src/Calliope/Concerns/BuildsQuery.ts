@@ -1020,7 +1020,7 @@ export default class BuildsQuery extends HasAttributes {
     public latest(column?: string): this {
         column = column ?? (this as unknown as Model).getCreatedAtColumn();
 
-        return this.orderBy(column, 'desc');
+        return this.orderBy(this.setServerStringCase(column), 'desc');
     }
 
     /**
@@ -1046,7 +1046,7 @@ export default class BuildsQuery extends HasAttributes {
     public oldest(column?: string): this {
         column = column ?? (this as unknown as Model).getCreatedAtColumn();
 
-        return this.orderBy(column, 'asc');
+        return this.orderBy(this.setServerStringCase(column), 'asc');
     }
 
     /**

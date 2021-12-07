@@ -8,6 +8,10 @@ class BuildsQuery extends Model {
     public compiledParams(): QueryParams & Record<string, any> {
         return this.compileQueryParameters();
     }
+
+    public getName(): string {
+        return 'BuildsQuery';
+    }
 }
 
 let builder: BuildsQuery;
@@ -835,23 +839,23 @@ describe('BuildsQuery', () => {
 
         it('should be able to be called statically', () => {
             // @ts-expect-error
-            const originalWithRelations = TestClass.prototype.withRelations;
+            const originalWithRelations = BuildsQuery.prototype.withRelations;
             // @ts-expect-error
-            TestClass.prototype.withRelations = ['relations'];
+            BuildsQuery.prototype.withRelations = ['relations'];
             builder = BuildsQuery.without(['relation']);
 
             // @ts-expect-error
             expect(builder.compileQueryParameters().with).toBeUndefined();
 
             // @ts-expect-error
-            TestClass.prototype.withRelations = originalWithRelations;
+            BuildsQuery.prototype.withRelations = originalWithRelations;
         });
 
         it('should accept string and array of strings', () => {
             // @ts-expect-error
-            const originalWithRelations = TestClass.prototype.withRelations;
+            const originalWithRelations = BuildsQuery.prototype.withRelations;
             // @ts-expect-error
-            TestClass.prototype.withRelations = ['relations'];
+            BuildsQuery.prototype.withRelations = ['relations'];
             builder = BuildsQuery.without(['relation']);
 
             // @ts-expect-error
@@ -863,7 +867,7 @@ describe('BuildsQuery', () => {
             expect(builder.compileQueryParameters().with).toBeUndefined();
 
             // @ts-expect-error
-            TestClass.prototype.withRelations = originalWithRelations;
+            BuildsQuery.prototype.withRelations = originalWithRelations;
         });
     });
 

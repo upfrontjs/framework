@@ -66,9 +66,9 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Promise<any>}
      */
-    protected async call<T = any>(
+    public async call<T = any>(
         method: Method,
-        data?: Attributes | FormData,
+        data?: Attributes | FormData | QueryParams,
         customHeaders?: Record<string, MaybeArray<string>>
     ): Promise<T | undefined> {
         const endpoint = this.getEndpoint();
@@ -133,18 +133,28 @@ export default class CallsApi extends BuildsQuery {
 
         return handlesApiResponse
             .handle<T>(apiCaller.call(url, method, data, customHeaders, queryParameters))
-            .then(response => {
-                if (response === undefined) {
-                    return;
-                }
+            .finally(() => {
+                this.requestCount--;
+                this.resetEndpoint();
+                this.resetQueryParameters();
+            });
+    }
 
-                if (isObjectLiteral<{ data: any }>(response) && 'data' in response) {
-                    response = response.data;
-                }
+    /**
+     * Access the data property if exists.
+     *
+     * @param {any} response
+     *
+     * @private
+     *
+     * @return {any}
+     */
+    private getDataFromResponse<T>(response: any): T {
+        if (isObjectLiteral<{ data: any }>(response) && 'data' in response) {
+            return response.data;
+        }
 
-                return response;
-            })
-            .finally(() => this.requestCount--);
+        return response;
     }
 
     /**
@@ -158,11 +168,7 @@ export default class CallsApi extends BuildsQuery {
         queryParameters?: QueryParams | Record<string, unknown>
     ): Promise<ModelCollection<T> | T> {
         return this.call('get', queryParameters)
-            .then(responseData => {
-                this.resetEndpoint().resetQueryParameters();
-
-                return this.newInstanceFromResponseData<T>(responseData as Attributes);
-            });
+            .then(responseData => this.newInstanceFromResponseData<T>(this.getDataFromResponse(responseData)));
     }
 
     /**
@@ -187,11 +193,7 @@ export default class CallsApi extends BuildsQuery {
      */
     public async post<T extends Model>(data: Attributes | FormData): Promise<T> {
         return this.call('post', data)
-            .then(responseData => {
-                return this.resetEndpoint()
-                    .resetQueryParameters()
-                    .getResponseModel<T>(responseData);
-            });
+            .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
 
     /**
@@ -203,11 +205,7 @@ export default class CallsApi extends BuildsQuery {
      */
     public async put<T extends Model>(data: Attributes | FormData): Promise<T> {
         return this.call('put', data)
-            .then(responseData => {
-                return this.resetEndpoint()
-                    .resetQueryParameters()
-                    .getResponseModel<T>(responseData);
-            });
+            .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
 
     /**
@@ -219,11 +217,7 @@ export default class CallsApi extends BuildsQuery {
      */
     public async patch<T extends Model>(data: Attributes | FormData): Promise<T> {
         return this.call('patch', data)
-            .then(responseData => {
-                return this.resetEndpoint()
-                    .resetQueryParameters()
-                    .getResponseModel<T>(responseData);
-            });
+            .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
 
     /**
@@ -236,11 +230,7 @@ export default class CallsApi extends BuildsQuery {
      */
     public async delete<T extends Model>(data?: Attributes | FormData): Promise<T> {
         return this.call('delete', data)
-            .then(responseData => {
-                return this.resetEndpoint()
-                    .resetQueryParameters()
-                    .getResponseModel<T>(responseData);
-            });
+            .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
 
     /**

@@ -214,35 +214,57 @@ Now if our other models extend our own model they will have the option to set th
 
 #### Send paginated requests
 
-While it's nice to be able to [paginate locally](./helpers/pagination.md) it might not be desired to get too much data upfront. In this case a pagination can be implemented that will only get the pages in question on an explicit request.
+While it's nice to be able to [paginate locally](./helpers/pagination.md) it might not be desired to get too much data upfront. In this case a pagination can be implemented that will only get the pages in question on an explicit request. Of course, you might change the typings and the implementation to fit your needs.
 
 ```ts
 // utils.ts
 import type { Model, ModelCollection } from '@upfrontjs/framework';
 import User from '@models/User';
 
-export interface PaginatedModels<T extends Model> {
+interface MyJsonApiResponse {
+    data: Attributes[];
+    links: {
+        first: string;
+        last: string;
+        next: string;
+    };
+    meta: {
+        current_page: number;
+        from: number;
+        to: number;
+        last_page: number;
+        total: number;
+        path: string;
+    };
+}
+
+interface PaginatedModels<T extends Model> {
     data: ModelCollection<T>;
     next: () => Promise<PaginatedModels<T>>;
     previous: () => Promise<PaginatedModels<T>>;
     page: (page: number) => Promise<PaginatedModels<T>>;
+    meta: MyJsonApiResponse['meta'];
 }
 
 export async function paginateModels<T extends Model>(builder: T, page = 1, limit = 25): Promise<PaginatedModels<T>> {
-    const modelCollection = await builder.limit(limit).page(page).get() as unknown as ModelCollection<T>;
-    // or some other custom logic where the response `meta` and `links` keys (if any) are taken into account
+    const response = await builder.limit(limit).page(page).call<MyJsonApiResponse>('get');
+    const modelCollection = new ModelCollection<T>(response!.data.map(attributes => builder.new(attributes)));
+    // or some other custom logic where the response `meta` and `links` or other keys (if any) are taken into account
 
     return {
         data: modelCollection,
         next: async () => paginateModels(builder, page + 1, limit),
         previous: async () => paginateModels(builder, page - 1, limit),
-        page: async (pageNumber: number) => paginateModels(builder, pageNumber, limit)
+        page: async (pageNumber: number) => paginateModels(builder, pageNumber, limit),
+        meta: response!.meta
+        // any other keys here like that you want to have access to
     };
 }
 
 // paginate users where column has the value of 1
 const firstPage = await paginateModels(User.where('column', 1));
 const secondPage = await firstPage.next();
+
 ```
 
 *Note: this isn't included in the framework by default because the package is back-end agnostic*

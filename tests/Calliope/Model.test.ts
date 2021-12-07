@@ -71,6 +71,13 @@ describe('Model', () => {
         });
     });
 
+    describe('new()', () => {
+        it('should give a new instance of the model', () => {
+            expect(user.new({ key: 'myString' })).toBeInstanceOf(User);
+            expect(user.is(user.new({ key: 'myString' }))).toBe(false);
+        });
+    });
+
     describe('is()', () => {
         it('should determine whether two models are the same',  () => {
             expect(user.is(1)).toBe(false);

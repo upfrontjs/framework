@@ -13,7 +13,7 @@ import type { KeysNotMatching, MaybeArray } from '../../Support/type';
 type InternalProperties = 'attributeCasing' | 'attributeCasts' | 'attributes' | 'casts' | 'endpoint' | 'exists' | 'fillable' | 'fillableAttributes' | 'guarded' | 'guardedAttributes' | 'hasOneOrManyParentKeyName' | 'loading' | 'mutatedEndpoint' | 'original' | 'primaryKey' | 'relationMethodPrefix' | 'relations' | 'requestCount' | 'serverAttributeCasing';
 
 /**
- * All keys of the object except where the value is a method
+ * All keys of the object except where the value is a method,
  * or it's a property defined on internally.
  *
  * Results in a union of keys.

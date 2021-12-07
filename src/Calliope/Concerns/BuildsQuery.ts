@@ -331,13 +331,13 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.where
      */
-    public static where(
+    public static where<T extends Model>(
         column: string,
         operator: Operator | unknown,
         value?: unknown,
         boolean: BooleanOperator = 'and'
-    ): Model {
-        return this.newQuery().where(
+    ): T {
+        return this.newQuery<T>().where(
             column,
             arguments.length > 2 ? operator as Operator : '=',
             arguments.length > 2 ? value : operator,
@@ -384,10 +384,10 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereKey
      */
-    public static whereKey(
+    public static whereKey<T extends Model>(
         value: MaybeArray<number | string>, boolean: BooleanOperator = 'and'
-    ): Model {
-        return this.newQuery().whereKey(value, boolean);
+    ): T {
+        return this.newQuery<T>().whereKey(value, boolean);
     }
 
     /**
@@ -427,10 +427,10 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotIn
      */
-    public static whereKeyNot(
+    public static whereKeyNot<T extends Model>(
         value: MaybeArray<number | string>, boolean: BooleanOperator = 'and'
-    ): Model {
-        return this.newQuery().whereKeyNot(value, boolean);
+    ): T {
+        return this.newQuery<T>().whereKeyNot(value, boolean);
     }
 
     /**
@@ -471,8 +471,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNull
      */
-    public static whereNull(columns: MaybeArray<string>): Model {
-        return this.newQuery().whereNull(columns);
+    public static whereNull<T extends Model>(columns: MaybeArray<string>): T {
+        return this.newQuery<T>().whereNull(columns);
     }
 
     /**
@@ -513,8 +513,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotNull
      */
-    public static whereNotNull(columns: MaybeArray<string>): Model {
-        return this.newQuery().whereNotNull(columns);
+    public static whereNotNull<T extends Model>(columns: MaybeArray<string>): T {
+        return this.newQuery<T>().whereNotNull(columns);
     }
 
     /**
@@ -550,8 +550,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereIn
      */
-    public static whereIn(column: string, values: any[], boolean: BooleanOperator = 'and'): Model {
-        return this.newQuery().whereIn(column, values, boolean);
+    public static whereIn<T extends Model>(column: string, values: any[], boolean: BooleanOperator = 'and'): T {
+        return this.newQuery<T>().whereIn(column, values, boolean);
     }
 
     /**
@@ -588,8 +588,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotIn
      */
-    public static whereNotIn(column: string, values: any[], boolean: BooleanOperator = 'and'): Model {
-        return this.newQuery().whereNotIn(column, values, boolean);
+    public static whereNotIn<T extends Model>(column: string, values: any[], boolean: BooleanOperator = 'and'): T {
+        return this.newQuery<T>().whereNotIn(column, values, boolean);
     }
 
     /**
@@ -631,8 +631,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereBetween
      */
-    public static whereBetween(column: string, values: any[], boolean: BooleanOperator = 'and'): Model {
-        return this.newQuery().whereBetween(column, values, boolean);
+    public static whereBetween<T extends Model>(column: string, values: any[], boolean: BooleanOperator = 'and'): T {
+        return this.newQuery<T>().whereBetween(column, values, boolean);
     }
 
     /**
@@ -674,8 +674,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotBetween
      */
-    public static whereNotBetween(column: string, values: any[], boolean: BooleanOperator = 'and'): Model {
-        return this.newQuery().whereNotBetween(column, values, boolean);
+    public static whereNotBetween<T extends Model>(column: string, values: any[], boolean: BooleanOperator = 'and'): T {
+        return this.newQuery<T>().whereNotBetween(column, values, boolean);
     }
 
     /**
@@ -716,8 +716,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.limit
      */
-    public static limit(count: number): Model {
-        return this.newQuery().limit(count);
+    public static limit<T extends Model>(count: number): T {
+        return this.newQuery<T>().limit(count);
     }
 
     /**
@@ -741,8 +741,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.page
      */
-    public static page(pageNumber: number): Model {
-        return this.newQuery().page(pageNumber);
+    public static page<T extends Model>(pageNumber: number): T {
+        return this.newQuery<T>().page(pageNumber);
     }
 
     /**
@@ -771,8 +771,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.when
      */
-    public static when(value: any, closure: (instance: BuildsQuery) => any): Model {
-        return this.newQuery().when(value, closure);
+    public static when<T extends Model>(value: any, closure: (instance: BuildsQuery) => any): T {
+        return this.newQuery<T>().when(value, closure);
     }
 
     /**
@@ -801,8 +801,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.unless
      */
-    public static unless(value: any, closure: (instance: BuildsQuery) => any): Model {
-        return this.newQuery().unless(value, closure);
+    public static unless<T extends Model>(value: any, closure: (instance: BuildsQuery) => any): T {
+        return this.newQuery<T>().unless(value, closure);
     }
 
     /**
@@ -823,8 +823,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.distinct
      */
-    public static distinct(boolean = true): Model {
-        return this.newQuery().distinct(boolean);
+    public static distinct<T extends Model>(boolean = true): T {
+        return this.newQuery<T>().distinct(boolean);
     }
 
     /**
@@ -849,8 +849,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.select
      */
-    public static select(columns: MaybeArray<string>): Model {
-        return this.newQuery().select(columns);
+    public static select<T extends Model>(columns: MaybeArray<string>): T {
+        return this.newQuery<T>().select(columns);
     }
 
     /**
@@ -875,8 +875,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.has
      */
-    public static has(relations: MaybeArray<string>): Model {
-        return this.newQuery().has(relations);
+    public static has<T extends Model>(relations: MaybeArray<string>): T {
+        return this.newQuery<T>().has(relations);
     }
 
     /**
@@ -901,8 +901,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.with
      */
-    public static with(relations: MaybeArray<string>): Model {
-        return this.newQuery().with(relations);
+    public static with<T extends Model>(relations: MaybeArray<string>): T {
+        return this.newQuery<T>().with(relations);
     }
 
     /**
@@ -925,8 +925,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.without
      */
-    public static without(relations: MaybeArray<string>): Model {
-        return this.newQuery().without(relations);
+    public static without<T extends Model>(relations: MaybeArray<string>): T {
+        return this.newQuery<T>().without(relations);
     }
 
     /**
@@ -951,8 +951,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.scope
      */
-    public static scope(scopes: MaybeArray<string>): Model {
-        return this.newQuery().scope(scopes);
+    public static scope<T extends Model>(scopes: MaybeArray<string>): T {
+        return this.newQuery<T>().scope(scopes);
     }
 
     /**
@@ -982,8 +982,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.orderBy
      */
-    public static orderBy(column: string, direction: Direction = 'asc'): Model {
-        return this.newQuery().orderBy(column, direction);
+    public static orderBy<T extends Model>(column: string, direction: Direction = 'asc'): T {
+        return this.newQuery<T>().orderBy(column, direction);
     }
 
     /**
@@ -1006,8 +1006,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.orderByDesc
      */
-    public static orderByDesc(column: string): Model {
-        return this.newQuery().orderByDesc(column);
+    public static orderByDesc<T extends Model>(column: string): T {
+        return this.newQuery<T>().orderByDesc(column);
     }
 
     /**
@@ -1032,8 +1032,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.latest
      */
-    public static latest(column?: string): Model {
-        return this.newQuery().latest(column);
+    public static latest<T extends Model>(column?: string): T {
+        return this.newQuery<T>().latest(column);
     }
 
     /**
@@ -1058,8 +1058,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.oldest
      */
-    public static oldest(column = 'created_at'): Model {
-        return this.newQuery().oldest(column);
+    public static oldest<T extends Model>(column = 'created_at'): T {
+        return this.newQuery<T>().oldest(column);
     }
 
     /**
@@ -1087,8 +1087,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.offset
      */
-    public static offset(count: number): Model {
-        return this.newQuery().offset(count);
+    public static offset<T extends Model>(count: number): T {
+        return this.newQuery<T>().offset(count);
     }
 
     /**
@@ -1113,7 +1113,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.skip
      */
-    public static skip(count: number): Model {
-        return this.newQuery().skip(count);
+    public static skip<T extends Model>(count: number): T {
+        return this.newQuery<T>().skip(count);
     }
 }

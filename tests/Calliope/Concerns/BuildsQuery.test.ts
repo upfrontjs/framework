@@ -1,20 +1,12 @@
 import type { QueryParams } from '../../../src/Calliope/Concerns/BuildsQuery';
-import BuildsQuery from '../../../src/Calliope/Concerns/BuildsQuery';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import type FormatsQueryParameters from '../../../src/Contracts/FormatsQueryParameters';
 import { types } from '../../test-helpers';
+import Model from '../../../src/Calliope/Model';
 
-class TestClass extends BuildsQuery {
-    public compiledParams(): Record<string, unknown> {
+class BuildsQuery extends Model {
+    public compiledParams(): QueryParams & Record<string, any> {
         return this.compileQueryParameters();
-    }
-
-    public getKeyName(): string {
-        return 'id';
-    }
-
-    public getCreatedAtColumn(): string {
-        return 'created_at';
     }
 }
 
@@ -22,7 +14,7 @@ let builder: BuildsQuery;
 
 describe('BuildsQuery', () => {
     beforeEach(() => {
-        builder = new TestClass();
+        builder = new BuildsQuery();
     });
 
     describe('.withRelations', () => {
@@ -45,7 +37,7 @@ describe('BuildsQuery', () => {
     describe('compileQueryParameters', () => {
         it('should call the formatQueryParameters if defined', () => {
             const mockFn = jest.fn();
-            class FormatterClass extends TestClass implements FormatsQueryParameters {
+            class FormatterClass extends BuildsQuery implements FormatsQueryParameters {
                 public formatQueryParameters(attributes: QueryParams) {
                     mockFn();
                     return attributes;
@@ -58,7 +50,7 @@ describe('BuildsQuery', () => {
         });
 
         it('should should use the returned object by the formatQueryParameters', () => {
-            class FormatterClass extends TestClass implements FormatsQueryParameters {
+            class FormatterClass extends BuildsQuery implements FormatsQueryParameters {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 public formatQueryParameters(_attributes: QueryParams) {
                     return { my: 'data' };
@@ -951,6 +943,7 @@ describe('BuildsQuery', () => {
 
         it('should be able to be called statically', () => {
             // it will be present when used from the model
+            // eslint-disable-next-line jest/unbound-method,@typescript-eslint/unbound-method
             BuildsQuery.prototype.getCreatedAtColumn = builder.getCreatedAtColumn;
 
             builder = BuildsQuery.latest();
@@ -976,6 +969,7 @@ describe('BuildsQuery', () => {
 
         it('should be able to be called statically', () => {
             // it will be present when used from the model
+            // eslint-disable-next-line jest/unbound-method,@typescript-eslint/unbound-method
             BuildsQuery.prototype.getCreatedAtColumn = builder.getCreatedAtColumn;
 
             builder = BuildsQuery.oldest();

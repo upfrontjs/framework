@@ -4,7 +4,7 @@ Models have been given powerful tools to manage data without involved logic and 
 
  - [Casting](#casting)
  - [Guarding](#guarding)
- - [Mutators/Accessors](#mutatorsaccessors)
+ - [Mutators/Accessors](#mutators-accessors)
  - [Attribute management](#attribute-management)
  - [Tracking changes](#tracking-changes)
 
@@ -327,7 +327,7 @@ user.fullName; // 'Dr. John Doe'
 Models can be constructed with the `new` keyword. This will mass assign attributes to the model while respecting the [guarding](#guarding) settings.
 
 ::: warning
-When constructing an instance and only passing in another instance of the model:
+When constructing an instance and passing in another instance of the model:
 ```js
 import User from '@Models/User';
 import Shift from '@Models/Shift';
@@ -524,15 +524,15 @@ const user = new User({ firstName: 'John', lastName: 'Doe', title: 'Dr.' });
 user.except(['fistName', 'title']); // { lastName: 'Doe' }
 ```
 
-#### toJson
+#### toJSON
 
-The `toJson` method returns the json string representation of the model's attributes and relations.
+The `toJSON` method returns the json representation of the model's attributes and relations.
 
 ```js
 import User from '@Models/User';
 
 const user = new User({ name: 'John Doe' });
-user.addRelation('shifts', new Shift({ shiftAttr: 1 })).toJson(); // {"name":"John Doe","shifts":[{"shiftAttr":1}]}
+user.addRelation('shifts', new Shift({ shiftAttr: 1 })).toJSON(); // {"name":"John Doe","shifts":[{"shiftAttr":1}]}
 ```
 
 ## Tracking changes

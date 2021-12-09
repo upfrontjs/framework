@@ -96,7 +96,7 @@ import { Factory } from '@upfrontjs/framework';
 import type { Attributes } from '@upfrontjs/framework';
 import type User from './src/Models/User';
 
-export default UserFactory<T extends User> extends Factory {
+export default UserFactory extends Factory<User> {
     definition(model: T, index: number): Attributes {
         return {
             name: 'user name',
@@ -129,7 +129,7 @@ return {
     firstName: () => 'user',
     lastName: 'name',
     fullName: (attributes) => {
-        return attributes.firstName + ' ' + attributes.lastName // 'user name'
+        return attributes.firstName + ' ' + attributes.lastName; // 'user name'
     }
 }
 ```
@@ -145,7 +145,7 @@ return {
 ```
 
 ### States
-States are a way to encapsulate some changes to the return value of your [definition()](#definition) method. It is resolved the same way as the `definition`, so you may use methods, and the previously resolved attributes.
+States are a way to encapsulate some changes to the return value of your [definition](#definition) method. It is resolved the same way as the `definition`, so you may use methods, and the previously resolved attributes.
 
 To define a state in your factory add a method with your state name:
 

@@ -52,7 +52,7 @@ The `freshTimestamps` method sends `GET` request [selecting](./query-building.md
 
 ### Properties
 
-##### deletedAt
+#### deletedAt
 
 The `deletedAt` is a static property on the model. The default value is `'deletedAt'`. You may over ride this if the expected timestamp attribute is named differently.
 The letter casing is no concern here as [getDeletedAtColumn](#getdeletedatcolumn) will update it to the correct casing.

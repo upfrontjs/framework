@@ -137,6 +137,48 @@ describe('Model', () => {
         });
     });
 
+    describe('clone', () => {
+        it('should return a clone of the given model', () => {
+            expect(user.is(user.clone())).toBe(true);
+        });
+
+        it('should clone the model in it\'s current state', () => {
+            user = new User({ id: 1, myKey: 2 });
+            user.setFillable(['id', 'something']);
+            user.setGuarded(['*']);
+            user.setCasts({ id: 'number' });
+            user.setAttribute('myKey', 3);
+            const userClone = user.clone();
+
+            expect(userClone.getRawAttributes()).toStrictEqual(user.getRawAttributes());
+            expect(userClone.getRawOriginal()).toStrictEqual(user.getRawOriginal());
+            expect(userClone.hasCast('id')).toBe(true);
+        });
+
+        it('should clone the model with any interim state', () => {
+            const shift = user.$shifts().setEndpoint('myEndpoint');
+            const shiftClone = shift.clone();
+
+            expect(shiftClone.getEndpoint()).toBe(shift.getEndpoint());
+            // @ts-expect-error
+            expect(shiftClone.hasOneOrManyParentKeyName).toBe(shift.hasOneOrManyParentKeyName);
+        });
+
+        it('should clone the model with query values retained', () => {
+            user.whereKey(1).with('relation').page(2);
+            // @ts-expect-error
+            expect(user.clone().compileQueryParameters()).toStrictEqual(user.compileQueryParameters());
+        });
+
+        it('should not copy values by reference', () => {
+            user.setAttribute('myKey', 1);
+            const userClone = user.clone();
+            user.setAttribute('myKey', 2);
+
+            expect(userClone.getAttribute('myKey')).toBe(1);
+        });
+    });
+
     describe('factory()', () => {
         it('should return the factory builder', () => {
             expect(User.factory()).toBeInstanceOf(FactoryBuilder);

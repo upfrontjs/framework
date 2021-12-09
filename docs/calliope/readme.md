@@ -155,6 +155,22 @@ userCopy.name; // 'the name'
 userCopy.getAttribute(userCopy.getCreatedAtColumn()); // undefined
 ```
 
+#### clone
+
+The `clone` method clones the instance in its current state. Meaning all changes to the [query building](./query-building.md), [endpoint](./api-calls.md#endpoint-manipulation) and [attribute changes](./attributes.md#tracking-changes) will be copied along. The result will match the original model but nothing is copied by reference.
+
+```js
+import User from '@Models/User';
+
+const user = User.factory().create({ myKey: 1 });
+const userClone = user.clone();
+user.is(userClone); // true
+
+user.myKey = 2;
+userClone.myKey === 1; // true
+
+```
+
 #### factory
 <Badge text="static" type="warning"/>
 

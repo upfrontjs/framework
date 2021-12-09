@@ -30,7 +30,7 @@ body:
     validations:
       required: false
   - type: textarea
-    id: expected behaviour
+    id: expected-behaviour
     attributes:
       label: Expected Behavior
       description: A concise description of what you expected to happen.

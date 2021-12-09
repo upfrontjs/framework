@@ -87,6 +87,20 @@ const user = new User;
 user.delete({ attribute: 1 });
 ```
 
+#### call
+<Badge text="async" type="warning"/>
+<Badge text="advanced" type="warning"/>
+
+The `call` method is what powers the rest of the api calls on the model. It takes one argument and two optional arguments. The first argument is the method name which is one of `'delete' | 'get' | 'patch' | 'post' | 'put'`. The second is the data to send along with the request. and the third is any custom headers in an object format to be sent along. After the request the [resetEndpoint](#resetendpoint) will be called and all [query parameters](./query-building.md) will be reset.
+
+```ts
+import User from '@Models/User';
+
+const user = new User();
+
+await user.call('get', { query: 'value' }); // GET your-api.com/users?query=value
+```
+
 ### Endpoint manipulation
 
 There are couple utilities to change the endpoint for the next request.
@@ -112,7 +126,7 @@ user.getEndpoint(); // 'users'
 ```
 #### resetEndpoint
 
-The `resetEndpoint` method resets the endpoint to the original [endpoint](#endpoint). If endpoint is not set, it will try to guess it based on the model name.
+The `resetEndpoint` method resets the endpoint to the original [endpoint](#endpoint). If endpoint is not set, it will try to guess it based on the [model name](./readme.md#getname).
 ```js
 import User from '@Models/User';
 

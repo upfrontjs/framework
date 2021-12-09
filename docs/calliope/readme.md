@@ -123,7 +123,7 @@ The `getKeyName` method returns the [primaryKey](#primarykey) of the model.
 
 The `getName` method expected to return the current class' name. For example in a class called `User` it should return `'User'`.
 
-*Note: This is essential to add to every model as this is used throughout the framework.*
+***Note: This is essential to add to every model as this is used throughout the framework.***
 ::: danger
 This value cannot be `this.constructor.name` **if** you're minifying your code or in the minification options you haven't turned off the class rename or equivalent option.
 :::
@@ -153,6 +153,22 @@ const userCopy = user.replicate();
 userCopy.getKey(); // undefined
 userCopy.name; // 'the name'
 userCopy.getAttribute(userCopy.getCreatedAtColumn()); // undefined
+```
+
+#### clone
+
+The `clone` method clones the instance in its current state. Meaning all changes to the [query building](./query-building.md), [endpoint](./api-calls.md#endpoint-manipulation) and [attribute changes](./attributes.md#tracking-changes) will be copied along. The result will match the original model but nothing is copied by reference.
+
+```js
+import User from '@Models/User';
+
+const user = User.factory().create({ myKey: 1 });
+const userClone = user.clone();
+user.is(userClone); // true
+
+user.myKey = 2;
+userClone.myKey === 1; // true
+
 ```
 
 #### factory

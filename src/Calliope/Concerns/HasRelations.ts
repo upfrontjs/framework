@@ -25,7 +25,8 @@ export default class HasRelations extends CallsApi {
     }
 
     /**
-     * The key name of the parent of the hasOne or hasMany relation.
+     * The key name of the parent of this model which was
+     * instantiated from a hasOne or hasMany relation.
      * This is used to remove the where query when saving
      * a new entity like `parent.$child().save({});`
      *

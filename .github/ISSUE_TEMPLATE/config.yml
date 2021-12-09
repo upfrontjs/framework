@@ -1,0 +1,7 @@
+---
+blank_issues_enabled: false
+contact_links:
+  -
+    about: "Please ask and answer usage questions in the discussion section."
+    name: Question
+    url: "https://github.com/upfrontjs/framework/discussions/new?category=q-a"

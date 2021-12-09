@@ -7,6 +7,10 @@ assignees: ''
 
 ---
 
+<!---
+If your suggestion involves substantial changes/breaking changes/otherwise a lot of work, consider opening a discussion first.
+-->
+
 **Search terms**
 The terms you searched for in the issues before opening a new issue.
 

@@ -108,9 +108,9 @@ export default class Model extends SoftDeletes implements HasFactory {
 
         // attributes
         clone.original = this.getRawOriginal();
-        clone.fillableAttributes = this.fillableAttributes;
-        clone.guardedAttributes = this.guardedAttributes;
-        clone.attributeCasts = this.attributeCasts;
+        clone.fillableAttributes = cloneDeep(this.fillableAttributes);
+        clone.guardedAttributes = cloneDeep(this.guardedAttributes);
+        clone.attributeCasts = cloneDeep(this.attributeCasts);
 
         // miscellaneous
         clone.hasOneOrManyParentKeyName = this.hasOneOrManyParentKeyName;

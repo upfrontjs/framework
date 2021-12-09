@@ -16,7 +16,7 @@ The `on` method sets up the listener for an event. It receives two arguments, th
 import { EventEmitter } from '@upfrontjs/framework';
 import type { MyEvents } from '../types';
 
-const emitter = EventEmitter.getInstance<MyEvents>();
+const emitter = EventEmitter.getInstance<>();
 emitter.on('myEvent', num => num);
 emitter.emit('myEvent', 2);
 ```
@@ -29,7 +29,7 @@ The `once` method works the same way as the [on](#on) method except once the cal
 import { EventEmitter } from '@upfrontjs/framework';
 import type { MyEvents } from '../types';
 
-const emitter = EventEmitter.getInstance<MyEvents>();
+const emitter = EventEmitter.getInstance<>();
 emitter.once('myEvent', num => console.log(num));
 emitter.emit('myEvent', 1); // 1 logged out to the console
 emitter.emit('myEvent', 1); // nothing happens
@@ -42,7 +42,7 @@ The `prependListener` method works the same way as the [on](#on) method except t
 import { EventEmitter } from '@upfrontjs/framework';
 import type { MyEvents } from '../types';
 
-const emitter = EventEmitter.getInstance<MyEvents>();
+const emitter = EventEmitter.getInstance<>();
 emitter.on('myEvent', num => console.log(num));
 emitter.prependListener('myEvent', num => console.log('first log: ', num));
 emitter.emit('myEvent', 1); // logged out 'first log: 1', then '1'

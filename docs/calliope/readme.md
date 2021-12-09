@@ -123,7 +123,7 @@ The `getKeyName` method returns the [primaryKey](#primarykey) of the model.
 
 The `getName` method expected to return the current class' name. For example in a class called `User` it should return `'User'`.
 
-***Note: This is essential to add to every model as this is used throughout the framework.***
+*Note: This is essential to add to every model as this is used throughout the framework.*
 ::: danger
 This value cannot be `this.constructor.name` **if** you're minifying your code or in the minification options you haven't turned off the class rename or equivalent option.
 :::

@@ -13,6 +13,16 @@ const excellentStudentNames = students
     .pluck('name');
 ```
 
+```ts
+import User from '@models/User';
+
+const students = await User.where('is_student', true).with('grades').get();
+
+const excellentStudentNames = students
+    .filter(student => student.grades.average('value') > 4)
+    .pluck('name');
+```
+
 ## What does it solve?
 There are number of solutions out there for fetching data and working with the response. However not all of these might be as scalable as one would hope. With state management, you might have a getter for users, but those users include all users, meaning for a custom collection you would need a new getter method. An on-demand ajax request written specifically to solve a single issue, while it is simple to do, it quickly gets repetitive and hard to maintain. [Upfront](./installation.md) solves the above by creating abstraction over the data in a unified api. Just like the above examples it can be used to fetch data on demand or be complimentary to state management libraries.
 

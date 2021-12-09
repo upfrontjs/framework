@@ -65,8 +65,8 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {this}
      */
-    public new(attributes?: Attributes<this> | Model): this {
-        return new (this.constructor as new (attributes?: Attributes<this> | Model) => this)(attributes);
+    public new(attributes?: Attributes | Attributes<this>): this {
+        return new (this.constructor as new (attributes?: Attributes | Attributes<this>) => this)(attributes);
     }
 
     /**

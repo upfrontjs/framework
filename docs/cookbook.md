@@ -247,7 +247,7 @@ interface PaginatedModels<T extends Model> {
 }
 
 export async function paginateModels<T extends Model>(builder: T, page = 1, limit = 25): Promise<PaginatedModels<T>> {
-    const response = await builder.limit(limit).page(page).call<MyJsonApiResponse>('get');
+    const response = await builder.clone().limit(limit).page(page).call<MyJsonApiResponse>('get');
     const modelCollection = new ModelCollection<T>(response!.data.map(attributes => builder.new(attributes)));
     // or some other custom logic where the response `meta` and `links` or other keys (if any) are taken into account
 

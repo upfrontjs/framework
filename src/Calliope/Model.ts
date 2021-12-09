@@ -6,6 +6,7 @@ import ModelCollection from './ModelCollection';
 import LogicException from '../Exceptions/LogicException';
 import { finish, isUuid } from '../Support/string';
 import type { MaybeArray } from '../Support/type';
+import { cloneDeep } from 'lodash';
 
 export default class Model extends SoftDeletes implements HasFactory {
     /**
@@ -64,8 +65,8 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {this}
      */
-    public new(attributes?: Attributes | Attributes<this>): this {
-        return new (this.constructor as new (attributes?: Attributes | Attributes<this>) => this)(attributes);
+    public new(attributes?: Attributes<this> | Model): this {
+        return new (this.constructor as new (attributes?: Attributes<this> | Model) => this)(attributes);
     }
 
     /**
@@ -93,7 +94,43 @@ export default class Model extends SoftDeletes implements HasFactory {
         const attributes = { ...this.getRawAttributes(), ...this.getRelations() };
         excluded.forEach(key => delete attributes[key]);
 
-        return new (this.constructor as new (attributes?: Attributes) => this)(attributes);
+        return this.new(attributes);
+    }
+
+    /**
+     * Creates a one to one copy of the model without copying by reference.
+     *
+     * @return {this}
+     */
+    public clone(): this {
+        // this takes care of the attributes, relations and setting up descriptors
+        const clone = this.new(this);
+
+        // attributes
+        clone.original = this.getRawOriginal();
+        clone.fillableAttributes = cloneDeep(this.fillableAttributes);
+        clone.guardedAttributes = cloneDeep(this.guardedAttributes);
+        clone.attributeCasts = cloneDeep(this.attributeCasts);
+
+        // miscellaneous
+        clone.hasOneOrManyParentKeyName = this.hasOneOrManyParentKeyName;
+        clone.mutatedEndpoint = this.mutatedEndpoint;
+
+        // query parameters
+        clone.wheres = cloneDeep(this.wheres);
+        clone.columns = cloneDeep(this.columns);
+        clone.withs = cloneDeep(this.withs);
+        clone.withouts = cloneDeep(this.withouts);
+        clone.withRelations = cloneDeep(this.withRelations);
+        clone.scopes = cloneDeep(this.scopes);
+        clone.relationsExists = cloneDeep(this.relationsExists);
+        clone.orders = cloneDeep(this.orders);
+        clone.distinctOnly = this.distinctOnly;
+        clone.offsetCount = this.offsetCount;
+        clone.limitCount = this.limitCount;
+        clone.pageNumber = this.pageNumber;
+
+        return clone;
     }
 
     /**

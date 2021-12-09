@@ -10,11 +10,13 @@ I'd also love PRs. If you're thinking of a large PR, I advise opening up an issu
 
 ## Which branch
 
-**Patch** bug fixes should be sent to the latest stable branch. Bug fixes should never be sent to the main branch unless they fix features that exist only in the upcoming release.
+~~**Patch** bug fixes should be sent to the latest stable branch. Bug fixes should never be sent to the main branch unless they fix features that exist only in the upcoming release.~~
 
-**Minor** features that are fully backward compatible with the current release may be sent to the latest stable branch (`release/{version}.x`).
+~~**Minor** features that are fully backward compatible with the current release may be sent to the latest stable branch (`release/{version}.x`).~~
 
-**Major** new features should always be sent to the `main` branch, which contains the upcoming release.
+~~**Major** new features should always be sent to the `main` branch, which contains the upcoming release.~~
+
+Until reaching a stable version (v1), all pull requests should start from `main` and with your changes go into `release/0.x`. After that `release/0.x` will gets merged into the `main` branch.
 
 ## Submitting a pull request
 

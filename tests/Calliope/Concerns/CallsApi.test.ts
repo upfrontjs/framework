@@ -471,6 +471,17 @@ describe('CallsApi', () => {
 
             expect(caller.getEndpoint()).toBe('users');
         });
+
+        it('should kebab-case multi word models', () => {
+            Object.defineProperty(caller, 'endpoint', {
+                get: () => ''
+            });
+            caller.getName = () => 'MyModel';
+
+            caller.resetEndpoint();
+
+            expect(caller.getEndpoint()).toBe('my-models');
+        });
     });
 
     describe('appendToEndpoint()', () => {

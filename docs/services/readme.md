@@ -39,11 +39,10 @@ declare module '@upfrontjs/framework' {
 
 ---
 
-Upfront provides the implementations for the above interfaces which should cover most use cases. If you don't set your own implementation, upfront will fall back to these default services. These classes are also available from the [global configuration]((../helpers/global-config.md)) anywhere in your application.
+Upfront provides the implementations for the above interfaces which should cover most use cases. If you don't set your own implementation, upfront will fall back to these default services.
 
 - [API](./api.md) - implements `ApiCaller`
 - [ApiResponseHandler](./api-response-handler.md) - implements `HandlesApiResponse`
-
 
 ### Using Custom Services
 

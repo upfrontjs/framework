@@ -66,9 +66,9 @@ export default class GlobalConfig<T extends Configuration & Record<PropertyKey, 
      * @param {string} key
      * @param {any}    value
      */
-    public set<K extends PropertyKey | keyof T, V>(
-        key: K, value: K extends keyof T ? T[K] : V
-    ): asserts this is GlobalConfig<K extends keyof T ? WithProperty<T, K> : T & { [key in K]: V }> {
+    public set<K extends keyof T>(key: K, value: T[K]): asserts this is GlobalConfig<WithProperty<T, K>>
+    public set<K extends PropertyKey, V>(key: K, value: V): asserts this is GlobalConfig<T & { [key in K]: V }>
+    public set(key: string, value: unknown): void {
         if (GlobalConfig.usedAsReference.includes(key) || GlobalConfig.usedAsReference.includes('*')) {
             GlobalConfig.configuration[key] = value;
 

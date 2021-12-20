@@ -89,7 +89,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
     /**
      * Return the first element in the collection,
      * if callback given the first element that  passes the truth test.
-     * Otherwise undefined.
+     * Otherwise, undefined.
      *
      * @param {function} callback
      *

@@ -349,16 +349,16 @@ import { paginate } from '@upfrontjs/framework';
 isObjectLiteral({}); // true
 ```
 
-#### isConstructableUserClass
+#### isUserLandClass
 
-The `isConstructableUserClass` is a helper to evaluate that the passed in argument is a class constructor defined in the script, which can be used with the `new` keyword.
+The `isUserLandClass` is a helper to evaluate that the passed in argument is a class constructor defined in the script, which can be used with the `new` keyword.
 
 ```js
-import { isConstructableUserClass } from '@upfrontjs/framework';
+import { isUserLandClass } from '@upfrontjs/framework';
 
-isConstructableUserClass(class C {}); // true
+isUserLandClass(class C {}); // true
 ```
 
 ::: warning
-This only returns true for classes that are not built-ins, e.g.: `isConstructableUserClass(Array)` will be false.
+This only returns true for classes that are not built-ins, e.g.: `isUserLandClass(Array)` will be false.
 :::

@@ -21,6 +21,6 @@ jobs:
       - name: Update gh-pages branch
         run: |
           git config --global user.name "${{ github.actor }}"
-          git add api-docs
+          git add -f api-docs
           git commit -m "Updates from ${{ github.ref }}"
           git push -u origin gh-pages

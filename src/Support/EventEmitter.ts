@@ -2,6 +2,11 @@ export type Listener<TArg = any> = (...args: TArg[]) => Promise<void> | void;
 export type Events = Record<string, Listener[]>;
 
 export default class EventEmitter<TEvents extends Events = Events> {
+    /**
+     * The singleton.
+     *
+     * @private
+     */
     private static instance?: any;
 
     // mark constructor private so no newing up is allowed

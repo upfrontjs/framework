@@ -149,7 +149,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {any}
      */
-    private  getDataFromResponse<T>(response: any): T {
+    private getDataFromResponse<T>(response: any): T {
         if (isObjectLiteral<{ data: any }>(response) && 'data' in response) {
             return response.data;
         }

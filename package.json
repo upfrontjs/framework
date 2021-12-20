@@ -1,6 +1,6 @@
 {
     "name": "@upfrontjs/framework",
-    "version": "0.7.0",
+    "version": "0.7.1",
     "description": "Data handling framework complementary to backend model systems.",
     "main": "index.min.js",
     "module": "index.es.min.js",
@@ -107,7 +107,7 @@
         "ts-jest": "^26.4.4",
         "tslib": "^2.2.0",
         "typedoc": "^0.22.2",
-        "typescript": "~4.4.4"
+        "typescript": "^4.5.3"
     },
     "peerDependencies": {
         "@types/qs": "^6.9.5"

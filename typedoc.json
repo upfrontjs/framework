@@ -4,7 +4,7 @@
     ],
     "tsconfig": "tsconfig.json",
     "out": "api-docs",
-    "name": "UpfrontJs",
+    "name": "UpfrontJS",
     "readme": "./README.md",
     "plugin": [],
     "includeVersion": true,

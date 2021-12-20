@@ -8,7 +8,7 @@ import type { QueryParams } from './BuildsQuery';
 import BuildsQuery from './BuildsQuery';
 import type { Attributes } from './HasAttributes';
 import { isObjectLiteral } from '../../Support/function';
-import { finish, plural } from '../../Support/string';
+import { finish, kebab, plural } from '../../Support/string';
 import type { MaybeArray } from '../../Support/type';
 
 export type Method = 'delete' | 'get' | 'patch' | 'post' | 'put';
@@ -338,7 +338,7 @@ export default class CallsApi extends BuildsQuery {
     public resetEndpoint(): this {
         this.mutatedEndpoint = typeof this.endpoint === 'string' && this.endpoint.length
             ? this.endpoint
-            : plural((this as unknown as Model).getName().toLowerCase());
+            : plural(kebab((this as unknown as Model).getName()).toLowerCase());
 
         return this;
     }

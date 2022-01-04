@@ -263,12 +263,13 @@ User.unless(() => false, model => model.whereKey(1));
 
 #### distinct
 
-The `distinct` method adds a distinct constraint to the next request indicating that only distinct records are expected.
+The `distinct` method adds a distinct parameter for the request where the returned rows are expected to be distinct by the given columns.
 
 ```js
 import User from '@Models/User';
 
-User.distinct();
+User.distinct('column1');
+User.distinct(['column1', 'column2']);
 ```
 
 #### select

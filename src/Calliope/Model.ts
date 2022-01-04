@@ -74,7 +74,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @param {string[]|string} except
      */
-    public replicate(except?: MaybeArray<AttributeKeys<this> | string>): this
+    public replicate(except?: MaybeArray<AttributeKeys<this> | string>): this;
     public replicate(except?: MaybeArray<string>): this {
         const excluded = new Set([
             this.getKeyName(),

@@ -63,7 +63,7 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @return {this}
      */
-    public mergeFillable(fillable: (AttributeKeys<this> | string)[]): this
+    public mergeFillable(fillable: (AttributeKeys<this> | string)[]): this;
     public mergeFillable(fillable: string[]): this {
         this.fillableAttributes = [...this.getFillable(), ...fillable] as string[];
 
@@ -77,7 +77,7 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @return {this}
      */
-    public mergeGuarded(guarded: (AttributeKeys<this> | string)[]): this
+    public mergeGuarded(guarded: (AttributeKeys<this> | string)[]): this;
     public mergeGuarded(guarded: string[]): this {
         this.guardedAttributes = [...this.getGuarded(), ...guarded];
 
@@ -91,7 +91,7 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @return {this}
      */
-    public setFillable(fillable: (AttributeKeys<this> | string)[]): this
+    public setFillable(fillable: (AttributeKeys<this> | string)[]): this;
     public setFillable(fillable: string[]): this {
         this.fillableAttributes = fillable;
 
@@ -105,7 +105,7 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @return {this}
      */
-    public setGuarded(guarded: (AttributeKeys<this> | string)[]): this
+    public setGuarded(guarded: (AttributeKeys<this> | string)[]): this;
     public setGuarded(guarded: string[]): this {
         this.guardedAttributes = guarded;
 
@@ -117,7 +117,7 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @param {string} key
      */
-    public isFillable(key: AttributeKeys<this> | string): boolean
+    public isFillable(key: AttributeKeys<this> | string): boolean;
     public isFillable(key: string): boolean {
         return this.getFillable().includes(key) || this.getFillable().includes('*');
     }
@@ -127,7 +127,7 @@ export default class GuardsAttributes extends CastsAttributes {
      *
      * @param {string} key
      */
-    public isGuarded(key: AttributeKeys<this> | string): boolean
+    public isGuarded(key: AttributeKeys<this> | string): boolean;
     public isGuarded(key: string): boolean {
         // if key is defined in both guarded and fillable, then fillable takes priority.
         return (this.getGuarded().includes(key) || this.getGuarded().includes('*')) && !this.isFillable(key);

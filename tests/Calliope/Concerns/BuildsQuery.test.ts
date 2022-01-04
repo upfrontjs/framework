@@ -740,19 +740,19 @@ describe('BuildsQuery', () => {
 
     describe('distinct()', () => {
         it('should set the distinct value', () => {
-            builder.distinct();
+            builder.distinct('column1');
 
-            expect(builder.compiledParams().distinctOnly).toBe(true);
+            expect(builder.compiledParams().distinct).toStrictEqual(['column1']);
 
-            builder.distinct(false);
+            builder.distinct(['column1', 'column2']);
 
-            expect(builder.compiledParams().distinctOnly).toBeUndefined();
+            expect(builder.compiledParams().distinct).toStrictEqual(['column1', 'column2']);
         });
 
         it('should be able to be called statically', () => {
-            builder = BuildsQuery.distinct();
+            builder = BuildsQuery.distinct('column1');
             // @ts-expect-error
-            expect(builder.compileQueryParameters().distinctOnly).toBe(true);
+            expect(builder.compileQueryParameters().distinct).toStrictEqual(['column1']);
         });
     });
 

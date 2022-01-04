@@ -21,5 +21,5 @@ While using this package increases ease of access and cuts down development time
 
 ---
 
-As always you're encouraged to explore the [source](https://github.com/upfrontjs/framework) yourself or look at the api reference to gain insight on how the package works, and the [tests](https://github.com/upfrontjs/framework/tree/main/tests) to see how it's used.
+As always you're encouraged to explore the [source](https://github.com/upfrontjs/framework) yourself or look at the [api reference](https://upfrontjs.github.io/framework/) to gain insight on how the package works, and the [tests](https://github.com/upfrontjs/framework/tree/main/tests) to see how it's used.
 

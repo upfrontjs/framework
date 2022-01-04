@@ -71,7 +71,7 @@ type QueryParams = Partial<{
     scopes: string[]; // apply these scopes
     relationsExists: string[]; // only return if these relations exists
     orders: Order[]; // return records in this order
-    distinctOnly: boolean; // return unique records only
+    distinct: string[]; // return rows that are unique by these columns
     offset: number; // skip this many records
     limit: number; // limit the number of records to this
     page: number; // return the records from this page in pagination

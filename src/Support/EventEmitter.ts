@@ -231,7 +231,7 @@ export default class EventEmitter<TEvents extends Events = Events> {
      *
      * @param {string=} event - only count the listeners for the given event
      */
-    public listenerCount(event?: keyof TEvents): number
+    public listenerCount(event?: keyof TEvents): number;
     public listenerCount(event?: string): number {
         let count = 0;
 

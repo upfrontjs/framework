@@ -74,7 +74,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @param {string[]|string} except
      */
-    public replicate(except?: MaybeArray<AttributeKeys<this> | string>): this
+    public replicate(except?: MaybeArray<AttributeKeys<this> | string>): this;
     public replicate(except?: MaybeArray<string>): this {
         const excluded = new Set([
             this.getKeyName(),
@@ -199,7 +199,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      * @param {object=} data
      */
     public async save(data?: Attributes<this>): Promise<this> {
-        const dataToSave = Object.assign({}, this.exists ? this.getChanges() : this.getRawAttributes(), data);
+        const dataToSave = Object.assign(this.exists ? this.getChanges() : this.getRawAttributes(), data);
 
         if (!Object.keys(dataToSave).length) {
             return this;
@@ -223,7 +223,7 @@ export default class Model extends SoftDeletes implements HasFactory {
         );
         this.hasOneOrManyParentKeyName = undefined;
 
-        this.forceFill(Object.assign({}, model.getRawOriginal(), model.getRelations()))
+        this.forceFill(Object.assign(model.getRawOriginal(), model.getRelations()))
             .syncOriginal()
             .setLastSyncedAt();
 
@@ -247,8 +247,6 @@ export default class Model extends SoftDeletes implements HasFactory {
      * Find the model based on the given id.
      *
      * @param {string|number} id
-     *
-     * @return
      */
     public async find<T extends this>(id: number | string): Promise<T> {
         return await this

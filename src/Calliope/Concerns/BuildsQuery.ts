@@ -21,7 +21,7 @@ export type QueryParams = Partial<{
     scopes: string[];
     relationsExists: string[];
     orders: Order[];
-    distinctOnly: boolean;
+    distinct: string[];
     offset: number;
     limit: number;
     page: number;
@@ -101,13 +101,13 @@ export default class BuildsQuery extends HasAttributes {
     protected orders: Order[] = [];
 
     /**
-     * Flag indicating that only distinct values should be returned.
+     * Return distinct rows by these columns.
      *
      * @protected
      *
-     * @type {boolean}
+     * @type {string[]}
      */
-    protected distinctOnly = false;
+    protected distinctBy: string[] = [];
 
     /**
      * The number of records to be skipped.
@@ -199,8 +199,8 @@ export default class BuildsQuery extends HasAttributes {
             params.orders = this.orders;
         }
 
-        if (this.distinctOnly) {
-            params.distinctOnly = this.distinctOnly;
+        if (this.distinctBy.length) {
+            params.distinct = this.distinctBy;
         }
 
         if (this.offsetCount > 0) {
@@ -239,7 +239,7 @@ export default class BuildsQuery extends HasAttributes {
         this.scopes = [];
         this.relationsExists = [];
         this.orders = [];
-        this.distinctOnly = false;
+        this.distinctBy = [];
         this.offsetCount = 0;
         this.limitCount = 0;
         this.pageNumber = 0;
@@ -806,12 +806,12 @@ export default class BuildsQuery extends HasAttributes {
     }
 
     /**
-     * Request only distinct values on the query.
+     * Request only distinct values on the query based on the given columns.
      *
      * @return {this}
      */
-    public distinct(boolean = true): this {
-        this.distinctOnly = boolean;
+    public distinct(columns: MaybeArray<string>): this {
+        this.distinctBy = Array.isArray(columns) ? columns : [columns];
 
         return this;
     }
@@ -823,8 +823,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.distinct
      */
-    public static distinct<T extends Model>(boolean = true): T {
-        return this.newQuery<T>().distinct(boolean);
+    public static distinct<T extends Model>(columns: MaybeArray<string>): T {
+        return this.newQuery<T>().distinct(columns);
     }
 
     /**

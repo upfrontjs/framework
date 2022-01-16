@@ -174,8 +174,7 @@ export default class BuildsQuery extends HasAttributes {
             params.columns = this.columns;
         }
 
-        const withRelations = this.withRelations.filter(relation => !this.withs.includes(relation));
-        const withs = new Set(this.withs.concat(withRelations));
+        const withs = new Set([...this.withs, ...this.withRelations]);
 
         withs.forEach(relationName => {
             if (this.withouts.includes(relationName)) {

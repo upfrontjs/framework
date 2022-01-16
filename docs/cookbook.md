@@ -217,52 +217,89 @@ Now if our other models extend our own model they will have the option to set th
 While it's nice to be able to [paginate locally](./helpers/pagination.md) it might not be desired to get too much data upfront. In this case a pagination can be implemented that will only get the pages in question on an explicit request. Of course, you might change the typings and the implementation to fit your needs.
 
 ```ts
-// utils.ts
-import type { Model, ModelCollection } from '@upfrontjs/framework';
-import User from '@models/User';
+// paginator.ts
+import type { Attributes, Model } from '@upfrontjs/framework';
+import { ModelCollection } from '@upfrontjs/framework';
 
-interface MyJsonApiResponse {
-    data: Attributes[];
+interface PaginatedApiResponse<T = Attributes> {
+    data: T[];
     links: {
         first: string;
         last: string;
-        next: string;
+        prev: string | null;
+        next: string | null;
     };
     meta: {
         current_page: number;
+        /**
+         * From all the existing records this is where the current items start from.
+         */
         from: number;
+        /**
+         * From all the existing records this is where the current items go to.
+         */
         to: number;
         last_page: number;
+        /**
+         * String representation of a number.
+         */
+        per_page: string;
+        links: {
+            url: string | null;
+            label: string;
+            active: boolean;
+        }[];
+        /**
+         * Total number of records.
+         */
         total: number;
         path: string;
     };
 }
 
-interface PaginatedModels<T extends Model> {
+export interface PaginatedModels<T extends Model> {
     data: ModelCollection<T>;
-    next: () => Promise<PaginatedModels<T>>;
-    previous: () => Promise<PaginatedModels<T>>;
-    page: (page: number) => Promise<PaginatedModels<T>>;
-    meta: MyJsonApiResponse['meta'];
+    next: () => Promise<PaginatedModels<T> | undefined>;
+    previous: () => Promise<PaginatedModels<T> | undefined>;
+    page: (page: number) => Promise<PaginatedModels<T> | undefined>;
+    hasNext: boolean;
+    hasPrevious: boolean;
+    from: PaginatedApiResponse['meta']['from'];
+    to: PaginatedApiResponse['meta']['to'];
+    total: PaginatedApiResponse['meta']['total'];
 }
 
-export async function paginateModels<T extends Model>(builder: T, page = 1, limit = 25): Promise<PaginatedModels<T>> {
-    const response = await builder.clone().limit(limit).page(page).call<MyJsonApiResponse>('get');
-    const modelCollection = new ModelCollection<T>(response!.data.map(attributes => builder.new(attributes)));
-    // or some other custom logic where the response `meta` and `links` or other keys (if any) are taken into account
+async function paginator<T extends Model>(builder: T, page = 1, limit = 25): Promise<PaginatedModels<T>> {
+    const response = (await builder.clone().limit(limit).page(page).call<PaginatedApiResponse<Attributes<T>>>('get'))!;
+    const modelCollection = new ModelCollection<T>(response.data.map(attributes => builder.new(attributes)));
 
     return {
         data: modelCollection,
-        next: async () => paginateModels(builder, page + 1, limit),
-        previous: async () => paginateModels(builder, page - 1, limit),
-        page: async (pageNumber: number) => paginateModels(builder, pageNumber, limit),
-        meta: response!.meta
-        // any other keys here like that you want to have access to
+        next: async () => {
+            if (!response.links.next) return;
+            return paginatedModels(builder, page + 1, limit);
+        },
+        previous: async () => {
+            if (!response.links.prev) return;
+            return paginatedModels(builder, page - 1, limit);
+        },
+        page: async (pageNumber: number) => {
+            if (pageNumber > response.meta.last_page || pageNumber < 0) return;
+            return paginatedModels(builder, pageNumber, limit);
+        },
+        from: response.meta.from,
+        to: response.meta.to,
+        total: response.meta.total,
+        hasNext: !!response.links.next,
+        hasPrevious: !!response.links.prev
     };
 }
 
+export default paginator;
+
+// script.ts
 // paginate users where column has the value of 1
-const firstPage = await paginateModels(User.where('column', 1));
+const firstPage = await paginateModels(User.where<User>('column', 1));
 const secondPage = await firstPage.next();
 
 ```

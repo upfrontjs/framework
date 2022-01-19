@@ -125,7 +125,7 @@ export default class Model extends SoftDeletes implements HasFactory {
         clone.scopes = cloneDeep(this.scopes);
         clone.relationsExists = cloneDeep(this.relationsExists);
         clone.orders = cloneDeep(this.orders);
-        clone.distinctOnly = this.distinctOnly;
+        clone.distinctBy = cloneDeep(this.distinctBy);
         clone.offsetCount = this.offsetCount;
         clone.limitCount = this.limitCount;
         clone.pageNumber = this.pageNumber;

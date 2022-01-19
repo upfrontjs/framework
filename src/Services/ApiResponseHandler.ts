@@ -13,7 +13,7 @@ export default class ApiResponseHandler implements HandlesApiResponse {
     public async handle<T = unknown | undefined>(promise: Promise<ApiResponse>): Promise<T> {
         return promise
             .then(async (response: ApiResponse) => this.handleResponse(response))
-            .catch(error => this.handleError(error))
+            .catch(async error => this.handleError(error))
             .finally(() => this.handleFinally()) as Promise<T>;
     }
 
@@ -48,8 +48,8 @@ export default class ApiResponseHandler implements HandlesApiResponse {
      *
      * @return {void}
      */
-    public handleError(rejectReason: unknown): never {
-        throw rejectReason;
+    public async handleError(rejectReason: unknown): Promise<never> {
+        throw await Promise.resolve(rejectReason);
     }
 
     /**

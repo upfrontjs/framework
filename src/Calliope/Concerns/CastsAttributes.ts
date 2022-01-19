@@ -28,7 +28,7 @@ export default class CastsAttributes {
      *
      * @type {object}
      */
-    public get casts(): Record<string, CastType> {
+    public get casts(): Record<AttributeKeys<this>, CastType> | Record<string, CastType> {
         return {};
     }
 
@@ -39,7 +39,7 @@ export default class CastsAttributes {
      *
      * @return {this}
      */
-    public mergeCasts(casts: Record<AttributeKeys<this> | string, CastType>): this {
+    public mergeCasts(casts: Record<AttributeKeys<this>, CastType> | Record<string, CastType>): this {
         this.attributeCasts = merge(this.attributeCasts, casts);
 
         return this;
@@ -52,6 +52,7 @@ export default class CastsAttributes {
      *
      * @return {this}
      */
+    public setCasts(casts: Record<AttributeKeys<this>, CastType> | Record<string, CastType>): this;
     public setCasts(casts: Record<AttributeKeys<this> | string, CastType>): this {
         this.attributeCasts = casts;
 

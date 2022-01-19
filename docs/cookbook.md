@@ -271,7 +271,12 @@ export interface PaginatedModels<T extends Model> {
 
 async function paginator<T extends Model>(builder: T, page = 1, limit = 25): Promise<PaginatedModels<T>> {
     const response = (await builder.clone().limit(limit).page(page).call<PaginatedApiResponse<Attributes<T>>>('get'))!;
-    const modelCollection = new ModelCollection<T>(response.data.map(attributes => builder.new(attributes)));
+    const modelCollection = new ModelCollection<T>(response.data.map(attributes => {
+        return builder
+            .new(attributes)
+            // @ts-expect-error - Protected internal method required for correct .exists detection
+            .setLastSyncedAt();
+    }));
 
     return {
         data: modelCollection,

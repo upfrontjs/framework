@@ -276,19 +276,16 @@ export default class CallsApi extends BuildsQuery {
             );
         }
 
-        if (Array.isArray(data)) {
-            const collection = new ModelCollection<T>();
+        const createModel = (attributes: Attributes): T => {
+            // pass the attributes to the constructor in case the user needs to use it.
+            return new (this.constructor as new (attributes?: Attributes) => T)(attributes)
+                // but do not lose any data from the server due to fillable settings
+                .forceFill(attributes)
+                .syncOriginal()
+                .setLastSyncedAt();
+        };
 
-            data.forEach(attributes => {
-                const model = new (this.constructor as new () => T)();
-                collection.push(model.forceFill(attributes).syncOriginal().setLastSyncedAt());
-            });
-
-            return collection;
-        }
-
-        const model = new (this.constructor as new () => T)();
-        return model.forceFill(data).syncOriginal().setLastSyncedAt();
+        return Array.isArray(data) ? new ModelCollection(data.map(createModel)) : createModel(data);
     }
 
     /**

@@ -49,7 +49,7 @@ export default class ApiResponseHandler implements HandlesApiResponse {
      * @return {void}
      */
     public async handleError(rejectReason: unknown): Promise<never> {
-        throw await Promise.resolve(rejectReason);
+        return Promise.reject(rejectReason);
     }
 
     /**

@@ -399,6 +399,18 @@ import User from '@Models/User';
 User.newQuery(); // The query builder
 ```
 
+#### resetQueryParameters
+
+The `resetQueryParameters` is a method that clears all previously set query parameters.
+
+```js
+import User from '@Models/User';
+
+const user = new User();
+void user.where('columns', 'value').get(); // would send the where query
+void user.where('columns', 'value').resetQueryParameters().get(); // would NOT send any query
+```
+
 ## Properties
 
 #### withRelations

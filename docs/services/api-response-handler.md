@@ -12,7 +12,7 @@ The `handleSuccess` method attempts to parse the [`ApiResponse`](./readme.md#api
 
 #### handleError
 
-The `handleError` method throws the captured error from [handleSuccess](#handlesuccess).
+The `handleError` is an async method that throws the captured error from [handleSuccess](#handlesuccess).
 
 #### handleFinally
 

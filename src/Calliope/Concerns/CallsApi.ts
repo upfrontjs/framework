@@ -11,7 +11,10 @@ import { isObjectLiteral } from '../../Support/function';
 import { finish, kebab, plural } from '../../Support/string';
 import type { MaybeArray } from '../../Support/type';
 
-export type Method = 'delete' | 'get' | 'patch' | 'post' | 'put';
+/**
+ * The request methods.
+ */
+export type Method = 'DELETE' | 'delete' | 'GET' | 'get' | 'PATCH' | 'patch' | 'POST' | 'post' | 'PUT' | 'put';
 
 export default class CallsApi extends BuildsQuery {
     /**

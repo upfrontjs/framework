@@ -152,7 +152,7 @@ describe('SoftDeletes', () => {
             expect(getLastRequest()).toBeUndefined();
         });
 
-        it('should set the deleted at column to undefined', async () => {
+        it('should set the deleted at attribute to null', async () => {
             // response will not include the deleted at column
             const responseUser = User.factory().create() as User;
             responseUser.deleteAttribute(responseUser.getDeletedAtColumn()).syncOriginal();
@@ -162,6 +162,17 @@ describe('SoftDeletes', () => {
 
             // but it's still set to null
             expect(softDeletes.getAttribute(softDeletes.getDeletedAtColumn())).toBeNull();
+        });
+
+        it('should set the deleted at attribute to whatever the server sends', async () => {
+            const responseUser = User
+                .factory<User>()
+                .createOne({ [softDeletes.getDeletedAtColumn()]: 'deleted' });
+            mockUserModelResponse(responseUser);
+
+            softDeletes = await softDeletes.restore();
+
+            expect(softDeletes.getAttribute(softDeletes.getDeletedAtColumn())).toBe('deleted');
         });
 
         it('should send a PATCH request with the column set to null', async () => {

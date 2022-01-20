@@ -5,7 +5,7 @@ import { finish } from '../../Support/string';
 
 export default class HasTimestamps extends HasRelations {
     /**
-     * The name of the created at attribute.
+     * The name of the created at attribute on the server side.
      *
      * @type {string}
      *
@@ -14,7 +14,7 @@ export default class HasTimestamps extends HasRelations {
     protected static readonly createdAt: string = 'created_at';
 
     /**
-     * The name of the updated at attribute.
+     * The name of the updated at attribute on the server side.
      *
      * @type {string}
      *

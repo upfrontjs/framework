@@ -225,7 +225,7 @@ export default class CastsAttributes {
     }
 
     /**
-     * Cast the given value to boolean, throw error if it can't be casted.
+     * Cast the given value to boolean, throw error if it can't be cast.
      *
      * @param {string} key
      * @param {any} value
@@ -256,7 +256,7 @@ export default class CastsAttributes {
     }
 
     /**
-     * Cast to date time using the configured library, throw error if it can't be casted.
+     * Cast to date time using the configured library, throw error if it can't be cast.
      *
      * @param {string} key
      * @param {any} value

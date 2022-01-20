@@ -5,7 +5,7 @@ import { finish } from '../../Support/string';
 
 export default class SoftDeletes extends HasTimestamps {
     /**
-     * The name of the deleted at attribute.
+     * The name of the deleted at attribute on the server side.
      *
      * @type {string}
      *
@@ -14,7 +14,7 @@ export default class SoftDeletes extends HasTimestamps {
     protected static readonly deletedAt: string = 'deleted_at';
 
     /**
-     * Indicates if the model should expect timestamps.
+     * Indicates if the model should expect a timestamp for soft-deletion.
      *
      * @type {boolean}
      */

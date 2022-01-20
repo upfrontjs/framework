@@ -230,7 +230,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    protected resetQueryParameters(): this {
+    public resetQueryParameters(): this {
         this.wheres = [];
         this.columns = [];
         this.withs = [];

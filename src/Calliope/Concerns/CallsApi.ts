@@ -14,7 +14,13 @@ import type { MaybeArray } from '../../Support/type';
 /**
  * The request methods.
  */
-export type Method = 'DELETE' | 'delete' | 'GET' | 'get' | 'PATCH' | 'patch' | 'POST' | 'post' | 'PUT' | 'put';
+export type Method =
+    'DELETE' | 'delete'
+    | 'GET' | 'get'
+    | 'HEAD' | 'head'
+    | 'PATCH' | 'patch'
+    | 'POST' | 'post'
+    | 'PUT' | 'put';
 
 export default class CallsApi extends BuildsQuery {
     /**
@@ -61,7 +67,7 @@ export default class CallsApi extends BuildsQuery {
     /**
      * The call method that mediates between the model and api handlers.
      *
-     * @param {'get'|'post'|'delete'|'patch'|'put'} method
+     * @param {Method} method
      * @param {object=} data
      * @param {object=} customHeaders
      *

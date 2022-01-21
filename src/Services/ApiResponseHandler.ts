@@ -34,6 +34,15 @@ export default class ApiResponseHandler implements HandlesApiResponse {
 
         if (response.status < 200 || response.status > 299 || response.status === 204) return;
 
+        if (response.request) {
+            if ('method' in response.request && response.request.method && response.request.method === 'HEAD') {
+                // this response was the answer to the `HEAD` request
+                // and the user is likely looking for the headers
+                // but return the whole response just in case
+                return response;
+            }
+        }
+
         if (typeof response.json === 'function') {
             return (response as Response).json();
         }

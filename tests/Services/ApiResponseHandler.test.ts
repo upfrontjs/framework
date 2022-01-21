@@ -4,6 +4,7 @@ import fetchMock from 'jest-fetch-mock';
 import { buildResponse } from '../test-helpers';
 import User from '../mock/Models/User';
 import type { ApiResponse } from '../../src/Contracts/HandlesApiResponse';
+import { API } from '../../src';
 
 const handler = new ApiResponseHandler();
 
@@ -91,5 +92,23 @@ describe('ApiResponseHandler', () => {
         await expect(handler.handle(
             Promise.resolve({ status: 200, statusText: 'OK', headers: new Headers }))
         ).resolves.toBeUndefined();
+    });
+
+    it('should return the response if it was called with a head request', async () => {
+        const response = buildResponse(
+            undefined,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            { headers: { 'Content-Length': '12345' } }
+        ) as ApiResponse & MockResponseInit;
+        delete response.body;
+        response.request = {
+            method: 'HEAD'
+        };
+
+        fetchMock.mockResponseOnce(async () => Promise.resolve(response));
+
+        const apiResponse = await handler.handle<ApiResponse>(new API().call('url', 'HEAD'));
+        expect(apiResponse).toBeInstanceOf(Response);
+        expect(apiResponse.headers.get('Content-Length')).toBe('12345');
     });
 });

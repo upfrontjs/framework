@@ -103,15 +103,15 @@ export default class API implements ApiCaller {
         // removed by initRequest or requestOptions
         initOptions.method = initOptions.method ?? 'GET';
 
-        if (initOptions.method === 'GET') {
-            // given if there was any body it was merged in above,
-            // we delete it as GET cannot have a body
+        if (initOptions.method === 'GET' || initOptions.method === 'HEAD') {
+            // if there was a body merged in above,
+            // we delete it as GET and HEAD cannot have a body
             delete initOptions.body;
         }
 
         if (isObjectLiteral(data) && Object.keys(data).length || data instanceof FormData) {
             // if not a GET method
-            if (initOptions.method && initOptions.method !== 'GET') {
+            if (initOptions.method && initOptions.method !== 'GET' || initOptions.method !== 'HEAD') {
                 if (data instanceof FormData) {
                     if (!headers.has('Content-Type')) {
                         headers.set('Content-Type', 'multipart/form-data');

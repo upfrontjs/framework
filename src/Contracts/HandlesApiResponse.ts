@@ -11,7 +11,7 @@ export interface ApiResponse extends Pick<Response, 'headers' | 'status' | 'stat
     /**
      * The request that got this response.
      */
-    request?: RequestInit;
+    request?: Record<string, any> & (RequestInit | XMLHttpRequest);
 
     /**
      * The url the request was sent to.

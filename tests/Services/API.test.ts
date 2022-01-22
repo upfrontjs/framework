@@ -1,6 +1,7 @@
 import API from '../../src/Services/API';
 import { config as globalConfig } from '../setupTests';
-import { finish } from '../../src';
+import type { Method } from '../../src/Calliope/Concerns/CallsApi';
+import { finish } from '../../src/Support/string';
 import InvalidArgumentException from '../../src/Exceptions/InvalidArgumentException';
 import type { MaybeArray } from '../../src/Support/type';
 
@@ -9,7 +10,7 @@ const url = finish(String(globalConfig.get('baseEndPoint')), '/') + 'users';
 class APITester extends API {
     public async getConfig(
         endpoint: string,
-        method: 'delete' | 'get' | 'patch' | 'post' | 'put',
+        method: Method,
         data?: FormData | Record<string, unknown>,
         customHeaders?: Record<string, MaybeArray<string>>
     ): Promise<{ url: string; requestInit: RequestInit }> {
@@ -237,7 +238,7 @@ describe('API', () => {
             });
             let config = (await api.getConfig(url, 'get', {})).requestInit;
 
-            expect(config.method).toBe('get');
+            expect(config.method).toBe('GET');
             delete api.requestOptions;
 
             Object.defineProperty(api, 'initRequest', {
@@ -255,14 +256,14 @@ describe('API', () => {
                 configurable: true
             });
             config = (await api.getConfig(url, 'post', {})).requestInit;
-            expect(config.method).toBe('get');
+            expect(config.method).toBe('GET');
             delete api.initRequest;
         });
     });
 
     describe('call()', () => {
         it('should return a promise', () => {
-            expect(api.call(url, 'get')).toBeInstanceOf(Promise);
+            expect(api.call(url, 'GET')).toBeInstanceOf(Promise);
         });
     });
 });

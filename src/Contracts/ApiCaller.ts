@@ -21,7 +21,7 @@ export default interface ApiCaller {
      * If defined it should return a request configuration object.
      *
      * @param {string} url - The endpoint the request goes to.
-     * @param {'get' | 'post' | 'delete' | 'patch' | 'put'} method - The method the request uses.
+     * @param {Method} method - The method the request uses.
      * @param {object=} data - The optional data to send with the request.
      *
      * @return {Partial<RequestInit>}
@@ -37,7 +37,7 @@ export default interface ApiCaller {
      * The expected signature of the call method.
      *
      * @param {string} url - The endpoint the request goes to.
-     * @param {'get' | 'post' | 'delete' | 'patch' | 'put'} method - The method the request uses.
+     * @param {Method} method - The method the request uses.
      * @param {object=} data - The optional data to send with the request.
      * @param {object=} customHeaders - Custom headers to merge into the request.
      *

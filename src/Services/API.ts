@@ -41,6 +41,20 @@ export default class API implements ApiCaller {
      */
     public async call(
         url: string,
+        method: 'HEAD' | 'head',
+        data?: FormData | Record<string, unknown>,
+        customHeaders?: Record<string, MaybeArray<string>>,
+        queryParameters?: Record<string, unknown>
+    ): Promise<ApiResponse & { request: { method: 'HEAD' } }>;
+    public async call<T>(
+        url: string,
+        method: Method,
+        data?: FormData | Record<string, unknown>,
+        customHeaders?: Record<string, MaybeArray<string>>,
+        queryParameters?: Record<string, unknown>
+    ): Promise<ApiResponse<T>>;
+    public async call(
+        url: string,
         method: Method,
         data?: FormData | Record<string, unknown>,
         customHeaders?: Record<string, MaybeArray<string>>,
@@ -111,7 +125,7 @@ export default class API implements ApiCaller {
 
         if (isObjectLiteral(data) && Object.keys(data).length || data instanceof FormData) {
             // if not a GET method
-            if (initOptions.method && initOptions.method !== 'GET' || initOptions.method !== 'HEAD') {
+            if (initOptions.method !== 'GET' && initOptions.method !== 'HEAD') {
                 if (data instanceof FormData) {
                     if (!headers.has('Content-Type')) {
                         headers.set('Content-Type', 'multipart/form-data');

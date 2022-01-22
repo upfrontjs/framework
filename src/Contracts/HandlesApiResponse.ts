@@ -1,12 +1,14 @@
 /**
  * The http library agnostic response.
  */
-export interface ApiResponse extends Pick<Response, 'headers' | 'status' | 'statusText'> {
+export interface ApiResponse<
+    T = any[] | Record<string, any> | string | null
+> extends Pick<Response, 'headers' | 'status' | 'statusText'> {
     /**
      * The parsed response content.
      * (in case of libraries like axios)
      */
-    data?: Record<string, any> | string | null;
+    data?: T;
 
     /**
      * The request that got this response.
@@ -22,6 +24,11 @@ export interface ApiResponse extends Pick<Response, 'headers' | 'status' | 'stat
      * Additional information.
      */
     [key: string]: any;
+
+    /**
+     * The fetch json method resolving to the given type.
+     */
+    json?: () => Promise<Exclude<T, string | null>>;
 }
 
 /**

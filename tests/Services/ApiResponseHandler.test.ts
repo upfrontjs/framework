@@ -107,7 +107,7 @@ describe('ApiResponseHandler', () => {
 
         fetchMock.mockResponseOnce(async () => Promise.resolve(response));
 
-        const apiResponse = await handler.handle<ApiResponse>(new API().call('url', 'HEAD'));
+        const apiResponse = (await handler.handle(new API().call('url', 'HEAD')))!;
         expect(apiResponse).toBeInstanceOf(Response);
         expect(apiResponse.headers.get('Content-Length')).toBe('12345');
     });

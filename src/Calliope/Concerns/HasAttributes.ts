@@ -23,7 +23,9 @@ export type AttributeKeys<T> = Exclude<KeysNotMatching<T, CallableFunction>, Int
 /**
  * The attributes the model is handling.
  */
-export type Attributes<T extends HasAttributes = HasAttributes> = Record<AttributeKeys<T> | string, unknown>;
+export type Attributes<T extends HasAttributes = HasAttributes> = {
+    [K in AttributeKeys<T>]: T[K];
+};
 
 export default class HasAttributes extends GuardsAttributes implements Jsonable, Iterable<any> {
     /**

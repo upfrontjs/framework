@@ -656,10 +656,8 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {object}
      */
-    public except<K extends AttributeKeys<this> | string>(attributes: K):
-    Record<Exclude<AttributeKeys<this>, K>, this[Exclude<AttributeKeys<this>, K>]>
-    & Record<K, K extends AttributeKeys<this> ? never : unknown>;
-    public except(attributes: MaybeArray<string>): Attributes;
+    public except<K extends AttributeKeys<this>[], R = Omit<Attributes<this>, K[number]>>(attributes: K): R;
+    public except<K extends AttributeKeys<this> | string, R = Omit<Attributes<this>, K>>(attributes: K): R;
     public except(attributes: MaybeArray<string>): Attributes {
         const result: Attributes = {};
 

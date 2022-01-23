@@ -79,7 +79,7 @@ describe('SoftDeletes', () => {
 
             await softDeletes.delete();
 
-            expect(getLastRequest()?.method).toBe('delete');
+            expect(getLastRequest()?.method).toBe('DELETE');
             expect(getLastRequest()?.url)
                 .toContain(finish(softDeletes.getEndpoint(), '/') + String(softDeletes.getKey()));
         });
@@ -180,7 +180,7 @@ describe('SoftDeletes', () => {
 
             softDeletes = await softDeletes.restore();
 
-            expect(getLastRequest()?.method).toBe('patch');
+            expect(getLastRequest()?.method).toBe('PATCH');
             expect(getLastRequest()?.body).toStrictEqual({ [snake(softDeletes.getDeletedAtColumn())]: null });
             expect(getLastRequest()?.url)
                 .toContain(finish(softDeletes.getEndpoint(), '/') + String(softDeletes.getKey()));

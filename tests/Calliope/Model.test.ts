@@ -195,7 +195,7 @@ describe('Model', () => {
             mockUserModelResponse(user);
             await user.find(String(user.getKey()));
 
-            expect(getLastRequest()?.method).toBe('get');
+            expect(getLastRequest()?.method).toBe('GET');
             expect(getLastRequest()?.url).toContain('/' + String(user.getKey()));
         });
 
@@ -219,7 +219,7 @@ describe('Model', () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().times(2).create())));
             await user.findMany([2, 3]);
 
-            expect(getLastRequest()?.method).toBe('get');
+            expect(getLastRequest()?.method).toBe('GET');
             expect(getLastRequest()?.url).toContain(
                 'wheres[][column]=id' +
                 '&wheres[][operator]=in' +
@@ -260,7 +260,7 @@ describe('Model', () => {
             mockUserModelResponse(user);
             await user.refresh();
 
-            expect(getLastRequest()?.method).toBe('get');
+            expect(getLastRequest()?.method).toBe('GET');
             expect(getLastRequest()?.url).toContain(finish(user.getEndpoint(), '/') + String(user.getKey()));
         });
 
@@ -307,7 +307,7 @@ describe('Model', () => {
             mockUserModelResponse(user);
             await User.all();
 
-            expect(getLastRequest()?.method).toBe('get');
+            expect(getLastRequest()?.method).toBe('GET');
         });
 
         it('should return a ModelCollection', async () => {
@@ -359,7 +359,7 @@ describe('Model', () => {
 
             await user.save({ name: 'new name' });
 
-            expect(getLastRequest()?.method).toBe('patch');
+            expect(getLastRequest()?.method).toBe('PATCH');
             expect(getLastRequest()?.url).toContain(finish(user.getEndpoint(), '/') + String(user.getKey()));
         });
 
@@ -370,7 +370,7 @@ describe('Model', () => {
 
             await user.save({});
 
-            expect(getLastRequest()?.method).toBe('post');
+            expect(getLastRequest()?.method).toBe('POST');
         });
 
         it('should send all attributes if model doesn\'t exist', async () => {
@@ -426,7 +426,7 @@ describe('Model', () => {
 
                 const lastRequest = getLastRequest();
                 expect(lastRequest?.url).toBe(String(config.get('baseEndPoint')) + '/' + contract.getEndpoint());
-                expect(lastRequest?.method).toBe('post');
+                expect(lastRequest?.method).toBe('POST');
                 expect(lastRequest?.body).toStrictEqual({
                     // eslint-disable-next-line @typescript-eslint/naming-convention
                     my_attribute: 'value',
@@ -447,7 +447,7 @@ describe('Model', () => {
 
                 const lastRequest = getLastRequest();
                 expect(lastRequest?.url).toBe(String(config.get('baseEndPoint')) + '/' + shift.getEndpoint());
-                expect(lastRequest?.method).toBe('post');
+                expect(lastRequest?.method).toBe('POST');
                 expect(lastRequest?.body).toStrictEqual({
                     // eslint-disable-next-line @typescript-eslint/naming-convention
                     my_attribute: 'value',
@@ -462,7 +462,7 @@ describe('Model', () => {
             mockUserModelResponse(user);
             await user.update({ key: 'value' });
 
-            expect(getLastRequest()?.method).toBe('patch');
+            expect(getLastRequest()?.method).toBe('PATCH');
         });
 
         it('should set the correct endpoint', async () => {

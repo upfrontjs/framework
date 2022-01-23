@@ -69,7 +69,7 @@ describe('HasTimestamps', () => {
         it('should send a PATCH request', async () => {
             await hasTimestamps.touch();
 
-            expect(getLastRequest()?.method).toBe('patch');
+            expect(getLastRequest()?.method).toBe('PATCH');
             expect(getLastRequest()?.url)
                 .toContain(finish(hasTimestamps.getEndpoint(), '/') + String(hasTimestamps.getKey()));
         });
@@ -125,7 +125,7 @@ describe('HasTimestamps', () => {
         it('should send a GET request with the selected columns', async () => {
             await hasTimestamps.freshTimestamps();
 
-            expect(getLastRequest()?.method).toBe('get');
+            expect(getLastRequest()?.method).toBe('GET');
             expect(getLastRequest()?.url).toBe(
                 String(config.get('baseEndPoint'))
                 + finish(start(hasTimestamps.getEndpoint(), '/'), '/' + String(hasTimestamps.getKey()))

@@ -683,7 +683,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(caller);
             await caller.delete();
 
-            expect(getLastRequest()?.method).toBe('delete');
+            expect(getLastRequest()?.method).toBe('DELETE');
         });
 
         it('should send information in the request body', async () => {

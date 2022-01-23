@@ -497,7 +497,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(user);
 
             await caller.get();
-            expect(getLastRequest()?.method).toBe('get');
+            expect(getLastRequest()?.method).toBe('GET');
         });
 
         it('should return a promise with new model or model collection', async () => {
@@ -560,7 +560,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(caller);
             await caller.post({ key: 'value' });
 
-            expect(getLastRequest()?.method).toBe('post');
+            expect(getLastRequest()?.method).toBe('POST');
         });
 
         it('should return this or new model depending on the response', async () => {
@@ -601,7 +601,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(caller);
             await caller.put({ key: 'value' });
 
-            expect(getLastRequest()?.method).toBe('put');
+            expect(getLastRequest()?.method).toBe('PUT');
         });
 
         it('should return this or new model depending on the response', async () => {
@@ -642,7 +642,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(caller);
             await caller.patch({ key: 'value' });
 
-            expect(getLastRequest()?.method).toBe('patch');
+            expect(getLastRequest()?.method).toBe('PATCH');
         });
 
         it('should return this or new model depending on the response', async () => {

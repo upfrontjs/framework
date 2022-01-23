@@ -171,10 +171,8 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {any}
      */
-    public getAttribute<
-        K extends AttributeKeys<this> | string,
-        T extends K extends AttributeKeys<this> ? this[K] : unknown = K extends AttributeKeys<this> ? this[K] : unknown
-    >(key: K, defaultValue?: T): T;
+    public getAttribute<K extends AttributeKeys<this> | string, T extends this[K]>(key: K, defaultValue: T): T;
+    public getAttribute<K extends AttributeKeys<this> | string, T extends this[K]>(key: K, defaultValue?: T): T | undefined;
     public getAttribute(key: string, defaultValue?: unknown): unknown {
         // If attribute exists
         if (key in this.attributes) {

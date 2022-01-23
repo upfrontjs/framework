@@ -1,6 +1,10 @@
 import Model from '../../../src/Calliope/Model';
 
 class TestClass extends Model {
+    public override getName(): string {
+        return 'TestClass';
+    }
+
     public get fillable(): string[] {
         return ['attr1'];
     }
@@ -31,6 +35,10 @@ describe('GuardsAttributes', () => {
     describe('setGuarded()', () => {
         beforeEach(() => {
             class TestGuardingClass extends Model {
+                public override getName(): string {
+                    return 'TestGuardingClass';
+                }
+
                 public guardedAttributes = ['attr1'];
             }
 

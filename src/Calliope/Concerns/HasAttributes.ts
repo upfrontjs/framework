@@ -34,7 +34,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     [key: string]: unknown;
 
     /**
-     * Property indicating how attributes and relation names should be casted by default.
+     * Property indicating how attributes and relation names should be cast by default.
      *
      * @type {'snake'|'camel'}
      *
@@ -46,7 +46,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
 
     /**
      * Property indicating how attributes and relation names
-     * should be casted by default when sent to the server.
+     * should be cast by default when sent to the server.
      *
      * @type {'snake'|'camel'}
      *
@@ -81,7 +81,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      */
     // This property placed here because extending classes are
     // not yet constructed therefore when HasAttributes
-    // constructs it may ultimately references
+    // constructs it may ultimately reference
     // this.relations, and it wouldn't
     // be set otherwise.
     protected relations: Record<string, (Model | ModelCollection<Model>)> = {};

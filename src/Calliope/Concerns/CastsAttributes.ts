@@ -203,7 +203,7 @@ export default class CastsAttributes {
     }
 
     /**
-     * Cast the given value to number, throw error if it can't be casted.
+     * Cast the given value to number, throw error if it can't be cast.
      *
      * @param {string} key
      * @param {any} value

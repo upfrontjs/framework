@@ -629,12 +629,15 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     /**
      * Get a subset of the model's attributes.
      *
-     * @param {string[]} attributes
+     * @param {string|string[]} attributes
      *
      * @return {object}
      */
-    public only<K extends AttributeKeys<this> | string>(attributes: K): Pick<Attributes<this>, K> & Record<K, this[K]>;
-    public only(attributes: MaybeArray<string>): Attributes;
+    public only<
+        K extends AttributeKeys<this>[],
+        R = { [P in K[number]]?: Attributes<this>[P] }
+    >(attributes: K): R;
+    public only<K extends AttributeKeys<this>, R = Record<K, this[K]>>(attributes: K): R;
     public only(attributes: MaybeArray<string>): Attributes {
         attributes = Array.isArray(attributes) ? attributes : [attributes];
         const result: Attributes = {};

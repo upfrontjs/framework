@@ -656,6 +656,7 @@ describe('HasAttributes', () => {
         it('should return only the specified attributes', () => {
             hasAttributes = new User({ test: 1, value: 2 });
 
+            expect(hasAttributes.only('test')).toStrictEqual({ test: 1 });
             expect(hasAttributes.only(['test'])).toStrictEqual({ test: 1 });
         });
     });

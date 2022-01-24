@@ -1,5 +1,4 @@
 import Model from '../../../src/Calliope/Model';
-import type Factory from '../../../src/Calliope/Factory/Factory';
 import FileFactory from '../Factories/FileFactory';
 
 export default class FileModel extends Model {
@@ -7,7 +6,7 @@ export default class FileModel extends Model {
         return 'FileModel';
     }
 
-    public factory(): Factory<this> {
+    public factory(): FileFactory {
         return new FileFactory;
     }
 

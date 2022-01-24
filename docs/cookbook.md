@@ -185,8 +185,9 @@ export default class Model extends BaseModel implements FormatsQueryParameters {
         this.appends.push(name);
         return this;
     }
-    
-    public static append<T extends Model>(name: string): T {
+
+    // @ts-expect-error - despite TS2526, it still infers correctly
+    public static append<T extends Model = InstanceType<this>>(name: string): T {
         this.newQuery<T>().append(name);
     }
 

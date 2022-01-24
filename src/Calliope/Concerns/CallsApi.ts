@@ -173,7 +173,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Promise<Model|ModelCollection<Model>>}
      */
-    // @ts-expect-error - we know in reality this is in fact a Model
+    // @ts-expect-error - despite TS2526, it still infers correctly
     public async get<T extends Model = this>(
         queryParameters?: QueryParams | Record<string, unknown>
     ): Promise<ModelCollection<T> | T> {
@@ -188,7 +188,8 @@ export default class CallsApi extends BuildsQuery {
      *
      * @see CallsApi.prototype.get
      */
-    public static async get<T extends Model>(
+    // @ts-expect-error - despite TS2526, it still infers correctly
+    public static async get<T extends Model = InstanceType<this>>(
         queryParameters?: QueryParams | Record<string, unknown>
     ): Promise<ModelCollection<T> | T> {
         return new this().get<T>(queryParameters);
@@ -201,7 +202,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    // @ts-expect-error - we know in reality this is in fact a Model
+    // @ts-expect-error - despite TS2526, it still infers correctly
     public async post<T extends Model = this>(data: Attributes | FormData): Promise<T> {
         return this.call('post', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
@@ -214,7 +215,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    // @ts-expect-error - we know in reality this is in fact a Model
+    // @ts-expect-error - despite TS2526, it still infers correctly
     public async put<T extends Model = this>(data: Attributes | FormData): Promise<T> {
         return this.call('put', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
@@ -227,7 +228,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    // @ts-expect-error - we know in reality this is in fact a Model
+    // @ts-expect-error - despite TS2526, it still infers correctly
     public async patch<T extends Model = this>(data: Attributes | FormData): Promise<T> {
         return this.call('patch', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
@@ -241,7 +242,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Promise<boolean>}
      */
-    // @ts-expect-error - we know in reality this is in fact a Model
+    // @ts-expect-error - despite TS2526, it still infers correctly
     public async delete<T extends Model = this>(data?: Attributes | FormData): Promise<T> {
         return this.call('delete', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));

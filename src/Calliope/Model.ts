@@ -174,7 +174,8 @@ export default class Model extends SoftDeletes implements HasFactory {
     /**
      * Call the factory fluently from the model.
      */
-    public static factory<T extends Model>(times = 1): FactoryBuilder<T> {
+    // @ts-expect-error - despite TS2526, it still infers correctly
+    public static factory<T extends Model = InstanceType<this>>(times = 1): FactoryBuilder<T> {
         return new FactoryBuilder(this as unknown as new (attributes?: Attributes) => T).times(times);
     }
 
@@ -183,7 +184,8 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {Promise<Model|ModelCollection<Model>>}
      */
-    public static async all<T extends Model>(): Promise<ModelCollection<T>> {
+    // @ts-expect-error - despite TS2526, it still infers correctly
+    public static async all<T extends Model = InstanceType<this>>(): Promise<ModelCollection<T>> {
         let response = await new this().get<T>();
 
         if (response instanceof Model) {
@@ -259,7 +261,8 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @see Model.prototype.find
      */
-    public static async find<T extends Model>(id: number | string): Promise<T> {
+    // @ts-expect-error - despite TS2526, it still infers correctly
+    public static async find<T extends Model = InstanceType<this>>(id: number | string): Promise<T> {
         return new this().find<T>(id);
     }
 
@@ -286,7 +289,8 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @see Model.prototype.findMany
      */
-    public static async findMany<T extends Model>(ids: (number | string)[]): Promise<ModelCollection<T>> {
+    // @ts-expect-error - despite TS2526, it still infers correctly
+    public static async findMany<T extends Model = InstanceType<this>>(ids: (number | string)[]): Promise<ModelCollection<T>> {
         return new this().findMany<T>(ids);
     }
 

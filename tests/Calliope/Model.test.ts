@@ -78,6 +78,16 @@ describe('Model', () => {
         });
     });
 
+    describe('create()', () => {
+        it('should return a new instance', () => {
+            expect(User.create()).toBeInstanceOf(User);
+        });
+
+        it('should have the capabilities of the model', () => {
+            expect(User.create({ key: 'value' }).getAttribute('key')).toBe('value');
+        });
+    });
+
     describe('is()', () => {
         it('should determine whether two models are the same',  () => {
             expect(user.is(1)).toBe(false);

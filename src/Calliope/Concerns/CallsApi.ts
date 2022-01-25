@@ -9,7 +9,7 @@ import BuildsQuery from './BuildsQuery';
 import type { Attributes } from './HasAttributes';
 import { isObjectLiteral } from '../../Support/function';
 import { finish, kebab, plural } from '../../Support/string';
-import type { MaybeArray } from '../../Support/type';
+import type { MaybeArray, StaticToThis } from '../../Support/type';
 
 /**
  * The request methods.
@@ -188,11 +188,11 @@ export default class CallsApi extends BuildsQuery {
      *
      * @see CallsApi.prototype.get
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static async get<T extends Model = InstanceType<this>>(
+    public static async get<T extends StaticToThis>(
+        this: T,
         queryParameters?: QueryParams & Record<string, unknown>
-    ): Promise<ModelCollection<T> | T> {
-        return new this().get<T>(queryParameters);
+    ): Promise<ModelCollection<T['prototype']> | T['prototype']> {
+        return new this().get(queryParameters);
     }
 
     /**

@@ -2,7 +2,9 @@ import InvalidArgumentException from '../../Exceptions/InvalidArgumentException'
 import HasAttributes from './HasAttributes';
 import type Model from '../Model';
 import type FormatsQueryParameters from '../../Contracts/FormatsQueryParameters';
-import type { MaybeArray } from '../../Support/type';
+import type { MaybeArray, StaticToThis as BaseStaticToThis } from '../../Support/type';
+
+type StaticToThis = BaseStaticToThis & { newQuery: typeof BuildsQuery['newQuery'] };
 
 type BooleanOperator = 'and' | 'or';
 type Direction = 'asc' | 'desc';
@@ -152,9 +154,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {BuildsQuery}
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static newQuery<T extends Model = InstanceType<this>>(): T {
-        return new this as T;
+    public static newQuery<T extends StaticToThis>(this: T): T['prototype'] {
+        return new this;
     }
 
     /**
@@ -331,14 +332,14 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.where
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static where<T extends Model = InstanceType<this>>(
+    public static where<T extends StaticToThis>(
+        this: T,
         column: string,
         operator: Operator | unknown,
         value?: unknown,
         boolean: BooleanOperator = 'and'
-    ): T {
-        return this.newQuery<T>().where(
+    ): T['prototype'] {
+        return this.newQuery().where(
             column,
             arguments.length > 2 ? operator as Operator : '=',
             arguments.length > 2 ? value : operator,
@@ -385,11 +386,11 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereKey
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static whereKey<T extends Model = InstanceType<this>>(
+    public static whereKey<T extends StaticToThis>(
+        this: T,
         value: MaybeArray<number | string>, boolean: BooleanOperator = 'and'
-    ): T {
-        return this.newQuery<T>().whereKey(value, boolean);
+    ): T['prototype'] {
+        return this.newQuery().whereKey(value, boolean);
     }
 
     /**
@@ -429,11 +430,11 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotIn
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static whereKeyNot<T extends Model = InstanceType<this>>(
+    public static whereKeyNot<T extends StaticToThis>(
+        this: T,
         value: MaybeArray<number | string>, boolean: BooleanOperator = 'and'
-    ): T {
-        return this.newQuery<T>().whereKeyNot(value, boolean);
+    ): T['prototype'] {
+        return this.newQuery().whereKeyNot(value, boolean);
     }
 
     /**
@@ -474,9 +475,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNull
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static whereNull<T extends Model = InstanceType<this>>(columns: MaybeArray<string>): T {
-        return this.newQuery<T>().whereNull(columns);
+    public static whereNull<T extends StaticToThis>(this: T, columns: MaybeArray<string>): T['prototype'] {
+        return this.newQuery().whereNull(columns);
     }
 
     /**
@@ -517,9 +517,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotNull
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static whereNotNull<T extends Model = InstanceType<this>>(columns: MaybeArray<string>): T {
-        return this.newQuery<T>().whereNotNull(columns);
+    public static whereNotNull<T extends StaticToThis>(this: T, columns: MaybeArray<string>): T['prototype'] {
+        return this.newQuery().whereNotNull(columns);
     }
 
     /**
@@ -555,9 +554,11 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereIn
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static whereIn<T extends Model = InstanceType<this>>(column: string, values: any[], boolean: BooleanOperator = 'and'): T {
-        return this.newQuery<T>().whereIn(column, values, boolean);
+    public static whereIn<T extends StaticToThis>(
+        this: T,
+        column: string, values: any[], boolean: BooleanOperator = 'and'
+    ): T['prototype'] {
+        return this.newQuery().whereIn(column, values, boolean);
     }
 
     /**
@@ -594,9 +595,11 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotIn
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static whereNotIn<T extends Model = InstanceType<this>>(column: string, values: any[], boolean: BooleanOperator = 'and'): T {
-        return this.newQuery<T>().whereNotIn(column, values, boolean);
+    public static whereNotIn<T extends StaticToThis>(
+        this: T,
+        column: string, values: any[], boolean: BooleanOperator = 'and'
+    ): T['prototype'] {
+        return this.newQuery().whereNotIn(column, values, boolean);
     }
 
     /**
@@ -638,9 +641,11 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereBetween
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static whereBetween<T extends Model = InstanceType<this>>(column: string, values: any[], boolean: BooleanOperator = 'and'): T {
-        return this.newQuery<T>().whereBetween(column, values, boolean);
+    public static whereBetween<T extends StaticToThis>(
+        this: T,
+        column: string, values: any[], boolean: BooleanOperator = 'and'
+    ): T['prototype'] {
+        return this.newQuery().whereBetween(column, values, boolean);
     }
 
     /**
@@ -682,9 +687,11 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.whereNotBetween
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static whereNotBetween<T extends Model = InstanceType<this>>(column: string, values: any[], boolean: BooleanOperator = 'and'): T {
-        return this.newQuery<T>().whereNotBetween(column, values, boolean);
+    public static whereNotBetween<T extends StaticToThis>(
+        this: T,
+        column: string, values: any[], boolean: BooleanOperator = 'and'
+    ): T['prototype'] {
+        return this.newQuery().whereNotBetween(column, values, boolean);
     }
 
     /**
@@ -725,9 +732,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.limit
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static limit<T extends Model = InstanceType<this>>(count: number): T {
-        return this.newQuery<T>().limit(count);
+    public static limit<T extends StaticToThis>(this: T, count: number): T['prototype'] {
+        return this.newQuery().limit(count);
     }
 
     /**
@@ -751,9 +757,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.page
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static page<T extends Model = InstanceType<this>>(pageNumber: number): T {
-        return this.newQuery<T>().page(pageNumber);
+    public static page<T extends StaticToThis>(this: T, pageNumber: number): T['prototype'] {
+        return this.newQuery().page(pageNumber);
     }
 
     /**
@@ -782,9 +787,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.when
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static when<T extends Model = InstanceType<this>>(value: any, closure: (instance: BuildsQuery) => any): T {
-        return this.newQuery<T>().when(value, closure);
+    public static when<T extends StaticToThis>(this: T, value: any, closure: (instance: BuildsQuery) => any): T['prototype'] {
+        return this.newQuery().when(value, closure);
     }
 
     /**
@@ -813,9 +817,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.unless
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static unless<T extends Model = InstanceType<this>>(value: any, closure: (instance: BuildsQuery) => any): T {
-        return this.newQuery<T>().unless(value, closure);
+    public static unless<T extends StaticToThis>(this: T, value: any, closure: (instance: BuildsQuery) => any): T['prototype'] {
+        return this.newQuery().unless(value, closure);
     }
 
     /**
@@ -836,9 +839,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.distinct
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static distinct<T extends Model = InstanceType<this>>(columns: MaybeArray<string>): T {
-        return this.newQuery<T>().distinct(columns);
+    public static distinct<T extends StaticToThis>(this: T, columns: MaybeArray<string>): T['prototype'] {
+        return this.newQuery().distinct(columns);
     }
 
     /**
@@ -863,9 +865,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.select
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static select<T extends Model = InstanceType<this>>(columns: MaybeArray<string>): T {
-        return this.newQuery<T>().select(columns);
+    public static select<T extends StaticToThis>(this: T, columns: MaybeArray<string>): T['prototype'] {
+        return this.newQuery().select(columns);
     }
 
     /**
@@ -890,9 +891,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.has
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static has<T extends Model = InstanceType<this>>(relations: MaybeArray<string>): T {
-        return this.newQuery<T>().has(relations);
+    public static has<T extends StaticToThis>(this: T, relations: MaybeArray<string>): T['prototype'] {
+        return this.newQuery().has(relations);
     }
 
     /**
@@ -917,9 +917,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.with
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static with<T extends Model = InstanceType<this>>(relations: MaybeArray<string>): T {
-        return this.newQuery<T>().with(relations);
+    public static with<T extends StaticToThis>(this: T, relations: MaybeArray<string>): T['prototype'] {
+        return this.newQuery().with(relations);
     }
 
     /**
@@ -942,9 +941,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.without
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static without<T extends Model = InstanceType<this>>(relations: MaybeArray<string>): T {
-        return this.newQuery<T>().without(relations);
+    public static without<T extends StaticToThis>(this: T, relations: MaybeArray<string>): T['prototype'] {
+        return this.newQuery().without(relations);
     }
 
     /**
@@ -969,9 +967,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.scope
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static scope<T extends Model = InstanceType<this>>(scopes: MaybeArray<string>): T {
-        return this.newQuery<T>().scope(scopes);
+    public static scope<T extends StaticToThis>(this: T, scopes: MaybeArray<string>): T['prototype'] {
+        return this.newQuery().scope(scopes);
     }
 
     /**
@@ -1001,9 +998,11 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.orderBy
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static orderBy<T extends Model = InstanceType<this>>(column: string, direction: Direction = 'asc'): T {
-        return this.newQuery<T>().orderBy(column, direction);
+    public static orderBy<T extends StaticToThis>(
+        this: T,
+        column: string, direction: Direction = 'asc'
+    ): T['prototype'] {
+        return this.newQuery().orderBy(column, direction);
     }
 
     /**
@@ -1026,9 +1025,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.orderByDesc
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static orderByDesc<T extends Model = InstanceType<this>>(column: string): T {
-        return this.newQuery<T>().orderByDesc(column);
+    public static orderByDesc<T extends StaticToThis>(this: T, column: string): T['prototype'] {
+        return this.newQuery().orderByDesc(column);
     }
 
     /**
@@ -1053,9 +1051,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.latest
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static latest<T extends Model = InstanceType<this>>(column?: string): T {
-        return this.newQuery<T>().latest(column);
+    public static latest<T extends StaticToThis>(this: T, column?: string): T['prototype'] {
+        return this.newQuery().latest(column);
     }
 
     /**
@@ -1080,9 +1077,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.oldest
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static oldest<T extends Model = InstanceType<this>>(column = 'created_at'): T {
-        return this.newQuery<T>().oldest(column);
+    public static oldest<T extends StaticToThis>(this: T, column = 'created_at'): T['prototype'] {
+        return this.newQuery().oldest(column);
     }
 
     /**
@@ -1110,9 +1106,8 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.offset
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static offset<T extends Model = InstanceType<this>>(count: number): T {
-        return this.newQuery<T>().offset(count);
+    public static offset<T extends StaticToThis>(this: T, count: number): T['prototype'] {
+        return this.newQuery().offset(count);
     }
 
     /**
@@ -1137,8 +1132,7 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.skip
      */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static skip<T extends Model = InstanceType<this>>(count: number): T {
-        return this.newQuery<T>().skip(count);
+    public static skip<T extends StaticToThis>(this: T, count: number): T['prototype'] {
+        return this.newQuery().skip(count);
     }
 }

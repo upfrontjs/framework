@@ -553,6 +553,28 @@ describe('CallsApi', () => {
 
             expect(data).toStrictEqual(user);
         });
+
+        it('should unwrap data if response comes data wrapped', async () => {
+            const user = User.factory().createOne();
+
+            fetchMock.mockResponseOnce(async () => Promise.resolve({
+                status: 200,
+                body: JSON.stringify({
+                    data: [user.getAttributes()]
+                })
+            }));
+
+            let data = await User.get();
+            expect(data).toBeInstanceOf(ModelCollection);
+
+            fetchMock.mockResponseOnce(async () => Promise.resolve({
+                status: 200,
+                body: JSON.stringify([user.getAttributes()])
+            }));
+            data = await User.get();
+
+            expect(data).toBeInstanceOf(ModelCollection);
+        });
     });
 
     describe('post()', () => {

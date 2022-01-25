@@ -17,7 +17,7 @@ describe('SoftDeletes', () => {
         it('should correctly determine if it is soft deleted', () => {
             expect(softDeletes.trashed()).toBe(false);
 
-            softDeletes.setAttribute(softDeletes.getDeletedAtColumn(), new Date().toISOString());
+            softDeletes.setAttribute(softDeletes.getDeletedAtName(), new Date().toISOString());
 
             expect(softDeletes.trashed()).toBe(true);
         });
@@ -25,7 +25,7 @@ describe('SoftDeletes', () => {
 
     describe('getDeletedAtColumn()', () => {
         it('should return the deletedAt column', () => {
-            expect(softDeletes.getDeletedAtColumn()).toBe('deletedAt');
+            expect(softDeletes.getDeletedAtName()).toBe('deletedAt');
         });
 
         it('should return the deletedAt column correctly if overridden', () => {
@@ -34,7 +34,7 @@ describe('SoftDeletes', () => {
             }
             softDeletes = new MyUser;
 
-            expect(softDeletes.getDeletedAtColumn()).toBe('myDeletedAt');
+            expect(softDeletes.getDeletedAtName()).toBe('myDeletedAt');
         });
     });
 
@@ -56,7 +56,7 @@ describe('SoftDeletes', () => {
 
     describe('delete()', () => {
         it('should return if the model has already been deleted', async () => {
-            softDeletes.setAttribute(softDeletes.getDeletedAtColumn(), new Date().toISOString());
+            softDeletes.setAttribute(softDeletes.getDeletedAtName(), new Date().toISOString());
             await softDeletes.delete();
 
             expect(getLastRequest()).toBeUndefined();
@@ -90,20 +90,20 @@ describe('SoftDeletes', () => {
             await softDeletes.delete();
 
             expect(getLastRequest()?.body)
-                .toStrictEqual({ [snake(softDeletes.getDeletedAtColumn())]: now.toISOString() });
+                .toStrictEqual({ [snake(softDeletes.getDeletedAtName())]: now.toISOString() });
         });
 
         it('should merge in the optional argument into the request', async () => {
             mockUserModelResponse(softDeletes);
 
             await softDeletes.delete({
-                [softDeletes.getDeletedAtColumn()]: new Date(now.getTime() + 10).toISOString(),
+                [softDeletes.getDeletedAtName()]: new Date(now.getTime() + 10).toISOString(),
                 key: 'value'
             });
 
             expect(getLastRequest()?.body)
                 .toStrictEqual({
-                    [snake(softDeletes.getDeletedAtColumn())]: new Date(now.getTime() + 10).toISOString(),
+                    [snake(softDeletes.getDeletedAtName())]: new Date(now.getTime() + 10).toISOString(),
                     key: 'value'
                 });
         });
@@ -111,12 +111,12 @@ describe('SoftDeletes', () => {
         it('should update the model\'s deleted at column', async () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({
                 ...softDeletes.getRawOriginal(),
-                [softDeletes.getDeletedAtColumn()]: now.toISOString()
+                [softDeletes.getDeletedAtName()]: now.toISOString()
             })));
 
             await softDeletes.delete();
 
-            expect(softDeletes.getAttribute(softDeletes.getDeletedAtColumn())).toBe(now.toISOString());
+            expect(softDeletes.getAttribute(softDeletes.getDeletedAtName())).toBe(now.toISOString());
         });
 
         it('should throw an error if the model has not been persisted before calling the method', async () => {
@@ -131,7 +131,7 @@ describe('SoftDeletes', () => {
 
     describe('restore()', () => {
         beforeEach(() => {
-            softDeletes.setAttribute(softDeletes.getDeletedAtColumn(), new Date().toISOString()).syncOriginal();
+            softDeletes.setAttribute(softDeletes.getDeletedAtName(), new Date().toISOString()).syncOriginal();
         });
 
         it('should return itself if it isn\'t using soft deletes', async () => {
@@ -145,7 +145,7 @@ describe('SoftDeletes', () => {
         });
 
         it('should return itself if the deleted at column is already undefined', async () => {
-            softDeletes.setAttribute(softDeletes.getDeletedAtColumn(), undefined);
+            softDeletes.setAttribute(softDeletes.getDeletedAtName(), undefined);
 
             softDeletes = await softDeletes.restore();
 
@@ -155,24 +155,24 @@ describe('SoftDeletes', () => {
         it('should set the deleted at attribute to null', async () => {
             // response will not include the deleted at column
             const responseUser = User.factory().create() as User;
-            responseUser.deleteAttribute(responseUser.getDeletedAtColumn()).syncOriginal();
+            responseUser.deleteAttribute(responseUser.getDeletedAtName()).syncOriginal();
             mockUserModelResponse(responseUser);
 
             softDeletes = await softDeletes.restore();
 
             // but it's still set to null
-            expect(softDeletes.getAttribute(softDeletes.getDeletedAtColumn())).toBeNull();
+            expect(softDeletes.getAttribute(softDeletes.getDeletedAtName())).toBeNull();
         });
 
         it('should set the deleted at attribute to whatever the server sends', async () => {
             const responseUser = User
                 .factory<User>()
-                .createOne({ [softDeletes.getDeletedAtColumn()]: 'deleted' });
+                .createOne({ [softDeletes.getDeletedAtName()]: 'deleted' });
             mockUserModelResponse(responseUser);
 
             softDeletes = await softDeletes.restore();
 
-            expect(softDeletes.getAttribute(softDeletes.getDeletedAtColumn())).toBe('deleted');
+            expect(softDeletes.getAttribute(softDeletes.getDeletedAtName())).toBe('deleted');
         });
 
         it('should send a PATCH request with the column set to null', async () => {
@@ -181,7 +181,7 @@ describe('SoftDeletes', () => {
             softDeletes = await softDeletes.restore();
 
             expect(getLastRequest()?.method).toBe('PATCH');
-            expect(getLastRequest()?.body).toStrictEqual({ [snake(softDeletes.getDeletedAtColumn())]: null });
+            expect(getLastRequest()?.body).toStrictEqual({ [snake(softDeletes.getDeletedAtName())]: null });
             expect(getLastRequest()?.url)
                 .toContain(finish(softDeletes.getEndpoint(), '/') + String(softDeletes.getKey()));
         });

@@ -30,11 +30,11 @@ export default class Model extends SoftDeletes implements HasFactory {
         const lastSyncedAt = '_' + this.setStringCase('last_synced_at');
 
         if (boolean && this.usesTimestamps()) {
-            boolean = !!this.getAttribute(this.getCreatedAtColumn());
+            boolean = !!this.getAttribute(this.getCreatedAtName());
         }
 
         if (boolean && this.usesSoftDeletes()) {
-            boolean = !this.getAttribute(this.getDeletedAtColumn());
+            boolean = !this.getAttribute(this.getDeletedAtName());
         }
 
         return boolean && lastSyncedAt in this && !!this[lastSyncedAt];
@@ -92,9 +92,9 @@ export default class Model extends SoftDeletes implements HasFactory {
     public replicate(except?: MaybeArray<string>): this {
         const excluded = new Set([
             this.getKeyName(),
-            this.getCreatedAtColumn(),
-            this.getUpdatedAtColumn(),
-            this.getDeletedAtColumn()
+            this.getCreatedAtName(),
+            this.getUpdatedAtName(),
+            this.getDeletedAtName()
         ]);
 
         if (except) {

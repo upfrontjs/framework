@@ -29,13 +29,13 @@ describe('Model', () => {
         });
 
         it('should consider that it has a created at date if using timestamp', () => {
-            user.setAttribute(user.getCreatedAtColumn(), undefined);
+            user.setAttribute(user.getCreatedAtName(), undefined);
 
             expect(user.exists).toBe(false);
         });
 
         it('should consider that it has soft deleted set if using soft deleted', () => {
-            user.setAttribute(user.getDeletedAtColumn(), new Date().toISOString());
+            user.setAttribute(user.getDeletedAtName(), new Date().toISOString());
 
             expect(user.exists).toBe(false);
         });
@@ -112,13 +112,13 @@ describe('Model', () => {
 
     describe('replicate()', () => {
         it('should replicate the model without timestamps and primary key', () => {
-            user.setAttribute(user.getDeletedAtColumn(), new Date().toISOString());
+            user.setAttribute(user.getDeletedAtName(), new Date().toISOString());
             const replica = user.replicate();
 
             expect(replica.getAttribute(replica.getKeyName())).toBeUndefined();
-            expect(replica.getAttribute(replica.getCreatedAtColumn())).toBeUndefined();
-            expect(replica.getAttribute(replica.getUpdatedAtColumn())).toBeUndefined();
-            expect(replica.getAttribute(replica.getDeletedAtColumn())).toBeUndefined();
+            expect(replica.getAttribute(replica.getCreatedAtName())).toBeUndefined();
+            expect(replica.getAttribute(replica.getUpdatedAtName())).toBeUndefined();
+            expect(replica.getAttribute(replica.getDeletedAtName())).toBeUndefined();
         });
 
         it('should accept attribute keys that should be excluded at replication', () => {
@@ -404,9 +404,9 @@ describe('Model', () => {
                 my_attr: 1,
                 custom_attr: 1,
                 name: thisUser.name,
-                [snake(thisUser.getCreatedAtColumn())]: null,
-                [snake(thisUser.getUpdatedAtColumn())]: null,
-                [snake(thisUser.getDeletedAtColumn())]: null
+                [snake(thisUser.getCreatedAtName())]: null,
+                [snake(thisUser.getUpdatedAtName())]: null,
+                [snake(thisUser.getDeletedAtName())]: null
                 /* eslint-enable @typescript-eslint/naming-convention */
             });
         });

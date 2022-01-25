@@ -34,7 +34,7 @@ export default class HasTimestamps extends HasRelations {
      *
      * @return {string}
      */
-    public getCreatedAtColumn(): string {
+    public getCreatedAtName(): string {
         return this.setStringCase((this.constructor as unknown as HasTimestamps).createdAt as string);
     }
 
@@ -43,7 +43,7 @@ export default class HasTimestamps extends HasRelations {
      *
      * @return {string}
      */
-    public getUpdatedAtColumn(): string {
+    public getUpdatedAtName(): string {
         return this.setStringCase((this.constructor as unknown as HasTimestamps).updatedAt as string);
     }
 
@@ -69,7 +69,7 @@ export default class HasTimestamps extends HasRelations {
         // @ts-expect-error
         (this as unknown as Model).throwIfModelDoesntExistsWhenCalling('touch');
 
-        const updatedAt = this.getUpdatedAtColumn();
+        const updatedAt = this.getUpdatedAtName();
 
         return this.setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()))
             .patch({ [updatedAt]: new Date().toISOString() })
@@ -95,8 +95,8 @@ export default class HasTimestamps extends HasRelations {
         // @ts-expect-error
         (this as unknown as Model).throwIfModelDoesntExistsWhenCalling('freshTimestamps');
 
-        const createdAt = this.getCreatedAtColumn();
-        const updatedAt = this.getUpdatedAtColumn();
+        const createdAt = this.getCreatedAtName();
+        const updatedAt = this.getUpdatedAtName();
 
         return this.select([createdAt, updatedAt])
             .whereKey((this as unknown as Model).getKey()!)

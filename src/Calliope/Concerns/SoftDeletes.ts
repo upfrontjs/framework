@@ -26,7 +26,7 @@ export default class SoftDeletes extends HasTimestamps {
      * @return {boolean}
      */
     public trashed(): boolean {
-        return !!this.getAttribute(this.getDeletedAtColumn());
+        return !!this.getAttribute(this.getDeletedAtName());
     }
 
     /**
@@ -34,7 +34,7 @@ export default class SoftDeletes extends HasTimestamps {
      *
      * @return {string}
      */
-    public getDeletedAtColumn(): string {
+    public getDeletedAtName(): string {
         return this.setStringCase((this.constructor as unknown as SoftDeletes).deletedAt as string);
     }
 
@@ -59,7 +59,7 @@ export default class SoftDeletes extends HasTimestamps {
             return super.delete(data);
         }
 
-        const deletedAt = this.getDeletedAtColumn();
+        const deletedAt = this.getDeletedAtName();
 
         if (this.getAttribute(deletedAt)) {
             return this as unknown as T;
@@ -84,7 +84,7 @@ export default class SoftDeletes extends HasTimestamps {
      * @return {Promise<this>}
      */
     public async restore(): Promise<this> {
-        if (!this.usesSoftDeletes() || !this.getAttribute(this.getDeletedAtColumn())) {
+        if (!this.usesSoftDeletes() || !this.getAttribute(this.getDeletedAtName())) {
             return this;
         }
 
@@ -96,9 +96,9 @@ export default class SoftDeletes extends HasTimestamps {
         }
 
         return this.setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()))
-            .patch({ [this.getDeletedAtColumn()]: null })
+            .patch({ [this.getDeletedAtName()]: null })
             .then(model => {
-                const deletedAt = this.getDeletedAtColumn();
+                const deletedAt = this.getDeletedAtName();
 
                 return this.setAttribute(deletedAt, model.getAttribute(deletedAt, null)).syncOriginal(deletedAt);
             });

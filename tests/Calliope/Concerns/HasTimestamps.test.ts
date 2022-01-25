@@ -14,14 +14,14 @@ describe('HasTimestamps', () => {
         fetchMock.mockResponseOnce(async () => Promise.resolve(
             buildResponse(User.factory()
                 .create()
-                .only([hasTimestamps.getCreatedAtColumn(), hasTimestamps.getUpdatedAtColumn()])
+                .only([hasTimestamps.getCreatedAtName(), hasTimestamps.getUpdatedAtName()])
             )
         ));
     });
 
     describe('getCreatedAtColumn', () => {
         it('should return the createdAt column', () => {
-            expect(hasTimestamps.getCreatedAtColumn()).toBe('createdAt');
+            expect(hasTimestamps.getCreatedAtName()).toBe('createdAt');
         });
 
         it('should return the createdAt column correctly if overridden', () => {
@@ -30,13 +30,13 @@ describe('HasTimestamps', () => {
             }
             hasTimestamps = new MyUser;
 
-            expect(hasTimestamps.getCreatedAtColumn()).toBe('myCreatedAt');
+            expect(hasTimestamps.getCreatedAtName()).toBe('myCreatedAt');
         });
     });
 
     describe('getUpdatedAtColumn', () => {
         it('should return the updatedAt column', () => {
-            expect(hasTimestamps.getUpdatedAtColumn()).toBe('updatedAt');
+            expect(hasTimestamps.getUpdatedAtName()).toBe('updatedAt');
         });
 
         it('should return the updatedAt column correctly if overridden', () => {
@@ -45,7 +45,7 @@ describe('HasTimestamps', () => {
             }
             hasTimestamps = new MyUser;
 
-            expect(hasTimestamps.getUpdatedAtColumn()).toBe('myUpdatedAt');
+            expect(hasTimestamps.getUpdatedAtName()).toBe('myUpdatedAt');
         });
     });
 
@@ -75,14 +75,14 @@ describe('HasTimestamps', () => {
         });
 
         it('should update the timestamps', async () => {
-            const createdAt = hasTimestamps.getAttribute(hasTimestamps.getCreatedAtColumn());
-            const updatedAt = hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtColumn());
+            const createdAt = hasTimestamps.getAttribute(hasTimestamps.getCreatedAtName());
+            const updatedAt = hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtName());
 
             jest.advanceTimersByTime(1000);
             await hasTimestamps.touch();
 
-            expect(hasTimestamps.getAttribute(hasTimestamps.getCreatedAtColumn())).toBe(createdAt);
-            expect(hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtColumn())).not.toBe(updatedAt);
+            expect(hasTimestamps.getAttribute(hasTimestamps.getCreatedAtName())).toBe(createdAt);
+            expect(hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtName())).not.toBe(updatedAt);
         });
 
         it('should throw an error if updated at column is not in the response',  async () => {
@@ -93,7 +93,7 @@ describe('HasTimestamps', () => {
             const failingFunc = jest.fn(async () => hasTimestamps.touch());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
-                '\'' + hasTimestamps.getUpdatedAtColumn() + '\' is not found in the response model.'
+                '\'' + hasTimestamps.getUpdatedAtName() + '\' is not found in the response model.'
             ));
         });
 
@@ -141,14 +141,14 @@ describe('HasTimestamps', () => {
                 buildResponse({ updated_at: new Date().toISOString(), created_at: new Date().toISOString() })
             ));
 
-            const createdAt = hasTimestamps.getAttribute(hasTimestamps.getCreatedAtColumn());
-            const updatedAt = hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtColumn());
+            const createdAt = hasTimestamps.getAttribute(hasTimestamps.getCreatedAtName());
+            const updatedAt = hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtName());
 
             jest.advanceTimersByTime(1000);
             await hasTimestamps.freshTimestamps();
 
-            expect(hasTimestamps.getAttribute(hasTimestamps.getCreatedAtColumn())).not.toBe(createdAt);
-            expect(hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtColumn())).not.toBe(updatedAt);
+            expect(hasTimestamps.getAttribute(hasTimestamps.getCreatedAtName())).not.toBe(createdAt);
+            expect(hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtName())).not.toBe(updatedAt);
         });
 
         it('should return itself instead of new instance', async () => {
@@ -166,7 +166,7 @@ describe('HasTimestamps', () => {
             const failingFunc = jest.fn(async () => hasTimestamps.freshTimestamps());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
-                '\'' + hasTimestamps.getCreatedAtColumn() + '\' is not found in the response model.'
+                '\'' + hasTimestamps.getCreatedAtName() + '\' is not found in the response model.'
             ));
         });
 
@@ -178,7 +178,7 @@ describe('HasTimestamps', () => {
             const failingFunc = jest.fn(async () => hasTimestamps.freshTimestamps());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
-                '\'' + hasTimestamps.getUpdatedAtColumn() + '\' is not found in the response model.'
+                '\'' + hasTimestamps.getUpdatedAtName() + '\' is not found in the response model.'
             ));
         });
 

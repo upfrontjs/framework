@@ -946,7 +946,7 @@ describe('BuildsQuery', () => {
         it('should be able to be called statically', () => {
             // it will be present when used from the model
             // eslint-disable-next-line jest/unbound-method,@typescript-eslint/unbound-method
-            BuildsQuery.prototype.getCreatedAtColumn = builder.getCreatedAtColumn;
+            BuildsQuery.prototype.getCreatedAtName = builder.getCreatedAtName;
 
             builder = BuildsQuery.latest();
             // @ts-expect-error
@@ -972,7 +972,7 @@ describe('BuildsQuery', () => {
         it('should be able to be called statically', () => {
             // it will be present when used from the model
             // eslint-disable-next-line jest/unbound-method,@typescript-eslint/unbound-method
-            BuildsQuery.prototype.getCreatedAtColumn = builder.getCreatedAtColumn;
+            BuildsQuery.prototype.getCreatedAtName = builder.getCreatedAtName;
 
             builder = BuildsQuery.oldest();
             // @ts-expect-error

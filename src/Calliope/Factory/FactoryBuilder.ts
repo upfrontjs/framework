@@ -317,12 +317,12 @@ export default class FactoryBuilder<T extends Model> {
         }
 
         if (model.usesTimestamps()) {
-            if (!model.getAttribute(model.getCreatedAtColumn())) {
-                model.setAttribute(model.getCreatedAtColumn(), new Date().toISOString());
+            if (!model.getAttribute(model.getCreatedAtName())) {
+                model.setAttribute(model.getCreatedAtName(), new Date().toISOString());
             }
 
-            if (!model.getAttribute(model.getUpdatedAtColumn())) {
-                model.setAttribute(model.getUpdatedAtColumn(), new Date().toISOString());
+            if (!model.getAttribute(model.getUpdatedAtName())) {
+                model.setAttribute(model.getUpdatedAtName(), new Date().toISOString());
             }
         }
 
@@ -404,12 +404,12 @@ export default class FactoryBuilder<T extends Model> {
             });
 
             if (this.model.usesTimestamps()) {
-                attributes[this.model.getCreatedAtColumn()] = attributes[this.model.getCreatedAtColumn()] ?? null;
-                attributes[this.model.getUpdatedAtColumn()] = attributes[this.model.getUpdatedAtColumn()] ?? null;
+                attributes[this.model.getCreatedAtName()] = attributes[this.model.getCreatedAtName()] ?? null;
+                attributes[this.model.getUpdatedAtName()] = attributes[this.model.getUpdatedAtName()] ?? null;
             }
 
             if (this.model.usesSoftDeletes()) {
-                attributes[this.model.getDeletedAtColumn()] = attributes[this.model.getDeletedAtColumn()] ?? null;
+                attributes[this.model.getDeletedAtName()] = attributes[this.model.getDeletedAtName()] ?? null;
             }
 
             compiledAttributeArray.push(this.resolveAttributes(attributes, compiledAttributes));

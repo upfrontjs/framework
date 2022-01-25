@@ -187,9 +187,9 @@ describe('FactoryBuilder', () => {
         it('should not set the id and timestamps', () => {
             const model = factoryBuilder.make() as User;
 
-            expect(model[model.getUpdatedAtColumn()]).toBeNull();
-            expect(model[model.getCreatedAtColumn()]).toBeNull();
-            expect(model[model.getDeletedAtColumn()]).toBeNull();
+            expect(model[model.getUpdatedAtName()]).toBeNull();
+            expect(model[model.getCreatedAtName()]).toBeNull();
+            expect(model[model.getDeletedAtName()]).toBeNull();
             expect(model.getKey()).toBeUndefined();
         });
 
@@ -220,9 +220,9 @@ describe('FactoryBuilder', () => {
         it('should not set the id and timestamps', () => {
             const model = factoryBuilder.makeOne()!;
 
-            expect(model[model.getUpdatedAtColumn()]).toBeNull();
-            expect(model[model.getCreatedAtColumn()]).toBeNull();
-            expect(model[model.getDeletedAtColumn()]).toBeNull();
+            expect(model[model.getUpdatedAtName()]).toBeNull();
+            expect(model[model.getCreatedAtName()]).toBeNull();
+            expect(model[model.getDeletedAtName()]).toBeNull();
             expect(model.getKey()).toBeUndefined();
         });
 
@@ -321,8 +321,8 @@ describe('FactoryBuilder', () => {
         it('should set the id and timestamps', () => {
             const model = factoryBuilder.createOne();
 
-            expect(model[model.getUpdatedAtColumn()]).not.toBeNull();
-            expect(model[model.getCreatedAtColumn()]).not.toBeNull();
+            expect(model[model.getUpdatedAtName()]).not.toBeNull();
+            expect(model[model.getCreatedAtName()]).not.toBeNull();
             expect(model.getKey()).toBeDefined();
         });
 
@@ -345,7 +345,7 @@ describe('FactoryBuilder', () => {
             const models = factoryBuilder.createMany();
 
             expect(models.every(model => {
-                return model.getKey() && model[model.getUpdatedAtColumn()] && model[model.getCreatedAtColumn()];
+                return model.getKey() && model[model.getUpdatedAtName()] && model[model.getCreatedAtName()];
             })).toBe(true);
         });
 

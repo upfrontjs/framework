@@ -84,6 +84,16 @@ describe('CallsApi', () => {
         });
     });
 
+    describe('.endpoint', () => {
+        it('should be a getter only string', () => {
+            expect(typeof caller.endpoint).toBe('string');
+            // @ts-expect-error
+            expect(() => caller.endpoint = 'unexpected assignment').toThrowErrorMatchingInlineSnapshot(
+                '"Cannot set property endpoint of [object Object] which has only a getter"'
+            );
+        });
+    });
+
     describe('call()', () => {
         it('should throw an error if no endpoint is defined',  async () => {
             caller.setEndpoint('');

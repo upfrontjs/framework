@@ -129,7 +129,7 @@ const form = new FormData;
 const response = await handler.handle(
     api.call(
         config.get('baseEndPoint').finish('/') + 'form',
-        'post',
+        'POST',
         form,
         { 'X-Requested-With': 'Upfront' },
         { query: { parameters: 'to encode' } }
@@ -175,7 +175,7 @@ const myFirstUser = await User.where('name', 'like', '%me%').first()
 Extending/overwriting the model should not be a daunting task. If we wanted we could add an extra method to send data to the server. In this example we add a new field on the sent data which is called `appends` and we're expecting the server to append additional information on the model response data.
 
 ```ts
-import type { FormatsQueryParameters, QueryParams } from '@upfrontjs/framework';
+import type { FormatsQueryParameters, QueryParams, StaticToThis } from '@upfrontjs/framework';
 import { Model as BaseModel } from '@upfrontjs/framework';
 
 export default class Model extends BaseModel implements FormatsQueryParameters {
@@ -186,9 +186,8 @@ export default class Model extends BaseModel implements FormatsQueryParameters {
         return this;
     }
 
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public static append<T extends Model = InstanceType<this>>(name: string): T {
-        this.newQuery<T>().append(name);
+    public static append<T extends StaticToThis<Model>>(this: T, name: string): T['prototype'] {
+        this.newQuery().append(name);
     }
 
     public withoutAppend(name: string): this {
@@ -271,7 +270,7 @@ export interface PaginatedModels<T extends Model> {
 }
 
 async function paginator<T extends Model>(builder: T, page = 1, limit = 25): Promise<PaginatedModels<T>> {
-    const response = (await builder.clone().limit(limit).page(page).call<PaginatedApiResponse<Attributes<T>>>('get'))!;
+    const response = (await builder.clone().limit(limit).page(page).call<PaginatedApiResponse<Attributes<T>>>('GET'))!;
     const modelCollection = new ModelCollection<T>(response.data.map(attributes => {
         return builder
             .new(attributes)

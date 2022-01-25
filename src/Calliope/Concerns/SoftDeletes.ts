@@ -79,7 +79,7 @@ export default class SoftDeletes extends HasTimestamps {
     }
 
     /**
-     * Set the deleted at column to null on remote.
+     * Set the deleted at attribute to null on remote.
      *
      * @return {Promise<this>}
      */

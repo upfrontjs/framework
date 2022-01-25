@@ -23,12 +23,12 @@ describe('SoftDeletes', () => {
         });
     });
 
-    describe('getDeletedAtColumn()', () => {
-        it('should return the deletedAt column', () => {
+    describe('getDeletedAtName()', () => {
+        it('should return the deletedAt attribute', () => {
             expect(softDeletes.getDeletedAtName()).toBe('deletedAt');
         });
 
-        it('should return the deletedAt column correctly if overridden', () => {
+        it('should return the deletedAt name correctly if overridden', () => {
             class MyUser extends User {
                 protected static readonly deletedAt = 'my_deleted_at';
             }
@@ -84,7 +84,7 @@ describe('SoftDeletes', () => {
                 .toContain(finish(softDeletes.getEndpoint(), '/') + String(softDeletes.getKey()));
         });
 
-        it('should merge in the deleted at column into the optional parameters', async () => {
+        it('should merge in the deleted at attribute into the optional parameters', async () => {
             mockUserModelResponse(softDeletes);
 
             await softDeletes.delete();
@@ -108,7 +108,7 @@ describe('SoftDeletes', () => {
                 });
         });
 
-        it('should update the model\'s deleted at column', async () => {
+        it('should update the model\'s deleted at attribute', async () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({
                 ...softDeletes.getRawOriginal(),
                 [softDeletes.getDeletedAtName()]: now.toISOString()
@@ -144,7 +144,7 @@ describe('SoftDeletes', () => {
             expect(softDeletes).toStrictEqual(softDeletes);
         });
 
-        it('should return itself if the deleted at column is already undefined', async () => {
+        it('should return itself if the deleted at attribute is already undefined', async () => {
             softDeletes.setAttribute(softDeletes.getDeletedAtName(), undefined);
 
             softDeletes = await softDeletes.restore();
@@ -175,7 +175,7 @@ describe('SoftDeletes', () => {
             expect(softDeletes.getAttribute(softDeletes.getDeletedAtName())).toBe('deleted');
         });
 
-        it('should send a PATCH request with the column set to null', async () => {
+        it('should send a PATCH request with the attribute set to null', async () => {
             mockUserModelResponse(softDeletes);
 
             softDeletes = await softDeletes.restore();

@@ -304,7 +304,7 @@ export default paginator;
 
 // script.ts
 // paginate users where column has the value of 1
-const firstPage = await paginateModels(User.where<User>('column', 1));
+const firstPage = await paginateModels(User.where('column', 1));
 const secondPage = await firstPage.next();
 
 ```

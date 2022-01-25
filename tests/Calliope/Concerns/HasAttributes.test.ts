@@ -692,7 +692,7 @@ describe('HasAttributes', () => {
 
     describe('toString()', () => {
         it('should return a json with spacing', () => {
-            hasAttributes = User.factory<User>()
+            hasAttributes = User.factory()
                 .with(Shift.factory(2))
                 .with(Contract)
                 .createOne({ key1: 1, key2: 2 });

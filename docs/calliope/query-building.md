@@ -348,7 +348,7 @@ User.orderByDesc('column');
 
 #### latest
 
-The `latest` method is an alias of the [orderBy](#orderby) method using a descending order. You may optionally specify which column to order by with the default being the result of the [getCreatedAtColumn](./timestamps.md#getcreatedatcolumn) method.
+The `latest` method is an alias of the [orderBy](#orderby) method using a descending order. You may optionally specify which column to order by with the default being the result of the [getCreatedAtName](./timestamps.md#getcreatedatname) method.
 
 ```js
 import User from '@Models/User';
@@ -359,7 +359,7 @@ User.latest('signed_up_at');
 
 #### oldest
 
-The `oldest` method is an alias of the [orderBy](#orderby) method using an ascending order. You may optionally specify which column to order by with the default being the result of the [getCreatedAtColumn](./timestamps.md#getcreatedatcolumn) method.
+The `oldest` method is an alias of the [orderBy](#orderby) method using an ascending order. You may optionally specify which column to order by with the default being the result of the [getCreatedAtName](./timestamps.md#getcreatedatname) method.
 
 ```js
 import User from '@Models/User';

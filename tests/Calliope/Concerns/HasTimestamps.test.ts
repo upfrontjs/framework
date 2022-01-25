@@ -19,12 +19,12 @@ describe('HasTimestamps', () => {
         ));
     });
 
-    describe('getCreatedAtColumn', () => {
-        it('should return the createdAt column', () => {
+    describe('getCreatedAtName', () => {
+        it('should return the createdAt attribute', () => {
             expect(hasTimestamps.getCreatedAtName()).toBe('createdAt');
         });
 
-        it('should return the createdAt column correctly if overridden', () => {
+        it('should return the createdAt attribute correctly if overridden', () => {
             class MyUser extends User {
                 protected static readonly createdAt = 'my_created_at';
             }
@@ -34,12 +34,12 @@ describe('HasTimestamps', () => {
         });
     });
 
-    describe('getUpdatedAtColumn', () => {
-        it('should return the updatedAt column', () => {
+    describe('getUpdatedAtName', () => {
+        it('should return the updatedAt attribute', () => {
             expect(hasTimestamps.getUpdatedAtName()).toBe('updatedAt');
         });
 
-        it('should return the updatedAt column correctly if overridden', () => {
+        it('should return the updatedAt attribute correctly if overridden', () => {
             class MyUser extends User {
                 protected static readonly updatedAt = 'my_updated_at';
             }
@@ -85,7 +85,7 @@ describe('HasTimestamps', () => {
             expect(hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtName())).not.toBe(updatedAt);
         });
 
-        it('should throw an error if updated at column is not in the response',  async () => {
+        it('should throw an error if updated at attribute is not in the response',  async () => {
             fetchMock.resetMocks();
             fetchMock.mockResponseOnce(async () =>
                 Promise.resolve(buildResponse({ createdAt: new Date().toISOString() })));

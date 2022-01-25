@@ -226,7 +226,9 @@ describe('Model', () => {
 
     describe('findMany()', () => {
         it('should send a GET request with query params', async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().times(2).create())));
+            fetchMock.mockResponseOnce(
+                async () => Promise.resolve(buildResponse(User.factory().times(2).createMany()))
+            );
             await user.findMany([2, 3]);
 
             expect(getLastRequest()?.method).toBe('GET');
@@ -239,7 +241,9 @@ describe('Model', () => {
         });
 
         it('should be able to be called statically', async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().times(2).create())));
+            fetchMock.mockResponseOnce(
+                async () => Promise.resolve(buildResponse(User.factory().times(2).createMany()))
+            );
 
             const response = await User.findMany([2, 3]);
 
@@ -247,7 +251,12 @@ describe('Model', () => {
         });
 
         it('should return a ModelCollection even if only one model returned', async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().create())));
+            fetchMock.mockResponseOnce(
+                async () => Promise.resolve({
+                    status: 200,
+                    body: JSON.stringify(User.factory().rawOne())
+                })
+            );
             const users = await user.findMany([1]);
 
             expect(users).toBeInstanceOf(ModelCollection);
@@ -384,7 +393,7 @@ describe('Model', () => {
         });
 
         it('should send all attributes if model doesn\'t exist', async () => {
-            const thisUser = User.factory().make({ myAttr: 1 }) as User;
+            const thisUser = User.factory().makeOne({ myAttr: 1 });
             mockUserModelResponse(thisUser);
 
             await thisUser.save({ customAttr: 1 });

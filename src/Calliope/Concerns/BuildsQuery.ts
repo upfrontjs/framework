@@ -787,7 +787,10 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.when
      */
-    public static when<T extends StaticToThis>(this: T, value: any, closure: (instance: BuildsQuery) => any): T['prototype'] {
+    public static when<T extends StaticToThis>(
+        this: T, value: any,
+        closure: (instance: BuildsQuery) => any
+    ): T['prototype'] {
         return this.newQuery().when(value, closure);
     }
 
@@ -817,7 +820,10 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.unless
      */
-    public static unless<T extends StaticToThis>(this: T, value: any, closure: (instance: BuildsQuery) => any): T['prototype'] {
+    public static unless<T extends StaticToThis>(
+        this: T,
+        value: any, closure: (instance: BuildsQuery) => any
+    ): T['prototype'] {
         return this.newQuery().unless(value, closure);
     }
 

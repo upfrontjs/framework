@@ -68,6 +68,7 @@ describe('FactoryBuilder', () => {
         });
 
         it('should throw an error if the given state is not a function', () => {
+            // @ts-expect-error
             User.prototype.factory = () => new FakeFactory();
 
             const failingFunc = jest.fn(
@@ -82,6 +83,7 @@ describe('FactoryBuilder', () => {
         });
 
         it('should throw an error if the given state is not a returning an object', () => {
+            // @ts-expect-error
             User.prototype.factory = () => new FakeFactory();
 
             const failingFunc = jest.fn(
@@ -461,6 +463,7 @@ describe('FactoryBuilder', () => {
             // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
             const originalValue = Team.prototype.factory;
 
+            // @ts-expect-error
             Team.prototype.factory = () => new TestFactory;
 
             expect(new FactoryBuilder(Team).raw()).toStrictEqual({});

@@ -230,7 +230,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {this}
      */
-    public with(relation: FactoryBuilder<Model> | (new () => Model), relationName?: string): this {
+    public with<M extends Model>(relation: FactoryBuilder<M> | (new () => M), relationName?: string): this {
         if (relation instanceof FactoryBuilder) {
             relationName = relationName ?? relation.model.getName().toLowerCase();
         } else if (isUserLandClass<typeof Model>(relation)) {
@@ -258,7 +258,7 @@ export default class FactoryBuilder<T extends Model> {
             }
         }
 
-        this.relations[relationName] = relation;
+        this.relations[relationName] = relation as unknown as FactoryBuilder<Model>;
 
         return this;
     }

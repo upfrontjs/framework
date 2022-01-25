@@ -166,7 +166,7 @@ describe('SoftDeletes', () => {
 
         it('should set the deleted at attribute to whatever the server sends', async () => {
             const responseUser = User
-                .factory<User>()
+                .factory()
                 .createOne({ [softDeletes.getDeletedAtName()]: 'deleted' });
             mockUserModelResponse(responseUser);
 

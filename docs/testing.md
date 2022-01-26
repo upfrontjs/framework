@@ -192,13 +192,13 @@ import type { Attributes } from '@upfrontjs/framework';
 import type User from './src/Models/User';
 
 export default UserFactory extends Factory<User> {
-    definition(model: T, index: number): Attributes<User> {
+    definition(model: User, index: number): Attributes<User> {
         return {
             name: 'user name'
         };
     }
     
-    nameOverride(model: T, index: number): Attributes<User> {
+    nameOverride(model: User, index: number): Attributes<User> {
         return {
             name: 'new name'
         };

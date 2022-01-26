@@ -276,7 +276,7 @@ async function paginatedModels<T extends Model>(
 ): Promise<PaginatedModels<T>> {
     const instance = !(builder instanceof Model) ? new builder() : builder.clone();
     
-    const response = (await instance.clone().limit(limit).page(page).call<PaginatedApiResponse<Attributes<T>>>('GET'))!;
+    const response = (await instance.limit(limit).page(page).call<PaginatedApiResponse<Attributes<T>>>('GET'))!;
     const modelCollection = new ModelCollection<T>(response.data.map(attributes => {
         return instance
             .new(attributes)

@@ -121,18 +121,6 @@ describe('API', () => {
             expect(config.body).toBeUndefined();
         });
 
-        it('should prepare FormData', async () => {
-            const form = new FormData();
-            form.append('key', 'value');
-
-            const config = (await api.getConfig(url, 'post', form)).requestInit;
-
-            expect(config.body).toBeInstanceOf(FormData);
-            expect((config.body as FormData).get('key')).toBe('value');
-            // @ts-expect-error
-            expect(config.headers.get('Content-Type')).toBe('multipart/form-data');
-        });
-
         it('should stringify the given data', async () => {
             const data = { custom: 'value' };
             const config = (await api.getConfig(url, 'post', data)).requestInit;

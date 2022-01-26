@@ -12,7 +12,6 @@ import { buildResponse, getLastRequest } from '../../test-helpers';
 import { cloneDeep } from 'lodash';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import Collection from '../../../src/Support/Collection';
-import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 import { config } from '../../setupTests';
 import { plural } from '../../../src/Support/string';
 
@@ -101,10 +100,10 @@ describe('HasRelations', () => {
     });
 
     describe('addRelation()', () => {
-        let shifts: ModelCollection<Model>;
+        let shifts: ModelCollection<Shift>;
 
         beforeEach(() => {
-            shifts = Shift.factory().times(2).create() as ModelCollection<Model>;
+            shifts = Shift.factory().times(2).createMany();
         });
 
         it('should be able to add a relation to the model', () => {
@@ -116,7 +115,8 @@ describe('HasRelations', () => {
         });
 
         it('should set relation as model collection even if the given data is a single model', () => {
-            expect(hasRelations.addRelation('shifts', Shift.factory().create()).shifts).toBeInstanceOf(ModelCollection);
+            expect(hasRelations.addRelation('shifts', Shift.factory().createOne()).shifts)
+                .toBeInstanceOf(ModelCollection);
         });
 
         it('should throw an error if trying to add undefined relation', () => {
@@ -130,7 +130,7 @@ describe('HasRelations', () => {
         it('should throw an error if value is collection or array but the relation is of singular type', () => {
             let failingFunc = jest.fn(() => hasRelations.addRelation(
                 'contract',
-                Contract.factory().times(2).raw()
+                Contract.factory().times(2).rawMany()
             ));
 
             expect(failingFunc).toThrow(
@@ -141,7 +141,7 @@ describe('HasRelations', () => {
 
             failingFunc = jest.fn(() => hasRelations.addRelation(
                 'contract',
-                (Contract.factory().times(2).raw() as Collection<Attributes>).toArray()
+                Contract.factory().times(2).rawMany().toArray()
             ));
 
             expect(failingFunc).toThrow(
@@ -154,7 +154,7 @@ describe('HasRelations', () => {
         it('should throw an error if value is a model collection but the relation is of singular type', () => {
             const failingFunc = jest.fn(() => hasRelations.addRelation(
                 'contract',
-                Contract.factory().times(2).create()
+                Contract.factory().times(2).createMany()
             ));
 
             expect(failingFunc).toThrow(
@@ -218,7 +218,7 @@ describe('HasRelations', () => {
                 buildResponse({
                     ...hasRelations.getRawOriginal(),
                     file: (FileModel.factory().create() as Model).getRawOriginal(),
-                    files: (FileModel.factory().times(2).create() as ModelCollection<Model>)
+                    files: FileModel.factory().times(2).createMany()
                         .map(file => file.getRawOriginal())
                         .toArray()
                 })
@@ -293,7 +293,7 @@ describe('HasRelations', () => {
             // morphMany
             fetchMock.mockResponseOnce(async () => Promise.resolve(
                 buildResponse(
-                    (FileModel.factory().times(2).create() as ModelCollection<Model>)
+                    FileModel.factory().times(2).createMany()
                         .map(file => file.getRawOriginal())
                         .toArray()
                 )
@@ -304,7 +304,7 @@ describe('HasRelations', () => {
             // hasMany
             fetchMock.mockResponseOnce(async () => Promise.resolve(
                 buildResponse(
-                    (Shift.factory().times(2).create() as ModelCollection<Model>)
+                    Shift.factory().times(2).createMany()
                         .map(shift => shift.getRawOriginal())
                         .toArray()
                 )

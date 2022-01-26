@@ -129,7 +129,7 @@ const form = new FormData;
 const response = await handler.handle(
     api.call(
         config.get('baseEndPoint').finish('/') + 'form',
-        'post',
+        'POST',
         form,
         { 'X-Requested-With': 'Upfront' },
         { query: { parameters: 'to encode' } }
@@ -175,7 +175,7 @@ const myFirstUser = await User.where('name', 'like', '%me%').first()
 Extending/overwriting the model should not be a daunting task. If we wanted we could add an extra method to send data to the server. In this example we add a new field on the sent data which is called `appends` and we're expecting the server to append additional information on the model response data.
 
 ```ts
-import type { FormatsQueryParameters, QueryParams } from '@upfrontjs/framework';
+import type { FormatsQueryParameters, QueryParams, StaticToThis } from '@upfrontjs/framework';
 import { Model as BaseModel } from '@upfrontjs/framework';
 
 export default class Model extends BaseModel implements FormatsQueryParameters {
@@ -185,9 +185,9 @@ export default class Model extends BaseModel implements FormatsQueryParameters {
         this.appends.push(name);
         return this;
     }
-    
-    public static append<T extends Model>(name: string): T {
-        this.newQuery<T>().append(name);
+
+    public static append<T extends StaticToThis<Model>>(this: T, name: string): T['prototype'] {
+        this.newQuery().append(name);
     }
 
     public withoutAppend(name: string): this {
@@ -217,50 +217,98 @@ Now if our other models extend our own model they will have the option to set th
 While it's nice to be able to [paginate locally](./helpers/pagination.md) it might not be desired to get too much data upfront. In this case a pagination can be implemented that will only get the pages in question on an explicit request. Of course, you might change the typings and the implementation to fit your needs.
 
 ```ts
-// utils.ts
-import type { Model, ModelCollection } from '@upfrontjs/framework';
-import User from '@models/User';
+// paginator.ts
+import type { Attributes, Model } from '@upfrontjs/framework';
+import { ModelCollection } from '@upfrontjs/framework';
 
-interface MyJsonApiResponse {
-    data: Attributes[];
+interface PaginatedApiResponse<T = Attributes> {
+    data: T[];
     links: {
         first: string;
         last: string;
-        next: string;
+        prev: string | null;
+        next: string | null;
     };
     meta: {
         current_page: number;
+        /**
+         * From all the existing records this is where the current items start from.
+         */
         from: number;
+        /**
+         * From all the existing records this is where the current items go to.
+         */
         to: number;
         last_page: number;
+        /**
+         * String representation of a number.
+         */
+        per_page: string;
+        links: {
+            url: string | null;
+            label: string;
+            active: boolean;
+        }[];
+        /**
+         * Total number of records.
+         */
         total: number;
         path: string;
     };
 }
 
-interface PaginatedModels<T extends Model> {
+export interface PaginatedModels<T extends Model> {
     data: ModelCollection<T>;
-    next: () => Promise<PaginatedModels<T>>;
-    previous: () => Promise<PaginatedModels<T>>;
-    page: (page: number) => Promise<PaginatedModels<T>>;
-    meta: MyJsonApiResponse['meta'];
+    next: () => Promise<PaginatedModels<T> | undefined>;
+    previous: () => Promise<PaginatedModels<T> | undefined>;
+    page: (page: number) => Promise<PaginatedModels<T> | undefined>;
+    hasNext: boolean;
+    hasPrevious: boolean;
+    from: PaginatedApiResponse['meta']['from'];
+    to: PaginatedApiResponse['meta']['to'];
+    total: PaginatedApiResponse['meta']['total'];
 }
 
-export async function paginateModels<T extends Model>(builder: T, page = 1, limit = 25): Promise<PaginatedModels<T>> {
-    const response = await builder.clone().limit(limit).page(page).call<MyJsonApiResponse>('get');
-    const modelCollection = new ModelCollection<T>(response!.data.map(attributes => builder.new(attributes)));
-    // or some other custom logic where the response `meta` and `links` or other keys (if any) are taken into account
+async function paginatedModels<T extends Model>(
+    builder: T | (new() => T),
+    page = 1,
+    limit = 25
+): Promise<PaginatedModels<T>> {
+    const instance = !(builder instanceof Model) ? new builder() : builder.clone();
+    
+    const response = (await instance.limit(limit).page(page).call<PaginatedApiResponse<Attributes<T>>>('GET'))!;
+    const modelCollection = new ModelCollection<T>(response.data.map(attributes => {
+        return instance
+            .new(attributes)
+            // @ts-expect-error - Protected internal method required for correct .exists detection
+            .setLastSyncedAt();
+    }));
 
     return {
         data: modelCollection,
-        next: async () => paginateModels(builder, page + 1, limit),
-        previous: async () => paginateModels(builder, page - 1, limit),
-        page: async (pageNumber: number) => paginateModels(builder, pageNumber, limit),
-        meta: response!.meta
-        // any other keys here like that you want to have access to
+        next: async () => {
+            if (!response.links.next) return;
+            return paginatedModels(instance, page + 1, limit);
+        },
+        previous: async () => {
+            if (!response.links.prev) return;
+            return paginatedModels(instance, page - 1, limit);
+        },
+        page: async (pageNumber: number) => {
+            if (pageNumber > response.meta.last_page || pageNumber < 0) return;
+            return paginatedModels(instance, pageNumber, limit);
+        },
+        from: response.meta.from,
+        to: response.meta.to,
+        total: response.meta.total,
+        hasNext: !!response.links.next,
+        hasPrevious: !!response.links.prev
     };
 }
 
+export default paginator;
+
+// script.ts
 // paginate users where column has the value of 1
 const firstPage = await paginateModels(User.where('column', 1));
 const secondPage = await firstPage.next();

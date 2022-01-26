@@ -28,7 +28,7 @@ export default class CastsAttributes {
      *
      * @type {object}
      */
-    public get casts(): Record<string, CastType> {
+    public get casts(): Record<AttributeKeys<this>, CastType> | Record<string, CastType> {
         return {};
     }
 
@@ -39,7 +39,7 @@ export default class CastsAttributes {
      *
      * @return {this}
      */
-    public mergeCasts(casts: Record<AttributeKeys<this> | string, CastType>): this {
+    public mergeCasts(casts: Record<AttributeKeys<this>, CastType> | Record<string, CastType>): this {
         this.attributeCasts = merge(this.attributeCasts, casts);
 
         return this;
@@ -52,6 +52,7 @@ export default class CastsAttributes {
      *
      * @return {this}
      */
+    public setCasts(casts: Record<AttributeKeys<this>, CastType> | Record<string, CastType>): this;
     public setCasts(casts: Record<AttributeKeys<this> | string, CastType>): this {
         this.attributeCasts = casts;
 
@@ -202,7 +203,7 @@ export default class CastsAttributes {
     }
 
     /**
-     * Cast the given value to number, throw error if it can't be casted.
+     * Cast the given value to number, throw error if it can't be cast.
      *
      * @param {string} key
      * @param {any} value
@@ -224,7 +225,7 @@ export default class CastsAttributes {
     }
 
     /**
-     * Cast the given value to boolean, throw error if it can't be casted.
+     * Cast the given value to boolean, throw error if it can't be cast.
      *
      * @param {string} key
      * @param {any} value
@@ -255,7 +256,7 @@ export default class CastsAttributes {
     }
 
     /**
-     * Cast to date time using the configured library, throw error if it can't be casted.
+     * Cast to date time using the configured library, throw error if it can't be cast.
      *
      * @param {string} key
      * @param {any} value

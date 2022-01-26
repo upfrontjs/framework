@@ -71,7 +71,7 @@ This will typehint keys on the model when accessing the above keys like `user.ag
 
 #### primaryKey
 
-The `primaryKey` is a getter of the column name which is used to identify your model. The default value is `'id'`.
+The `primaryKey` is a getter of the attribute name which is used to identify your model. The default value is `'id'`.
 
 ```js
 // User.js
@@ -147,12 +147,12 @@ import User from '@Models/User';
 const user = User.factory().create();
 user.getKey(); // 1
 user.name; // 'the name'
-user.getAttribute(user.getCreatedAtColumn()); // Date instance
+user.getAttribute(user.getCreatedAtName()); // Date instance
 
 const userCopy = user.replicate();
 userCopy.getKey(); // undefined
 userCopy.name; // 'the name'
-userCopy.getAttribute(userCopy.getCreatedAtColumn()); // undefined
+userCopy.getAttribute(userCopy.getCreatedAtName()); // undefined
 ```
 
 #### clone

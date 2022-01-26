@@ -10,11 +10,16 @@ export default class ApiResponseHandler implements HandlesApiResponse {
     /**
      * @inheritDoc
      */
-    public async handle<T = unknown | undefined>(promise: Promise<ApiResponse>): Promise<T> {
+    public async handle(
+        promise: Promise<ApiResponse & { request: { method: 'HEAD' | 'head' } }>
+        // omit to discourage accessing such on HEAD responses
+    ): Promise<Omit<ApiResponse, 'data' | 'json'> | undefined>;
+    public async handle<T>(promise: Promise<ApiResponse<T>>): Promise<T | undefined>;
+    public async handle(promise: Promise<ApiResponse>): Promise<unknown> {
         return promise
-            .then(async (response: ApiResponse) => this.handleResponse(response))
-            .catch(error => this.handleError(error))
-            .finally(() => this.handleFinally()) as Promise<T>;
+            .then(async response => this.handleResponse(response))
+            .catch(async error => this.handleError(error))
+            .finally(() => this.handleFinally());
     }
 
     /**
@@ -26,6 +31,10 @@ export default class ApiResponseHandler implements HandlesApiResponse {
      *
      * @throws {ApiResponse}
      */
+    public async handleResponse(
+        response: ApiResponse & { request: { method: 'HEAD' | 'head' } }
+    ): Promise<Omit<ApiResponse, 'data' | 'json'> | undefined>;
+    public async handleResponse<T>(response: ApiResponse<T>): Promise<T | undefined>;
     public async handleResponse(response: ApiResponse): Promise<unknown | undefined> {
         if (response.status >= 400) {
             // eslint-disable-next-line @typescript-eslint/no-throw-literal
@@ -34,8 +43,17 @@ export default class ApiResponseHandler implements HandlesApiResponse {
 
         if (response.status < 200 || response.status > 299 || response.status === 204) return;
 
+        if (response.request) {
+            if (response.request.method === 'HEAD') {
+                // this response was the answer to the `HEAD` request
+                // and the user is likely looking for the headers
+                // but return the whole response just in case
+                return response;
+            }
+        }
+
         if (typeof response.json === 'function') {
-            return (response as Response).json();
+            return response.json();
         }
 
         return;
@@ -48,8 +66,8 @@ export default class ApiResponseHandler implements HandlesApiResponse {
      *
      * @return {void}
      */
-    public handleError(rejectReason: unknown): never {
-        throw rejectReason;
+    public async handleError(rejectReason: unknown): Promise<never> {
+        return Promise.reject(rejectReason);
     }
 
     /**

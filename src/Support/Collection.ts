@@ -746,7 +746,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
         numbers = numbers.map(number => Number(number));
 
         if (numbers.some((number: number) => isNaN(number))) {
-            throw new LogicException('Some values cannot be casted to numbers.');
+            throw new LogicException('Some values cannot be cast to numbers.');
         }
 
         return numbers.toArray();

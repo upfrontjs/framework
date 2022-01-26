@@ -594,7 +594,7 @@ describe('Collection', () => {
 
         it('should return the only available item if one argument given', () => {
             collection = new Collection([1]);
-            expect(collection.random() === collection.random()).toBe(true);
+            expect(collection.random()).toBe(collection.random());
         });
 
         it('should return undefined if no items are in the collection', () => {
@@ -611,7 +611,7 @@ describe('Collection', () => {
             expect(collection).toContain(collection.first());
         });
 
-        it('should return a collection ready for cheining when multiple random elements returned', () => {
+        it('should return a collection ready for chaining when multiple random elements returned', () => {
             expect(collection.random(2).toArray()).toHaveLength(2);
         });
     });
@@ -672,7 +672,7 @@ describe('Collection', () => {
 
         it('should get the intersection of the collection and the arguments', () => {
             expect(collection.intersect(items)).toHaveLength(2);
-            expect(collection.intersect(items).indexOf(elements[0]) !== -1).toBe(false);
+            expect(collection.intersect(items).indexOf(elements[0])).toBe(-1);
         });
 
         it('should return a collection ready for chaining', () => {
@@ -1072,14 +1072,14 @@ describe('Collection', () => {
                 .toBe(elements.reduce((previousValue, currentValue) => previousValue + currentValue, 0));
         });
 
-        it('should throw an error if the element cannot be casted to a number', () => {
+        it('should throw an error if the element cannot be cast to a number', () => {
             collection = new Collection([1, 2, 'value']);
 
-            expect(() => collection.sum()).toThrow(new LogicException('Some values cannot be casted to numbers.'));
+            expect(() => collection.sum()).toThrow(new LogicException('Some values cannot be cast to numbers.'));
 
             collection = new Collection([{ id: 'value' }]);
 
-            expect(() => collection.sum('id')).toThrow(new LogicException('Some values cannot be casted to numbers.'));
+            expect(() => collection.sum('id')).toThrow(new LogicException('Some values cannot be cast to numbers.'));
         });
 
         it('should return the total value of object properties when key given', () => {
@@ -1104,14 +1104,14 @@ describe('Collection', () => {
             expect(collection.min()).toBe(1);
         });
 
-        it('should throw an error if the element cannot be casted to a number', () => {
+        it('should throw an error if the element cannot be cast to a number', () => {
             collection = new Collection([1, 2, 'value']);
 
-            expect(() => collection.min()).toThrow(new LogicException('Some values cannot be casted to numbers.'));
+            expect(() => collection.min()).toThrow(new LogicException('Some values cannot be cast to numbers.'));
 
             collection = new Collection([{ id: 'value' }]);
 
-            expect(() => collection.min('id')).toThrow(new LogicException('Some values cannot be casted to numbers.'));
+            expect(() => collection.min('id')).toThrow(new LogicException('Some values cannot be cast to numbers.'));
         });
 
         it('should return the lowest value of object properties when key given', () => {
@@ -1136,14 +1136,14 @@ describe('Collection', () => {
             expect(collection.max()).toBe(5);
         });
 
-        it('should throw an error if the element cannot be casted to a number', () => {
+        it('should throw an error if the element cannot be cast to a number', () => {
             collection = new Collection([1, 2, 'value']);
 
-            expect(() => collection.max()).toThrow(new LogicException('Some values cannot be casted to numbers.'));
+            expect(() => collection.max()).toThrow(new LogicException('Some values cannot be cast to numbers.'));
 
             collection = new Collection([{ id: 'value' }]);
 
-            expect(() => collection.max('id')).toThrow(new LogicException('Some values cannot be casted to numbers.'));
+            expect(() => collection.max('id')).toThrow(new LogicException('Some values cannot be cast to numbers.'));
         });
 
         it('should return the highest value of object properties when key given', () => {
@@ -1168,15 +1168,15 @@ describe('Collection', () => {
             expect(collection.average()).toBe(3);
         });
 
-        it('should throw an error if the element cannot be casted to a number', () => {
+        it('should throw an error if the element cannot be cast to a number', () => {
             collection = new Collection([1, 2, 'value']);
 
-            expect(() => collection.average()).toThrow(new LogicException('Some values cannot be casted to numbers.'));
+            expect(() => collection.average()).toThrow(new LogicException('Some values cannot be cast to numbers.'));
 
             collection = new Collection([{ id: 'value' }]);
 
             expect(() => collection.average('id')).toThrow(
-                new LogicException('Some values cannot be casted to numbers.')
+                new LogicException('Some values cannot be cast to numbers.')
             );
         });
 

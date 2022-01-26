@@ -173,13 +173,13 @@ export default class HasRelations extends CallsApi {
      *
      * @return this
      */
-    public addRelation(
+    public addRelation<T extends Model>(
         name: string,
         value: Collection<Attributes>
-        | Collection<Model>
+        | Collection<T>
         | MaybeArray<Attributes>
-        | MaybeArray<Model>
-        | ModelCollection<Model>
+        | MaybeArray<T>
+        | ModelCollection<T>
     ): this {
         name = this.removeRelationPrefix(name);
 
@@ -196,7 +196,7 @@ export default class HasRelations extends CallsApi {
          * Callback acting as user guard for collection of models.
          * ModelCollection is a subclass of Collection.
          */
-        const isCollectionWithModels = (val: any): val is Collection<Model> =>  Collection.isCollection(val)
+        const isCollectionWithModels = (val: any): val is Collection<T> =>  Collection.isCollection(val)
             && val.every(entry => entry instanceof HasRelations);
 
         if (value instanceof HasRelations || isCollectionWithModels(value) || isModelArray) {
@@ -211,16 +211,16 @@ export default class HasRelations extends CallsApi {
             }
 
             if (isModelArray) {
-                value = new ModelCollection(value as Model[]);
+                value = new ModelCollection(value as T[]);
             }
 
             if (value instanceof HasRelations) {
                 if (!isSingularRelationType) {
-                    value = new ModelCollection([value]);
+                    value = new ModelCollection([value as T]);
                 } else {
                     if (relationType === 'belongsTo') {
                         // set attribute to ensure sync between the foreign key and the given value
-                        this.setAttribute(value.guessForeignKeyName(), value.getKey());
+                        this.setAttribute(value.guessForeignKeyName(), (value as T).getKey());
                     }
                 }
             }

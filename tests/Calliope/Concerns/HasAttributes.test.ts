@@ -656,6 +656,7 @@ describe('HasAttributes', () => {
         it('should return only the specified attributes', () => {
             hasAttributes = new User({ test: 1, value: 2 });
 
+            expect(hasAttributes.only('test')).toStrictEqual({ test: 1 });
             expect(hasAttributes.only(['test'])).toStrictEqual({ test: 1 });
         });
     });
@@ -691,7 +692,7 @@ describe('HasAttributes', () => {
 
     describe('toString()', () => {
         it('should return a json with spacing', () => {
-            hasAttributes = User.factory<User>()
+            hasAttributes = User.factory()
                 .with(Shift.factory(2))
                 .with(Contract)
                 .createOne({ key1: 1, key2: 2 });

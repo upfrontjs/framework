@@ -1,12 +1,16 @@
-import GuardsAttributes from '../../../src/Calliope/Concerns/GuardsAttributes';
+import Model from '../../../src/Calliope/Model';
 
-class TestClass extends GuardsAttributes {
+class TestClass extends Model {
+    public override getName(): string {
+        return 'TestClass';
+    }
+
     public get fillable(): string[] {
         return ['attr1'];
     }
 }
 
-let guardedObject: GuardsAttributes;
+let guardedObject: Model;
 
 describe('GuardsAttributes', () => {
     beforeEach(() => {
@@ -30,7 +34,11 @@ describe('GuardsAttributes', () => {
 
     describe('setGuarded()', () => {
         beforeEach(() => {
-            class TestGuardingClass extends GuardsAttributes {
+            class TestGuardingClass extends Model {
+                public override getName(): string {
+                    return 'TestGuardingClass';
+                }
+
                 public guardedAttributes = ['attr1'];
             }
 

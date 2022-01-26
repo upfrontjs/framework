@@ -594,7 +594,7 @@ describe('Collection', () => {
 
         it('should return the only available item if one argument given', () => {
             collection = new Collection([1]);
-            expect(collection.random() === collection.random()).toBe(true);
+            expect(collection.random()).toBe(collection.random());
         });
 
         it('should return undefined if no items are in the collection', () => {
@@ -672,7 +672,7 @@ describe('Collection', () => {
 
         it('should get the intersection of the collection and the arguments', () => {
             expect(collection.intersect(items)).toHaveLength(2);
-            expect(collection.intersect(items).indexOf(elements[0]) !== -1).toBe(false);
+            expect(collection.intersect(items).indexOf(elements[0])).toBe(-1);
         });
 
         it('should return a collection ready for chaining', () => {

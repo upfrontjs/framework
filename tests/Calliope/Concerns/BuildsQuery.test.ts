@@ -78,7 +78,6 @@ describe('BuildsQuery', () => {
     describe('resetQueryParameters()', () => {
         it('should reset the params to the default values', () => {
             expect(builder.offset(10).compiledParams().offset).toBe(10);
-            // @ts-expect-error
             expect(builder.resetQueryParameters().compiledParams().offset).toBeUndefined();
         });
     });
@@ -885,7 +884,6 @@ describe('BuildsQuery', () => {
 
         it('should accept string and array of strings', () => {
             expect(builder.scope('testScope').compiledParams().scopes).toStrictEqual(['testScope']);
-            // @ts-expect-error
             expect(builder.resetQueryParameters().scope(['testScope']).compiledParams().scopes)
                 .toStrictEqual(['testScope']);
         });
@@ -948,7 +946,7 @@ describe('BuildsQuery', () => {
         it('should be able to be called statically', () => {
             // it will be present when used from the model
             // eslint-disable-next-line jest/unbound-method,@typescript-eslint/unbound-method
-            BuildsQuery.prototype.getCreatedAtColumn = builder.getCreatedAtColumn;
+            BuildsQuery.prototype.getCreatedAtName = builder.getCreatedAtName;
 
             builder = BuildsQuery.latest();
             // @ts-expect-error
@@ -974,7 +972,7 @@ describe('BuildsQuery', () => {
         it('should be able to be called statically', () => {
             // it will be present when used from the model
             // eslint-disable-next-line jest/unbound-method,@typescript-eslint/unbound-method
-            BuildsQuery.prototype.getCreatedAtColumn = builder.getCreatedAtColumn;
+            BuildsQuery.prototype.getCreatedAtName = builder.getCreatedAtName;
 
             builder = BuildsQuery.oldest();
             // @ts-expect-error

@@ -3,7 +3,7 @@ import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 import type Contract from '../Models/Contract';
 
 export default class ContractFactory extends Factory<Contract> {
-    public definition(): Attributes {
+    public definition(): Attributes<Contract> {
         return {
             startDate: new Date().toISOString(),
             endDate: null,

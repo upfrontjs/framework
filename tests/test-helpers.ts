@@ -3,6 +3,7 @@ import { isObjectLiteral } from '../src/Support/function';
 import Collection from '../src/Support/Collection';
 import type User from './mock/Models/User';
 import fetchMock from 'jest-fetch-mock';
+import type { Method } from '../src';
 
 export const buildResponse = (
     response?: any[] | Record<string, any> | string,
@@ -39,7 +40,7 @@ export const mockUserModelResponse = (user: User): void => {
 
 interface RequestDescriptor {
     url: string;
-    method: 'delete' | 'get' | 'patch' | 'post' | 'put';
+    method: Uppercase<Method>;
     headers: Headers;
     body?: unknown;
 }

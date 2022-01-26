@@ -9,9 +9,18 @@ import BuildsQuery from './BuildsQuery';
 import type { Attributes } from './HasAttributes';
 import { isObjectLiteral } from '../../Support/function';
 import { finish, kebab, plural } from '../../Support/string';
-import type { MaybeArray } from '../../Support/type';
+import type { MaybeArray, StaticToThis } from '../../Support/type';
 
-export type Method = 'delete' | 'get' | 'patch' | 'post' | 'put';
+/**
+ * The request methods.
+ */
+export type Method =
+    'DELETE' | 'delete'
+    | 'GET' | 'get'
+    | 'HEAD' | 'head'
+    | 'PATCH' | 'patch'
+    | 'POST' | 'post'
+    | 'PUT' | 'put';
 
 export default class CallsApi extends BuildsQuery {
     /**
@@ -58,7 +67,7 @@ export default class CallsApi extends BuildsQuery {
     /**
      * The call method that mediates between the model and api handlers.
      *
-     * @param {'get'|'post'|'delete'|'patch'|'put'} method
+     * @param {Method} method
      * @param {object=} data
      * @param {object=} customHeaders
      *
@@ -164,10 +173,11 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Promise<Model|ModelCollection<Model>>}
      */
-    public async get<T extends Model>(
-        queryParameters?: QueryParams | Record<string, unknown>
+    // @ts-expect-error - despite TS2526, it still infers correctly
+    public async get<T extends Model = this>(
+        queryParameters?: QueryParams & Record<string, unknown>
     ): Promise<ModelCollection<T> | T> {
-        return this.call('get', queryParameters)
+        return this.call('GET', queryParameters)
             .then(responseData => this.newInstanceFromResponseData<T>(this.getDataFromResponse(responseData)));
     }
 
@@ -178,10 +188,11 @@ export default class CallsApi extends BuildsQuery {
      *
      * @see CallsApi.prototype.get
      */
-    public static async get<T extends Model>(
-        queryParameters?: QueryParams | Record<string, unknown>
-    ): Promise<ModelCollection<T> | T> {
-        return new this().get<T>(queryParameters);
+    public static async get<T extends StaticToThis>(
+        this: T,
+        queryParameters?: QueryParams & Record<string, unknown>
+    ): Promise<ModelCollection<T['prototype']> | T['prototype']> {
+        return new this().get(queryParameters);
     }
 
     /**
@@ -191,8 +202,9 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async post<T extends Model>(data: Attributes | FormData): Promise<T> {
-        return this.call('post', data)
+    // @ts-expect-error - despite TS2526, it still infers correctly
+    public async post<T extends Model = this>(data: Attributes | FormData): Promise<T> {
+        return this.call('POST', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
 
@@ -203,8 +215,9 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async put<T extends Model>(data: Attributes | FormData): Promise<T> {
-        return this.call('put', data)
+    // @ts-expect-error - despite TS2526, it still infers correctly
+    public async put<T extends Model = this>(data: Attributes | FormData): Promise<T> {
+        return this.call('PUT', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
 
@@ -215,8 +228,9 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return
      */
-    public async patch<T extends Model>(data: Attributes | FormData): Promise<T> {
-        return this.call('patch', data)
+    // @ts-expect-error - despite TS2526, it still infers correctly
+    public async patch<T extends Model = this>(data: Attributes | FormData): Promise<T> {
+        return this.call('PATCH', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
 
@@ -228,8 +242,9 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Promise<boolean>}
      */
-    public async delete<T extends Model>(data?: Attributes | FormData): Promise<T> {
-        return this.call('delete', data)
+    // @ts-expect-error - despite TS2526, it still infers correctly
+    public async delete<T extends Model = this>(data?: Attributes | FormData): Promise<T> {
+        return this.call('DELETE', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
 
@@ -271,19 +286,16 @@ export default class CallsApi extends BuildsQuery {
             );
         }
 
-        if (Array.isArray(data)) {
-            const collection = new ModelCollection<T>();
+        const createModel = (attributes: Attributes): T => {
+            // pass the attributes to the constructor in case the user needs to use it
+            return new (this.constructor as new (attributes?: Attributes) => T)(attributes)
+                // but do not lose any data from the server due to fillable settings
+                .forceFill(attributes)
+                .syncOriginal()
+                .setLastSyncedAt();
+        };
 
-            data.forEach(attributes => {
-                const model = new (this.constructor as new () => T)();
-                collection.push(model.forceFill(attributes).syncOriginal().setLastSyncedAt());
-            });
-
-            return collection;
-        }
-
-        const model = new (this.constructor as new () => T)();
-        return model.forceFill(data).syncOriginal().setLastSyncedAt();
+        return Array.isArray(data) ? new ModelCollection(data.map(createModel)) : createModel(data);
     }
 
     /**

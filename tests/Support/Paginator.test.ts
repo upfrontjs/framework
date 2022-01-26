@@ -102,12 +102,12 @@ describe('Paginator', () => {
 
         describe('page()', () => {
             it('should set to specified page', () => {
-                expect(paginator.setItemsPerPage(1).page(3).items[0] === elements[2]).toBe(true);
+                expect(paginator.setItemsPerPage(1).page(3).items[0]).toBe(elements[2]);
             });
 
             it('should take no action if invalid page number is given', () => {
-                expect(paginator.setItemsPerPage(1).page(0).items[0] === elements[0]).toBe(true);
-                expect(paginator.setItemsPerPage(1).page(9).items[0] === elements[0]).toBe(true);
+                expect(paginator.setItemsPerPage(1).page(0).items[0]).toBe(elements[0]);
+                expect(paginator.setItemsPerPage(1).page(9).items[0]).toBe(elements[0]);
             });
         });
 

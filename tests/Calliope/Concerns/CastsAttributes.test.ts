@@ -135,12 +135,12 @@ describe('CastsAttributes', () => {
             expect(caster.publicCastAttribute('test', 'random value')).toStrictEqual(new Collection('random value'));
         });
 
-        it('should set collection casted collection value to array on set to avoid wrapping on get', () => {
+        it('should set collection cast collection value to array on set to avoid wrapping on get', () => {
             caster.mergeCasts({ test: 'collection' });
             expect(caster.publicCastAttribute('test', new Collection([1, 2]), 'set')).toStrictEqual([1, 2]);
         });
 
-        it('should return the value untouched when using collection and it can be casted on get', () => {
+        it('should return the value untouched when using collection and it can be cast on get', () => {
             caster.mergeCasts({ test: 'collection' });
             expect(caster.publicCastAttribute('test', [1, 2], 'set')).toStrictEqual([1, 2]);
         });
@@ -184,7 +184,7 @@ describe('CastsAttributes', () => {
             config.unset('datetime');
         });
 
-        it('should throw an error if the value cannot be casted to a Date when no datetime defined', () => {
+        it('should throw an error if the value cannot be cast to a Date when no datetime defined', () => {
             caster.mergeCasts({ test: 'datetime' });
             expect(() => caster.publicCastAttribute('test', 'invalid value')).toThrow(
                 new LogicException(

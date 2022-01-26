@@ -8,6 +8,7 @@ For example if you want to test your custom method you added to a model, you cou
 
 <code-group>
 <code-block title="Javascript">
+
 ```js
 import { GlobalConfig } from '@upfrontjs/framework';
 import User from '@/Models'
@@ -31,6 +32,7 @@ describe('customAjaxMethod()', () => {
 </code-block>
 
 <code-block title="Typescript">
+
 ```ts
 import { GlobalConfig } from '@upfrontjs/framework';
 import type { Configuration } from '@upfrontjs/framework';
@@ -60,10 +62,11 @@ describe('customAjaxMethod()', () => {
 
 To make testing your code easier with real data independent of your back end, upfront provides factories. With factories, you can construct [models](./calliope/readme.md) hydrated with data that you have defined and/or using a random data generator like [ChanceJs](https://chancejs.com/) set in your [configuration](./helpers/global-config.md#randomdatagenerator). With the  factory defined, construction of a model is easy as `User.factory().create()`
 
-To define a factory what you need to do is extend upfront's `Factory` in you class then in you model create a `factory()` method which returns your constructed factory.
+To define a factory what you need to do is extend upfront's `Factory` in you class, implement the [definition](#definition) method, then in you model create a `factory()` method which returns your constructed factory.
 
 <code-group>
 <code-block title="Javascript">
+
 ```js
 // UserFactory.js
 import { Factory, uuid } from '@upfrontjs/framework';
@@ -82,6 +85,10 @@ import { Model } from '@upfrontjs/framework';
 import UserFactory from '../../factories/UserFactory';
 
 export default User extends Model {
+    getName() {
+        return 'User';
+    }
+
     factory() {
         return new UserFactory
     }
@@ -90,6 +97,7 @@ export default User extends Model {
 </code-block>
 
 <code-block title="Typescript">
+
 ```ts
 // UserFactory.ts
 import { Factory } from '@upfrontjs/framework';
@@ -97,7 +105,7 @@ import type { Attributes } from '@upfrontjs/framework';
 import type User from './src/Models/User';
 
 export default UserFactory extends Factory<User> {
-    definition(model: T, index: number): Attributes {
+    definition(model: T, index: number): Attributes<User> {
         return {
             name: 'user name',
             resourceUuid: String.uuid()
@@ -110,9 +118,12 @@ import { Model } from '@upfrontjs/framework';
 import UserFactory from '../../factories/UserFactory';
 
 export default User extends Model {
-    // or the return value of `Factory<this>` is also valid
-    factory(): UserFactory {
-        return new UserFactory
+    public override getName(): string {
+        return 'User';
+    }
+    
+    public factory(): UserFactory {
+        return new UserFactory;
     }
 }
 ```
@@ -137,7 +148,7 @@ return {
 If you would like to define [relationships](./calliope/relationships.md) in your `definition` you could pass the relation's value, and the relation's foreign key.
 
 ```js
-const team = Team.factory().create()
+const team = Team.factory().createOne()
 return {
     teamId: team.getKey(),
     team: team // both Model and raw attributes are acceptable here
@@ -151,6 +162,7 @@ To define a state in your factory add a method with your state name:
 
 <code-group>
 <code-block title="Javascript">
+
 ```js
 // UserFactory.js
 import { Factory, ModelCollection } from '@upfrontjs/framework';
@@ -172,20 +184,21 @@ export default UserFactory extends Factory {
 </code-block>
 
 <code-block title="Typescript">
+
 ```ts
 // UserFactory.ts
 import { Factory, ModelCollection } from '@upfrontjs/framework';
 import type { Attributes } from '@upfrontjs/framework';
 import type User from './src/Models/User';
 
-export default UserFactory<T extends User> extends Factory {
-    definition(model: T, index: number): Attributes {
+export default UserFactory extends Factory<User> {
+    definition(model: User, index: number): Attributes<User> {
         return {
             name: 'user name'
         };
     }
     
-    nameOverride(model: T, index: number): Attributes {
+    nameOverride(model: User, index: number): Attributes<User> {
         return {
             name: 'new name'
         };
@@ -205,6 +218,7 @@ These hooks if implemented in your [factory](#factories) will receive the result
 
 <code-group>
 <code-block title="Javascript">
+
 ```js
 // UserFactory.js
 import { Factory, ModelCollection } from '@upfrontjs/framework';
@@ -228,20 +242,21 @@ export default UserFactory extends Factory {
 </code-block>
 
 <code-block title="Typescript">
+
 ```ts
 // UserFactory.ts
 import { Factory, ModelCollection } from '@upfrontjs/framework';
 import type { Attributes } from '@upfrontjs/framework';
 import type User from './src/Models/User';
 
-export default UserFactory<T extends User> extends Factory {
-    definition(model: T, index: number): Attributes {
+export default UserFactory extends Factory<User> {
+    definition(model: User, index: number): Attributes<User> {
         return {
             name: 'user name'
         };
     }
     
-    afterMaking(modelOrCollection: ModelCollection<T> | T): void {
+    afterMaking(modelOrCollection: ModelCollection<User> | User): void {
         if (ModelCollection.isModelCollection(modelOrCollection)) {
             modelOrCollection.forEach(model => model.setAttribute('name', 'name from hook'));
         } else {
@@ -262,8 +277,7 @@ import { Factory, ModelCollection } from '@upfrontjs/framework';
 
 export default UserFactory extends Factory
 {
-    definition()
-    {
+    definition() {
         return {
             name: this.random.name()
         };

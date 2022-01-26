@@ -1,6 +1,5 @@
 import Model from '../../../src/Calliope/Model';
 import User from './User';
-import type Factory from '../../../src/Calliope/Factory/Factory';
 import TeamFactory from '../Factories/TeamFactory';
 
 export default class Team extends Model {
@@ -20,7 +19,7 @@ export default class Team extends Model {
         return this.hasMany(User);
     }
 
-    public factory(): Factory<this> {
+    public factory(): TeamFactory {
         return new TeamFactory;
     }
 }

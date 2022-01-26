@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'src/**/*.ts'
+      - 'README.md'
     branches:
       - main
 
@@ -20,13 +21,13 @@ jobs:
         run: npm run docs:api
       - name: Update gh-pages branch
         run: |
-          cp -r ./api-docs/ ./
+          cp -r ./api-docs/* ./
           git add -f assets
           git add -f classes
           git add -f interfaces
           git add -f .nojekyll
           git add -f index.html
           git add -f modules.html
-          git add -A
+          git add README.md
           git commit -m "Updates from ${{ github.ref }}" --no-verify
           git push -u origin gh-pages

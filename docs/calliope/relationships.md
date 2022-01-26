@@ -114,7 +114,7 @@ const userComments = await user.$comments().get();
 ```
 
 ::: tip
-[hasMany](#hasmany) and [hasOne](#hasone) methods also allows us to create related resources while automatically setting the related column value.
+[hasMany](#hasmany) and [hasOne](#hasone) methods also allows us to create related resources while automatically setting the related attribute value.
 
 ```ts
 // User.ts

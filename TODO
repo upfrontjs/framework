@@ -1,3 +1,0 @@
-Todos which are not concerning a single unit of code:
-
-todo - qs should not be a dependency if the user not using the API service (maybe interfaces and services should be separate packages?)

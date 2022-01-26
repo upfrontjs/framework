@@ -32,7 +32,7 @@ describe('CallsApi', () => {
     describe('.serverAttributeCasing', () => {
         it('should cast the outgoing attributes to the set serverAttributeCasing', async () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
-            await caller.call('post', { someValue: 1 });
+            await caller.call('POST', { someValue: 1 });
 
             // eslint-disable-next-line @typescript-eslint/naming-convention
             expect(getLastRequest()?.body).toStrictEqual({ some_value: 1 });
@@ -40,7 +40,7 @@ describe('CallsApi', () => {
 
         it('should recursively cast the keys to any depth', async () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
-            await caller.call('post', {
+            await caller.call('POST', {
                 someValue: {
                     anotherValue: 1
                 }
@@ -61,7 +61,7 @@ describe('CallsApi', () => {
 
             const user = new UserWithSnakeCase;
 
-            await user.call('post', {
+            await user.call('POST', {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 some_value: {
                     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -77,10 +77,20 @@ describe('CallsApi', () => {
             formData.append('my_field', 'value');
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
 
-            await caller.call('post', formData);
+            await caller.call('POST', formData);
 
             expect((getLastRequest()?.body as FormData).has('my_field')).toBe(true);
             expect((getLastRequest()?.body as FormData).has('myField')).toBe(false);
+        });
+    });
+
+    describe('.endpoint', () => {
+        it('should be a getter only string', () => {
+            expect(typeof caller.endpoint).toBe('string');
+            // @ts-expect-error
+            expect(() => caller.endpoint = 'unexpected assignment').toThrowErrorMatchingInlineSnapshot(
+                '"Cannot set property endpoint of [object Object] which has only a getter"'
+            );
         });
     });
 
@@ -89,9 +99,9 @@ describe('CallsApi', () => {
             caller.setEndpoint('');
 
             // awkward syntax comes from https://github.com/facebook/jest/issues/1700
-            await expect(caller.call('get')).rejects.toStrictEqual(
+            await expect(caller.call('GET')).rejects.toStrictEqual(
                 new LogicException(
-                    'Endpoint is not defined when calling \'get\' method on \'' + caller.constructor.name + '\'.'
+                    'Endpoint is not defined when calling \'GET\' method on \'' + caller.constructor.name + '\'.'
                 )
             );
         });
@@ -99,18 +109,18 @@ describe('CallsApi', () => {
         it('should get the endpoint from the model as expected', async () => {
             const baseEndpoint = config.get('baseEndPoint');
             fetchMock.mockResponse(async () => Promise.resolve(buildResponse()));
-            await caller.call('get');
+            await caller.call('GET');
             // it adds the '/' between the baseEndPoint and the endpoint
             expect(getLastRequest()?.url).toBe(finish(baseEndpoint!, '/') + caller.getEndpoint());
 
             config.unset('baseEndPoint');
-            await caller.call('get');
+            await caller.call('GET');
             // if no baseEndPoint is set, we have no leading '/'
             expect(getLastRequest()?.url).toBe(caller.getEndpoint());
 
             config.set('baseEndPoint', baseEndpoint);
             caller.getEndpoint = () => 'https://test-domain.com/users';
-            await caller.call('get');
+            await caller.call('GET');
             // it just appends the value regardless of if it's a valid url
             expect(getLastRequest()?.url).toBe(finish(baseEndpoint!, '/') + caller.getEndpoint());
 
@@ -119,7 +129,7 @@ describe('CallsApi', () => {
 
         it('should return a promise with the response',  async () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
-            const responseData = await caller.call('get');
+            const responseData = await caller.call('GET');
 
             expect(responseData).toStrictEqual(User.factory().raw());
         });
@@ -137,7 +147,7 @@ describe('CallsApi', () => {
             config.set('api', api);
 
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse()));
-            await caller.call('get');
+            await caller.call('GET');
             expect(getLastRequest()?.headers.has('custom')).toBe(true);
             expect(getLastRequest()?.headers.get('custom')).toBe('header');
         });
@@ -153,7 +163,7 @@ describe('CallsApi', () => {
             config.set('apiResponseHandler', apiResponseHandler);
 
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse()));
-            await caller.call('get');
+            await caller.call('GET');
             expect(mockFn).toHaveBeenCalled();
         });
 
@@ -162,8 +172,8 @@ describe('CallsApi', () => {
                 async () => Promise.resolve(buildResponse((User.factory().create() as User).getRawOriginal()))
             );
 
-            const promise1 = caller.call('get');
-            const promise2 = caller.call('get');
+            const promise1 = caller.call('GET');
+            const promise2 = caller.call('GET');
 
             // @ts-expect-error
             expect(caller.requestCount).toBe(2);
@@ -179,7 +189,7 @@ describe('CallsApi', () => {
                 async () => Promise.resolve(buildResponse((User.factory().create() as User).getRawOriginal()))
             );
 
-            const promise = caller.call('get');
+            const promise = caller.call('GET');
 
             expect(caller.loading).toBe(true);
 
@@ -190,7 +200,7 @@ describe('CallsApi', () => {
 
         it('should send all the given data', async () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
-            await caller.call('post', {
+            await caller.call('POST', {
                 falsyKey1: null,
                 falsyKey2: undefined,
                 falsyKey3: false,
@@ -210,7 +220,7 @@ describe('CallsApi', () => {
         it('should not parse the response body if data wrapped', async () => {
             const data = User.factory().raw();
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({ data })));
-            const parsedResponse = await caller.call('get');
+            const parsedResponse = await caller.call('GET');
 
             expect(parsedResponse).toStrictEqual({ data });
         });
@@ -237,7 +247,7 @@ describe('CallsApi', () => {
 
         it('should return undefined if the response from the handler is undefined', async () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(undefined, { status: 100 })));
-            await expect(caller.call('get')).resolves.toBeUndefined();
+            await expect(caller.call('GET')).resolves.toBeUndefined();
         });
 
         describe('requestMiddleware', () => {
@@ -303,7 +313,7 @@ describe('CallsApi', () => {
 
                 fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
                 await caller.call(
-                    'post',
+                    'POST',
                     { key: 'value' },
                     { header: 'value' }
                 );
@@ -322,7 +332,7 @@ describe('CallsApi', () => {
 
                 fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
                 await caller.call(
-                    'get',
+                    'GET',
                     { key: 'value' },
                     { header: 'value' }
                 );
@@ -497,7 +507,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(user);
 
             await caller.get();
-            expect(getLastRequest()?.method).toBe('get');
+            expect(getLastRequest()?.method).toBe('GET');
         });
 
         it('should return a promise with new model or model collection', async () => {
@@ -553,6 +563,28 @@ describe('CallsApi', () => {
 
             expect(data).toStrictEqual(user);
         });
+
+        it('should unwrap data if response comes data wrapped', async () => {
+            const user = User.factory().createOne();
+
+            fetchMock.mockResponseOnce(async () => Promise.resolve({
+                status: 200,
+                body: JSON.stringify({
+                    data: [user.getAttributes()]
+                })
+            }));
+
+            let data = await User.get();
+            expect(data).toBeInstanceOf(ModelCollection);
+
+            fetchMock.mockResponseOnce(async () => Promise.resolve({
+                status: 200,
+                body: JSON.stringify([user.getAttributes()])
+            }));
+            data = await User.get();
+
+            expect(data).toBeInstanceOf(ModelCollection);
+        });
     });
 
     describe('post()', () => {
@@ -560,7 +592,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(caller);
             await caller.post({ key: 'value' });
 
-            expect(getLastRequest()?.method).toBe('post');
+            expect(getLastRequest()?.method).toBe('POST');
         });
 
         it('should return this or new model depending on the response', async () => {
@@ -601,7 +633,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(caller);
             await caller.put({ key: 'value' });
 
-            expect(getLastRequest()?.method).toBe('put');
+            expect(getLastRequest()?.method).toBe('PUT');
         });
 
         it('should return this or new model depending on the response', async () => {
@@ -642,7 +674,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(caller);
             await caller.patch({ key: 'value' });
 
-            expect(getLastRequest()?.method).toBe('patch');
+            expect(getLastRequest()?.method).toBe('PATCH');
         });
 
         it('should return this or new model depending on the response', async () => {
@@ -683,7 +715,7 @@ describe('CallsApi', () => {
             mockUserModelResponse(caller);
             await caller.delete();
 
-            expect(getLastRequest()?.method).toBe('delete');
+            expect(getLastRequest()?.method).toBe('DELETE');
         });
 
         it('should send information in the request body', async () => {

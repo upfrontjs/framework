@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
       - name: Build api docs
         run: npm run docs:api
       - name: Update gh-pages branch

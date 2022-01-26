@@ -103,7 +103,7 @@
         "rollup": "^2.35.1",
         "rollup-plugin-bundle-size": "^1.0.3",
         "rollup-plugin-terser": "^7.0.2",
-        "semantic-release": "^18.0.0",
+        "semantic-release": "^19.0.2",
         "ts-jest": "^26.4.4",
         "tslib": "^2.2.0",
         "typedoc": "^0.22.2",

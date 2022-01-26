@@ -101,7 +101,7 @@ describe('CallsApi', () => {
             // awkward syntax comes from https://github.com/facebook/jest/issues/1700
             await expect(caller.call('GET')).rejects.toStrictEqual(
                 new LogicException(
-                    'Endpoint is not defined when calling \'get\' method on \'' + caller.constructor.name + '\'.'
+                    'Endpoint is not defined when calling \'GET\' method on \'' + caller.constructor.name + '\'.'
                 )
             );
         });

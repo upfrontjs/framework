@@ -185,9 +185,9 @@ export default class Model extends BaseModel implements FormatsQueryParameters {
         this.appends.push(name);
         return this;
     }
-
-    public static append<T extends StaticToThis<Model>>(this: T, name: string): T['prototype'] {
-        this.newQuery().append(name);
+    
+    public static append<T extends Model>(name: string): T {
+        this.newQuery<T>().append(name);
     }
 
     public withoutAppend(name: string): this {

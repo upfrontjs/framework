@@ -127,9 +127,7 @@ export default class API implements ApiCaller {
             // if not a GET method
             if (initOptions.method !== 'GET' && initOptions.method !== 'HEAD') {
                 if (data instanceof FormData) {
-                    if (!headers.has('Content-Type')) {
-                        headers.set('Content-Type', 'multipart/form-data');
-                    }
+                    // fetch will set the Content-Type https://fetch.spec.whatwg.org/#ref-for-formdata%E2%91%A1
                     initOptions.body = data;
                 } else {
                     if (!headers.has('Content-Type')) {

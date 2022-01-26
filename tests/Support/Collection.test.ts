@@ -611,7 +611,7 @@ describe('Collection', () => {
             expect(collection).toContain(collection.first());
         });
 
-        it('should return a collection ready for cheining when multiple random elements returned', () => {
+        it('should return a collection ready for chaining when multiple random elements returned', () => {
             expect(collection.random(2).toArray()).toHaveLength(2);
         });
     });

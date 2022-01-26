@@ -845,8 +845,10 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.distinct
      */
-    public static distinct<T extends StaticToThis>(this: T, columns: MaybeArray<string>): T['prototype'] {
-        return this.newQuery().distinct(columns);
+    public static distinct<T extends Model>(columns: MaybeArray<string>): T {
+        // @ts-expect-error
+        // eslint-disable-next-line
+        return this.newQuery<T>().distinct(columns);
     }
 
     /**

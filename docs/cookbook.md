@@ -269,10 +269,16 @@ export interface PaginatedModels<T extends Model> {
     total: PaginatedApiResponse['meta']['total'];
 }
 
-async function paginator<T extends Model>(builder: T, page = 1, limit = 25): Promise<PaginatedModels<T>> {
-    const response = (await builder.clone().limit(limit).page(page).call<PaginatedApiResponse<Attributes<T>>>('GET'))!;
+async function paginatedModels<T extends Model>(
+    builder: T | (new() => T),
+    page = 1,
+    limit = 25
+): Promise<PaginatedModels<T>> {
+    const instance = !(builder instanceof Model) ? new builder() : builder.clone();
+    
+    const response = (await instance.clone().limit(limit).page(page).call<PaginatedApiResponse<Attributes<T>>>('GET'))!;
     const modelCollection = new ModelCollection<T>(response.data.map(attributes => {
-        return builder
+        return instance
             .new(attributes)
             // @ts-expect-error - Protected internal method required for correct .exists detection
             .setLastSyncedAt();
@@ -282,15 +288,15 @@ async function paginator<T extends Model>(builder: T, page = 1, limit = 25): Pro
         data: modelCollection,
         next: async () => {
             if (!response.links.next) return;
-            return paginatedModels(builder, page + 1, limit);
+            return paginatedModels(instance, page + 1, limit);
         },
         previous: async () => {
             if (!response.links.prev) return;
-            return paginatedModels(builder, page - 1, limit);
+            return paginatedModels(instance, page - 1, limit);
         },
         page: async (pageNumber: number) => {
             if (pageNumber > response.meta.last_page || pageNumber < 0) return;
-            return paginatedModels(builder, pageNumber, limit);
+            return paginatedModels(instance, pageNumber, limit);
         },
         from: response.meta.from,
         to: response.meta.to,

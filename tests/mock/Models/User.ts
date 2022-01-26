@@ -1,6 +1,5 @@
 import Model from '../../../src/Calliope/Model';
 import Team from './Team';
-import type Factory from '../../../src/Calliope/Factory/Factory';
 import UserFactory from '../Factories/UserFactory';
 import Shift from './Shift';
 import Contract from './Contract';
@@ -19,7 +18,7 @@ export default class User extends Model {
         return ['*'];
     }
 
-    public factory(): Factory<this> {
+    public factory(): UserFactory {
         return new UserFactory;
     }
 

@@ -3,7 +3,7 @@ import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 import type FileModel from '../Models/FileModel';
 
 export default class FileFactory extends Factory<FileModel> {
-    public definition(): Attributes {
+    public definition(): Attributes<FileModel> {
         return {
             name: 'image.jpg',
             url: 'https://picsum.photos/200'

@@ -50,7 +50,7 @@ export default class User extends Model {
 **The following cast types are available:**
 
 ::: warning
-If the values cannot be casted, an error will be thrown.
+If the values cannot be cast, an error will be thrown.
 :::
 #### `'boolean'`
 Casts the values to boolean. It does not evaluate values as truthy or falsy, it expects the numeric `0, 1`, booleans or `'true', 'false'` in any casing. This is useful to parse the data from the back-end.
@@ -409,7 +409,7 @@ user.name; // 'Jane Doe'
 
 When setting an attribute following priority will apply to value:
  - If exists use the [mutator](#mutatorsaccessors) to set the attribute.
- - If [cast](#casting) defined, use the casted value to set the attribute.
+ - If [cast](#casting) defined, use the cast value to set the attribute.
  - If the `key` argument is a defined relation and the `value` argument is a valid relation value, set the relation value.
  - Otherwise, just set the attribute on the model.
 
@@ -428,7 +428,7 @@ Optionally the method takes a second argument which is returned if the key canno
 This method is internally used when accessing attributes on the model like in the above example. The model will resolve the value in the following order:
 
  - If the attribute exists and has an [accessor](#mutatorsaccessors), return the accessor's value.
- - If the attribute exists, and a cast has been defined, return the casted value.
+ - If the attribute exists, and a cast has been defined, return the cast value.
  - If the given key is a relation's name, and the relation [has been loaded](./relationships.md#relationloaded), return the relation.
  - If the key is a property of the model, and it's a function, return the default value.
  - If the key is a property of the model, return its value.

@@ -348,7 +348,7 @@ User.orderByDesc('column');
 
 #### latest
 
-The `latest` method is an alias of the [orderBy](#orderby) method using a descending order. You may optionally specify which column to order by with the default being the result of the [getCreatedAtColumn](./timestamps.md#getcreatedatcolumn) method.
+The `latest` method is an alias of the [orderBy](#orderby) method using a descending order. You may optionally specify which column to order by with the default being the result of the [getCreatedAtName](./timestamps.md#getcreatedatname) method.
 
 ```js
 import User from '@Models/User';
@@ -359,7 +359,7 @@ User.latest('signed_up_at');
 
 #### oldest
 
-The `oldest` method is an alias of the [orderBy](#orderby) method using an ascending order. You may optionally specify which column to order by with the default being the result of the [getCreatedAtColumn](./timestamps.md#getcreatedatcolumn) method.
+The `oldest` method is an alias of the [orderBy](#orderby) method using an ascending order. You may optionally specify which column to order by with the default being the result of the [getCreatedAtName](./timestamps.md#getcreatedatname) method.
 
 ```js
 import User from '@Models/User';
@@ -397,6 +397,18 @@ The `newQuery` is a static method that returns the builder. You're not expected 
 import User from '@Models/User';
 
 User.newQuery(); // The query builder
+```
+
+#### resetQueryParameters
+
+The `resetQueryParameters` is a method that clears all previously set query parameters.
+
+```js
+import User from '@Models/User';
+
+const user = new User();
+void user.where('columns', 'value').get(); // would send the where query
+void user.where('columns', 'value').resetQueryParameters().get(); // would NOT send any query
 ```
 
 ## Properties

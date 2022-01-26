@@ -29,13 +29,13 @@ describe('Model', () => {
         });
 
         it('should consider that it has a created at date if using timestamp', () => {
-            user.setAttribute(user.getCreatedAtColumn(), undefined);
+            user.setAttribute(user.getCreatedAtName(), undefined);
 
             expect(user.exists).toBe(false);
         });
 
         it('should consider that it has soft deleted set if using soft deleted', () => {
-            user.setAttribute(user.getDeletedAtColumn(), new Date().toISOString());
+            user.setAttribute(user.getDeletedAtName(), new Date().toISOString());
 
             expect(user.exists).toBe(false);
         });
@@ -78,6 +78,16 @@ describe('Model', () => {
         });
     });
 
+    describe('create()', () => {
+        it('should return a new instance', () => {
+            expect(User.create()).toBeInstanceOf(User);
+        });
+
+        it('should have the capabilities of the model', () => {
+            expect(User.create({ key: 'value' }).getAttribute('key')).toBe('value');
+        });
+    });
+
     describe('is()', () => {
         it('should determine whether two models are the same',  () => {
             expect(user.is(1)).toBe(false);
@@ -102,13 +112,13 @@ describe('Model', () => {
 
     describe('replicate()', () => {
         it('should replicate the model without timestamps and primary key', () => {
-            user.setAttribute(user.getDeletedAtColumn(), new Date().toISOString());
+            user.setAttribute(user.getDeletedAtName(), new Date().toISOString());
             const replica = user.replicate();
 
             expect(replica.getAttribute(replica.getKeyName())).toBeUndefined();
-            expect(replica.getAttribute(replica.getCreatedAtColumn())).toBeUndefined();
-            expect(replica.getAttribute(replica.getUpdatedAtColumn())).toBeUndefined();
-            expect(replica.getAttribute(replica.getDeletedAtColumn())).toBeUndefined();
+            expect(replica.getAttribute(replica.getCreatedAtName())).toBeUndefined();
+            expect(replica.getAttribute(replica.getUpdatedAtName())).toBeUndefined();
+            expect(replica.getAttribute(replica.getDeletedAtName())).toBeUndefined();
         });
 
         it('should accept attribute keys that should be excluded at replication', () => {
@@ -195,7 +205,7 @@ describe('Model', () => {
             mockUserModelResponse(user);
             await user.find(String(user.getKey()));
 
-            expect(getLastRequest()?.method).toBe('get');
+            expect(getLastRequest()?.method).toBe('GET');
             expect(getLastRequest()?.url).toContain('/' + String(user.getKey()));
         });
 
@@ -216,10 +226,12 @@ describe('Model', () => {
 
     describe('findMany()', () => {
         it('should send a GET request with query params', async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().times(2).create())));
+            fetchMock.mockResponseOnce(
+                async () => Promise.resolve(buildResponse(User.factory().times(2).createMany()))
+            );
             await user.findMany([2, 3]);
 
-            expect(getLastRequest()?.method).toBe('get');
+            expect(getLastRequest()?.method).toBe('GET');
             expect(getLastRequest()?.url).toContain(
                 'wheres[][column]=id' +
                 '&wheres[][operator]=in' +
@@ -229,7 +241,9 @@ describe('Model', () => {
         });
 
         it('should be able to be called statically', async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().times(2).create())));
+            fetchMock.mockResponseOnce(
+                async () => Promise.resolve(buildResponse(User.factory().times(2).createMany()))
+            );
 
             const response = await User.findMany([2, 3]);
 
@@ -237,7 +251,12 @@ describe('Model', () => {
         });
 
         it('should return a ModelCollection even if only one model returned', async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().create())));
+            fetchMock.mockResponseOnce(
+                async () => Promise.resolve({
+                    status: 200,
+                    body: JSON.stringify(User.factory().rawOne())
+                })
+            );
             const users = await user.findMany([1]);
 
             expect(users).toBeInstanceOf(ModelCollection);
@@ -260,7 +279,7 @@ describe('Model', () => {
             mockUserModelResponse(user);
             await user.refresh();
 
-            expect(getLastRequest()?.method).toBe('get');
+            expect(getLastRequest()?.method).toBe('GET');
             expect(getLastRequest()?.url).toContain(finish(user.getEndpoint(), '/') + String(user.getKey()));
         });
 
@@ -307,7 +326,7 @@ describe('Model', () => {
             mockUserModelResponse(user);
             await User.all();
 
-            expect(getLastRequest()?.method).toBe('get');
+            expect(getLastRequest()?.method).toBe('GET');
         });
 
         it('should return a ModelCollection', async () => {
@@ -359,7 +378,7 @@ describe('Model', () => {
 
             await user.save({ name: 'new name' });
 
-            expect(getLastRequest()?.method).toBe('patch');
+            expect(getLastRequest()?.method).toBe('PATCH');
             expect(getLastRequest()?.url).toContain(finish(user.getEndpoint(), '/') + String(user.getKey()));
         });
 
@@ -370,11 +389,11 @@ describe('Model', () => {
 
             await user.save({});
 
-            expect(getLastRequest()?.method).toBe('post');
+            expect(getLastRequest()?.method).toBe('POST');
         });
 
         it('should send all attributes if model doesn\'t exist', async () => {
-            const thisUser = User.factory().make({ myAttr: 1 }) as User;
+            const thisUser = User.factory().makeOne({ myAttr: 1 });
             mockUserModelResponse(thisUser);
 
             await thisUser.save({ customAttr: 1 });
@@ -385,9 +404,9 @@ describe('Model', () => {
                 my_attr: 1,
                 custom_attr: 1,
                 name: thisUser.name,
-                [snake(thisUser.getCreatedAtColumn())]: null,
-                [snake(thisUser.getUpdatedAtColumn())]: null,
-                [snake(thisUser.getDeletedAtColumn())]: null
+                [snake(thisUser.getCreatedAtName())]: null,
+                [snake(thisUser.getUpdatedAtName())]: null,
+                [snake(thisUser.getDeletedAtName())]: null
                 /* eslint-enable @typescript-eslint/naming-convention */
             });
         });
@@ -426,7 +445,7 @@ describe('Model', () => {
 
                 const lastRequest = getLastRequest();
                 expect(lastRequest?.url).toBe(String(config.get('baseEndPoint')) + '/' + contract.getEndpoint());
-                expect(lastRequest?.method).toBe('post');
+                expect(lastRequest?.method).toBe('POST');
                 expect(lastRequest?.body).toStrictEqual({
                     // eslint-disable-next-line @typescript-eslint/naming-convention
                     my_attribute: 'value',
@@ -447,7 +466,7 @@ describe('Model', () => {
 
                 const lastRequest = getLastRequest();
                 expect(lastRequest?.url).toBe(String(config.get('baseEndPoint')) + '/' + shift.getEndpoint());
-                expect(lastRequest?.method).toBe('post');
+                expect(lastRequest?.method).toBe('POST');
                 expect(lastRequest?.body).toStrictEqual({
                     // eslint-disable-next-line @typescript-eslint/naming-convention
                     my_attribute: 'value',
@@ -462,7 +481,7 @@ describe('Model', () => {
             mockUserModelResponse(user);
             await user.update({ key: 'value' });
 
-            expect(getLastRequest()?.method).toBe('patch');
+            expect(getLastRequest()?.method).toBe('PATCH');
         });
 
         it('should set the correct endpoint', async () => {

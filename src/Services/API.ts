@@ -41,6 +41,20 @@ export default class API implements ApiCaller {
      */
     public async call(
         url: string,
+        method: 'HEAD' | 'head',
+        data?: FormData | Record<string, unknown>,
+        customHeaders?: Record<string, MaybeArray<string>>,
+        queryParameters?: Record<string, unknown>
+    ): Promise<ApiResponse & { request: { method: 'HEAD' } }>;
+    public async call<T>(
+        url: string,
+        method: Method,
+        data?: FormData | Record<string, unknown>,
+        customHeaders?: Record<string, MaybeArray<string>>,
+        queryParameters?: Record<string, unknown>
+    ): Promise<ApiResponse<T>>;
+    public async call(
+        url: string,
         method: Method,
         data?: FormData | Record<string, unknown>,
         customHeaders?: Record<string, MaybeArray<string>>,
@@ -59,7 +73,7 @@ export default class API implements ApiCaller {
      * Prepare/compile the ajax call initialisation.
      *
      * @param {string} url - The endpoint the request goes to.
-     * @param {'get' | 'post' | 'delete' | 'patch' | 'put'} method - The method the request uses.
+     * @param {Method} method - The method the request uses.
      * @param {object=} data - The optional data to send with the request.
      * @param {object=} customHeaders - Custom headers to merge into the request.
      * @param {object=} queryParameters - The query parameters to append to the url
@@ -75,7 +89,8 @@ export default class API implements ApiCaller {
         customHeaders?: Record<string, MaybeArray<string>>,
         queryParameters?: Record<string, unknown>
     ): Promise<{ url: string; requestInit: RequestInit }> {
-        const initOptions: RequestInit = { method: method.toLowerCase() };
+        // normalising fetch methods https://fetch.spec.whatwg.org/#concept-method-normalize
+        const initOptions: RequestInit = { method: method.toUpperCase() };
         const configHeaders = new Headers(new GlobalConfig().get('headers'));
         queryParameters = queryParameters ?? {};
 
@@ -100,17 +115,17 @@ export default class API implements ApiCaller {
 
         // ensure method is explicitly set if previously
         // removed by initRequest or requestOptions
-        initOptions.method = initOptions.method ?? 'get';
+        initOptions.method = initOptions.method ?? 'GET';
 
-        if (initOptions.method === 'get') {
-            // given if there was any body it was merged in above,
-            // we delete it as GET cannot have a body
+        if (initOptions.method === 'GET' || initOptions.method === 'HEAD') {
+            // if there was a body merged in above,
+            // we delete it as GET and HEAD cannot have a body
             delete initOptions.body;
         }
 
         if (isObjectLiteral(data) && Object.keys(data).length || data instanceof FormData) {
             // if not a GET method
-            if (initOptions.method && initOptions.method !== 'get') {
+            if (initOptions.method !== 'GET' && initOptions.method !== 'HEAD') {
                 if (data instanceof FormData) {
                     if (!headers.has('Content-Type')) {
                         headers.set('Content-Type', 'multipart/form-data');

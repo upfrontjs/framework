@@ -5,7 +5,7 @@ import type { Attributes, AttributeKeys } from './Concerns/HasAttributes';
 import ModelCollection from './ModelCollection';
 import LogicException from '../Exceptions/LogicException';
 import { finish, isUuid } from '../Support/string';
-import type { MaybeArray } from '../Support/type';
+import type { MaybeArray, StaticToThis } from '../Support/type';
 import { cloneDeep } from 'lodash';
 
 export default class Model extends SoftDeletes implements HasFactory {
@@ -30,11 +30,11 @@ export default class Model extends SoftDeletes implements HasFactory {
         const lastSyncedAt = '_' + this.setStringCase('last_synced_at');
 
         if (boolean && this.usesTimestamps()) {
-            boolean = !!this.getAttribute(this.getCreatedAtColumn());
+            boolean = !!this.getAttribute(this.getCreatedAtName());
         }
 
         if (boolean && this.usesSoftDeletes()) {
-            boolean = !this.getAttribute(this.getDeletedAtColumn());
+            boolean = !this.getAttribute(this.getDeletedAtName());
         }
 
         return boolean && lastSyncedAt in this && !!this[lastSyncedAt];
@@ -61,12 +61,26 @@ export default class Model extends SoftDeletes implements HasFactory {
     /**
      * Construct a new model from context.
      *
-     * @param {object=} attributes
+     * @param {(object | Model)=} attributes
      *
      * @return {this}
      */
     public new(attributes?: Attributes<this> | Model): this {
         return new (this.constructor as new (attributes?: Attributes<this> | Model) => this)(attributes);
+    }
+
+    /**
+     * Construct a new model from static.
+     *
+     * @param {(object | Model)=} attributes
+     *
+     * @return {this}
+     */
+    public static create<T extends Model>(
+        this: StaticToThis<T>,
+        attributes?: Attributes<T>
+    ): StaticToThis<T>['prototype'] {
+        return new this(attributes);
     }
 
     /**
@@ -78,9 +92,9 @@ export default class Model extends SoftDeletes implements HasFactory {
     public replicate(except?: MaybeArray<string>): this {
         const excluded = new Set([
             this.getKeyName(),
-            this.getCreatedAtColumn(),
-            this.getUpdatedAtColumn(),
-            this.getDeletedAtColumn()
+            this.getCreatedAtName(),
+            this.getUpdatedAtName(),
+            this.getDeletedAtName()
         ]);
 
         if (except) {
@@ -125,7 +139,7 @@ export default class Model extends SoftDeletes implements HasFactory {
         clone.scopes = cloneDeep(this.scopes);
         clone.relationsExists = cloneDeep(this.relationsExists);
         clone.orders = cloneDeep(this.orders);
-        clone.distinctOnly = this.distinctOnly;
+        clone.distinctBy = cloneDeep(this.distinctBy);
         clone.offsetCount = this.offsetCount;
         clone.limitCount = this.limitCount;
         clone.pageNumber = this.pageNumber;
@@ -174,8 +188,8 @@ export default class Model extends SoftDeletes implements HasFactory {
     /**
      * Call the factory fluently from the model.
      */
-    public static factory<T extends Model>(times = 1): FactoryBuilder<T> {
-        return new FactoryBuilder(this as unknown as new (attributes?: Attributes) => T).times(times);
+    public static factory<T extends StaticToThis>(this: T, times = 1): FactoryBuilder<T['prototype']> {
+        return new FactoryBuilder(this).times(times);
     }
 
     /**
@@ -183,8 +197,8 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {Promise<Model|ModelCollection<Model>>}
      */
-    public static async all<T extends Model>(): Promise<ModelCollection<T>> {
-        let response = await new this().get<T>();
+    public static async all<T extends StaticToThis>(this: T): Promise<ModelCollection<T['prototype']>> {
+        let response = await new this().get();
 
         if (response instanceof Model) {
             response = new ModelCollection([response]);
@@ -259,8 +273,8 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @see Model.prototype.find
      */
-    public static async find<T extends Model>(id: number | string): Promise<T> {
-        return new this().find<T>(id);
+    public static async find<T extends StaticToThis>(this: T, id: number | string): Promise<T['prototype']> {
+        return new this().find(id);
     }
 
     /**
@@ -286,8 +300,11 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @see Model.prototype.findMany
      */
-    public static async findMany<T extends Model>(ids: (number | string)[]): Promise<ModelCollection<T>> {
-        return new this().findMany<T>(ids);
+    public static async findMany<T extends StaticToThis>(
+        this: T,
+        ids: (number | string)[]
+    ): Promise<ModelCollection<T['prototype']>> {
+        return new this().findMany(ids);
     }
 
     /**

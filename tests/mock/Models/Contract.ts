@@ -1,7 +1,6 @@
 import Model from '../../../src/Calliope/Model';
 import User from './User';
 import ContractFactory from '../Factories/ContractFactory';
-import type Factory from '../../../src/Calliope/Factory/Factory';
 
 export default class Contract extends Model {
     public override getName(): string {
@@ -12,7 +11,7 @@ export default class Contract extends Model {
         return ['*'];
     }
 
-    public factory(): Factory<this> {
+    public factory(): ContractFactory {
         return new ContractFactory;
     }
 

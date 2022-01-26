@@ -1,4 +1,5 @@
 /* Utility types for transforming other types */
+import type Model from '../Calliope/Model';
 
 /**
  * Make the properties defined in the union required.
@@ -35,3 +36,16 @@ export type KeysNotMatching<T, V> = { [K in keyof T]: T[K] extends V ? never : K
 export type UnionToIntersection<T extends Record<PropertyKey, any>> = (T extends any ? (x: T) => any : never) extends (
     x: infer U
 ) => any ? U : never;
+
+/**
+ * Hack to get the instance type of the given constructable.
+ *
+ * This can be used like: public static myFunc<T extends StaticToThis>(this: T): T['prototype']
+ *
+ * Derived from the discussion on: https://github.com/Microsoft/TypeScript/issues/5863
+ * Declaring this: https://www.typescriptlang.org/docs/handbook/2/functions.html#declaring-this-in-a-function
+ */
+export type StaticToThis<T = Model> = {
+    new(...args: any[]): T;
+    prototype: T;
+};

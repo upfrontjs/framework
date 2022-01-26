@@ -4,7 +4,7 @@ import Team from '../Models/Team';
 import type User from '../Models/User';
 
 export default class UserFactory extends Factory<User> {
-    public definition(_model: User, index: number): Attributes {
+    public definition(_model: User, index: number): Attributes<User> {
         return {
             name: 'username ' + String(index)
         };

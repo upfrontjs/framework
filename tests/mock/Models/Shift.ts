@@ -1,5 +1,4 @@
 import Model from '../../../src/Calliope/Model';
-import type Factory from '../../../src/Calliope/Factory/Factory';
 import ShiftFactory from '../Factories/ShiftFactory';
 
 export default class Shift extends Model {
@@ -7,7 +6,7 @@ export default class Shift extends Model {
         return 'Shift';
     }
 
-    public factory(): Factory<this> {
-        return new ShiftFactory();
+    public factory(): ShiftFactory {
+        return new ShiftFactory;
     }
 }

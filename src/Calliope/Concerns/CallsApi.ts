@@ -177,7 +177,7 @@ export default class CallsApi extends BuildsQuery {
     public async get<T extends Model = this>(
         queryParameters?: QueryParams & Record<string, unknown>
     ): Promise<ModelCollection<T> | T> {
-        return this.call('get', queryParameters)
+        return this.call('GET', queryParameters)
             .then(responseData => this.newInstanceFromResponseData<T>(this.getDataFromResponse(responseData)));
     }
 
@@ -204,7 +204,7 @@ export default class CallsApi extends BuildsQuery {
      */
     // @ts-expect-error - despite TS2526, it still infers correctly
     public async post<T extends Model = this>(data: Attributes | FormData): Promise<T> {
-        return this.call('post', data)
+        return this.call('POST', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
 
@@ -217,7 +217,7 @@ export default class CallsApi extends BuildsQuery {
      */
     // @ts-expect-error - despite TS2526, it still infers correctly
     public async put<T extends Model = this>(data: Attributes | FormData): Promise<T> {
-        return this.call('put', data)
+        return this.call('PUT', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
 
@@ -230,7 +230,7 @@ export default class CallsApi extends BuildsQuery {
      */
     // @ts-expect-error - despite TS2526, it still infers correctly
     public async patch<T extends Model = this>(data: Attributes | FormData): Promise<T> {
-        return this.call('patch', data)
+        return this.call('PATCH', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
 
@@ -244,7 +244,7 @@ export default class CallsApi extends BuildsQuery {
      */
     // @ts-expect-error - despite TS2526, it still infers correctly
     public async delete<T extends Model = this>(data?: Attributes | FormData): Promise<T> {
-        return this.call('delete', data)
+        return this.call('DELETE', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
 

@@ -98,7 +98,7 @@ import User from '@Models/User';
 
 const user = new User();
 
-await user.call('get', { query: 'value' }); // GET your-api.com/users?query=value
+await user.call('GET', { query: 'value' }); // GET your-api.com/users?query=value
 ```
 
 ### Endpoint manipulation

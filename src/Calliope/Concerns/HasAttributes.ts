@@ -13,8 +13,8 @@ import type { KeysNotMatching, MaybeArray } from '../../Support/type';
 type InternalProperties = 'attributeCasing' | 'attributeCasts' | 'attributes' | 'casts' | 'endpoint' | 'exists' | 'fillable' | 'fillableAttributes' | 'guarded' | 'guardedAttributes' | 'hasOneOrManyParentKeyName' | 'loading' | 'mutatedEndpoint' | 'original' | 'primaryKey' | 'relationMethodPrefix' | 'relations' | 'requestCount' | 'serverAttributeCasing';
 
 /**
- * All keys of the object except where the value is a method,
- * or it's a property defined on internally.
+ * All keys of the model except where the value is a method,
+ * or it's a property defined internally.
  *
  * Results in a union of keys.
  */
@@ -85,37 +85,6 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     // this.relations, and it wouldn't
     // be set otherwise.
     protected relations: Record<string, (Model | ModelCollection<Model>)> = {};
-
-    /**
-     * Create a new instance.
-     *
-     * @param {object} attributes
-     *
-     * @protected
-     *
-     * @return {this}
-     */
-    public constructor(attributes?: Attributes) {
-        super();
-
-        if (attributes instanceof HasAttributes) {
-            // if newing up with a constructor, we'll take the attributes
-            // in their current state, not the original.
-            const allProperties = attributes.getRawAttributes();
-
-            if (isObjectLiteral(attributes.relations)) {
-                Object.assign(allProperties, cloneDeep(attributes.relations));
-            }
-
-            attributes = allProperties;
-        }
-
-        if (isObjectLiteral(attributes) && Object.keys(attributes).length) {
-            this.fill(attributes).syncOriginal();
-        }
-
-        return this;
-    }
 
     /**
      * The iterator used for looping over the attributes and relations.
@@ -301,18 +270,14 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     protected createDescriptor(keys: MaybeArray<string>): this {
         keys = Array.isArray(keys) ? keys : [keys];
 
+        // set up getters and setters
         keys.forEach(key => {
-            if (!Object.getOwnPropertyDescriptor(this, key)) {
-                // set up getters and setters
-                const descriptor: PropertyDescriptor = {
-                    get: () => this.getAttribute(key),
-                    set: (newValue) => this.setAttribute(key, newValue),
-                    enumerable: true,
-                    configurable: true
-                };
-
-                Object.defineProperty(this, key, descriptor);
-            }
+            Object.defineProperty(this, key, {
+                get: () => this.getAttribute(key),
+                set: newValue => this.setAttribute(key, newValue),
+                enumerable: true,
+                configurable: true
+            });
         });
 
         return this;

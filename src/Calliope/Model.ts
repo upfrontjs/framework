@@ -7,6 +7,7 @@ import LogicException from '../Exceptions/LogicException';
 import { finish, isUuid } from '../Support/string';
 import type { MaybeArray, StaticToThis } from '../Support/type';
 import { cloneDeep } from 'lodash';
+import { isObjectLiteral } from '../Support/function';
 
 export default class Model extends SoftDeletes implements HasFactory {
     /**
@@ -66,11 +67,11 @@ export default class Model extends SoftDeletes implements HasFactory {
      * @return {this}
      */
     public new(attributes?: Attributes<this> | Model): this {
-        return new (this.constructor as new (attributes?: Attributes<this> | Model) => this)(attributes);
+        return (this.constructor as typeof Model).create(attributes) as this;
     }
 
     /**
-     * Construct a new model from static.
+     * Construct a new model instance.
      *
      * @param {(object | Model)=} attributes
      *
@@ -80,7 +81,26 @@ export default class Model extends SoftDeletes implements HasFactory {
         this: StaticToThis<T>,
         attributes?: Attributes<T>
     ): StaticToThis<T>['prototype'] {
-        return new this(attributes);
+        const instance = new this();
+
+        // in case the user ignores the argument type
+        if (attributes instanceof Model) {
+            // if creating by passing a model, we'll take the attributes
+            // in their current state, not the original.
+            const allProperties = (attributes as T).getRawAttributes();
+
+            if (isObjectLiteral((attributes as T).relations)) {
+                Object.assign(allProperties, cloneDeep((attributes as T).relations));
+            }
+
+            attributes = allProperties;
+        }
+
+        if (isObjectLiteral(attributes) && Object.keys(attributes).length) {
+            instance.fill(attributes).syncOriginal();
+        }
+
+        return instance;
     }
 
     /**

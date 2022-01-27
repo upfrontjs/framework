@@ -270,11 +270,11 @@ export interface PaginatedModels<T extends Model> {
 }
 
 async function paginatedModels<T extends Model>(
-    builder: T | (new() => T),
+    builder: T | { new(): T; create: (...args: any[]) => T },
     page = 1,
     limit = 25
 ): Promise<PaginatedModels<T>> {
-    const instance = !(builder instanceof Model) ? new builder() : builder.clone();
+    const instance = builder instanceof Model ? builder.clone() : builder.create() as T;
     
     const response = (await instance.limit(limit).page(page).call<PaginatedApiResponse<Attributes<T>>>('GET'))!;
     const modelCollection = new ModelCollection<T>(response.data.map(attributes => {

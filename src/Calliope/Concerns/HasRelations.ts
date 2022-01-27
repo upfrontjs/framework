@@ -231,7 +231,8 @@ export default class HasRelations extends CallsApi {
             return this;
         }
 
-        const relatedModel: Model = (this[start(name, this.relationMethodPrefix)] as CallableFunction)();
+        const relatedCtor = ((this[start(name, this.relationMethodPrefix)] as CallableFunction)() as T)
+            .constructor as typeof Model;
         let relation: Model | ModelCollection<Model>;
 
         // set up the relations by calling the constructor of the related models
@@ -245,10 +246,10 @@ export default class HasRelations extends CallsApi {
 
             const collection = new ModelCollection;
 
-            value.forEach(modelData => collection.push(new (relatedModel.constructor as typeof Model)(modelData)));
+            value.forEach(modelData => collection.push(relatedCtor.create(modelData)));
             relation = collection;
         } else {
-            const model = new (relatedModel.constructor as typeof Model)(value);
+            const model = relatedCtor.create(value);
 
             if (relationType === 'belongsTo') {
                 // set attribute to ensure sync between the foreign key and the given value
@@ -260,7 +261,7 @@ export default class HasRelations extends CallsApi {
                 : new ModelCollection([model]);
         }
 
-        this.relations[name] = relation;
+        this.relations[name] = relation as Model;
         this.createDescriptor(name);
 
         return this;

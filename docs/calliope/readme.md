@@ -137,6 +137,20 @@ Bundlers/minifier options examples:
 - [babel-minify: keepClassName](https://babeljs.io/docs/en/babel-minify#node-api)
   :::
 
+#### create
+<Badge text="static" type="warning"/>
+
+The `create` method instantiates your model while setting up attributes and relations.
+
+```ts
+import User from '@Models/User';
+
+const user = User.create({ name: 'User Name' }); // User
+```
+::: warning
+Constructing a new class like `new User({...})` is **not** acceptable. This will not overwrite your class fields with default values if the same key has been passed in due to how JavaScript first constructs the parent class and only then the subclasses. However, you can still use it to call instance methods. Furthermore, it is also not cause unexpected results if using it with the [setAttribute](./attributes.md#setattribute) method or call methods that under the hood uses the [setAttribute](./attributes.md#setattribute).
+:::
+
 #### replicate
 
 The `replicate` method copies the instance into a non-existent instance. Meaning primary key and the timestamps won't be copied.

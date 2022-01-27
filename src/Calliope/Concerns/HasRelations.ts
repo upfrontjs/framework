@@ -14,6 +14,14 @@ type Relation = 'belongsTo' | 'belongsToMany' | 'hasMany' | 'hasOne' | 'morphMan
 
 export default class HasRelations extends CallsApi {
     /**
+     * The loaded relations for the model.
+     * The keys do not include the relation prefixes.
+     *
+     * @protected
+     */
+    protected relations: Record<string, (Model | ModelCollection<Model>)> = {};
+
+    /**
      * The string all the relation methods expected to prefixed by.
      *
      * @protected

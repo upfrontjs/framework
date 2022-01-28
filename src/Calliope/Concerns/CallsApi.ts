@@ -178,7 +178,9 @@ export default class CallsApi extends BuildsQuery {
         queryParameters?: QueryParams & Record<string, unknown>
     ): Promise<ModelCollection<T> | T> {
         return this.call('GET', queryParameters)
-            .then(responseData => this.newInstanceFromResponseData(this.getDataFromResponse<MaybeArray<Attributes<T>>>(responseData)));
+            .then(responseData => this.newInstanceFromResponseData(
+                this.getDataFromResponse<MaybeArray<Attributes<T>>>(responseData)
+            ));
     }
 
     /**

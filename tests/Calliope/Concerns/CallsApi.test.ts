@@ -8,7 +8,6 @@ import ModelCollection from '../../../src/Calliope/ModelCollection';
 import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 import { config } from '../../setupTests';
 import type Collection from '../../../src/Support/Collection';
-import type Model from '../../../src/Calliope/Model';
 import { snake, finish } from '../../../src/Support/string';
 import type RequestMiddleware from '../../../src/Contracts/RequestMiddleware';
 
@@ -403,7 +402,7 @@ describe('CallsApi', () => {
             const usersData = User.factory().times(2).raw() as Collection<Attributes>;
 
             // @ts-expect-error
-            const users = caller.newInstanceFromResponseData(usersData.toArray()) as ModelCollection<Model>;
+            const users = caller.newInstanceFromResponseData(usersData.toArray());
 
             users.forEach(userModel => {
                 // @ts-expect-error

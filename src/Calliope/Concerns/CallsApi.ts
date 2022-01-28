@@ -178,7 +178,7 @@ export default class CallsApi extends BuildsQuery {
         queryParameters?: QueryParams & Record<string, unknown>
     ): Promise<ModelCollection<T> | T> {
         return this.call('GET', queryParameters)
-            .then(responseData => this.newInstanceFromResponseData<T>(this.getDataFromResponse(responseData)));
+            .then(responseData => this.newInstanceFromResponseData(this.getDataFromResponse<MaybeArray<Attributes<T>>>(responseData)));
     }
 
     /**
@@ -260,7 +260,7 @@ export default class CallsApi extends BuildsQuery {
     private getResponseModel<T extends Model>(responseData: Attributes<T> | any): T {
         // returning a collection outside of GET is unexpected.
         return isObjectLiteral<Attributes<T>>(responseData)
-            ? this.newInstanceFromResponseData(responseData) as T
+            ? this.newInstanceFromResponseData(responseData)
             : this as unknown as T;
     }
 
@@ -273,6 +273,9 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Model}
      */
+    protected newInstanceFromResponseData<T extends Model>(data: Attributes<T>[]): ModelCollection<T>;
+    protected newInstanceFromResponseData<T extends Model>(data: Attributes<T>): T;
+    protected newInstanceFromResponseData<T extends Model>(data: MaybeArray<Attributes<T>>): ModelCollection<T> | T;
     protected newInstanceFromResponseData<T extends Model>(data: MaybeArray<Attributes<T>>): ModelCollection<T> | T {
         if (data === null
             || data === undefined

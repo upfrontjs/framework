@@ -153,7 +153,7 @@ describe('Model', () => {
         });
 
         it('should clone the model in it\'s current state', () => {
-            user = new User({ id: 1, myKey: 2 });
+            user = User.create({ id: 1, myKey: 2 });
             user.setFillable(['id', 'something']);
             user.setGuarded(['*']);
             user.setCasts({ id: 'number' });

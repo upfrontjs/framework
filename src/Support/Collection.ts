@@ -64,8 +64,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      * @return {this}
      */
     protected _newInstance(items?: MaybeArray<T>): this {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        return new (this.constructor as any)(items);
+        return new (this.constructor as new (items?: MaybeArray<T>) => this)(items);
     }
 
     /**

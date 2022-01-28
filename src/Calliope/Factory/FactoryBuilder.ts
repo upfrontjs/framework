@@ -289,8 +289,8 @@ export default class FactoryBuilder<T extends Model> {
                     const relationValue = this.relations[relation]![method]();
 
                     if (method === 'raw') {
-                        // construct model to check the relationValue is a valid value for the relation type
-                        new (this.model.constructor as typeof Model)({ [relation]: relationValue });
+                        // add relation to the model to check the relationValue is a valid value for the relation type
+                        (new (this.model.constructor as typeof Model)).addRelation(relation, relationValue);
                         (data as Attributes)[relation] = relationValue;
                     } else {
                         (data as Model).addRelation(relation, relationValue);

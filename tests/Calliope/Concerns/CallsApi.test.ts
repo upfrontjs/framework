@@ -8,7 +8,6 @@ import ModelCollection from '../../../src/Calliope/ModelCollection';
 import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 import { config } from '../../setupTests';
 import type Collection from '../../../src/Support/Collection';
-import type Model from '../../../src/Calliope/Model';
 import { snake, finish } from '../../../src/Support/string';
 import type RequestMiddleware from '../../../src/Contracts/RequestMiddleware';
 
@@ -362,7 +361,7 @@ describe('CallsApi', () => {
         it('should construct a single instance of a model', () => {
             const userData = User.factory().raw();
             //@ts-expect-error
-            expect(caller.newInstanceFromResponseData(userData)).toStrictEqual(new User(userData));
+            expect(caller.newInstanceFromResponseData(userData)).toStrictEqual(User.create(userData));
         });
 
         it('should construct a model collection on array argument', () => {
@@ -370,13 +369,13 @@ describe('CallsApi', () => {
             const userData = User.factory().raw() as Attributes;
             //@ts-expect-error
             expect(caller.newInstanceFromResponseData([userData]) as ModelCollection<User>)
-                .toStrictEqual(new ModelCollection([new User(userData)]));
+                .toStrictEqual(new ModelCollection([User.create(userData)]));
         });
 
         it('should force fill the models from the response', () => {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
             const userData = User.factory().raw() as Attributes;
-            const expectedUser = new User(userData);
+            const expectedUser = User.create(userData);
 
             // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
             const originalFillableReturn =  User.prototype.getFillable;
@@ -403,7 +402,7 @@ describe('CallsApi', () => {
             const usersData = User.factory().times(2).raw() as Collection<Attributes>;
 
             // @ts-expect-error
-            const users = caller.newInstanceFromResponseData(usersData.toArray()) as ModelCollection<Model>;
+            const users = caller.newInstanceFromResponseData(usersData.toArray());
 
             users.forEach(userModel => {
                 // @ts-expect-error

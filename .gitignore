@@ -5,6 +5,13 @@ array.*.js*
 string.*.js*
 types
 *.tgz
+# in case gh-pages manually managed
+index.html
+modules.html
+interfaces/
+classes/
+assets/
+.nojekyll
 
 # testing
 tests/cache/

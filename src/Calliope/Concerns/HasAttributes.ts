@@ -75,6 +75,49 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     protected original: Attributes = {};
 
     /**
+     * The loaded relations for the model.
+     *
+     * @protected
+     */
+    // This property placed here because extending classes are
+    // not yet constructed therefore when HasAttributes
+    // constructs it may ultimately reference
+    // this.relations, and it wouldn't
+    // be set otherwise.
+    protected relations: Record<string, (Model | ModelCollection<Model>)> = {};
+
+    /**
+     * Create a new instance.
+     *
+     * @param {object} attributes
+     *
+     * @protected
+     *
+     * @return {this}
+     */
+    public constructor(attributes?: Attributes) {
+        super();
+
+        if (attributes instanceof HasAttributes) {
+            // if newing up with a constructor, we'll take the attributes
+            // in their current state, not the original.
+            const allProperties = attributes.getRawAttributes();
+
+            if (isObjectLiteral(attributes.relations)) {
+                Object.assign(allProperties, cloneDeep(attributes.relations));
+            }
+
+            attributes = allProperties;
+        }
+
+        if (isObjectLiteral(attributes) && Object.keys(attributes).length) {
+            this.fill(attributes).syncOriginal();
+        }
+
+        return this;
+    }
+
+    /**
      * The iterator used for looping over the attributes and relations.
      *
      * @type {Symbol.iterator}

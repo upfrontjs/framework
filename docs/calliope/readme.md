@@ -55,7 +55,7 @@ User.create({ my: attributes });
 // etc...
 ```
 
-If you're passing attributes to the model you have to use the [create](#create) method.
+**If you're passing attributes to the model you have to use the [create](#create) method.**
 
 ::: tip TIP (Typescript)
 Typescript users may benefit from better typing support if they defined keys and their types on the models
@@ -154,7 +154,7 @@ import User from '@Models/User';
 const user = User.create({ name: 'User Name' }); // User
 ```
 ::: warning
-Constructing a new class like `new User({...})` is **not** acceptable. This will not overwrite your class fields with default values if the same key has been passed in due to how JavaScript first constructs the parent class and only then the subclasses. However, you can still use it to call instance methods. Furthermore, it is also not cause unexpected results if using it with the [setAttribute](./attributes.md#setattribute) method or call methods that under the hood uses the [setAttribute](./attributes.md#setattribute).
+Constructing a new class like `new User({...})` is **not** acceptable. This will not overwrite your class fields with default values if the same key has been passed in due to how JavaScript first constructs the parent class and only then the subclasses. However, you can still use it to call instance methods. Furthermore, it will not cause unexpected results if using it with the [setAttribute](./attributes.md#setattribute) method or call methods that under the hood uses the [setAttribute](./attributes.md#setattribute).
 :::
 
 #### replicate

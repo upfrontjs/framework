@@ -8,14 +8,14 @@ let hasAttributes: User;
 
 describe('HasAttributes', () => {
     beforeEach(() => {
-        hasAttributes = new User({ test: 1 });
+        hasAttributes = User.create({ test: 1 });
     });
 
     describe('.attributeCasing', () => {
         it('should dictate how attribute keys are formatted', () => {
             // the formatting boils down to the forceFill method
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            hasAttributes = new User({ some_value: 1 });
+            hasAttributes = User.create({ some_value: 1 });
 
             expect(hasAttributes.getAttribute('someValue')).toBe(1);
             expect(hasAttributes.getAttribute('some_value')).toBeUndefined();
@@ -28,7 +28,7 @@ describe('HasAttributes', () => {
                 }
             }
 
-            const user = new UserWithSnakeCase({ someValue: 1 });
+            const user = UserWithSnakeCase.create({ someValue: 1 });
 
             expect(user.getAttribute('someValue')).toBeUndefined();
             expect(user.getAttribute('some_value')).toBe(1);
@@ -68,10 +68,10 @@ describe('HasAttributes', () => {
         });
 
         it('should be able to take instance of itself and hydrate the relations and attributes', () => {
-            expect(new User(hasAttributes).getOriginal())
+            expect(User.create(hasAttributes).getOriginal())
                 .toStrictEqual(hasAttributes.getAttributes());
 
-            expect(new User(hasAttributes).getOriginal())
+            expect(User.create(hasAttributes).getOriginal())
                 .toStrictEqual(hasAttributes.getAttributes());
         });
 
@@ -83,7 +83,7 @@ describe('HasAttributes', () => {
                 }
             };
 
-            const user = new User(attributes);
+            const user = User.create(attributes);
 
             expect(user.getAttribute('value')).toBe(1);
             expect(user.getAttribute('level2')).toStrictEqual({ value: 1 });
@@ -106,7 +106,7 @@ describe('HasAttributes', () => {
             }
 
             expect(count).toBe(
-                hasAttributes.getAttributeKeys().length + Object.keys(hasAttributes.getRelations()).length
+                hasAttributes.getAttributeKeys().length +  hasAttributes.loadedRelationKeys().length
             );
         });
 
@@ -208,7 +208,7 @@ describe('HasAttributes', () => {
 
     describe('getAttributes()', () => {
         it('should return the class attributes in a resolved format', () => {
-            hasAttributes = new User({ test1: 1, test2: 2 });
+            hasAttributes = User.create({ test1: 1, test2: 2 });
 
             Object.defineProperty(hasAttributes, 'getTest1Attribute', {
                 value: function (): number {
@@ -222,13 +222,16 @@ describe('HasAttributes', () => {
 
     describe('getRawAttributes()', () => {
         it('should return the class attributes without any transformation', () => {
+            hasAttributes.getTestAttribute = (value: number) => value + 1;
+
+            expect(hasAttributes.test).toBe(2);
             expect(hasAttributes.getRawAttributes()).toStrictEqual({ test: 1 });
         });
     });
 
     describe('getAttributeKeys()', () => {
         it('should return an array of strings that are the keys in the attributes', () =>{
-            hasAttributes = new User({ test1: 1, test2: 2 });
+            hasAttributes = User.create({ test1: 1, test2: 2 });
 
             expect(hasAttributes.getAttributeKeys()).toStrictEqual(['test1', 'test2']);
         });
@@ -301,6 +304,40 @@ describe('HasAttributes', () => {
                 // eslint-disable-next-line @typescript-eslint/unbound-method
                 expect(descriptor?.set).toBeDefined();
             });
+        });
+
+        it('should overwrite existing descriptors', () => {
+            class ModelWithProperties extends User {
+                public attribute1?: string;
+
+                public attribute2 = 1;
+
+                public get fillable(): string[] {
+                    return ['*'];
+                }
+
+                public override getName(): string {
+                    return 'ModelWithProperties';
+                }
+            }
+
+            let modelWithProperties = ModelWithProperties.create();
+
+            let attribute2Descriptor = Object.getOwnPropertyDescriptor(modelWithProperties, 'attribute2');
+            expect(attribute2Descriptor!.value).toBe(1);
+
+            let attribute1Descriptor = Object.getOwnPropertyDescriptor(modelWithProperties, 'attribute1');
+            expect(attribute1Descriptor).toBeUndefined();
+
+            modelWithProperties = ModelWithProperties.create({ attribute1: 'value', attribute2: 2 });
+
+            attribute2Descriptor = Object.getOwnPropertyDescriptor(modelWithProperties, 'attribute2');
+            expect(attribute2Descriptor!.value).toBeUndefined();
+            expect(attribute2Descriptor!.get!()).toBe(2);
+
+            attribute1Descriptor = Object.getOwnPropertyDescriptor(modelWithProperties, 'attribute1');
+            expect(attribute1Descriptor).toBeDefined();
+            expect(attribute1Descriptor!.get!()).toBe('value');
         });
     });
 
@@ -463,7 +500,7 @@ describe('HasAttributes', () => {
 
     describe('reset()', () => {
         it('should set the attributes to the original', () => {
-            hasAttributes = new User({ test: 1 });
+            hasAttributes = User.create({ test: 1 });
             hasAttributes.test = 2;
 
             expect(hasAttributes.getAttribute('test')).toBe(2);
@@ -472,7 +509,7 @@ describe('HasAttributes', () => {
         });
 
         it('should use deep cloning', () => {
-            hasAttributes = new User({ test: 1 });
+            hasAttributes = User.create({ test: 1 });
             // @ts-expect-error
             hasAttributes.reset().original.test = 2;
             expect(hasAttributes.getAttribute('test')).not.toBe(2);
@@ -486,7 +523,7 @@ describe('HasAttributes', () => {
                     return 'accessed value';
                 }
             }
-            const userValueTransformator = new UserWithAccessor({ test: 1, test1: 1 });
+            const userValueTransformator = UserWithAccessor.create({ test: 1, test1: 1 });
 
             userValueTransformator.mergeCasts({ test1: 'boolean' });
 
@@ -499,7 +536,7 @@ describe('HasAttributes', () => {
                     return 'accessed value';
                 }
             }
-            const userValueTransformator = new UserWithAccessor({ test: 1, test1: 1 });
+            const userValueTransformator = UserWithAccessor.create({ test: 1, test1: 1 });
 
             userValueTransformator.mergeCasts({ test1: 'boolean' });
 
@@ -598,13 +635,13 @@ describe('HasAttributes', () => {
 
     describe('hasChanges()', () => {
         it('should determine if any changes has been made', () => {
-            hasAttributes = new User({ test: 1, value: 2 });
+            hasAttributes = User.create({ test: 1, value: 2 });
 
             expect(hasAttributes.setAttribute('test', 2).hasChanges()).toBe(true);
         });
 
         it('should determine if a given key has changed', () => {
-            hasAttributes = new User({ test: 1, value: 2 });
+            hasAttributes = User.create({ test: 1, value: 2 });
 
             expect(hasAttributes.setAttribute('test', 2).hasChanges('test')).toBe(true);
             expect(hasAttributes.hasChanges('value')).toBe(false);
@@ -624,13 +661,13 @@ describe('HasAttributes', () => {
     describe('isDirty()', () => {
         // isDirty an alias of hasChanges
         it('should determine if any changes has been made', () => {
-            hasAttributes = new User({ test: 1, value: 2 });
+            hasAttributes = User.create({ test: 1, value: 2 });
 
             expect(hasAttributes.setAttribute('test', 2).isDirty()).toBe(true);
         });
 
         it('should determine if a given key has changed', () => {
-            hasAttributes = new User({ test: 1, value: 2 });
+            hasAttributes = User.create({ test: 1, value: 2 });
 
             expect(hasAttributes.setAttribute('test', 2).isDirty('test')).toBe(true);
             expect(hasAttributes.isDirty('value')).toBe(false);
@@ -639,13 +676,13 @@ describe('HasAttributes', () => {
 
     describe('isClean()', () => {
         it('should determine if any changes has been made', () => {
-            hasAttributes = new User({ test: 1, value: 2 });
+            hasAttributes = User.create({ test: 1, value: 2 });
 
             expect(hasAttributes.setAttribute('test', 2).isClean()).toBe(false);
         });
 
         it('should determine if a given key has changed', () => {
-            hasAttributes = new User({ test: 1, value: 2 });
+            hasAttributes = User.create({ test: 1, value: 2 });
 
             expect(hasAttributes.setAttribute('test', 2).isClean('test')).toBe(false);
             expect(hasAttributes.isClean('value')).toBe(true);
@@ -654,7 +691,7 @@ describe('HasAttributes', () => {
 
     describe('only()', () => {
         it('should return only the specified attributes', () => {
-            hasAttributes = new User({ test: 1, value: 2 });
+            hasAttributes = User.create({ test: 1, value: 2 });
 
             expect(hasAttributes.only('test')).toStrictEqual({ test: 1 });
             expect(hasAttributes.only(['test'])).toStrictEqual({ test: 1 });
@@ -663,7 +700,7 @@ describe('HasAttributes', () => {
 
     describe('except()', () => {
         it('should return all the attributes except the specified ones', () => {
-            hasAttributes = new User({ test: 1, value: 2 });
+            hasAttributes = User.create({ test: 1, value: 2 });
 
             expect(hasAttributes.except(['test'])).toStrictEqual({ value: 2 });
         });

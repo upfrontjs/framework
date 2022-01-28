@@ -51,9 +51,11 @@ import User from '@Models/User';
 
 User.find(1);
 // or 
-new User({ my: attributes });
+User.create({ my: attributes });
 // etc...
 ```
+
+**If you're passing attributes to the model you have to use the [create](#create) method.**
 
 ::: tip TIP (Typescript)
 Typescript users may benefit from better typing support if they defined keys and their types on the models
@@ -62,6 +64,10 @@ export default class User extends Model {
     public is_admin?: boolean;
     public age?: number;
     public name?: string;
+
+    public override getName(): string {
+        return 'User';
+    }
 }
 ```
 This will typehint keys on the model when accessing the above keys like `user.age` and will get type hinted in various methods such as [getAttribute](./attributes.md#getattribute) where both the key, the default value and the return value will be type hinted.
@@ -98,9 +104,9 @@ The `is` method compares the given model with the current model based on the [ge
 import User from '@Models/User';
 import Shift from '@Models/Shift';
 
-const user = new User({ id: 1 });
-const user2 = new User({ id: 2 });
-const shift = new Shift({ id: 1 });
+const user = User.create({ id: 1 });
+const user2 = User.create({ id: 2 });
+const shift = Shift.create({ id: 1 });
 
 user.is(user); // true
 user.is(user2); // false
@@ -136,6 +142,20 @@ Bundlers/minifier options examples:
 - [esbuild: keep-names](https://esbuild.github.io/api/#keep-names)
 - [babel-minify: keepClassName](https://babeljs.io/docs/en/babel-minify#node-api)
   :::
+
+#### create
+<Badge text="static" type="warning"/>
+
+The `create` method instantiates your model while setting up attributes and relations.
+
+```ts
+import User from '@Models/User';
+
+const user = User.create({ name: 'User Name' }); // User
+```
+::: warning
+Constructing a new class like `new User({...})` is **not** acceptable. This will not overwrite your class fields with default values if the same key has been passed in due to how JavaScript first constructs the parent class and only then the subclasses. However, you can still use it to call instance methods. Furthermore, it will not cause unexpected results if using it with the [setAttribute](./attributes.md#setattribute) method or call methods that under the hood uses the [setAttribute](./attributes.md#setattribute).
+:::
 
 #### replicate
 

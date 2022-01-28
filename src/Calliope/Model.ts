@@ -103,7 +103,6 @@ export default class Model extends SoftDeletes implements HasFactory {
         return instance;
     }
 
-
     /**
      * Clone the model into a non-exiting instance.
      *

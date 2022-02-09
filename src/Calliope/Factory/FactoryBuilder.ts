@@ -11,7 +11,9 @@ import { plural, singular } from '../../Support/string';
 import type Configuration from '../../Contracts/Configuration';
 import type { MaybeArray } from '../../Support/type';
 
-export default class FactoryBuilder<T extends Model> {
+type State<T extends Factory<Model>> = Exclude<keyof T, 'definition' | 'getClassName' | 'random'>;
+
+export default class FactoryBuilder<T extends Model, F extends Factory<T> = Factory<T>> {
     /**
      * The number of models to create.
      *
@@ -35,14 +37,14 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @protected
      */
-    protected factory: Factory<T> | undefined;
+    protected factory?: F;
 
     /**
      * The states to be called when constructing the attributes.
      *
      * @protected
      */
-    protected states: string[] | undefined;
+    protected states: string[] = [];
 
     /**
      * The relation factories set by the with() method.
@@ -63,6 +65,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {this}
      */
+    public state(states: MaybeArray<State<F> | string>): this;
     public state(states: MaybeArray<string>): this {
         this.states = Array.isArray(states) ? [...new Set(states)] : [states];
 
@@ -455,7 +458,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {Factory}
      */
-    protected getFactory(): Factory<T> {
+    protected getFactory(): F {
         if (this.factory) {
             return this.factory;
         }
@@ -467,8 +470,7 @@ export default class FactoryBuilder<T extends Model> {
             );
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        const factory = this.model.factory();
+        const factory = this.model.factory() as F;
 
         if (!(factory instanceof Factory)) {
             throw new TypeError(
@@ -477,9 +479,7 @@ export default class FactoryBuilder<T extends Model> {
             );
         }
 
-        this.factory = factory;
-
-        return factory;
+        return this.factory = factory;
     }
 
     /**

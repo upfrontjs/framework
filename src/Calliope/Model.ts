@@ -66,8 +66,10 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {string|number}
      */
-    public getKey(): number | string | undefined {
-        return this.getAttribute(this.getKeyName()) as number | string | undefined;
+    public getKey<
+        T extends 'number' | 'string' = this['keyType']
+    >(): (T extends 'number' ? number : string) | undefined {
+        return this.getAttribute(this.getKeyName()) as (T extends 'number' ? number : string) | undefined;
     }
 
     /**

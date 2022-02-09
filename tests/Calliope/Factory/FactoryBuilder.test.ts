@@ -114,6 +114,34 @@ describe('FactoryBuilder', () => {
 
             expect(func).toHaveBeenCalledTimes(1);
         });
+
+        it('should call the states in order they appear in the argument', () => {
+            const func = jest.fn();
+            class LocalFakeFactory extends Factory<User> {
+                public firstState() {
+                    func('first name overwrite');
+                    return {
+                        name: 'first name overwrite'
+                    };
+                }
+
+                public secondState() {
+                    func('second name overwrite');
+                    return {
+                        name: 'second name overwrite'
+                    };
+                }
+            }
+
+            // @ts-expect-error
+            User.prototype.factory = () => new LocalFakeFactory();
+            const user = factoryBuilder.state(['firstState', 'secondState']).createOne();
+
+            expect(user.name).toBe('second name overwrite');
+            expect(func).toHaveBeenCalledTimes(2);
+            expect(func).toHaveBeenNthCalledWith(1, 'first name overwrite');
+            expect(func).toHaveBeenNthCalledWith(2, 'second name overwrite');
+        });
     });
 
     describe('getFactory()', () => {

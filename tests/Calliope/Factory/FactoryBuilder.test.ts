@@ -96,6 +96,22 @@ describe('FactoryBuilder', () => {
                 )
             );
         });
+
+        it('should not call a state twice', () => {
+            const func = jest.fn();
+            class LocalFakeFactory extends Factory<User> {
+                public myState() {
+                    func();
+                    return {};
+                }
+            }
+
+            // @ts-expect-error
+            User.prototype.factory = () => new LocalFakeFactory();
+            factoryBuilder.state(['myState', 'myState']).create();
+
+            expect(func).toHaveBeenCalledTimes(1);
+        });
     });
 
     describe('getFactory()', () => {

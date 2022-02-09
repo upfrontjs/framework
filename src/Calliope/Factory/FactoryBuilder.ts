@@ -57,13 +57,14 @@ export default class FactoryBuilder<T extends Model> {
 
     /**
      * Set the states to be applied.
+     * States are applied in the order they appear in the argument.
      *
      * @param {string|string[]} states
      *
      * @return {this}
      */
     public state(states: MaybeArray<string>): this {
-        this.states = Array.isArray(states) ? states : [states];
+        this.states = Array.isArray(states) ? [...new Set(states)] : [states];
 
         return this;
     }

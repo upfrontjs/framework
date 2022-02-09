@@ -505,6 +505,7 @@ export default class FactoryBuilder<T extends Model, F extends Factory<T> = Fact
             config.set('_lastIds', _lastIds);
         }
 
-        return _lastIds[modelName]!;
+        // @ts-expect-error
+        return this.model.keyType === 'string' ? `unique-id-${_lastIds[modelName]!}` : _lastIds[modelName]!;
     }
 }

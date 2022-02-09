@@ -330,10 +330,26 @@ describe('FactoryBuilder', () => {
         });
 
         it('should set unique ids', () => {
-            const userOne = factoryBuilder.create() as User;
-            const userTwo = factoryBuilder.create() as User;
+            const userOne = factoryBuilder.createOne();
+            const userTwo = factoryBuilder.createOne();
 
             expect(userOne.getKey()).not.toBe(userTwo.getKey());
+        });
+
+        it('should set the ids respective of the model\'s key type', () => {
+            // default is number
+            expect(typeof factoryBuilder.createOne().getKey()).toBe('number');
+
+            Object.defineProperty(User.prototype, 'keyType', {
+                get: () => 'string',
+                configurable: true
+            });
+
+            expect(typeof factoryBuilder.createOne().getKey()).toBe('string');
+
+            Object.defineProperty(User.prototype, 'keyType', {
+                get: () => 'number'
+            });
         });
 
         it('should set the dates', () => {

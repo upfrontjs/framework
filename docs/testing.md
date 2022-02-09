@@ -75,7 +75,7 @@ export default UserFactory extends Factory {
     definition(model, index) {
         return {
             name: 'user name',
-            resourceUuid: uuid()
+            someUuid: uuid()
         };
     }
 }
@@ -105,10 +105,10 @@ import type { Attributes } from '@upfrontjs/framework';
 import type User from './src/Models/User';
 
 export default UserFactory extends Factory<User> {
-    definition(model: T, index: number): Attributes<User> {
+    public definition(model: T, index: number): Attributes<User> {
         return {
             name: 'user name',
-            resourceUuid: String.uuid()
+            someUuid: String.uuid()
         };
     }
 }
@@ -154,6 +154,21 @@ return {
     team: team // both Model and raw attributes are acceptable here
 }
 ```
+
+::: tip
+Just like [getName](./calliope#getname)'s case if you use code mangling your factories will be renamed. Some errors depend on the class' name to give more helpful error messages. To circumvent this issue you may over-write the `getClassName` method on the factory like so:
+```ts
+export default UserFactory extends Factory<User> {
+    public definition(): Attributes<User> {
+        return {};
+    }
+    
+    public getClassName(): string {
+        return 'UserFactory';
+    }
+}
+```
+:::
 
 ### States
 States are a way to encapsulate some changes to the return value of your [definition](#definition) method. It is resolved the same way as the `definition`, so you may use methods, and the previously resolved attributes.

@@ -25,7 +25,7 @@ export default class Factory<T extends Model> implements FactoryHooks<T> {
     }
 
     /**
-     * Get the name of the class.
+     * Get the name of this factory class.
      *
      * @return {string}
      */

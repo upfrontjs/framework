@@ -482,7 +482,7 @@ export default class FactoryBuilder<T extends Model> {
     }
 
     /**
-     * Get a unique id based on the key name.
+     * Get a unique id based on the model name.
      *
      * @protected
      *
@@ -492,16 +492,17 @@ export default class FactoryBuilder<T extends Model> {
         const config: GlobalConfig<Configuration & Record<'_lastIds', Record<string, number>>> = new GlobalConfig();
 
         const _lastIds = config.get('_lastIds', {});
+        const modelName = this.model.getName();
 
         // update or create entry for the model.
-        if (!_lastIds[this.model.getName()]) {
-            _lastIds[this.model.getName()] = 1;
+        if (!_lastIds[modelName]) {
+            _lastIds[modelName] = 1;
             config.set('_lastIds', _lastIds);
         } else {
-            _lastIds[this.model.getName()]++;
+            _lastIds[modelName]++;
             config.set('_lastIds', _lastIds);
         }
 
-        return _lastIds[this.model.getName()]!;
+        return _lastIds[modelName]!;
     }
 }

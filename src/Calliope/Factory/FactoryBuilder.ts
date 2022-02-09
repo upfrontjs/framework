@@ -386,13 +386,13 @@ export default class FactoryBuilder<T extends Model, F extends Factory<T> = Fact
             this.states?.forEach(state => {
                 if (!(state in factory)) {
                     throw new InvalidOffsetException(
-                        '\'' + state + '\' is not defined on the \'' + factory.getClassName() + '\' class.'
+                        '\'' + state + '\' is not defined on the \'' + factory.getClassName() + '\' factory class.'
                     );
                 }
 
                 if (!(factory[state] instanceof Function)) {
                     throw new InvalidOffsetException(
-                        '\'' + state + '\' is not a method on the \'' + factory.getClassName() + '\' class.'
+                        '\'' + state + '\' is not a method on the \'' + factory.getClassName() + '\' factory class.'
                     );
                 }
 
@@ -400,7 +400,8 @@ export default class FactoryBuilder<T extends Model, F extends Factory<T> = Fact
 
                 if (!attributesFromState || typeof attributesFromState !== 'object') {
                     throw new TypeError(
-                        '\'' + state + '\' is not returning an object on \'' + factory.getClassName() + '\' class.'
+                        '\'' + state + '\' is not returning an object on \''
+                        + factory.getClassName() + '\' factory class.'
                     );
                 }
 
@@ -475,7 +476,7 @@ export default class FactoryBuilder<T extends Model, F extends Factory<T> = Fact
         if (!(factory instanceof Factory)) {
             throw new TypeError(
                 'Invalid return type defined on the factory() method on the \'' + this.model.getName() + '\' class.'
-                + 'Expected \'' + Factory.name + '\', got \'' + typeof factory + '\'.'
+                + ' Expected \'' + Factory.name + '\', got \'' + typeof factory + '\'.'
             );
         }
 

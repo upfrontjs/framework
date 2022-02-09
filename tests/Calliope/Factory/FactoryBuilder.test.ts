@@ -53,7 +53,7 @@ describe('FactoryBuilder', () => {
 
             expect(failingFunc).toThrow(
                 new InvalidOffsetException(
-                    '\'undefinedScope\' is not defined on the \'' + factoryName + '\' class.'
+                    '\'undefinedScope\' is not defined on the \'' + factoryName + '\' factory class.'
                 )
             );
         });
@@ -73,7 +73,7 @@ describe('FactoryBuilder', () => {
 
             expect(failingFunc).toThrow(
                 new InvalidOffsetException(
-                    '\'scopeAsProperty\' is not a method on the \'' + String(FakeFactory.name) + '\' class.'
+                    '\'scopeAsProperty\' is not a method on the \'' + String(FakeFactory.name) + '\' factory class.'
                 )
             );
         });
@@ -94,7 +94,7 @@ describe('FactoryBuilder', () => {
 
             expect(failingFunc).toThrow(
                 new TypeError(
-                    '\'invalidScope\' is not returning an object on \'' + String(FakeFactory.name) + '\' class.'
+                    '\'invalidScope\' is not returning an object on \'' + String(FakeFactory.name) + '\' factory class.'
                 )
             );
         });
@@ -134,7 +134,7 @@ describe('FactoryBuilder', () => {
             expect(failingFunc).toThrow(
                 new TypeError(
                     'Invalid return type defined on the factory() method on the \'' + User.name + '\' class.'
-                    + 'Expected \'' + Factory.name + '\', got \'object\'.'
+                    + ' Expected \'' + Factory.name + '\', got \'object\'.'
                 )
             );
         });

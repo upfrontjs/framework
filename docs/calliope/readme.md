@@ -84,8 +84,32 @@ The `primaryKey` is a getter of the attribute name which is used to identify you
 import { Model } from '@upfrontjs/framework';
 
 export default class User extends Model {
+    getName() {
+        return 'User';
+    }
+    
     get primaryKey() {
         return 'id';
+    }
+}
+```
+
+#### keyType
+
+The `keyType` is a getter that identifies what the type is of your [primaryKey](#primarykey). Its value has to be either `'string'` or `'number'` with `'number'` being the default value.
+You should update this value to `'string'` if you're using a uuid or some custom string for the primary key as this is used when in the [Factory](../testing.md#factories) and [exists](#exists) logic.
+
+```js
+// User.ts
+import { Model } from '@upfrontjs/framework';
+
+export default class User extends Model {
+    public override getName(): string {
+        return 'User';
+    }
+    
+    public get primaryKey(): 'number' | 'string' {
+        return 'string';
     }
 }
 ```

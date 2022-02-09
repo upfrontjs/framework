@@ -22,6 +22,17 @@ export default class Model extends SoftDeletes implements HasFactory {
     }
 
     /**
+     * The type of the key that acts as the primary key of the model.
+     *
+     * @type {'number' | 'string'}
+     *
+     * @protected
+     */
+    protected get keyType(): 'number' | 'string' {
+        return 'number';
+    }
+
+    /**
      * Indicates whether the model exists on the backend or not.
      *
      * @type {boolean}

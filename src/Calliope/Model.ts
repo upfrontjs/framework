@@ -4,7 +4,7 @@ import type HasFactory from '../Contracts/HasFactory';
 import type { Attributes, AttributeKeys } from './Concerns/HasAttributes';
 import ModelCollection from './ModelCollection';
 import LogicException from '../Exceptions/LogicException';
-import { finish, isUuid } from '../Support/string';
+import { finish } from '../Support/string';
 import type { MaybeArray, StaticToThis } from '../Support/type';
 import { cloneDeep } from 'lodash';
 import { isObjectLiteral } from '../Support/function';
@@ -38,7 +38,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      * @type {boolean}
      */
     public get exists(): boolean {
-        let boolean = isUuid(String(this.getKey())) || !isNaN(Number(this.getKey()));
+        let boolean = this.keyType === 'string' ? !!this.getKey() : !isNaN(Number(this.getKey()));
         const lastSyncedAt = '_' + this.setStringCase('last_synced_at');
 
         if (boolean && this.usesTimestamps()) {

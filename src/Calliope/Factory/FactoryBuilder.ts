@@ -489,19 +489,19 @@ export default class FactoryBuilder<T extends Model> {
      * @return {string|number}
      */
     protected getKey(): number | string {
-        const config: GlobalConfig<Configuration & Record<'lastIds', Record<string, number>>> = new GlobalConfig();
+        const config: GlobalConfig<Configuration & Record<'_lastIds', Record<string, number>>> = new GlobalConfig();
 
-        const lastIds = config.get('lastIds', {});
+        const _lastIds = config.get('_lastIds', {});
 
         // update or create entry for the model.
-        if (!lastIds[this.model.getName()]) {
-            lastIds[this.model.getName()] = 1;
-            config.set('lastIds', lastIds);
+        if (!_lastIds[this.model.getName()]) {
+            _lastIds[this.model.getName()] = 1;
+            config.set('_lastIds', _lastIds);
         } else {
-            lastIds[this.model.getName()]++;
-            config.set('lastIds', lastIds);
+            _lastIds[this.model.getName()]++;
+            config.set('_lastIds', _lastIds);
         }
 
-        return lastIds[this.model.getName()]!;
+        return _lastIds[this.model.getName()]!;
     }
 }

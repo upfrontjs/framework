@@ -70,10 +70,20 @@ export default class SoftDeletes extends HasTimestamps {
         (this as unknown as Model).throwIfModelDoesntExistsWhenCalling('delete');
 
         this.setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()));
-        return super.delete({
-            [deletedAt]: new Date().toISOString(),
-            ...data
-        }).then(model => {
+
+        if (!data) {
+            data = { [deletedAt]: new Date().toISOString() };
+        } else if (data instanceof FormData) {
+            const serverCasedDeletedAt = this.setServerStringCase(deletedAt);
+            if (!data.has(serverCasedDeletedAt)) {
+                data.append(serverCasedDeletedAt, new Date().toISOString());
+            }
+        } else if (!(deletedAt in data)) {
+            // @ts-expect-error
+            data[deletedAt] = new Date().toISOString();
+        }
+
+        return super.delete(data).then(model => {
             return this.setAttribute(deletedAt, model.getAttribute(deletedAt))
                 .syncOriginal(deletedAt) as unknown as T;
         });

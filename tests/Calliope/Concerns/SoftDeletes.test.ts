@@ -93,6 +93,19 @@ describe('SoftDeletes', () => {
                 .toStrictEqual({ [snake(softDeletes.getDeletedAtName())]: now.toISOString() });
         });
 
+        it('should set the deleted at on the given form if not already set', async () => {
+            mockUserModelResponse(softDeletes);
+
+            const form = new FormData();
+            form.append('my_key', 'my_value');
+
+            await softDeletes.delete(form);
+
+            const body = getLastRequest()!.body as FormData;
+            expect(body.get('my_key')).toBe('my_value');
+            expect(body.get(snake(softDeletes.getDeletedAtName()))).toBe(now.toISOString());
+        });
+
         it('should merge in the optional argument into the request', async () => {
             mockUserModelResponse(softDeletes);
 

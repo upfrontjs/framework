@@ -73,6 +73,7 @@ describe('CallsApi', () => {
 
         it('should not cast keys for form data', async () => {
             const formData = new FormData();
+            // when appending fields, naming is very explicit, so we assume it is deliberate
             formData.append('my_field', 'value');
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
 
@@ -197,8 +198,27 @@ describe('CallsApi', () => {
             expect(caller.loading).toBe(false);
         });
 
+        it('should set the given data to the .serverAttributeCasing', async () => {
+            mockUserModelResponse(User.factory().makeOne());
+            await caller.call('POST', {
+                myKey1: null,
+                myKey2: { some: { deepNested: 'value' } },
+                myKey3: false,
+                myKey4: 0
+            });
+
+            expect(getLastRequest()?.body).toStrictEqual({
+                /* eslint-disable @typescript-eslint/naming-convention */
+                my_key_1: null,
+                my_key_2: { some: { deep_nested: 'value' } },
+                my_key_3: false,
+                my_key_4: 0
+                /* eslint-enable @typescript-eslint/naming-convention */
+            });
+        });
+
         it('should send all the given data', async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+            mockUserModelResponse(User.factory().makeOne());
             await caller.call('POST', {
                 falsyKey1: null,
                 falsyKey2: undefined,

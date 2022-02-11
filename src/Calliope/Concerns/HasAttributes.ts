@@ -121,6 +121,33 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     }
 
     /**
+     * Utility to recursively format the keys according to the server argument.
+     *
+     * @param {object} attributes - The object which should
+     * @param {boolean} server - whether to use the serverAttributeCasing or attributeCasing
+     *
+     * @protected
+     *
+     * @return {boolean}
+     */
+    protected transformKeys(attributes: Attributes, server: boolean): Attributes {
+        const dataWithKeyCasing: Attributes = {};
+
+        Object.keys(attributes).forEach(key => {
+            dataWithKeyCasing[server ? this.setServerStringCase(key) : this.setStringCase(key)] =
+                // If attributes[key] is a model/collection/or otherwise a constructible structure
+                // it would count as an object literal, so we add a not Object constructor check.
+                // This prevents it from becoming an object literal, and in turn
+                // its internal keys falling into the setAttribute flow.
+                isObjectLiteral(attributes[key]) && (attributes[key] as new() => any).constructor === Object
+                    ? this.transformKeys(attributes[key] as Attributes<this>, server)
+                    : attributes[key];
+        });
+
+        return dataWithKeyCasing;
+    }
+
+    /**
      * Get an attribute from the model.
      *
      * @param {string} key
@@ -317,7 +344,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     }
 
     /**
-     * Fill the model with an array of attributes.
+     * Fill the model with the given attributes while respecting the guarding settings.
      *
      * @param {object} attributes
      *
@@ -331,7 +358,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     }
 
     /**
-     * Fill the model with an array of attributes. Force mass assignment.
+     * Fill the model with the given attributes without respecting the guarding settings.
      *
      * @param {object} attributes
      *
@@ -339,8 +366,10 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      */
     public forceFill(attributes: Attributes | Attributes<this>): this;
     public forceFill(attributes: Attributes): this {
+        attributes = this.transformKeys(attributes, false);
+
         Object.keys(attributes).forEach(name => {
-            this.setAttribute(this.setStringCase(name), attributes[name] as any);
+            this.setAttribute(name, attributes[name]);
         });
 
         return this;

@@ -89,24 +89,7 @@ export default class CallsApi extends BuildsQuery {
             );
         }
 
-        /**
-         * Recursively format the keys according to serverAttributeCasing
-         *
-         * @see CallsApi.prototype.serverAttributeCasing
-         */
-        const transformValues = (object: Attributes): Attributes => {
-            const dataWithKeyCasing: Attributes = {};
-
-            Object.keys(object).forEach(key => {
-                dataWithKeyCasing[this.setServerStringCase(key)] = isObjectLiteral(object[key])
-                    ? transformValues(object[key] as Attributes)
-                    : object[key];
-            });
-
-            return dataWithKeyCasing;
-        };
-
-        let queryParameters = transformValues(this.compileQueryParameters());
+        let queryParameters = this.transformKeys(this.compileQueryParameters(), true);
         const config = new GlobalConfig;
         const url = (config.get('baseEndPoint') ? finish(config.get('baseEndPoint', '')!, '/') : '')
             + (endpoint.startsWith('/') ? endpoint.slice(1) : endpoint);
@@ -114,7 +97,7 @@ export default class CallsApi extends BuildsQuery {
         const handlesApiResponse = new (config.get('apiResponseHandler', ApiResponseHandler))!;
 
         if (data && isObjectLiteral<Attributes>(data) && !(data instanceof FormData)) {
-            data = transformValues(data);
+            data = this.transformKeys(data, true);
         }
 
         const requestMiddleware = config.get('requestMiddleware');

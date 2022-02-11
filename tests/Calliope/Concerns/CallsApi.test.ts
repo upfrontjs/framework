@@ -245,7 +245,7 @@ describe('CallsApi', () => {
         });
 
         it('should reset the endpoint', async () => {
-            mockUserModelResponse(User.factory().create() as User);
+            mockUserModelResponse();
 
             caller.setEndpoint('endpoint');
             await caller.get();
@@ -257,7 +257,7 @@ describe('CallsApi', () => {
             // @ts-expect-error
             expect(caller.compileQueryParameters().wheres).toHaveLength(1);
 
-            mockUserModelResponse(User.factory().create() as User);
+            mockUserModelResponse();
             await caller.get();
 
             // @ts-expect-error
@@ -538,7 +538,7 @@ describe('CallsApi', () => {
         });
 
         it('should take parameters for the request', async () => {
-            mockUserModelResponse(User.factory().create() as User);
+            mockUserModelResponse();
             await caller.get({ myParam: 1 });
 
             expect(getLastRequest()?.url)
@@ -546,7 +546,7 @@ describe('CallsApi', () => {
         });
 
         it('should overwrite query parameters from the builder', async () => {
-            mockUserModelResponse(User.factory().create() as User);
+            mockUserModelResponse();
             await caller.whereKey(1).get({
                 wheres: [
                     {
@@ -564,7 +564,7 @@ describe('CallsApi', () => {
         });
 
         it('should send query parameters in the request', async () => {
-            mockUserModelResponse(User.factory().create() as User);
+            mockUserModelResponse();
             await caller.whereKey(43).get();
 
             expect(getLastRequest()?.url).toBe(
@@ -636,7 +636,7 @@ describe('CallsApi', () => {
         it('should send query parameters in the url', async () => {
             caller.whereKey(43);
 
-            mockUserModelResponse(User.factory().create() as User);
+            mockUserModelResponse();
             await caller.post({ key: 'value' });
 
             expect(getLastRequest()?.body).toStrictEqual({ key: 'value' });
@@ -677,7 +677,7 @@ describe('CallsApi', () => {
         it('should send query parameters in the url', async () => {
             caller.whereKey(43);
 
-            mockUserModelResponse(User.factory().create() as User);
+            mockUserModelResponse();
             await caller.put({ key: 'value' });
 
             expect(getLastRequest()?.body).toStrictEqual({ key: 'value' });
@@ -718,7 +718,7 @@ describe('CallsApi', () => {
         it('should send query parameters in the url', async () => {
             caller.whereKey(43);
 
-            mockUserModelResponse(User.factory().create() as User);
+            mockUserModelResponse();
             await caller.patch({ key: 'value' });
 
             expect(getLastRequest()?.body).toStrictEqual({ key: 'value' });
@@ -768,7 +768,7 @@ describe('CallsApi', () => {
         it('should send query parameters in the url', async () => {
             caller.whereKey(43);
 
-            mockUserModelResponse(User.factory().create() as User);
+            mockUserModelResponse();
             await caller.delete();
 
             expect(getLastRequest()?.url).toBe(

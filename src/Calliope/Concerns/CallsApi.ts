@@ -23,7 +23,7 @@ export type Method =
     | 'PUT' | 'put';
 
 /**
- * Key value of headers where the values can be an array of values.
+ * Key-value pairs of headers where the values can be an array of values.
  * Each value is appended to the outgoing headers.
  */
 export type CustomHeaders = Record<string, MaybeArray<string>>;

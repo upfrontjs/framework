@@ -22,6 +22,12 @@ export type Method =
     | 'POST' | 'post'
     | 'PUT' | 'put';
 
+/**
+ * Key value of headers where the values can be an array of values.
+ * Each value is appended to the outgoing headers.
+ */
+export type CustomHeaders = Record<string, MaybeArray<string>>;
+
 export default class CallsApi extends BuildsQuery {
     /**
      * The basic endpoint that model queries.
@@ -78,17 +84,17 @@ export default class CallsApi extends BuildsQuery {
     public async call<T = any>(
         method: 'GET' | 'get' | 'HEAD' | 'head',
         data?: QueryParams | SimpleAttributes,
-        customHeaders?: Record<string, MaybeArray<string>>
+        customHeaders?: CustomHeaders
     ): Promise<T | undefined>;
     public async call<T = any>(
         method: Exclude<Method, 'GET' | 'get' | 'HEAD' | 'head'>,
         data?: FormData | SimpleAttributes | SimpleAttributes<this>,
-        customHeaders?: Record<string, MaybeArray<string>>
+        customHeaders?: CustomHeaders
     ): Promise<T | undefined>;
     public async call<T = any>(
         method: Method,
         data?: FormData | QueryParams | SimpleAttributes<this>,
-        customHeaders?: Record<string, MaybeArray<string>>
+        customHeaders?: CustomHeaders
     ): Promise<T | undefined> {
         const endpoint = this.getEndpoint();
 

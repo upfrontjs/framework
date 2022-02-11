@@ -35,7 +35,7 @@ import type { QueryParams } from './Calliope/Concerns/BuildsQuery';
 import type FormatsQueryParameters from './Contracts/FormatsQueryParameters';
 import type { ApiResponse } from './Contracts/HandlesApiResponse';
 import type { Events, Listener } from './Support/EventEmitter';
-import type { Method } from './Calliope/Concerns/CallsApi';
+import type { Method, CustomHeaders } from './Calliope/Concerns/CallsApi';
 
 export type {
     AttributeCaster,
@@ -53,7 +53,8 @@ export type {
     AttributeKeys,
     Method,
     SimpleAttributes,
-    SimpleAttributeKeys
+    SimpleAttributeKeys,
+    CustomHeaders
 };
 
 export * from './Support/type';

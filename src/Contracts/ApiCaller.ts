@@ -1,6 +1,5 @@
-import type { Method } from '../Calliope/Concerns/CallsApi';
+import type { Method, CustomHeaders } from '../Calliope/Concerns/CallsApi';
 import type { ApiResponse } from './HandlesApiResponse';
-import type { MaybeArray } from '../Support/type';
 
 /**
  * Interface prescribes what's expected to be implemented
@@ -47,7 +46,7 @@ export default interface ApiCaller {
         url: string,
         method: Method,
         data?: FormData | Record<string, unknown>,
-        customHeaders?: Record<string, MaybeArray<string>>,
+        customHeaders?: CustomHeaders,
         queryParameters?: Record<string, any>
     ) => Promise<ApiResponse>;
 }

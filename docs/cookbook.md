@@ -21,6 +21,7 @@ Don't be afraid of changing and overriding methods if that solves your problem. 
 <code-group>
 
 <code-block title="Javascript">
+
 ```js
 // UserCollection.js
 import User from '@models/User';
@@ -32,7 +33,7 @@ export default class UserCollection extends ModelCollection {
     }
     
     async markAsReady() {
-        return User.whereKey(this.modelKeys()).update({ ready: true });
+        return User.whereKey(this.modelKeys()).patch({ ready: true });
     }
 }
 
@@ -40,8 +41,10 @@ export default class UserCollection extends ModelCollection {
 import User from '@models/User';
 import UserCollection from '@/UserCollection';
 
-const modelCollection = await User.latest().limit(10).get();
-let users = new UserCollection(modelCollection.toArray());
+const users = await User.latest()
+    .limit(10)
+    .get()
+    .then(users => new UserCollection(users.toArray()));
 
 if (users.areAwake().length === modelCollection.length) {
     await users.markAsReady();
@@ -52,18 +55,19 @@ if (users.areAwake().length === modelCollection.length) {
 </code-block>
 
 <code-block title="Typescript">
+
 ```ts
 // UserCollection.ts
 import User from '@models/User';
 import { ModelCollection } from '@upfrontjs/framework';
 
-export default class UserCollection<T extends User> extends ModelCollection<T> {
-    areAwake(): ModelCollection<T> {
+export default class UserCollection<T extends User = User> extends ModelCollection<T> {
+    public areAwake(): ModelCollection<T> {
         return this.filter(user => user.wokeUp && user.hadBeverage('hot'));
     }
 
-    async markAsReady(): ModelCollection<User> {
-        return User.whereKey(this.modelKeys()).update({ ready: true });
+    public async markAsReady(): ModelCollection<T> {
+        return User.whereKey(this.modelKeys()).patch({ ready: true });
     }
 }
 
@@ -71,8 +75,10 @@ export default class UserCollection<T extends User> extends ModelCollection<T> {
 import User from '@models/User';
 import UserCollection from '@/UserCollection';
 
-const modelCollection = await User.latest().limit(10).get();
-let users = new UserCollection(modelCollection.toArray());
+const users = await User.latest()
+    .limit(10)
+    .get()
+    .then(users => new UserCollection(users.toArray()));
 
 if (users.areAwake().length === modelCollection.length) {
     await users.markAsReady();

@@ -182,7 +182,7 @@ This in action will look like:
 ```js
 import User from '@Models/User';
 
-const user = new User({ someAttribute: 1, name: 'name' });
+const user = User.create({ someAttribute: 1, name: 'name' });
 user.getAttributes(); // { name: 'name' }
 ```
 
@@ -318,7 +318,7 @@ After you have defined your accessors and mutators they'll be automatically call
 ```js
 import User from '@Models/User';
 
-const user = new User({ title: 'Dr.', fullName: 'John Doe' });
+const user = User.create({ title: 'Dr.', fullName: 'John Doe' });
 user.fullName; // 'Dr. John Doe'
 ```
 
@@ -344,6 +344,7 @@ While some prefer to name their variables and object keys as [camelCase](../help
 
 <code-group>
 <code-block title="Javascript">
+
 ```js
 // User.js
 import { Model } from '@upfrontjs/framework';
@@ -357,6 +358,7 @@ export default class User extends Model {
 </code-block>
 
 <code-block title="Typescript">
+
 ```ts
 // User.ts
 import { Model } from '@upfrontjs/framework';
@@ -370,7 +372,7 @@ export default class User extends Model {
 </code-block>
 </code-group>
 
-When using mass-assignment like the [constructor](#attribute-management) and the [fill](#fill) methods, all keys will automatically transform to its respective casing. `user.fill({ some_value: 1 }).someValue; // 1`
+When using mass-assignment like the [create](./readme.md#create) and the [fill](#fill) methods, all keys of the given arguments will automatically and recursively transform to the set casing. e.g.: `user.fill({ some_value: 1 }).someValue; // 1`
 The default value is `'camel'`. This can be counteracted by the [serverAttributeCasing](./api-calls.md#serverattributecasing) getter method when sending data to the server.
 
 ---
@@ -385,7 +387,7 @@ Just like object literals, models are also iterable using a for of loop. This lo
 import User from '@Models/User';
 import Shift from '@Models/Shift';
 
-const user = new User({ title: 'Dr.', shifts: [new Shift] });
+const user = User.create({ title: 'Dr.', shifts: [new Shift] });
 
 for (const [item, key] of user) {
     // ...
@@ -419,7 +421,7 @@ The `getAttribute` method is what's used for getting attributes from the model. 
 ```js
 import User from '@Models/User';
 
-const user = new User({ name: 'John Doe' });
+const user = User.create({ name: 'John Doe' });
 user.name; // 'John Doe'
 user.getAttribute('name'); // 'John Doe'
 ```
@@ -441,7 +443,7 @@ The `getAttributes` method returns all the attributes that has been set in an ob
 ```js
 import User from '@Models/User';
 
-const user = new User({ firstName: 'John', lastName: 'Doe' });
+const user = User.create({ firstName: 'John', lastName: 'Doe' });
 user.getAttributes(); // { firstName: 'John', lastName: 'Doe' }
 ```
 
@@ -456,7 +458,7 @@ The `getAttributeKeys` method returns all the attribute keys on the model curren
 ```js
 import User from '@Models/User';
 
-const user = new User({ firstName: 'John', lastName: 'Doe' });
+const user = User.create({ firstName: 'John', lastName: 'Doe' });
 user.getAttributeKeys(); // ['firstName', 'lastName']
 ```
 
@@ -478,7 +480,7 @@ export default class User extends Model {
 import User from '@Models/User';
 import Shift from '@Models/Shift';
 
-const user = new User({ firstName: 'John', lastName: 'Doe' });
+const user = User.create({ firstName: 'John', lastName: 'Doe' });
 user.property = 1;
 user.addRelation('shifts', [new Shift]);
 
@@ -495,7 +497,7 @@ The `fill` method merges in the given attributes onto the model that are conside
 ```js
 import User from '@Models/User';
 
-const user = new User({ firstName: 'John', lastName: 'Doe' });
+const user = User.create({ firstName: 'John', lastName: 'Doe' });
 user.fill({ fistName: 'Jane', title: 'Dr.' }).getAttributes(); // { firstName: 'Jane', lastName: 'Doe', title: 'Dr. }
 ```
 
@@ -510,7 +512,7 @@ The `only` method returns only the attributes that match the given key(s).
 ```js
 import User from '@Models/User';
 
-const user = new User({ firstName: 'John', lastName: 'Doe' });
+const user = User.create({ firstName: 'John', lastName: 'Doe' });
 user.only('fistName'); // { firstName: 'John' }
 ```
 #### except
@@ -520,7 +522,7 @@ The `except` method returns only the attributes that match does not the given ke
 ```js
 import User from '@Models/User';
 
-const user = new User({ firstName: 'John', lastName: 'Doe', title: 'Dr.' });
+const user = User.create({ firstName: 'John', lastName: 'Doe', title: 'Dr.' });
 user.except(['fistName', 'title']); // { lastName: 'Doe' }
 ```
 
@@ -531,7 +533,7 @@ The `toJSON` method returns the json representation of the model's attributes an
 ```js
 import User from '@Models/User';
 
-const user = new User({ name: 'John Doe' });
+const user = User.create({ name: 'John Doe' });
 user.addRelation('shifts', new Shift({ shiftAttr: 1 })).toJSON(); // {"name":"John Doe","shifts":[{"shiftAttr":1}]}
 ```
 
@@ -545,7 +547,7 @@ The `syncOriginal` method set's the original state of the data to the current st
 ```js
 import User from '@Models/User';
 
-const user = new User({ name: 'John Doe' });
+const user = User.create({ name: 'John Doe' });
 user.name = 'Jane Doe';
 user.getOriginal('name'); // 'John Doe'
 user.syncOriginal().getOriginal('name'); // 'Jane Doe'
@@ -558,7 +560,7 @@ The `reset` method will set the attributes to the original values, discarding an
 ```js
 import User from '@Models/User';
 
-const user = new User({ name: 'John Doe' });
+const user = User.create({ name: 'John Doe' });
 user.name = 'new name';
 user.getChanges(); // { name: 'new name' }
 user.reset().getChanges(); // {}
@@ -570,7 +572,7 @@ The `getOriginal` method returns the original value in a resolved format. Meanin
 ```js
 import User from '@Models/User';
 
-const user = new User({ name: 'John Doe' });
+const user = User.create({ name: 'John Doe' });
 user.name = 'Jane Doe';
 user.getOriginal('name'); // 'John Doe'
 user.getOriginal('title', 'Mr.'); // 'Mr.'
@@ -586,7 +588,7 @@ The `getChanges` method returns only the changed data since the model was constr
 ```js
 import User from '@Models/User';
 
-const user = new User({ name: 'John Doe', title: 'Mr.' });
+const user = User.create({ name: 'John Doe', title: 'Mr.' });
 user.getChanges(); // {}
 user.name = 'Jane Doe';
 user.getChanges(); // { name: 'Jane Doe' }
@@ -601,7 +603,7 @@ The `getDeletedAttributes` method returns only the deleted attributes since the 
 ```js
 import User from '@Models/User';
 
-const user = new User({ name: 'John Doe', title: 'Mr.' });
+const user = User.create({ name: 'John Doe', title: 'Mr.' });
 user.getDeletedAttributes(); // {}
 user.deleteAttribute('name').getDeletedAttributes(); // { name: 'John Doe' }
 user.deleteAttribute('title').getDeletedAttributes('name'); // { name: 'John Doe' }
@@ -614,7 +616,7 @@ The `getNewAttributes` method returns only the newly added attributes since the 
 ```js
 import User from '@Models/User';
 
-const user = new User({ name: 'John Doe', title: 'Mr.' });
+const user = User.create({ name: 'John Doe', title: 'Mr.' });
 user.getNewAttributes(); // {}
 user.setAttribute('attr', 1).getNewAttributes(); // { attr: 1 }
 user.setAttribute('attr2', 2).getNewAttributes('attr'); // { attr: 1 }
@@ -626,7 +628,7 @@ The `hasChanges` method determines whether any changes have occurred since const
 ```js
 import User from '@Models/User';
 
-const user = new User({ name: 'John Doe', title: 'Mr.' });
+const user = User.create({ name: 'John Doe', title: 'Mr.' });
 user.hasChanges(); // false
 user.name = 'Jane Doe';
 user.hasChanges(); // true
@@ -647,7 +649,7 @@ The `isClean` method determines whether the attributes matches with the original
 ```js
 import User from '@Models/User';
 
-const user = new User({ name: 'John Doe', title: 'Mr.' });
+const user = User.create({ name: 'John Doe', title: 'Mr.' });
 user.isClean(); // true
 user.name = 'Jane Doe';
 user.isClean(); // false

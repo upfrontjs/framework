@@ -57,7 +57,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @readonly
      */
-    public get attributeCasing(): 'camel' | 'snake' {
+    protected get attributeCasing(): 'camel' | 'snake' {
         return 'camel';
     }
 

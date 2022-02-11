@@ -24,7 +24,11 @@ import type AttributeCaster from './Contracts/AttributeCaster';
 import type HandlesApiResponse from './Contracts/HandlesApiResponse';
 import type ApiCaller from './Contracts/ApiCaller';
 import type Configuration from './Contracts/Configuration';
-import type { Attributes, AttributeKeys } from './Calliope/Concerns/HasAttributes';
+import type { Attributes,
+    AttributeKeys,
+    SimpleAttributes,
+    SimpleAttributeKeys
+} from './Calliope/Concerns/HasAttributes';
 import type FactoryHooks from './Contracts/FactoryHooks';
 import type { CastType } from './Calliope/Concerns/CastsAttributes';
 import type { QueryParams } from './Calliope/Concerns/BuildsQuery';
@@ -47,7 +51,9 @@ export type {
     Events,
     Listener,
     AttributeKeys,
-    Method
+    Method,
+    SimpleAttributes,
+    SimpleAttributeKeys
 };
 
 export * from './Support/type';

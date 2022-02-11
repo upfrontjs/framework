@@ -2,6 +2,7 @@ import HasTimestamps from './HasTimestamps';
 import type Model from '../Model';
 import LogicException from '../../Exceptions/LogicException';
 import { finish } from '../../Support/string';
+import type { SimpleAttributes } from './HasAttributes';
 
 export default class SoftDeletes extends HasTimestamps {
     /**
@@ -54,7 +55,7 @@ export default class SoftDeletes extends HasTimestamps {
      *
      * @return {Promise<boolean>}
      */
-    public async delete<T extends Model>(data: Record<string, unknown> = {}): Promise<T> {
+    public async delete<T extends Model>(data?: FormData | SimpleAttributes | SimpleAttributes<this>): Promise<T> {
         if (!this.usesSoftDeletes()) {
             return super.delete(data);
         }

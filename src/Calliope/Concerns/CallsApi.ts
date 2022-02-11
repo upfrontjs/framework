@@ -6,7 +6,7 @@ import ApiResponseHandler from '../../Services/ApiResponseHandler';
 import type Model from '../Model';
 import type { QueryParams } from './BuildsQuery';
 import BuildsQuery from './BuildsQuery';
-import type { Attributes } from './HasAttributes';
+import type { Attributes, SimpleAttributes } from './HasAttributes';
 import { isObjectLiteral } from '../../Support/function';
 import { finish, kebab, plural } from '../../Support/string';
 import type { MaybeArray, StaticToThis } from '../../Support/type';
@@ -77,7 +77,7 @@ export default class CallsApi extends BuildsQuery {
      */
     public async call<T = any>(
         method: Method,
-        data?: Attributes | FormData | QueryParams,
+        data?: FormData | QueryParams | SimpleAttributes<this>,
         customHeaders?: Record<string, MaybeArray<string>>
     ): Promise<T | undefined> {
         const endpoint = this.getEndpoint();
@@ -96,7 +96,7 @@ export default class CallsApi extends BuildsQuery {
         const apiCaller = new (config.get('api', API));
         const handlesApiResponse = new (config.get('apiResponseHandler', ApiResponseHandler))!;
 
-        if (data && isObjectLiteral<Attributes>(data) && !(data instanceof FormData)) {
+        if (data && isObjectLiteral<SimpleAttributes>(data) && !(data instanceof FormData)) {
             data = this.transformKeys(data, true);
         }
 
@@ -188,7 +188,7 @@ export default class CallsApi extends BuildsQuery {
      * @return
      */
     // @ts-expect-error - despite TS2526, it still infers correctly
-    public async post<T extends Model = this>(data: Attributes | FormData): Promise<T> {
+    public async post<T extends Model = this>(data: FormData | SimpleAttributes | SimpleAttributes<this>): Promise<T> {
         return this.call('POST', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
@@ -201,7 +201,7 @@ export default class CallsApi extends BuildsQuery {
      * @return
      */
     // @ts-expect-error - despite TS2526, it still infers correctly
-    public async put<T extends Model = this>(data: Attributes | FormData): Promise<T> {
+    public async put<T extends Model = this>(data: FormData | SimpleAttributes | SimpleAttributes<this>): Promise<T> {
         return this.call('PUT', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
@@ -214,7 +214,7 @@ export default class CallsApi extends BuildsQuery {
      * @return
      */
     // @ts-expect-error - despite TS2526, it still infers correctly
-    public async patch<T extends Model = this>(data: Attributes | FormData): Promise<T> {
+    public async patch<T extends Model = this>(data: FormData | SimpleAttributes | SimpleAttributes<this>): Promise<T> {
         return this.call('PATCH', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
@@ -228,7 +228,7 @@ export default class CallsApi extends BuildsQuery {
      * @return {Promise<boolean>}
      */
     // @ts-expect-error - despite TS2526, it still infers correctly
-    public async delete<T extends Model = this>(data?: Attributes | FormData): Promise<T> {
+    public async delete<T extends Model = this>(data?: FormData | SimpleAttributes | SimpleAttributes<this>): Promise<T> {
         return this.call('DELETE', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }

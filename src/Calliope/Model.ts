@@ -1,7 +1,7 @@
 import SoftDeletes from './Concerns/SoftDeletes';
 import FactoryBuilder from './Factory/FactoryBuilder';
 import type HasFactory from '../Contracts/HasFactory';
-import type { Attributes, AttributeKeys } from './Concerns/HasAttributes';
+import type { Attributes, AttributeKeys, SimpleAttributes } from './Concerns/HasAttributes';
 import ModelCollection from './ModelCollection';
 import LogicException from '../Exceptions/LogicException';
 import { finish } from '../Support/string';
@@ -79,7 +79,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {this}
      */
-    public new(attributes?: Attributes<this> | Model): this {
+    public new(attributes?: Attributes<this> | this): this {
         return (this.constructor as typeof Model).create(attributes) as this;
     }
 
@@ -100,10 +100,10 @@ export default class Model extends SoftDeletes implements HasFactory {
         if (attributes instanceof Model) {
             // if creating by passing a model, we'll take the attributes
             // in their current state, not the original.
-            const allProperties = (attributes as T).getRawAttributes();
+            const allProperties = attributes.getRawAttributes() as Attributes<T>;
 
-            if (isObjectLiteral((attributes as T).relations)) {
-                Object.assign(allProperties, cloneDeep((attributes as T).relations));
+            if (isObjectLiteral(attributes.relations)) {
+                Object.assign(allProperties, attributes.getRelations());
             }
 
             attributes = allProperties;
@@ -138,7 +138,7 @@ export default class Model extends SoftDeletes implements HasFactory {
             }
         }
 
-        const attributes = { ...this.getRawAttributes(), ...this.getRelations() };
+        const attributes = { ...this.getRawAttributes(), ...this.getRelations() } as Attributes<this>;
         excluded.forEach(key => delete attributes[key]);
 
         return this.new(attributes);
@@ -245,7 +245,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @param {object=} data
      */
-    public async save(data?: Attributes<this>): Promise<this> {
+    public async save(data?: SimpleAttributes<this>): Promise<this> {
         const dataToSave = Object.assign(this.exists ? this.getChanges() : this.getRawAttributes(), data);
 
         if (!Object.keys(dataToSave).length) {
@@ -284,7 +284,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @see CallsApi.prototype.patch
      */
-    public async update(data: Attributes<this>): Promise<this> {
+    public async update(data: SimpleAttributes<this>): Promise<this> {
         this.throwIfModelDoesntExistsWhenCalling('update');
         return this.setEndpoint(finish(this.getEndpoint(), '/') + String(this.getKey()))
             .patch(data);

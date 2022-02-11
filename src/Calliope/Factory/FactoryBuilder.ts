@@ -1,5 +1,5 @@
 import type Model from '../Model';
-import type { Attributes } from '../Concerns/HasAttributes';
+import type { Attributes, SimpleAttributes } from '../Concerns/HasAttributes';
 import ModelCollection from '../ModelCollection';
 import Factory from './Factory';
 import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
@@ -94,8 +94,8 @@ export default class FactoryBuilder<T extends Model, F extends Factory<T> = Fact
      *
      * @param {object=} attributes
      */
-    public raw(attributes?: Attributes<T>): Attributes | Collection<Attributes> {
-        return this.addRelations(this.rawAttributes(attributes), 'raw') as Attributes | Collection<Attributes>;
+    public raw(attributes?: SimpleAttributes<T>): Attributes<T> | Collection<Attributes<T>> {
+        return this.addRelations(this.rawAttributes(attributes), 'raw') as Attributes<T> | Collection<Attributes<T>>;
     }
 
     /**
@@ -104,8 +104,8 @@ export default class FactoryBuilder<T extends Model, F extends Factory<T> = Fact
      *
      * @param {object=} attributes
      */
-    public rawOne(attributes?: Attributes<T>): T {
-        return this.times(1).raw(attributes) as T;
+    public rawOne(attributes?: SimpleAttributes<T>): Attributes<T> {
+        return this.times(1).raw(attributes) as Attributes<T>;
     }
 
     /**
@@ -114,11 +114,11 @@ export default class FactoryBuilder<T extends Model, F extends Factory<T> = Fact
      *
      * @param {object=} attributes
      */
-    public rawMany(attributes?: Attributes<T>): Collection<Attributes> {
+    public rawMany(attributes?: SimpleAttributes<T>): Collection<Attributes<T>> {
         const rawAttributes = this.raw(attributes);
 
         if (!(rawAttributes instanceof Collection)) {
-            return new Collection<Attributes>(rawAttributes);
+            return new Collection<Attributes<T>>(rawAttributes);
         }
 
         return rawAttributes;

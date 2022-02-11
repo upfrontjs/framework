@@ -99,9 +99,9 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {Collection<number|string>}
      */
-    public modelKeys(): Collection<number | string | undefined> {
+    public modelKeys(): Collection<ReturnType<T['getKey']>> {
         this._throwIfNotModels();
-        return this.map(model => model.getKey());
+        return this.map(model => model.getKey()) as unknown as Collection<ReturnType<T['getKey']>>;
     }
 
     /**

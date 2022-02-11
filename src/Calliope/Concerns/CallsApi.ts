@@ -76,6 +76,16 @@ export default class CallsApi extends BuildsQuery {
      * @return {Promise<any>}
      */
     public async call<T = any>(
+        method: 'GET' | 'get' | 'HEAD' | 'head',
+        data?: QueryParams | SimpleAttributes,
+        customHeaders?: Record<string, MaybeArray<string>>
+    ): Promise<T | undefined>;
+    public async call<T = any>(
+        method: Exclude<Method, 'GET' | 'get' | 'HEAD' | 'head'>,
+        data?: FormData | SimpleAttributes | SimpleAttributes<this>,
+        customHeaders?: Record<string, MaybeArray<string>>
+    ): Promise<T | undefined>;
+    public async call<T = any>(
         method: Method,
         data?: FormData | QueryParams | SimpleAttributes<this>,
         customHeaders?: Record<string, MaybeArray<string>>

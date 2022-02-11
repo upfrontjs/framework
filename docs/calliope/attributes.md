@@ -324,20 +324,6 @@ user.fullName; // 'Dr. John Doe'
 
 ## Attribute management
 
-Models can be constructed with the `new` keyword. This will mass assign attributes to the model while respecting the [guarding](#guarding) settings.
-
-::: warning
-When constructing an instance and passing in another instance of the model:
-```js
-import User from '@Models/User';
-import Shift from '@Models/Shift';
-
-const user = new User({ name: 'John Doe' });
-const newUser = new User(user);
-```
-It will clone the [raw attributes](#getrawattributes) and the [relationships](./relationships.md) of the model.
-:::
-
 #### attributeCasing
 
 While some prefer to name their variables and object keys as [camelCase](../helpers/readme.md#camel) others will prefer [snake_case](../helpers/readme.md#snake) or perhaps there are different conventions between the front and back end. To accommodate such preferences you can set the `attributeCasing` getter to return either `'camel'` or `'snake'` like so:

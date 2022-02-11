@@ -14,7 +14,7 @@ The `loading` property indicates whether there is an ongoing request on the mode
 
 #### serverAttributeCasing
 
-The `serverAttributeCasing` is a getter which similarly to [attributeCasing](./attributes.md#attributecasing) casts the request keys to the given casing on outgoing requests. The valid values are `'snake'` or `'camel'` with `'snake'` being the default value.
+The `serverAttributeCasing` is a getter which similarly to [attributeCasing](./attributes.md#attributecasing) casts the request keys recursively to the given casing on outgoing requests. The valid values are `'snake'` or `'camel'` with `'snake'` being the default value.
 
 #### _lastSyncedAt
 

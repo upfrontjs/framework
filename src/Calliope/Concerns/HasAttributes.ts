@@ -44,6 +44,15 @@ export type SimpleAttributes<T extends HasAttributes = HasAttributes> = {
     [K in SimpleAttributeKeys<T>]: T[K] extends Model | ModelCollection<Model> ? never : T[K];
 };
 
+/**
+ * Unwrap the model attributes recursively into attributes or array of attributes.
+ */
+export type RawAttributes<T extends HasAttributes> = {
+    [K in AttributeKeys<T>]: T[K] extends Model
+        ? RawAttributes<T[K]>
+        : T[K] extends ModelCollection<infer M> ? RawAttributes<M>[] : T[K]
+};
+
 export default class HasAttributes extends GuardsAttributes implements Jsonable, Iterable<any> {
     /**
      * The model attribute.
@@ -676,7 +685,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     /**
      * @inheritDoc
      */
-    public toJSON<T extends ReturnType<typeof JSON.parse>>(): T {
+    public toJSON<T extends ReturnType<typeof JSON.parse> = RawAttributes<this>>(): T {
         const json = this.getAttributes() as SimpleAttributes;
 
         const relations = (this as unknown as HasRelations).getRelations();

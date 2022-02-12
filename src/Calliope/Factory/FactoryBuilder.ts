@@ -1,5 +1,5 @@
 import type Model from '../Model';
-import type { Attributes, SimpleAttributes } from '../Concerns/HasAttributes';
+import type { Attributes, RawAttributes } from '../Concerns/HasAttributes';
 import ModelCollection from '../ModelCollection';
 import Factory from './Factory';
 import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
@@ -94,8 +94,11 @@ export default class FactoryBuilder<T extends Model, F extends Factory<T> = Fact
      *
      * @param {object=} attributes
      */
-    public raw(attributes?: SimpleAttributes<T>): Attributes<T> | Collection<Attributes<T>> {
-        return this.addRelations(this.rawAttributes(attributes), 'raw') as Attributes<T> | Collection<Attributes<T>>;
+    public raw(attributes?: RawAttributes<T>): Collection<RawAttributes<T>> | RawAttributes<T> {
+        return this.addRelations(
+            this.rawAttributes(attributes),
+            'raw'
+        ) as Collection<RawAttributes<T>> | RawAttributes<T>;
     }
 
     /**
@@ -104,8 +107,8 @@ export default class FactoryBuilder<T extends Model, F extends Factory<T> = Fact
      *
      * @param {object=} attributes
      */
-    public rawOne(attributes?: SimpleAttributes<T>): Attributes<T> {
-        return this.times(1).raw(attributes) as Attributes<T>;
+    public rawOne(attributes?: RawAttributes<T>): RawAttributes<T> {
+        return this.times(1).raw(attributes) as RawAttributes<T>;
     }
 
     /**
@@ -114,11 +117,11 @@ export default class FactoryBuilder<T extends Model, F extends Factory<T> = Fact
      *
      * @param {object=} attributes
      */
-    public rawMany(attributes?: SimpleAttributes<T>): Collection<Attributes<T>> {
+    public rawMany(attributes?: RawAttributes<T>): Collection<RawAttributes<T>> {
         const rawAttributes = this.raw(attributes);
 
         if (!(rawAttributes instanceof Collection)) {
-            return new Collection<Attributes<T>>(rawAttributes);
+            return new Collection<RawAttributes<T>>(rawAttributes);
         }
 
         return rawAttributes;

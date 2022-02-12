@@ -24,23 +24,23 @@ describe('FactoryBuilder', () => {
         const factoryName: string = new User().factory().constructor.name;
 
         it('should return the model with the states applied', () => {
-            const user = factoryBuilder.state('withTeam').create() as User;
+            const user = factoryBuilder.state('withTeam').createOne();
             expect(user.team).toBeInstanceOf(Team);
 
-            const newUser = factoryBuilder.state('nameOverridden').create() as User;
+            const newUser = factoryBuilder.state('nameOverridden').createOne();
             expect(newUser.name).not.toBe(user.name);
         });
 
         it('should take multiple arguments', () => {
-            const user = factoryBuilder.create() as User;
-            const newUser = factoryBuilder.state(['withTeam', 'nameOverridden']).create() as User;
+            const user = factoryBuilder.createOne();
+            const newUser = factoryBuilder.state(['withTeam', 'nameOverridden']).createOne();
 
             expect(newUser.team).toBeInstanceOf(Team);
             expect(newUser.name).not.toBe(user.name);
         });
 
         it('should call the states with an empty target model and the current index', () => {
-            const user = factoryBuilder.state(['calledWithArguments']).create() as User;
+            const user = factoryBuilder.state(['calledWithArguments']).createOne();
 
             expect(user.modelAttribute).toBe(User.name);
             expect(user.index).toBe(1);
@@ -447,8 +447,8 @@ describe('FactoryBuilder', () => {
 
     describe('with()', () => {
         it('should add the relation data to the result', () => {
-            expect((factoryBuilder.with(Contract.factory()).raw() as Attributes).contract).toBeDefined();
-            expect((factoryBuilder.with(Contract.factory()).make() as User).contract).toBeInstanceOf(Contract);
+            expect(factoryBuilder.with(Contract.factory()).rawOne().contract).toBeDefined();
+            expect(factoryBuilder.with(Contract.factory()).makeOne().contract).toBeInstanceOf(Contract);
 
             factoryBuilder.with(Shift.factory()).times(2).makeMany().forEach((user: User) => {
                 expect(user.shifts).toBeInstanceOf(ModelCollection);
@@ -475,8 +475,8 @@ describe('FactoryBuilder', () => {
         });
 
         it('should accept a model constructor as the first argument', () => {
-            expect((factoryBuilder.with(Contract).raw() as Attributes).contract).toBeDefined();
-            expect((factoryBuilder.with(Contract).make() as User).contract).toBeInstanceOf(Contract);
+            expect(factoryBuilder.with(Contract).rawOne().contract).toBeDefined();
+            expect(factoryBuilder.with(Contract).makeOne().contract).toBeInstanceOf(Contract);
 
             factoryBuilder.with(Shift).times(2).makeMany().forEach((user: User) => {
                 expect(user.shifts).toBeInstanceOf(ModelCollection);

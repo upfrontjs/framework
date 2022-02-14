@@ -4,7 +4,7 @@ import Team from '../../mock/Models/Team';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
 import InvalidOffsetException from '../../../src/Exceptions/InvalidOffsetException';
 import Factory from '../../../src/Calliope/Factory/Factory';
-import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
+import type { Attributes, RawAttributes } from '../../../src/Calliope/Concerns/HasAttributes';
 import Collection from '../../../src/Support/Collection';
 import UserFactory from '../../mock/Factories/UserFactory';
 import Model from '../../../src/Calliope/Model';
@@ -12,6 +12,7 @@ import Shift from '../../mock/Models/Shift';
 import Contract from '../../mock/Models/Contract';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import { now } from '../../setupTests';
+import { cloneDeep } from 'lodash';
 
 let factoryBuilder: FactoryBuilder<User, UserFactory>;
 
@@ -141,6 +142,40 @@ describe('FactoryBuilder', () => {
             expect(func).toHaveBeenCalledTimes(2);
             expect(func).toHaveBeenNthCalledWith(1, 'first name overwrite');
             expect(func).toHaveBeenNthCalledWith(2, 'second name overwrite');
+        });
+    });
+
+    describe('attributes()', () => {
+        it('should be applied after the states', () => {
+            const user = factoryBuilder.state(['nameOverridden']).createOne();
+            const newUser = factoryBuilder.attributes({ name: 'custom name' }).createOne();
+
+            expect(newUser.name).not.toBe(user.name);
+            expect(newUser.name).toBe('custom name');
+        });
+
+        it('should allow for customising related factories', () => {
+            const user = factoryBuilder
+                .with(Contract.factory().attributes({ contractAttribute: 1 }))
+                .createOne();
+
+            expect((user.contract as Contract).contractAttribute).toBe(1);
+        });
+
+        it('should be resolved the same format as definition and states', () => {
+            const func = jest.fn();
+            factoryBuilder
+                .attributes({
+                    name: (attrs: Attributes<User> | RawAttributes<User>) => {
+                        func(cloneDeep(attrs));
+                        return 'name from attributes method';
+                    }
+                })
+                .rawOne();
+
+            expect(func).toHaveBeenCalledWith({
+                name: 'username 1'
+            });
         });
     });
 

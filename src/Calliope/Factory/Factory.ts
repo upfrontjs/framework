@@ -1,7 +1,7 @@
-import type { Attributes } from '../Concerns/HasAttributes';
 import type Model from '../Model';
 import GlobalConfig from '../../Support/GlobalConfig';
 import type FactoryHooks from '../../Contracts/FactoryHooks';
+import type { ResolvableAttributes } from './FactoryBuilder';
 
 export default class Factory<T extends Model> implements FactoryHooks<T> {
     [method: string]: CallableFunction;
@@ -20,7 +20,7 @@ export default class Factory<T extends Model> implements FactoryHooks<T> {
      * @return {Attributes}
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public definition(_emptyModel: T, _loopIndex: number): Attributes {
+    public definition(_emptyModel: T, _loopIndex: number): ResolvableAttributes {
         return {};
     }
 

@@ -13,6 +13,18 @@ import type { MaybeArray } from '../../Support/type';
 
 type State<T extends Factory<Model>> = Exclude<keyof T, 'definition' | 'getClassName' | 'random'>;
 
+/**
+ * The model attributes when constructing with a factory.
+ * Attributes might be functions called with the previously
+ * resolved attributes returning the intended attribute value.
+ */
+export type ResolvableAttributes<T extends Model = Model> = {
+    [K in keyof Attributes<T>]:
+    RawAttributes<T>[K]
+    | T[K]
+    | ((previouslyResolvedAttributes?: Attributes<T> | RawAttributes<T>) => T[K])
+};
+
 export default class FactoryBuilder<T extends Model, F extends Factory<T> = Factory<T>> {
     /**
      * The number of models to create.
@@ -53,6 +65,11 @@ export default class FactoryBuilder<T extends Model, F extends Factory<T> = Fact
      */
     protected relations: Record<string, FactoryBuilder<Model>> = {};
 
+    /**
+     * Extra attributes to be added after resolving the states.
+     */
+    public extraAttributes = {} as ResolvableAttributes<T>;
+
     public constructor(modelConstructor: new (attributes?: Attributes<T>) => T) {
         this.model = new modelConstructor;
     }
@@ -68,6 +85,21 @@ export default class FactoryBuilder<T extends Model, F extends Factory<T> = Fact
     public state(states: MaybeArray<State<F> | string>): this;
     public state(states: MaybeArray<string>): this {
         this.states = Array.isArray(states) ? [...new Set(states)] : [states];
+
+        return this;
+    }
+
+    /**
+     * Attributes to be added fluently to the factory for
+     * when building the model after resolving the states,
+     * allowing customisation of relating factories.
+     *
+     * @param {object} attributes
+     *
+     * @return {this}
+     */
+    public attributes(attributes: ResolvableAttributes<T>): this {
+        this.extraAttributes = attributes;
 
         return this;
     }
@@ -411,6 +443,8 @@ export default class FactoryBuilder<T extends Model, F extends Factory<T> = Fact
                 compiledAttributes = this.resolveAttributes(attributesFromState as Attributes, compiledAttributes);
             });
 
+            compiledAttributes = this.resolveAttributes(this.extraAttributes, compiledAttributes);
+
             if (this.model.usesTimestamps()) {
                 attributes[this.model.getCreatedAtName()] = attributes[this.model.getCreatedAtName()] ?? null;
                 attributes[this.model.getUpdatedAtName()] = attributes[this.model.getUpdatedAtName()] ?? null;
@@ -444,7 +478,10 @@ export default class FactoryBuilder<T extends Model, F extends Factory<T> = Fact
      *
      * @return {object}
      */
-    private resolveAttributes(attributes: Attributes, previouslyResolvedAttributes: Attributes = {}): Attributes {
+    private resolveAttributes(
+        attributes: ResolvableAttributes,
+        previouslyResolvedAttributes: Attributes = {}
+    ): Attributes {
         Object.getOwnPropertyNames(attributes)
             .forEach(key => {
                 previouslyResolvedAttributes[key] = attributes[key] instanceof Function

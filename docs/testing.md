@@ -341,6 +341,15 @@ User.factory().state(['admin', 'withTeam']).create()
 ```
 ---
 The following are the last methods to be called on the builder. These methods return the result of the build. 
+
+#### attributes
+
+The `attributes` method allows for customising the attributes of the constructed model(s). It isn't different to passing in attributes to the creation methods except, this allows for setting attributes of related factories when using the [with](#with) method and aides with more concise code in case the factory is saved for later use.
+
+```js
+User.factory().with(Contract.factory().attributes({ contractAttribute: 1 })).create();
+```
+
 #### raw
 
 The `raw` method instruct the builder to construct your model's or models' data. It will return the attributes in an object literal or a [Collection](./helpers/collection.md) of them depending on the [`times`](#times) method call or lack there of. This will not include any primary keys and [timestamps](./calliope/timestamps.md).

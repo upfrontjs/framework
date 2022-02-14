@@ -1,10 +1,10 @@
 import SoftDeletes from './Concerns/SoftDeletes';
 import FactoryBuilder from './Factory/FactoryBuilder';
 import type HasFactory from '../Contracts/HasFactory';
-import type { Attributes, AttributeKeys } from './Concerns/HasAttributes';
+import type { Attributes, AttributeKeys, SimpleAttributes } from './Concerns/HasAttributes';
 import ModelCollection from './ModelCollection';
 import LogicException from '../Exceptions/LogicException';
-import { finish, isUuid } from '../Support/string';
+import { finish } from '../Support/string';
 import type { MaybeArray, StaticToThis } from '../Support/type';
 import { cloneDeep } from 'lodash';
 import { isObjectLiteral } from '../Support/function';
@@ -22,12 +22,23 @@ export default class Model extends SoftDeletes implements HasFactory {
     }
 
     /**
+     * The type of the key that acts as the primary key of the model.
+     *
+     * @type {'number' | 'string'}
+     *
+     * @protected
+     */
+    protected get keyType(): 'number' | 'string' {
+        return 'number';
+    }
+
+    /**
      * Indicates whether the model exists on the backend or not.
      *
      * @type {boolean}
      */
     public get exists(): boolean {
-        let boolean = isUuid(String(this.getKey())) || !isNaN(Number(this.getKey()));
+        let boolean = this.keyType === 'string' ? !!this.getKey() : !isNaN(Number(this.getKey()));
         const lastSyncedAt = '_' + this.setStringCase('last_synced_at');
 
         if (boolean && this.usesTimestamps()) {
@@ -55,8 +66,10 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {string|number}
      */
-    public getKey(): number | string | undefined {
-        return this.getAttribute(this.getKeyName()) as number | string | undefined;
+    public getKey<
+        T extends 'number' | 'string' = this['keyType']
+    >(): (T extends 'number' ? number : string) | undefined {
+        return this.getAttribute(this.getKeyName()) as (T extends 'number' ? number : string) | undefined;
     }
 
     /**
@@ -66,7 +79,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {this}
      */
-    public new(attributes?: Attributes<this> | Model): this {
+    public new(attributes?: Attributes<this> | this): this {
         return (this.constructor as typeof Model).create(attributes) as this;
     }
 
@@ -87,10 +100,10 @@ export default class Model extends SoftDeletes implements HasFactory {
         if (attributes instanceof Model) {
             // if creating by passing a model, we'll take the attributes
             // in their current state, not the original.
-            const allProperties = (attributes as T).getRawAttributes();
+            const allProperties = attributes.getRawAttributes() as Attributes<T>;
 
-            if (isObjectLiteral((attributes as T).relations)) {
-                Object.assign(allProperties, cloneDeep((attributes as T).relations));
+            if (isObjectLiteral(attributes.relations)) {
+                Object.assign(allProperties, attributes.getRelations());
             }
 
             attributes = allProperties;
@@ -125,7 +138,7 @@ export default class Model extends SoftDeletes implements HasFactory {
             }
         }
 
-        const attributes = { ...this.getRawAttributes(), ...this.getRelations() };
+        const attributes = { ...this.getRawAttributes(), ...this.getRelations() } as Attributes<this>;
         excluded.forEach(key => delete attributes[key]);
 
         return this.new(attributes);
@@ -232,7 +245,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @param {object=} data
      */
-    public async save(data?: Attributes<this>): Promise<this> {
+    public async save(data?: SimpleAttributes<this>): Promise<this> {
         const dataToSave = Object.assign(this.exists ? this.getChanges() : this.getRawAttributes(), data);
 
         if (!Object.keys(dataToSave).length) {
@@ -271,7 +284,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @see CallsApi.prototype.patch
      */
-    public async update(data: Attributes<this>): Promise<this> {
+    public async update(data: SimpleAttributes<this>): Promise<this> {
         this.throwIfModelDoesntExistsWhenCalling('update');
         return this.setEndpoint(finish(this.getEndpoint(), '/') + String(this.getKey()))
             .patch(data);

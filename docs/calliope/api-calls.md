@@ -14,11 +14,11 @@ The `loading` property indicates whether there is an ongoing request on the mode
 
 #### serverAttributeCasing
 
-The `serverAttributeCasing` is a getter which similarly to [attributeCasing](./attributes.md#attributecasing) casts the request keys to the given casing on outgoing requests. The valid values are `'snake'` or `'camel'` with `'snake'` being the default value.
+The `serverAttributeCasing` is a getter which similarly to [attributeCasing](./attributes.md#attributecasing) casts the request keys recursively to the given casing on outgoing requests. The valid values are `'snake'` or `'camel'` with `'snake'` being the default value.
 
 #### _lastSyncedAt
 
-The `_lastSyncedAt` or `_last_synced_at` (naming subject to [attributeCasing](./attributes.md#attributecasing)) attribute is a getter attribute that is set only when the model data has been fetched, [saved](./readme.md#save) or [refreshed](./readme.md#refresh). It is type subject to the [datetime](./attributes.md#datetime) setting, with the value of when was the last time the data has been loaded from the backend.
+The `_lastSyncedAt` or `_last_synced_at` (naming subject to [attributeCasing](./attributes.md#attributecasing)) attribute is a getter attribute that is set only when the model data has been fetched, [saved](./readme.md#save) or [refreshed](./readme.md#refresh). Its type subject to the [datetime](./attributes.md#datetime) setting, with the value of when was the last time the data has been loaded from the backend.
 
 ## Methods
 

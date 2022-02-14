@@ -1,5 +1,5 @@
 import type Model from '../Model';
-import type { Attributes } from '../Concerns/HasAttributes';
+import type { Attributes, RawAttributes } from '../Concerns/HasAttributes';
 import ModelCollection from '../ModelCollection';
 import Factory from './Factory';
 import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
@@ -11,7 +11,21 @@ import { plural, singular } from '../../Support/string';
 import type Configuration from '../../Contracts/Configuration';
 import type { MaybeArray } from '../../Support/type';
 
-export default class FactoryBuilder<T extends Model> {
+type State<T extends Factory<Model>> = Exclude<keyof T, 'definition' | 'getClassName' | 'random'>;
+
+/**
+ * The model attributes when constructing with a factory.
+ * Attributes might be functions called with the previously
+ * resolved attributes returning the intended attribute value.
+ */
+export type ResolvableAttributes<T extends Model = Model> = {
+    [K in keyof Attributes<T>]:
+    RawAttributes<T>[K]
+    | T[K]
+    | ((previouslyResolvedAttributes?: Attributes<T> | RawAttributes<T>) => T[K])
+};
+
+export default class FactoryBuilder<T extends Model, F extends Factory<T> = Factory<T>> {
     /**
      * The number of models to create.
      *
@@ -35,14 +49,14 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @protected
      */
-    protected factory: Factory<T> | undefined;
+    protected factory?: F;
 
     /**
      * The states to be called when constructing the attributes.
      *
      * @protected
      */
-    protected states: string[] | undefined;
+    protected states: string[] = [];
 
     /**
      * The relation factories set by the with() method.
@@ -51,19 +65,41 @@ export default class FactoryBuilder<T extends Model> {
      */
     protected relations: Record<string, FactoryBuilder<Model>> = {};
 
+    /**
+     * Extra attributes to be added after resolving the states.
+     */
+    public extraAttributes = {} as ResolvableAttributes<T>;
+
     public constructor(modelConstructor: new (attributes?: Attributes<T>) => T) {
         this.model = new modelConstructor;
     }
 
     /**
      * Set the states to be applied.
+     * States are applied in the order they appear in the argument.
      *
      * @param {string|string[]} states
      *
      * @return {this}
      */
+    public state(states: MaybeArray<State<F> | string>): this;
     public state(states: MaybeArray<string>): this {
-        this.states = Array.isArray(states) ? states : [states];
+        this.states = Array.isArray(states) ? [...new Set(states)] : [states];
+
+        return this;
+    }
+
+    /**
+     * Attributes to be added fluently to the factory for
+     * when building the model after resolving the states,
+     * allowing customisation of relating factories.
+     *
+     * @param {object} attributes
+     *
+     * @return {this}
+     */
+    public attributes(attributes: ResolvableAttributes<T>): this {
+        this.extraAttributes = attributes;
 
         return this;
     }
@@ -90,8 +126,11 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @param {object=} attributes
      */
-    public raw(attributes?: Attributes<T>): Attributes | Collection<Attributes> {
-        return this.addRelations(this.rawAttributes(attributes), 'raw') as Attributes | Collection<Attributes>;
+    public raw(attributes?: RawAttributes<T>): Collection<RawAttributes<T>> | RawAttributes<T> {
+        return this.addRelations(
+            this.rawAttributes(attributes),
+            'raw'
+        ) as Collection<RawAttributes<T>> | RawAttributes<T>;
     }
 
     /**
@@ -100,8 +139,8 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @param {object=} attributes
      */
-    public rawOne(attributes?: Attributes<T>): T {
-        return this.times(1).raw(attributes) as T;
+    public rawOne(attributes?: RawAttributes<T>): RawAttributes<T> {
+        return this.times(1).raw(attributes) as RawAttributes<T>;
     }
 
     /**
@@ -110,11 +149,11 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @param {object=} attributes
      */
-    public rawMany(attributes?: Attributes<T>): Collection<Attributes> {
+    public rawMany(attributes?: RawAttributes<T>): Collection<RawAttributes<T>> {
         const rawAttributes = this.raw(attributes);
 
         if (!(rawAttributes instanceof Collection)) {
-            return new Collection<Attributes>(rawAttributes);
+            return new Collection<RawAttributes<T>>(rawAttributes);
         }
 
         return rawAttributes;
@@ -382,13 +421,13 @@ export default class FactoryBuilder<T extends Model> {
             this.states?.forEach(state => {
                 if (!(state in factory)) {
                     throw new InvalidOffsetException(
-                        '\'' + state + '\' is not defined on the \'' + factory.getClassName() + '\' class.'
+                        '\'' + state + '\' is not defined on the \'' + factory.getClassName() + '\' factory class.'
                     );
                 }
 
                 if (!(factory[state] instanceof Function)) {
                     throw new InvalidOffsetException(
-                        '\'' + state + '\' is not a method on the \'' + factory.getClassName() + '\' class.'
+                        '\'' + state + '\' is not a method on the \'' + factory.getClassName() + '\' factory class.'
                     );
                 }
 
@@ -396,12 +435,15 @@ export default class FactoryBuilder<T extends Model> {
 
                 if (!attributesFromState || typeof attributesFromState !== 'object') {
                     throw new TypeError(
-                        '\'' + state + '\' is not returning an object on \'' + factory.getClassName() + '\' class.'
+                        '\'' + state + '\' is not returning an object on \''
+                        + factory.getClassName() + '\' factory class.'
                     );
                 }
 
                 compiledAttributes = this.resolveAttributes(attributesFromState as Attributes, compiledAttributes);
             });
+
+            compiledAttributes = this.resolveAttributes(this.extraAttributes, compiledAttributes);
 
             if (this.model.usesTimestamps()) {
                 attributes[this.model.getCreatedAtName()] = attributes[this.model.getCreatedAtName()] ?? null;
@@ -436,7 +478,10 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {object}
      */
-    private resolveAttributes(attributes: Attributes, previouslyResolvedAttributes: Attributes = {}): Attributes {
+    private resolveAttributes(
+        attributes: ResolvableAttributes,
+        previouslyResolvedAttributes: Attributes = {}
+    ): Attributes {
         Object.getOwnPropertyNames(attributes)
             .forEach(key => {
                 previouslyResolvedAttributes[key] = attributes[key] instanceof Function
@@ -454,7 +499,7 @@ export default class FactoryBuilder<T extends Model> {
      *
      * @return {Factory}
      */
-    protected getFactory(): Factory<T> {
+    protected getFactory(): F {
         if (this.factory) {
             return this.factory;
         }
@@ -466,42 +511,41 @@ export default class FactoryBuilder<T extends Model> {
             );
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        const factory = this.model.factory();
+        const factory = this.model.factory() as F;
 
         if (!(factory instanceof Factory)) {
             throw new TypeError(
                 'Invalid return type defined on the factory() method on the \'' + this.model.getName() + '\' class.'
-                + 'Expected \'' + Factory.name + '\', got \'' + typeof factory + '\'.'
+                + ' Expected \'' + Factory.name + '\', got \'' + typeof factory + '\'.'
             );
         }
 
-        this.factory = factory;
-
-        return factory;
+        return this.factory = factory;
     }
 
     /**
-     * Get a unique id based on the key name.
+     * Get a unique id based on the model name.
      *
      * @protected
      *
      * @return {string|number}
      */
     protected getKey(): number | string {
-        const config: GlobalConfig<Configuration & Record<'lastIds', Record<string, number>>> = new GlobalConfig();
+        const config: GlobalConfig<Configuration & Record<'_lastIds', Record<string, number>>> = new GlobalConfig();
 
-        const lastIds = config.get('lastIds', {});
+        const _lastIds = config.get('_lastIds', {});
+        const modelName = this.model.getName();
 
         // update or create entry for the model.
-        if (!lastIds[this.model.getName()]) {
-            lastIds[this.model.getName()] = 1;
-            config.set('lastIds', lastIds);
+        if (!_lastIds[modelName]) {
+            _lastIds[modelName] = 1;
+            config.set('_lastIds', _lastIds);
         } else {
-            lastIds[this.model.getName()]++;
-            config.set('lastIds', lastIds);
+            _lastIds[modelName]++;
+            config.set('_lastIds', _lastIds);
         }
 
-        return lastIds[this.model.getName()]!;
+        // @ts-expect-error
+        return this.model.keyType === 'string' ? `unique-id-${_lastIds[modelName]!}` : _lastIds[modelName]!;
     }
 }

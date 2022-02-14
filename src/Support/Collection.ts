@@ -1053,7 +1053,12 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @return {boolean}
      */
-    public every(predicate: (value: T, index?: number, array?: T[]) => unknown, thisArg?: any): boolean {
+    public every<S extends T>(
+        predicate: (value: T, index: number, array: T[]) => value is S,
+        thisArg?: any
+    ): this is S[];
+    public every(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): boolean;
+    public every(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): boolean {
         return this.toArray().every(predicate, thisArg);
     }
 
@@ -1062,7 +1067,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @return {boolean}
      */
-    public some(predicate: (value: T, index?: number, array?: T[]) => unknown, thisArg?: any): boolean {
+    public some(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): boolean {
         return this.toArray().some(predicate, thisArg);
     }
 
@@ -1071,7 +1076,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @return {any}
      */
-    public find(predicate: (value: T, index?: number, obj?: T[]) => unknown, thisArg?: any): T | undefined {
+    public find(predicate: (value: T, index: number, obj: T[]) => unknown, thisArg?: any): T | undefined {
         return this.toArray().find(predicate, thisArg);
     }
 
@@ -1080,7 +1085,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @return {number}
      */
-    public findIndex(predicate: (value: T, index?: number, obj?: T[]) => unknown, thisArg?: any): number {
+    public findIndex(predicate: (value: T, index: number, obj: T[]) => unknown, thisArg?: any): number {
         return this.toArray().findIndex(predicate, thisArg);
     }
 
@@ -1164,6 +1169,27 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
         }
 
         return this.toArray().reduceRight(callback, initialValue);
+    }
+
+    /**
+     * @see Array.prototype.at
+     */
+    public at(index: number): T | undefined {
+        return this.toArray().at(index);
+    }
+
+    /**
+     * @see Array.prototype.entries
+     */
+    public entries(): IterableIterator<[number, T]> {
+        return this.toArray().entries();
+    }
+
+    /**
+     * @see Array.prototype.values
+     */
+    public values(): IterableIterator<T> {
+        return this.toArray().values();
     }
 
     /**

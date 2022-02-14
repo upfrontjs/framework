@@ -9,6 +9,13 @@ export type RequireSome<T extends Record<PropertyKey, any>, K extends keyof T> =
 };
 
 /**
+ * Make the properties defined in the union optional.
+ */
+export type PartialSome<T extends Record<PropertyKey, any>, K extends keyof T> = Omit<T, K> & {
+    [MK in K]?: T[MK]
+};
+
+/**
  * Make the type either the initial value or an array of it.
  */
 export type MaybeArray<T> = T | T[];

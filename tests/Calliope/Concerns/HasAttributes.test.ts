@@ -45,7 +45,7 @@ describe('HasAttributes', () => {
         });
     });
 
-    describe('constructor()', () => {
+    describe('create()', () => {
         it('should set up mutators', () => {
             // when it has a mutator defined
             Object.defineProperty(hasAttributes, 'setTestAttribute', {

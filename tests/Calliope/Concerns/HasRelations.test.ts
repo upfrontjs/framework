@@ -182,7 +182,7 @@ describe('HasRelations', () => {
             hasRelations.removeRelation('shifts');
 
             expect(hasRelations.relationLoaded('shifts')).toBe(false);
-            expect(hasRelations.addRelation('shifts', new Collection(Shift.factory().times(1).rawOne())).shifts)
+            expect(hasRelations.addRelation('shifts', Shift.factory().times(1).rawMany()).shifts)
                 .toBeInstanceOf(ModelCollection);
             expect(hasRelations.relationLoaded('shifts')).toBe(true);
         });

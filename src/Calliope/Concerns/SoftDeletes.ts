@@ -79,7 +79,7 @@ export default class SoftDeletes extends HasTimestamps {
                 data.append(serverCasedDeletedAt, new Date().toISOString());
             }
         } else if (!(deletedAt in data)) {
-            // @ts-expect-error
+            // @ts-expect-error - string is in fact can be used to index here
             data[deletedAt] = new Date().toISOString();
         }
 

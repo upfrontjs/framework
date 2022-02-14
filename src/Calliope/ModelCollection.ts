@@ -1,6 +1,7 @@
 import Collection from '../Support/Collection';
 import type Model from './Model';
 import type { MaybeArray } from '../Support/type';
+import type { RawAttributes } from './Concerns/HasAttributes';
 
 export default class ModelCollection<T extends Model> extends Collection<T> {
     public constructor(models?: MaybeArray<T>) {
@@ -99,9 +100,9 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {Collection<number|string>}
      */
-    public modelKeys(): Collection<number | string | undefined> {
+    public modelKeys(): Collection<ReturnType<T['getKey']>> {
         this._throwIfNotModels();
-        return this.map(model => model.getKey());
+        return this.map(model => model.getKey()) as unknown as Collection<ReturnType<T['getKey']>>;
     }
 
     /**
@@ -418,7 +419,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
     /**
      * @inheritDoc
      */
-    public override toJSON(): { elements: ReturnType<T['toJSON']>[] } {
+    public override toJSON<R extends ReturnType<typeof JSON.parse> = RawAttributes<T>>(): { elements: R[] } {
         // eslint-disable-next-line max-len
         // https://security.stackexchange.com/questions/7001/how-should-web-app-developers-defend-against-json-hijacking/7003#7003
         return { elements: this.toArray().map(model => model.toJSON()) };

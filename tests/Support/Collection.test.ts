@@ -1577,5 +1577,32 @@ describe('Collection', () => {
                 expect(collection.reduceRight(callback, 1)).toStrictEqual(elements.reduceRight(callback, 1));
             });
         });
+
+        describe('at()', () => {
+            it('should return the expected element', () => {
+                expect(collection.at(1)).toBe(elements.at(1));
+                expect(collection.at(-1)).toBe(elements.at(-1));
+                expect(collection.at(10)).toBe(elements.at(10));
+                expect(collection.at(2.3)).toBe(elements.at(2.3));
+            });
+        });
+
+        describe('entries', () => {
+            it('should return the iterable entries', () => {
+                const iterator = collection.entries();
+
+                expect(iterator.next().value).toStrictEqual([0, elements[0]]);
+                expect(iterator.next().value).toStrictEqual([1, elements[1]]);
+            });
+        });
+
+        describe('values', () => {
+            it('should return the iterable values', () => {
+                const iterator = collection.values();
+
+                expect(iterator.next().value).toBe(elements[0]);
+                expect(iterator.next().value).toBe(elements[1]);
+            });
+        });
     });
 });

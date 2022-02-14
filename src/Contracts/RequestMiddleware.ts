@@ -1,20 +1,19 @@
-import type { Attributes } from '../Calliope/Concerns/HasAttributes';
-import type { Method } from '../Calliope/Concerns/CallsApi';
+import type { SimpleAttributes } from '../Calliope/Concerns/HasAttributes';
+import type { Method, CustomHeaders } from '../Calliope/Concerns/CallsApi';
 import type { QueryParams } from '../Calliope/Concerns/BuildsQuery';
-import type { MaybeArray } from '../Support/type';
 
 type TransformedRequest = {
-    data?: Attributes | FormData;
-    customHeaders?: Record<string, MaybeArray<string>>;
-    queryParameters?: Attributes | Partial<QueryParams>;
+    data?: FormData | SimpleAttributes;
+    customHeaders?: CustomHeaders;
+    queryParameters?: Partial<QueryParams> | SimpleAttributes;
 };
 
 export default interface RequestMiddleware {
     handle: (
         url: string,
         method: Method,
-        data?: Attributes | FormData,
-        customHeaders?: Record<string, MaybeArray<string>>,
-        queryParameters?: Attributes | Partial<QueryParams>
+        data?: FormData | SimpleAttributes,
+        customHeaders?: CustomHeaders,
+        queryParameters?: Partial<QueryParams> | SimpleAttributes
     ) => Promise<TransformedRequest> | TransformedRequest;
 }

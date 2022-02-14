@@ -2,6 +2,8 @@
 
 The collection is an object an implementing `ArrayLike` and [Iterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols) meaning it can be iterated with `for... of` or generators, has a `.length` property, and it can be indexed by numbers `collection[0]`. It implements all method available on the [array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) in a compatible fashion. The collection is immutable unless the methods that are expected to mutate the collection: `push`, `pop`, `unshift`, `shift`, `fill`.
 
+_* Despite feature parity, the type of the collection isn't interchangeable with the array given some methods are returning a collection instead of array, for example `map`._
+
 Instantiating a new collection is easy as:
 ```js
 import { Collection, collect } from '@upfrontjs/framework'

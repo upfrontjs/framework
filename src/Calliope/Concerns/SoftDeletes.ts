@@ -2,6 +2,7 @@ import HasTimestamps from './HasTimestamps';
 import type Model from '../Model';
 import LogicException from '../../Exceptions/LogicException';
 import { finish } from '../../Support/string';
+import type { SimpleAttributes } from './HasAttributes';
 
 export default class SoftDeletes extends HasTimestamps {
     /**
@@ -54,7 +55,7 @@ export default class SoftDeletes extends HasTimestamps {
      *
      * @return {Promise<boolean>}
      */
-    public async delete<T extends Model>(data: Record<string, unknown> = {}): Promise<T> {
+    public async delete<T extends Model>(data?: FormData | SimpleAttributes | SimpleAttributes<this>): Promise<T> {
         if (!this.usesSoftDeletes()) {
             return super.delete(data);
         }
@@ -69,10 +70,20 @@ export default class SoftDeletes extends HasTimestamps {
         (this as unknown as Model).throwIfModelDoesntExistsWhenCalling('delete');
 
         this.setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()));
-        return super.delete({
-            [deletedAt]: new Date().toISOString(),
-            ...data
-        }).then(model => {
+
+        if (!data) {
+            data = { [deletedAt]: new Date().toISOString() };
+        } else if (data instanceof FormData) {
+            const serverCasedDeletedAt = this.setServerStringCase(deletedAt);
+            if (!data.has(serverCasedDeletedAt)) {
+                data.append(serverCasedDeletedAt, new Date().toISOString());
+            }
+        } else if (!(deletedAt in data)) {
+            // @ts-expect-error - string is in fact can be used to index here
+            data[deletedAt] = new Date().toISOString();
+        }
+
+        return super.delete(data).then(model => {
             return this.setAttribute(deletedAt, model.getAttribute(deletedAt))
                 .syncOriginal(deletedAt) as unknown as T;
         });

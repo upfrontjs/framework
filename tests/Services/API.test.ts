@@ -1,6 +1,6 @@
 import API from '../../src/Services/API';
 import { config as globalConfig } from '../setupTests';
-import type { CustomHeaders, Method } from '../../src/Calliope/Concerns/CallsApi';
+import type { Method } from '../../src/Calliope/Concerns/CallsApi';
 import { finish } from '../../src/Support/string';
 import InvalidArgumentException from '../../src/Exceptions/InvalidArgumentException';
 

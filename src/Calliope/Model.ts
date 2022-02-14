@@ -4,7 +4,7 @@ import type HasFactory from '../Contracts/HasFactory';
 import type { Attributes, AttributeKeys, SimpleAttributes } from './Concerns/HasAttributes';
 import ModelCollection from './ModelCollection';
 import LogicException from '../Exceptions/LogicException';
-import { finish } from '../Support/string';
+import { finish, isUuid } from '../Support/string';
 import type { MaybeArray, StaticToThis } from '../Support/type';
 import { cloneDeep } from 'lodash';
 import { isObjectLiteral } from '../Support/function';
@@ -79,7 +79,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {this}
      */
-    public new(attributes?: Attributes<this> | this): this {
+    public new(attributes?: Attributes<this> | Model): this {
         return (this.constructor as typeof Model).create(attributes) as this;
     }
 
@@ -100,10 +100,10 @@ export default class Model extends SoftDeletes implements HasFactory {
         if (attributes instanceof Model) {
             // if creating by passing a model, we'll take the attributes
             // in their current state, not the original.
-            const allProperties = attributes.getRawAttributes() as Attributes<T>;
+            const allProperties = (attributes as T).getRawAttributes();
 
-            if (isObjectLiteral(attributes.relations)) {
-                Object.assign(allProperties, attributes.getRelations());
+            if (isObjectLiteral((attributes as T).relations)) {
+                Object.assign(allProperties, cloneDeep((attributes as T).relations));
             }
 
             attributes = allProperties;

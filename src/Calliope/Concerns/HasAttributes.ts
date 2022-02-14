@@ -448,8 +448,8 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {any}
      */
-    public getOriginal<K extends SimpleAttributeKeys<this> | string, T extends this[K]>(key: K, defaultValue?: T): T;
-    public getOriginal(): SimpleAttributes<this>;
+    public getOriginal<K extends AttributeKeys<this> | string, T extends this[K]>(key: K, defaultValue?: T): T;
+    public getOriginal(): Attributes<this>;
     public getOriginal(key?: string, defaultValue?: unknown): unknown {
         const getOriginalValue = (attributeKey: string) => {
             if (this.hasGetAccessor(attributeKey)) {
@@ -480,8 +480,8 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {any}
      */
-    public getRawOriginal<K extends SimpleAttributeKeys<this> | string, T extends this[K]>(key: K, defaultValue?: T): T;
-    public getRawOriginal(): SimpleAttributes<this>;
+    public getRawOriginal<K extends AttributeKeys<this> | string, T extends this[K]>(key: K, defaultValue?: T): T;
+    public getRawOriginal(): Attributes<this>;
     public getRawOriginal(key?: string, defaultValue?: unknown): unknown {
         if (key) {
             return this.original.hasOwnProperty(key) ? cloneDeep(this.original[key]) : defaultValue;
@@ -497,9 +497,9 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {object}
      */
-    public getChanges<K extends SimpleAttributeKeys<this>>(key: K): Record<K, this[K] | undefined>;
-    public getChanges(key?: string): Partial<SimpleAttributes<this>>;
-    public getChanges(key?: string): SimpleAttributes {
+    public getChanges<K extends AttributeKeys<this>>(key: K): Record<K, this[K] | undefined>;
+    public getChanges(key?: string): Partial<Attributes<this>>;
+    public getChanges(key?: string): Attributes {
         if (key) {
             if (isEqual(this.getRawOriginal(key), this.attributes[key])) {
                 return {};
@@ -528,9 +528,9 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {object}
      */
-    public getDeletedAttributes<K extends SimpleAttributeKeys<this>>(key: K): Record<K, this[K] | undefined>;
-    public getDeletedAttributes(key?: string): Partial<SimpleAttributes<this>>;
-    public getDeletedAttributes(key?: string): SimpleAttributes {
+    public getDeletedAttributes<K extends AttributeKeys<this>>(key: K): Record<K, this[K] | undefined>;
+    public getDeletedAttributes(key?: string): Partial<Attributes<this>>;
+    public getDeletedAttributes(key?: string): Attributes {
         if (key) {
             if (key in this.original) {
                 if (key in this.attributes) {
@@ -564,9 +564,9 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {object}
      */
-    public getNewAttributes<K extends SimpleAttributeKeys<this>>(key: K): Record<K, this[K] | undefined>;
-    public getNewAttributes(key?: string): Partial<SimpleAttributes<this>>;
-    public getNewAttributes(key?: string): SimpleAttributes {
+    public getNewAttributes<K extends AttributeKeys<this>>(key: K): Record<K, this[K] | undefined>;
+    public getNewAttributes(key?: string): Partial<Attributes<this>>;
+    public getNewAttributes(key?: string): Attributes {
         if (key) {
             if (key in this.attributes) {
                 if (key in this.original) {
@@ -640,11 +640,11 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      * @return {object}
      */
     public only<
-        K extends SimpleAttributeKeys<this>[],
-        R = { [P in K[number]]?: SimpleAttributes<this>[P] }
+        K extends AttributeKeys<this>[],
+        R = { [P in K[number]]?: Attributes<this>[P] }
     >(attributes: K): R;
-    public only<K extends SimpleAttributeKeys<this>, R = Record<K, this[K]>>(attributes: K): R;
-    public only(attributes: MaybeArray<string>): SimpleAttributes {
+    public only<K extends AttributeKeys<this>, R = Record<K, this[K]>>(attributes: K): R;
+    public only(attributes: MaybeArray<string>): Attributes {
         attributes = Array.isArray(attributes) ? attributes : [attributes];
         const result: Attributes = {};
 
@@ -664,9 +664,9 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {object}
      */
-    public except<K extends SimpleAttributeKeys<this>[], R = Omit<SimpleAttributes<this>, K[number]>>(attributes: K): R;
-    public except<K extends SimpleAttributeKeys<this> | string, R = Omit<SimpleAttributes<this>, K>>(attributes: K): R;
-    public except(attributes: MaybeArray<string>): SimpleAttributes {
+    public except<K extends AttributeKeys<this>[], R = Omit<Attributes<this>, K[number]>>(attributes: K): R;
+    public except<K extends AttributeKeys<this> | string, R = Omit<Attributes<this>, K>>(attributes: K): R;
+    public except(attributes: MaybeArray<string>): Attributes {
         const result: Attributes = {};
 
         attributes = Array.isArray(attributes) ? attributes : [attributes];

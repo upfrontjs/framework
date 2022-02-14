@@ -419,7 +419,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
     /**
      * @inheritDoc
      */
-    public override toJSON<R extends ReturnType<typeof JSON.parse> = RawAttributes<T>>(): { elements: R[] } {
+    public override toJSON(): { elements: ReturnType<T['toJSON']>[] } {
         // eslint-disable-next-line max-len
         // https://security.stackexchange.com/questions/7001/how-should-web-app-developers-defend-against-json-hijacking/7003#7003
         return { elements: this.toArray().map(model => model.toJSON()) };

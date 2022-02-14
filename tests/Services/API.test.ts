@@ -3,7 +3,6 @@ import { config as globalConfig } from '../setupTests';
 import type { CustomHeaders, Method } from '../../src/Calliope/Concerns/CallsApi';
 import { finish } from '../../src/Support/string';
 import InvalidArgumentException from '../../src/Exceptions/InvalidArgumentException';
-import type { MaybeArray } from '../../src/Support/type';
 
 const url = finish(String(globalConfig.get('baseEndPoint')), '/') + 'users';
 

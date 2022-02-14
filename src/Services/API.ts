@@ -42,7 +42,7 @@ export default class API implements ApiCaller {
         url: string,
         method: 'HEAD' | 'head',
         data?: FormData | Record<string, unknown>,
-        customHeaders?: Record<string, MaybeArray<string>>,
+        customHeaders?: CustomHeaders,
         queryParameters?: Record<string, unknown>
     ): Promise<ApiResponse & { request: { method: 'HEAD' } }>;
     public async call<T>(
@@ -56,7 +56,7 @@ export default class API implements ApiCaller {
         url: string,
         method: Method,
         data?: FormData | Record<string, unknown>,
-        customHeaders?: Record<string, MaybeArray<string>>,
+        customHeaders?: CustomHeaders,
         queryParameters?: Record<string, unknown>
     ): Promise<ApiResponse> {
         const config = await this.initConfig(url, method, data, customHeaders, queryParameters);

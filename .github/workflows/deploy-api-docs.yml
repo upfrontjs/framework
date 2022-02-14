@@ -24,7 +24,8 @@ jobs:
           git add -f assets
           git add -f classes
           git add -f interfaces
-          git add -f '.nojekyll'
+          touch .nojekyll
+          git add -f .nojekyll
           git add -f index.html
           git add -f modules.html
           git commit -m "Updates from ${{ github.ref }}" --no-verify

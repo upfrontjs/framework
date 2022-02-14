@@ -105,7 +105,7 @@ import type { Attributes } from '@upfrontjs/framework';
 import type User from './src/Models/User';
 
 export default UserFactory extends Factory<User> {
-    definition(model: T, index: number): Attributes<User> {
+    public definition(model: T, index: number): Attributes<User> {
         return {
             name: 'user name',
             someUuid: String.uuid()

@@ -218,7 +218,7 @@ describe('CallsApi', () => {
         });
 
         it('should send all the given data', async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+            mockUserModelResponse(User.factory().makeOne());
             await caller.call('POST', {
                 falsyKey1: null,
                 falsyKey2: undefined,

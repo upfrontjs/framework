@@ -60,6 +60,11 @@ describe('FactoryBuilder', () => {
         });
 
         it('should throw an error if the given state is not a function', () => {
+            class FakeFactory extends Factory<User> {
+                // @ts-expect-error
+                public scopeAsProperty = 0;
+            }
+
             // @ts-expect-error
             User.prototype.factory = () => new FakeFactory();
 
@@ -75,6 +80,12 @@ describe('FactoryBuilder', () => {
         });
 
         it('should throw an error if the given state is not a returning an object', () => {
+            class FakeFactory extends Factory<User> {
+                public invalidScope() {
+                    return null;
+                }
+            }
+
             // @ts-expect-error
             User.prototype.factory = () => new FakeFactory();
 

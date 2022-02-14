@@ -22,10 +22,26 @@ describe('Model', () => {
             expect(user.exists).toBe(true);
         });
 
-        it('should consider if the primary key is select-text', () => {
+        it('should consider if the primary key is set', () => {
             user.setAttribute(user.getKeyName(), undefined);
 
             expect(user.exists).toBe(false);
+        });
+
+        it('should accept any string id that has length as valid', () => {
+            Object.defineProperty(user, 'keyType', {
+                get: () => 'string',
+                configurable: true
+            });
+            user.setAttribute(user.getKeyName(), '');
+            expect(user.exists).toBe(false);
+
+            user.setAttribute(user.getKeyName(), 'unique-id');
+            expect(user.exists).toBe(true);
+
+            Object.defineProperty(user, 'keyType', {
+                get: () => 'number'
+            });
         });
 
         it('should consider that it has a created at date if using timestamp', () => {

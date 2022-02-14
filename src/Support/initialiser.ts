@@ -2,6 +2,7 @@ import Collection from './Collection';
 import Paginator from './Paginator';
 import type Model from '../Calliope/Model';
 import FactoryBuilder from '../Calliope/Factory/FactoryBuilder';
+import type Factory from '../Calliope/Factory/Factory';
 
 /**
  * Create a collection from the array.
@@ -35,6 +36,9 @@ export function paginate<T>(items?: any[], itemsPerPage = 10, wrapsAround = fals
  *
  * @return {Paginator}
  */
-export function factory<T extends Model>(modelConstructor: new () => T, amount = 1): FactoryBuilder<T> {
-    return new FactoryBuilder(modelConstructor).times(amount);
+export function factory<T extends Model, F extends Factory<T> = Factory<T>>(
+    modelConstructor: new () => T,
+    amount = 1
+): FactoryBuilder<T, F> {
+    return new FactoryBuilder<T, F>(modelConstructor).times(amount);
 }

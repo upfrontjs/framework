@@ -1,9 +1,8 @@
 import API from '../../src/Services/API';
 import { config as globalConfig } from '../setupTests';
-import type { Method } from '../../src/Calliope/Concerns/CallsApi';
+import type { CustomHeaders, Method } from '../../src/Calliope/Concerns/CallsApi';
 import { finish } from '../../src/Support/string';
 import InvalidArgumentException from '../../src/Exceptions/InvalidArgumentException';
-import type { MaybeArray } from '../../src/Support/type';
 
 const url = finish(String(globalConfig.get('baseEndPoint')), '/') + 'users';
 
@@ -12,7 +11,7 @@ class APITester extends API {
         endpoint: string,
         method: Method,
         data?: FormData | Record<string, unknown>,
-        customHeaders?: Record<string, MaybeArray<string>>
+        customHeaders?: CustomHeaders
     ): Promise<{ url: string; requestInit: RequestInit }> {
         return this.initConfig(endpoint, method, data, customHeaders);
     }
@@ -131,7 +130,7 @@ describe('API', () => {
         });
 
         it('should process the given custom headers', async () => {
-            const header: Record<string, MaybeArray<string>> = { custom: 'header' };
+            const header: CustomHeaders = { custom: 'header' };
             const config = (await api.getConfig(url, 'post', undefined, header)).requestInit;
 
             // @ts-expect-error

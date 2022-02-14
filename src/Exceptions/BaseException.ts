@@ -1,10 +1,8 @@
-export default class BaseException extends Error {
+export default abstract class BaseException extends Error {
     /**
      * The name of the called exception class.
      *
      * @type {string}
      */
-    public get name(): string {
-        return this.constructor.name;
-    }
+    public abstract get name(): string;
 }

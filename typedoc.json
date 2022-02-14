@@ -12,7 +12,6 @@
     "intentionallyNotExported": [
         "WhereDescription",
         "Order",
-        "Method",
         "Operator",
         "Direction",
         "Relation",

@@ -84,8 +84,32 @@ The `primaryKey` is a getter of the attribute name which is used to identify you
 import { Model } from '@upfrontjs/framework';
 
 export default class User extends Model {
+    getName() {
+        return 'User';
+    }
+    
     get primaryKey() {
         return 'id';
+    }
+}
+```
+
+#### keyType
+
+The `keyType` is a getter that identifies what the type is of your [primaryKey](#primarykey). Its value has to be either `'string'` or `'number'` with `'number'` being the default value.
+You should update this value to `'string'` if you're using a uuid or some custom string for the primary key as this is used when in the [Factory](../testing.md#factories) and [exists](#exists) logic.
+
+```js
+// User.ts
+import { Model } from '@upfrontjs/framework';
+
+export default class User extends Model {
+    public override getName(): string {
+        return 'User';
+    }
+    
+    public get primaryKey(): 'string' {
+        return 'string';
     }
 }
 ```
@@ -146,7 +170,7 @@ Bundlers/minifier options examples:
 #### create
 <Badge text="static" type="warning"/>
 
-The `create` method instantiates your model while setting up attributes and relations.
+The `create` method instantiates your model while setting up attributes and relations. This will mass assign attributes to the model while respecting the [guarding](./attributes#guarding) settings.
 
 ```ts
 import User from '@Models/User';
@@ -155,6 +179,18 @@ const user = User.create({ name: 'User Name' }); // User
 ```
 ::: warning
 Constructing a new class like `new User({...})` is **not** acceptable. This will not overwrite your class fields with default values if the same key has been passed in due to how JavaScript first constructs the parent class and only then the subclasses. However, you can still use it to call instance methods. Furthermore, it will not cause unexpected results if using it with the [setAttribute](./attributes.md#setattribute) method or call methods that under the hood uses the [setAttribute](./attributes.md#setattribute).
+:::
+
+::: tip
+When creating an instance and passing in another instance of the model:
+```js
+import User from '@Models/User';
+import Shift from '@Models/Shift';
+
+const user = User.create({ name: 'John Doe' });
+const newUser = User.create(user);
+```
+It will clone the [raw attributes](./attributes#getrawattributes) and the [relationships](./relationships.md#getrelations) of the model.
 :::
 
 #### replicate

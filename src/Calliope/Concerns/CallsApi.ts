@@ -6,7 +6,7 @@ import ApiResponseHandler from '../../Services/ApiResponseHandler';
 import type Model from '../Model';
 import type { QueryParams } from './BuildsQuery';
 import BuildsQuery from './BuildsQuery';
-import type { Attributes } from './HasAttributes';
+import type { Attributes, SimpleAttributes } from './HasAttributes';
 import { isObjectLiteral } from '../../Support/function';
 import { finish, kebab, plural } from '../../Support/string';
 import type { MaybeArray, StaticToThis } from '../../Support/type';
@@ -21,6 +21,12 @@ export type Method =
     | 'PATCH' | 'patch'
     | 'POST' | 'post'
     | 'PUT' | 'put';
+
+/**
+ * Key-value pairs of headers where the values can be an array of values.
+ * Each value is appended to the outgoing headers.
+ */
+export type CustomHeaders = Record<string, MaybeArray<string>>;
 
 export default class CallsApi extends BuildsQuery {
     /**
@@ -76,9 +82,19 @@ export default class CallsApi extends BuildsQuery {
      * @return {Promise<any>}
      */
     public async call<T = any>(
+        method: 'GET' | 'get' | 'HEAD' | 'head',
+        data?: QueryParams | SimpleAttributes,
+        customHeaders?: CustomHeaders
+    ): Promise<T | undefined>;
+    public async call<T = any>(
+        method: Exclude<Method, 'GET' | 'get' | 'HEAD' | 'head'>,
+        data?: FormData | SimpleAttributes | SimpleAttributes<this>,
+        customHeaders?: CustomHeaders
+    ): Promise<T | undefined>;
+    public async call<T = any>(
         method: Method,
-        data?: Attributes | FormData | QueryParams,
-        customHeaders?: Record<string, MaybeArray<string>>
+        data?: FormData | QueryParams | SimpleAttributes<this>,
+        customHeaders?: CustomHeaders
     ): Promise<T | undefined> {
         const endpoint = this.getEndpoint();
 
@@ -89,32 +105,15 @@ export default class CallsApi extends BuildsQuery {
             );
         }
 
-        /**
-         * Recursively format the keys according to serverAttributeCasing
-         *
-         * @see CallsApi.prototype.serverAttributeCasing
-         */
-        const transformValues = (object: Attributes): Attributes => {
-            const dataWithKeyCasing: Attributes = {};
-
-            Object.keys(object).forEach(key => {
-                dataWithKeyCasing[this.setServerStringCase(key)] = isObjectLiteral(object[key])
-                    ? transformValues(object[key] as Attributes)
-                    : object[key];
-            });
-
-            return dataWithKeyCasing;
-        };
-
-        let queryParameters = transformValues(this.compileQueryParameters());
+        let queryParameters = this.transformKeys(this.compileQueryParameters(), true);
         const config = new GlobalConfig;
         const url = (config.get('baseEndPoint') ? finish(config.get('baseEndPoint', '')!, '/') : '')
             + (endpoint.startsWith('/') ? endpoint.slice(1) : endpoint);
         const apiCaller = new (config.get('api', API));
         const handlesApiResponse = new (config.get('apiResponseHandler', ApiResponseHandler))!;
 
-        if (data && isObjectLiteral<Attributes>(data) && !(data instanceof FormData)) {
-            data = transformValues(data);
+        if (data && isObjectLiteral<SimpleAttributes>(data) && !(data instanceof FormData)) {
+            data = this.transformKeys(data, true);
         }
 
         const requestMiddleware = config.get('requestMiddleware');
@@ -205,7 +204,7 @@ export default class CallsApi extends BuildsQuery {
      * @return
      */
     // @ts-expect-error - despite TS2526, it still infers correctly
-    public async post<T extends Model = this>(data: Attributes | FormData): Promise<T> {
+    public async post<T extends Model = this>(data: FormData | SimpleAttributes | SimpleAttributes<this>): Promise<T> {
         return this.call('POST', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
@@ -218,7 +217,7 @@ export default class CallsApi extends BuildsQuery {
      * @return
      */
     // @ts-expect-error - despite TS2526, it still infers correctly
-    public async put<T extends Model = this>(data: Attributes | FormData): Promise<T> {
+    public async put<T extends Model = this>(data: FormData | SimpleAttributes | SimpleAttributes<this>): Promise<T> {
         return this.call('PUT', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
@@ -231,7 +230,7 @@ export default class CallsApi extends BuildsQuery {
      * @return
      */
     // @ts-expect-error - despite TS2526, it still infers correctly
-    public async patch<T extends Model = this>(data: Attributes | FormData): Promise<T> {
+    public async patch<T extends Model = this>(data: FormData | SimpleAttributes | SimpleAttributes<this>): Promise<T> {
         return this.call('PATCH', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }
@@ -245,7 +244,9 @@ export default class CallsApi extends BuildsQuery {
      * @return {Promise<boolean>}
      */
     // @ts-expect-error - despite TS2526, it still infers correctly
-    public async delete<T extends Model = this>(data?: Attributes | FormData): Promise<T> {
+    public async delete<T extends Model = this>(
+        data?: FormData | SimpleAttributes | SimpleAttributes<this>
+    ): Promise<T> {
         return this.call('DELETE', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }

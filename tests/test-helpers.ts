@@ -1,7 +1,7 @@
 import type { MockResponseInit } from 'jest-fetch-mock';
 import { isObjectLiteral } from '../src/Support/function';
 import Collection from '../src/Support/Collection';
-import type User from './mock/Models/User';
+import User from './mock/Models/User';
 import fetchMock from 'jest-fetch-mock';
 import type { Method } from '../src';
 
@@ -34,7 +34,7 @@ export const buildResponse = (
     return responseObject;
 };
 
-export const mockUserModelResponse = (user: User): void => {
+export const mockUserModelResponse = (user: User = User.factory().createOne()): void => {
     fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(user.getRawAttributes())));
 };
 
@@ -93,6 +93,8 @@ export const types = [
     undefined,
     // eslint-disable-next-line @typescript-eslint/no-extraneous-class
     class C {},
+    // eslint-disable-next-line @typescript-eslint/no-extraneous-class
+    new class C {},
     BigInt,
     Map,
     new Map,
@@ -101,5 +103,8 @@ export const types = [
     WeakSet,
     new WeakSet,
     Date,
-    new Date
+    new Date,
+    FormData,
+    new FormData,
+    Event
 ];

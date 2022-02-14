@@ -4,7 +4,7 @@ import Team from '../../mock/Models/Team';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
 import InvalidOffsetException from '../../../src/Exceptions/InvalidOffsetException';
 import Factory from '../../../src/Calliope/Factory/Factory';
-import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
+import type { Attributes, RawAttributes } from '../../../src/Calliope/Concerns/HasAttributes';
 import Collection from '../../../src/Support/Collection';
 import UserFactory from '../../mock/Factories/UserFactory';
 import Model from '../../../src/Calliope/Model';
@@ -12,17 +12,9 @@ import Shift from '../../mock/Models/Shift';
 import Contract from '../../mock/Models/Contract';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import { now } from '../../setupTests';
+import { cloneDeep } from 'lodash';
 
-class FakeFactory extends Factory<User> {
-    // @ts-expect-error
-    public scopeAsProperty = 0;
-
-    public invalidScope() {
-        return null;
-    }
-}
-
-let factoryBuilder: FactoryBuilder<User>;
+let factoryBuilder: FactoryBuilder<User, UserFactory>;
 
 describe('FactoryBuilder', () => {
     beforeEach(() => {
@@ -33,23 +25,23 @@ describe('FactoryBuilder', () => {
         const factoryName: string = new User().factory().constructor.name;
 
         it('should return the model with the states applied', () => {
-            const user = factoryBuilder.state('withTeam').create() as User;
+            const user = factoryBuilder.state('withTeam').createOne();
             expect(user.team).toBeInstanceOf(Team);
 
-            const newUser = factoryBuilder.state('nameOverridden').create() as User;
+            const newUser = factoryBuilder.state('nameOverridden').createOne();
             expect(newUser.name).not.toBe(user.name);
         });
 
         it('should take multiple arguments', () => {
-            const user = factoryBuilder.create() as User;
-            const newUser = factoryBuilder.state(['withTeam', 'nameOverridden']).create() as User;
+            const user = factoryBuilder.createOne();
+            const newUser = factoryBuilder.state(['withTeam', 'nameOverridden']).createOne();
 
             expect(newUser.team).toBeInstanceOf(Team);
             expect(newUser.name).not.toBe(user.name);
         });
 
         it('should call the states with an empty target model and the current index', () => {
-            const user = factoryBuilder.state(['calledWithArguments']).create() as User;
+            const user = factoryBuilder.state(['calledWithArguments']).createOne();
 
             expect(user.modelAttribute).toBe(User.name);
             expect(user.index).toBe(1);
@@ -62,12 +54,17 @@ describe('FactoryBuilder', () => {
 
             expect(failingFunc).toThrow(
                 new InvalidOffsetException(
-                    '\'undefinedScope\' is not defined on the \'' + factoryName + '\' class.'
+                    '\'undefinedScope\' is not defined on the \'' + factoryName + '\' factory class.'
                 )
             );
         });
 
         it('should throw an error if the given state is not a function', () => {
+            class FakeFactory extends Factory<User> {
+                // @ts-expect-error
+                public scopeAsProperty = 0;
+            }
+
             // @ts-expect-error
             User.prototype.factory = () => new FakeFactory();
 
@@ -77,12 +74,18 @@ describe('FactoryBuilder', () => {
 
             expect(failingFunc).toThrow(
                 new InvalidOffsetException(
-                    '\'scopeAsProperty\' is not a method on the \'' + String(FakeFactory.name) + '\' class.'
+                    '\'scopeAsProperty\' is not a method on the \'' + String(FakeFactory.name) + '\' factory class.'
                 )
             );
         });
 
         it('should throw an error if the given state is not a returning an object', () => {
+            class FakeFactory extends Factory<User> {
+                public invalidScope() {
+                    return null;
+                }
+            }
+
             // @ts-expect-error
             User.prototype.factory = () => new FakeFactory();
 
@@ -92,9 +95,89 @@ describe('FactoryBuilder', () => {
 
             expect(failingFunc).toThrow(
                 new TypeError(
-                    '\'invalidScope\' is not returning an object on \'' + String(FakeFactory.name) + '\' class.'
+                    '\'invalidScope\' is not returning an object on \'' + String(FakeFactory.name) + '\' factory class.'
                 )
             );
+        });
+
+        it('should not call a state twice', () => {
+            const func = jest.fn();
+            class LocalFakeFactory extends Factory<User> {
+                public myState() {
+                    func();
+                    return {};
+                }
+            }
+
+            // @ts-expect-error
+            User.prototype.factory = () => new LocalFakeFactory();
+            factoryBuilder.state(['myState', 'myState']).create();
+
+            expect(func).toHaveBeenCalledTimes(1);
+            User.prototype.factory = () => new UserFactory();
+        });
+
+        it('should call the states in order they appear in the argument', () => {
+            const func = jest.fn();
+            class LocalFakeFactory extends Factory<User> {
+                public firstState() {
+                    func('first name overwrite');
+                    return {
+                        name: 'first name overwrite'
+                    };
+                }
+
+                public secondState() {
+                    func('second name overwrite');
+                    return {
+                        name: 'second name overwrite'
+                    };
+                }
+            }
+
+            // @ts-expect-error
+            User.prototype.factory = () => new LocalFakeFactory();
+            const user = factoryBuilder.state(['firstState', 'secondState']).createOne();
+
+            expect(user.name).toBe('second name overwrite');
+            expect(func).toHaveBeenCalledTimes(2);
+            expect(func).toHaveBeenNthCalledWith(1, 'first name overwrite');
+            expect(func).toHaveBeenNthCalledWith(2, 'second name overwrite');
+            User.prototype.factory = () => new UserFactory();
+        });
+    });
+
+    describe('attributes()', () => {
+        it('should be applied after the states', () => {
+            const user = factoryBuilder.state(['nameOverridden']).createOne();
+            const newUser = factoryBuilder.attributes({ name: 'custom name' }).createOne();
+
+            expect(newUser.name).not.toBe(user.name);
+            expect(newUser.name).toBe('custom name');
+        });
+
+        it('should allow for customising related factories', () => {
+            const user = factoryBuilder
+                .with(Contract.factory().attributes({ contractAttribute: 1 }))
+                .createOne();
+
+            expect((user.contract as Contract).contractAttribute).toBe(1);
+        });
+
+        it('should be resolved the same format as definition and states', () => {
+            const func = jest.fn();
+            factoryBuilder
+                .attributes({
+                    name: (attrs: Attributes<User> | RawAttributes<User>) => {
+                        func(cloneDeep(attrs));
+                        return 'name from attributes method';
+                    }
+                })
+                .rawOne();
+
+            expect(func).toHaveBeenCalledWith({
+                name: 'username 1'
+            });
         });
     });
 
@@ -116,7 +199,7 @@ describe('FactoryBuilder', () => {
             expect(failingFunc).toThrow(
                 new TypeError(
                     'Invalid return type defined on the factory() method on the \'' + User.name + '\' class.'
-                    + 'Expected \'' + Factory.name + '\', got \'object\'.'
+                    + ' Expected \'' + Factory.name + '\', got \'object\'.'
                 )
             );
         });
@@ -284,10 +367,26 @@ describe('FactoryBuilder', () => {
         });
 
         it('should set unique ids', () => {
-            const userOne = factoryBuilder.create() as User;
-            const userTwo = factoryBuilder.create() as User;
+            const userOne = factoryBuilder.createOne();
+            const userTwo = factoryBuilder.createOne();
 
             expect(userOne.getKey()).not.toBe(userTwo.getKey());
+        });
+
+        it('should set the ids respective of the model\'s key type', () => {
+            // default is number
+            expect(typeof factoryBuilder.createOne().getKey()).toBe('number');
+
+            Object.defineProperty(User.prototype, 'keyType', {
+                get: () => 'string',
+                configurable: true
+            });
+
+            expect(typeof factoryBuilder.createOne().getKey()).toBe('string');
+
+            Object.defineProperty(User.prototype, 'keyType', {
+                get: () => 'number'
+            });
         });
 
         it('should set the dates', () => {
@@ -385,8 +484,8 @@ describe('FactoryBuilder', () => {
 
     describe('with()', () => {
         it('should add the relation data to the result', () => {
-            expect((factoryBuilder.with(Contract.factory()).raw() as Attributes).contract).toBeDefined();
-            expect((factoryBuilder.with(Contract.factory()).make() as User).contract).toBeInstanceOf(Contract);
+            expect(factoryBuilder.with(Contract.factory()).rawOne().contract).toBeDefined();
+            expect(factoryBuilder.with(Contract.factory()).makeOne().contract).toBeInstanceOf(Contract);
 
             factoryBuilder.with(Shift.factory()).times(2).makeMany().forEach((user: User) => {
                 expect(user.shifts).toBeInstanceOf(ModelCollection);
@@ -413,8 +512,8 @@ describe('FactoryBuilder', () => {
         });
 
         it('should accept a model constructor as the first argument', () => {
-            expect((factoryBuilder.with(Contract).raw() as Attributes).contract).toBeDefined();
-            expect((factoryBuilder.with(Contract).make() as User).contract).toBeInstanceOf(Contract);
+            expect(factoryBuilder.with(Contract).rawOne().contract).toBeDefined();
+            expect(factoryBuilder.with(Contract).makeOne().contract).toBeInstanceOf(Contract);
 
             factoryBuilder.with(Shift).times(2).makeMany().forEach((user: User) => {
                 expect(user.shifts).toBeInstanceOf(ModelCollection);

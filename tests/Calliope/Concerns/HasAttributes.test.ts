@@ -3,6 +3,8 @@ import Shift from '../../mock/Models/Shift';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
 import { isEqual } from 'lodash';
 import Contract from '../../mock/Models/Contract';
+import Team from '../../mock/Models/Team';
+import { Collection } from '../../../src';
 
 let hasAttributes: User;
 
@@ -33,9 +35,17 @@ describe('HasAttributes', () => {
             expect(user.getAttribute('someValue')).toBeUndefined();
             expect(user.getAttribute('some_value')).toBe(1);
         });
+
+        it('should set the string case of all keys of the given object', () => {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            hasAttributes.forceFill({ test_key: 1, object_key: { nested_test_key: 1 } });
+
+            expect(hasAttributes.testKey).toBe(1);
+            expect(hasAttributes.objectKey).toStrictEqual({ nestedTestKey: 1 });
+        });
     });
 
-    describe('constructor()', () => {
+    describe('create()', () => {
         it('should set up mutators', () => {
             // when it has a mutator defined
             Object.defineProperty(hasAttributes, 'setTestAttribute', {
@@ -427,6 +437,19 @@ describe('HasAttributes', () => {
 
             expect(hasAttributes.getAttribute('test')).toBe(1);
             expect(hasAttributes.getAttribute('value')).toBe(2);
+        });
+
+        it('should not error when called with a relating model', () => {
+            // this in reality tests the transformKeys method
+            const team = Team.factory().createOne();
+
+            const func = () => hasAttributes
+                .setAttribute('teamId', team.getKey())
+                .addRelation('team', team)
+                .forceFill(hasAttributes.getRelations());
+            expect(func).not.toThrow(new RangeError('Maximum call stack size exceeded'));
+
+            expect(hasAttributes.forceFill({ myCollection: new Collection() }).myCollection).toBeInstanceOf(Collection);
         });
     });
 

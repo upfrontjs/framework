@@ -4,9 +4,8 @@ import { isObjectLiteral } from '../Support/function';
 import GlobalConfig from '../Support/GlobalConfig';
 import { finish } from '../Support/string';
 import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
-import type { Method } from '../Calliope/Concerns/CallsApi';
+import type { Method, CustomHeaders } from '../Calliope/Concerns/CallsApi';
 import type { ApiResponse } from '../Contracts/HandlesApiResponse';
-import type { MaybeArray } from '../Support/type';
 
 /**
  * The default ApiCaller implementation used by upfrontjs.
@@ -43,21 +42,21 @@ export default class API implements ApiCaller {
         url: string,
         method: 'HEAD' | 'head',
         data?: FormData | Record<string, unknown>,
-        customHeaders?: Record<string, MaybeArray<string>>,
+        customHeaders?: CustomHeaders,
         queryParameters?: Record<string, unknown>
     ): Promise<ApiResponse & { request: { method: 'HEAD' } }>;
     public async call<T>(
         url: string,
         method: Method,
         data?: FormData | Record<string, unknown>,
-        customHeaders?: Record<string, MaybeArray<string>>,
+        customHeaders?: CustomHeaders,
         queryParameters?: Record<string, unknown>
     ): Promise<ApiResponse<T>>;
     public async call(
         url: string,
         method: Method,
         data?: FormData | Record<string, unknown>,
-        customHeaders?: Record<string, MaybeArray<string>>,
+        customHeaders?: CustomHeaders,
         queryParameters?: Record<string, unknown>
     ): Promise<ApiResponse> {
         const config = await this.initConfig(url, method, data, customHeaders, queryParameters);
@@ -86,7 +85,7 @@ export default class API implements ApiCaller {
         url: string,
         method: Method,
         data?: FormData | Record<string, unknown>,
-        customHeaders?: Record<string, MaybeArray<string>>,
+        customHeaders?: CustomHeaders,
         queryParameters?: Record<string, unknown>
     ): Promise<{ url: string; requestInit: RequestInit }> {
         // normalising fetch methods https://fetch.spec.whatwg.org/#concept-method-normalize

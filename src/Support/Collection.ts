@@ -1053,7 +1053,10 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @return {boolean}
      */
-    public every<S extends T>(predicate: (value: T, index: number, array: T[]) => value is S, thisArg?: any): this is S[];
+    public every<S extends T>(
+        predicate: (value: T, index: number, array: T[]) => value is S,
+        thisArg?: any
+    ): this is S[];
     public every(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): boolean;
     public every(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): boolean {
         return this.toArray().every(predicate, thisArg);

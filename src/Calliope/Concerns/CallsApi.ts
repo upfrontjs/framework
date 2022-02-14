@@ -244,7 +244,9 @@ export default class CallsApi extends BuildsQuery {
      * @return {Promise<boolean>}
      */
     // @ts-expect-error - despite TS2526, it still infers correctly
-    public async delete<T extends Model = this>(data?: FormData | SimpleAttributes | SimpleAttributes<this>): Promise<T> {
+    public async delete<T extends Model = this>(
+        data?: FormData | SimpleAttributes | SimpleAttributes<this>
+    ): Promise<T> {
         return this.call('DELETE', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
     }

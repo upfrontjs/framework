@@ -114,6 +114,7 @@ describe('FactoryBuilder', () => {
             factoryBuilder.state(['myState', 'myState']).create();
 
             expect(func).toHaveBeenCalledTimes(1);
+            User.prototype.factory = () => new UserFactory();
         });
 
         it('should call the states in order they appear in the argument', () => {
@@ -142,6 +143,7 @@ describe('FactoryBuilder', () => {
             expect(func).toHaveBeenCalledTimes(2);
             expect(func).toHaveBeenNthCalledWith(1, 'first name overwrite');
             expect(func).toHaveBeenNthCalledWith(2, 'second name overwrite');
+            User.prototype.factory = () => new UserFactory();
         });
     });
 

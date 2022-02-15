@@ -20,8 +20,6 @@ jobs:
         run: npm run docs:api
       - name: Update gh-pages branch
         run: |
-          git config --global user.email "nandor.kraszlan@gmail.com"
-          git config --global user.name "Nandor Kraszlan"
           cp -r ./api-docs/* ./
           git add -f assets
           git add -f classes

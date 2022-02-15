@@ -4,6 +4,7 @@ import ModelCollection from '../../../src/Calliope/ModelCollection';
 import { isEqual } from 'lodash';
 import Contract from '../../mock/Models/Contract';
 import Team from '../../mock/Models/Team';
+import type { RawAttributes } from '../../../src';
 import { Collection } from '../../../src';
 
 let hasAttributes: User;
@@ -747,6 +748,20 @@ describe('HasAttributes', () => {
                     { shiftAttr: 1 }
                 ]
             });
+        });
+
+        it('should take attributes in their raw form', () => {
+            // raw because json isn't something that is displayed to the user
+            const shift = Shift.create({ attr: 1 });
+
+            shift.getAttrAttribute = (value: number) => {
+                return value + 1;
+            };
+
+            hasAttributes.addRelation('shifts', shift);
+            expect((hasAttributes.toJSON().shifts as [RawAttributes<Shift>])[0].attr).toBe(1);
+
+            delete shift.getAttrAttribute;
         });
     });
 

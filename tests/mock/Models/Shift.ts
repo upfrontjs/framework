@@ -9,4 +9,8 @@ export default class Shift extends Model {
     public factory(): ShiftFactory {
         return new ShiftFactory;
     }
+
+    public get fillable(): string[] {
+        return ['*'];
+    }
 }

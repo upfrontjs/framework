@@ -4,6 +4,7 @@ import ModelCollection from '../../../src/Calliope/ModelCollection';
 import { isEqual } from 'lodash';
 import Contract from '../../mock/Models/Contract';
 import Team from '../../mock/Models/Team';
+import type { RawAttributes } from '../../../src';
 import { Collection } from '../../../src';
 
 let hasAttributes: User;

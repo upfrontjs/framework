@@ -686,7 +686,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      * @inheritDoc
      */
     public toJSON<T extends ReturnType<typeof JSON.parse> = RawAttributes<this>>(): T {
-        const json = this.getAttributes() as SimpleAttributes;
+        const json = this.getRawAttributes() as SimpleAttributes;
 
         const relations = (this as unknown as HasRelations).getRelations();
 

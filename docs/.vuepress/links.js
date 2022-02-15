@@ -57,9 +57,9 @@ const sidebar = [
     },
 ]
 
-// const apiLink = { text: 'API', link: 'https://google.com', target:'_blank' }
-
 module.exports = {
     sidebar,
-    nav: []
+    nav: [
+        { text: 'API', link: 'https://upfrontjs.github.io/framework', target:'_blank' }
+    ]
 }

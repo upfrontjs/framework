@@ -4,6 +4,7 @@ import type Jsonable from '../Contracts/Jsonable';
 import LogicException from '../Exceptions/LogicException';
 import { isObjectLiteral } from './function';
 import type { MaybeArray } from './type';
+import InvalidOffsetException from '../Exceptions/InvalidOffsetException';
 
 export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T>, ArrayLike<T> {
     /**
@@ -439,6 +440,41 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
         }
 
         return new Collection(result);
+    }
+
+    /**
+     * Chunk the collection by the specified key.
+     */
+    public chunkBy<K extends keyof T>(key: K | ((item: T) => PropertyKey)): Record<PropertyKey, Collection<T>> {
+        if (!this._allAreObjects()) {
+            throw new TypeError('Every item needs to be an object to be able to access its properties.');
+        }
+
+        const result: Record<PropertyKey, Collection<T>> = {};
+
+        if (typeof key === 'string' || typeof key === 'number' || typeof key === 'symbol') {
+            if (!this.every(obj => key in obj)) {
+                throw new InvalidOffsetException(
+                    '\'' + String(key) + '\' is not present in every item of the collection.'
+                );
+            }
+
+            this.pluck(String(key)).unique().forEach(value => {
+                result[value as PropertyKey] = this.filter(item => item[key] === value);
+            });
+        } else {
+            this.forEach(item => {
+                const propertyKey = key(item);
+
+                if (!result.hasOwnProperty(propertyKey)) {
+                    result[propertyKey] = new Collection();
+                }
+
+                result[propertyKey]!.push(item);
+            });
+        }
+
+        return result;
     }
 
     /**

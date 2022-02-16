@@ -2,6 +2,7 @@ import Collection from '../../src/Support/Collection';
 import LogicException from '../../src/Exceptions/LogicException';
 import { now } from '../setupTests';
 import { isObjectLiteral } from '../../src';
+import InvalidOffsetException from '../../src/Exceptions/InvalidOffsetException';
 
 let collection: Collection<any>;
 
@@ -744,6 +745,81 @@ describe('Collection', () => {
 
         it('should return a collection ready for chaining', () => {
             expect(collection.chunk(2).toArray()).toHaveLength(3);
+        });
+    });
+
+    describe('chunkBy()', () => {
+        interface Elem {
+            id: number;
+            parentId: number;
+            [key: string]: any;
+        }
+
+        // 5:2, 3:3, 2:4, 1:1
+        const elements: Elem[] = [
+            { id: 0, parentId: 5 },
+            { id: 1, parentId: 5 },
+            { id: 2, parentId: 3 },
+            { id: 3, parentId: 3 },
+            { id: 4, parentId: 3 },
+            { id: 5, parentId: 2 },
+            { id: 6, parentId: 2, keyNotPresent: 'in other items' },
+            { id: 7, parentId: 2 },
+            { id: 8, parentId: 2 },
+            { id: 9, parentId: 1 }
+        ];
+        let chunkableCollection: Collection<Elem>;
+
+        beforeEach(() => {
+            chunkableCollection = new Collection(elements);
+        });
+
+        it('should throw an error if not every item is an object', () => {
+            collection = new Collection([1, 2]);
+
+            expect(() => collection.chunkBy('id')).toThrow(
+                new TypeError('Every item needs to be an object to be able to access its properties.')
+            );
+        });
+
+        it('should throw an error if key not present in every item of the collection', () => {
+            expect(() => chunkableCollection.chunkBy('keyNotPresent')).toThrow(
+                new InvalidOffsetException('\'keyNotPresent\' is not present in every item of the collection.')
+            );
+            expect(() => chunkableCollection.chunkBy('noExistentKey')).toThrow(
+                new InvalidOffsetException('\'noExistentKey\' is not present in every item of the collection.')
+            );
+        });
+
+        it('should chunk the collection into an object with given key value being the key', () => {
+            const chunkedRecord = chunkableCollection.chunkBy('parentId');
+
+            expect(chunkedRecord).toBeInstanceOf(Object);
+            expect(chunkedRecord[5]).toHaveLength(2);
+            expect(chunkedRecord[3]).toHaveLength(3);
+            expect(chunkedRecord[2]).toHaveLength(4);
+            expect(chunkedRecord[1]).toHaveLength(1);
+            expect(chunkedRecord[1]).toBeInstanceOf(Collection);
+        });
+
+        it('should chunk the collection into an object based on the value returned by the given function', () => {
+            const collectionToBeChunked = new Collection([
+                { id: 1, nested: { key: 'value-1' } },
+                { id: 2, nested: { key: 'value-1' } },
+                { id: 3, nested: { key: 'value-2' } },
+                { id: 4, nested: { key: 'value-2' } },
+                { id: 5, nested: { key: 'value-2' } },
+                { id: 6, nested: { key: 'value-2' } },
+                { id: 7, nested: { key: 'value-4' } }
+            ]);
+
+            const chunkedRecord = collectionToBeChunked.chunkBy(item => item.nested.key);
+
+            expect(chunkedRecord).toBeInstanceOf(Object);
+            expect(chunkedRecord['value-1']).toHaveLength(2);
+            expect(chunkedRecord['value-2']).toHaveLength(4);
+            expect(chunkedRecord['value-4']).toHaveLength(1);
+            expect(chunkedRecord['value-4']).toBeInstanceOf(Collection);
         });
     });
 

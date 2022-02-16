@@ -1068,7 +1068,8 @@ describe('Collection', () => {
             collection = new Collection(Array.of(null, ...elements));
 
             const func = () => collection.pluck('id');
-            expect(func).toThrow(new TypeError('Every item needs to be an object to be able to access its properties'));
+            expect(func)
+                .toThrow(new TypeError('Every item needs to be an object to be able to access its properties.'));
         });
 
         it('should return a collection ready for chaining', () => {

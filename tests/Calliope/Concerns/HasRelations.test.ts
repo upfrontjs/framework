@@ -332,7 +332,7 @@ describe('HasRelations', () => {
                     String(config.get('baseEndPoint'))
                     + '/' + String(hasRelations.getEndpoint())
                     + '/' + String(hasRelations.getKey())
-                    + '?' + 'with[]=file&with[]=files'
+                    + '?' + 'with[0]=file&with[1]=files'
                 );
             }
         );

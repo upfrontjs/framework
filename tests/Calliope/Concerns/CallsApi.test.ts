@@ -316,8 +316,8 @@ describe('CallsApi', () => {
                     newKey: 'new value'
                 });
                 expect(getLastRequest()!.url).toBe(
-                    finish(config.get('baseEndPoint')!, '/') + caller.getEndpoint()
-                    + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=1&wheres[][boolean]=and&key=value'
+                    finish(config.get('baseEndPoint')!, '/') + caller.getEndpoint() +
+                    '?wheres[0][column]=id&wheres[0][operator]=%3D&wheres[0][value]=1&wheres[0][boolean]=and&key=value'
                 );
 
                 config.unset('requestMiddleware');
@@ -560,7 +560,7 @@ describe('CallsApi', () => {
 
             expect(getLastRequest()?.url)
                 .toBe(`${config.get('baseEndPoint')!}/${caller.getEndpoint()}`
-                    + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=2&wheres[][boolean]=and');
+                    + '?wheres[0][column]=id&wheres[0][operator]=%3D&wheres[0][value]=2&wheres[0][boolean]=and');
         });
 
         it('should send query parameters in the request', async () => {
@@ -570,7 +570,7 @@ describe('CallsApi', () => {
             expect(getLastRequest()?.url).toBe(
                 String(config.get('baseEndPoint')) + '/'
                 + caller.getEndpoint()
-                + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=43&wheres[][boolean]=and'
+                + '?wheres[0][column]=id&wheres[0][operator]=%3D&wheres[0][value]=43&wheres[0][boolean]=and'
             );
         });
 
@@ -642,7 +642,7 @@ describe('CallsApi', () => {
             expect(getLastRequest()?.body).toStrictEqual({ key: 'value' });
             expect(getLastRequest()?.url).toBe(
                 `${config.get('baseEndPoint')!}/${caller.getEndpoint()}`
-                + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=43&wheres[][boolean]=and'
+                + '?wheres[0][column]=id&wheres[0][operator]=%3D&wheres[0][value]=43&wheres[0][boolean]=and'
             );
         });
     });
@@ -683,7 +683,7 @@ describe('CallsApi', () => {
             expect(getLastRequest()?.body).toStrictEqual({ key: 'value' });
             expect(getLastRequest()?.url).toBe(
                 `${config.get('baseEndPoint')!}/${caller.getEndpoint()}`
-                + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=43&wheres[][boolean]=and'
+                + '?wheres[0][column]=id&wheres[0][operator]=%3D&wheres[0][value]=43&wheres[0][boolean]=and'
             );
         });
     });
@@ -724,7 +724,7 @@ describe('CallsApi', () => {
             expect(getLastRequest()?.body).toStrictEqual({ key: 'value' });
             expect(getLastRequest()?.url).toBe(
                 `${config.get('baseEndPoint')!}/${caller.getEndpoint()}`
-                + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=43&wheres[][boolean]=and'
+                + '?wheres[0][column]=id&wheres[0][operator]=%3D&wheres[0][value]=43&wheres[0][boolean]=and'
             );
         });
     });
@@ -773,7 +773,7 @@ describe('CallsApi', () => {
 
             expect(getLastRequest()?.url).toBe(
                 `${config.get('baseEndPoint')!}/${caller.getEndpoint()}`
-                + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=43&wheres[][boolean]=and'
+                + '?wheres[0][column]=id&wheres[0][operator]=%3D&wheres[0][value]=43&wheres[0][boolean]=and'
             );
         });
     });

@@ -9,6 +9,7 @@ on:
       - 'src/**/*.ts'
       - 'package-lock.json'
     branches:
+      - main
       - 'release/*'
 
 jobs:

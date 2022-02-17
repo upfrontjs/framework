@@ -248,11 +248,13 @@ describe('Model', () => {
             await user.findMany([2, 3]);
 
             expect(getLastRequest()?.method).toBe('GET');
-            expect(getLastRequest()?.url).toContain(
-                'wheres[][column]=id' +
-                '&wheres[][operator]=in' +
-                '&wheres[][value][]=2&wheres[][value][]=3' +
-                '&wheres[][boolean]=and'
+            expect(getLastRequest()?.url).toBe(
+                config.get('baseEndPoint')! + '/' +
+                user.getEndpoint() + '?' +
+                'wheres[0][column]=id' +
+                '&wheres[0][operator]=in' +
+                '&wheres[0][value][0]=2&wheres[0][value][1]=3' +
+                '&wheres[0][boolean]=and'
             );
         });
 
@@ -303,8 +305,8 @@ describe('Model', () => {
             mockUserModelResponse(user);
             await user.refresh();
 
-            const params = 'columns[]=' + user.getAttributeKeys().reduce((previous, next) => {
-                return previous + '&columns[]=' + next;
+            const params = 'columns[0]=' + user.getAttributeKeys().reduce((previous, next, index) => {
+                return previous + '&columns[' + String(index) + ']=' + next;
             });
 
             expect(getLastRequest()?.url).toContain(params);

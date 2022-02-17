@@ -216,6 +216,39 @@ collection.chunk(2); // Collection[Collection[1, 2], Collection[3, 4], Collectio
 collection.chunk(5); // Collection[Collection[1, 2, 3, 4, 5]]
 ```
 
+#### chunkBy
+
+The `chunkBy` method returns an object where the keys are the resolved key values. The method also accepts a callback function which can be used to chunk by deeply nested key values.
+```js
+import { Collection } from '@upfrontjs/framework';
+
+const collection = new Collection([
+    { id: 0, parentId: 5 },
+    { id: 1, parentId: 5 },
+    { id: 2, parentId: 3 },
+    { id: 3, parentId: 3 },
+    { id: 4, parentId: 3 }
+]);
+
+/**
+ * Will result in:
+ * {
+ *     '5': Collection[{ id: 0, parentId: 5 },{ id: 1, parentId: 5 }],
+ *     '3': Collection[{ id: 2, parentId: 3 },{ id: 3, parentId: 3 },{ id: 4, parentId: 3 }],
+ * }
+ */
+collection.chunkBy('parentId');
+
+/**
+ * Will result in:
+ * {
+ *     '5': Collection[{ id: 0, parentId: 5 },{ id: 1, parentId: 5 }],
+ *     '3': Collection[{ id: 2, parentId: 3 },{ id: 3, parentId: 3 },{ id: 4, parentId: 3 }],
+ * }
+ */
+collection.chunkBy(item => item.parentKey);
+```
+
 #### when
 
 The `when` method executes the given method if the first argument evaluates to true. The method has to return the collection.

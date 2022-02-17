@@ -4,6 +4,7 @@ import type Jsonable from '../Contracts/Jsonable';
 import LogicException from '../Exceptions/LogicException';
 import { isObjectLiteral } from './function';
 import type { MaybeArray } from './type';
+import InvalidOffsetException from '../Exceptions/InvalidOffsetException';
 
 export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T>, ArrayLike<T> {
     /**
@@ -296,7 +297,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
     }
 
     /**
-     * Remove all items the are deep equal to the argument.
+     * Remove all items that are deep equal to the argument.
      *
      * @param {any} item
      *
@@ -314,7 +315,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      * @return {this}
      */
     public nth(every: number): this {
-        return this._newInstance(this.toArray().filter((_item, index) => (index + 1) % every === 0));
+        return this.filter((_item, index) => (index + 1) % every === 0);
     }
 
     /**
@@ -323,7 +324,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      * @return {this}
      */
     public withoutEmpty(): this {
-        return this._newInstance(this.toArray().filter(item => item !== undefined && item !== null));
+        return this.filter(item => item !== undefined && item !== null);
     }
 
     /**
@@ -415,7 +416,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
             ? values
             : new Collection(Array.isArray(values) ? values : [values]);
 
-        return this._newInstance(this.toArray().filter(item => argCollection.includes(item)));
+        return this.filter(item => argCollection.includes(item));
     }
 
     /**
@@ -435,10 +436,45 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
                 continue;
             }
 
-            result.push(this._newInstance(this.slice(start, start + size).toArray()));
+            result.push(this.slice(start, start + size));
         }
 
         return new Collection(result);
+    }
+
+    /**
+     * Chunk the collection by the specified key.
+     */
+    public chunkBy<K extends keyof T>(key: K | ((item: T) => PropertyKey)): Record<PropertyKey, Collection<T>> {
+        if (!this._allAreObjects()) {
+            throw new TypeError('Every item needs to be an object to be able to access its properties.');
+        }
+
+        const result: Record<PropertyKey, Collection<T>> = {};
+
+        if (typeof key === 'string' || typeof key === 'number' || typeof key === 'symbol') {
+            if (!this.every(obj => key in obj)) {
+                throw new InvalidOffsetException(
+                    '\'' + String(key) + '\' is not present in every item of the collection.'
+                );
+            }
+
+            this.pluck(String(key)).unique().forEach(value => {
+                result[value as PropertyKey] = this.filter(item => item[key] === value);
+            });
+        } else {
+            this.forEach(item => {
+                const propertyKey = key(item);
+
+                if (!result.hasOwnProperty(propertyKey)) {
+                    result[propertyKey] = new Collection();
+                }
+
+                result[propertyKey]!.push(item);
+            });
+        }
+
+        return result;
     }
 
     /**
@@ -535,18 +571,13 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
             return this;
         }
 
-        const array = this.toArray();
-
         if (count < 0) {
-            return this._newInstance(
-                array
-                    .reverse()
-                    .filter((_item, index) => index + 1 <= Math.abs(count))
-                    .reverse()
-            );
+            return this.reverse()
+                .filter((_item, index) => index + 1 <= Math.abs(count))
+                .reverse();
         }
 
-        return this._newInstance(array.filter((_item, index) => index + 1 <= count));
+        return this.filter((_item, index) => index + 1 <= count);
     }
 
     /**
@@ -600,18 +631,13 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
             return this._newInstance(this.toArray());
         }
 
-        const array = this.toArray();
-
         if (count < 0) {
-            return this._newInstance(
-                array
-                    .reverse()
-                    .filter((_item, index) => index >= Math.abs(count))
-                    .reverse()
-            );
+            return this.reverse()
+                .filter((_item, index) => index >= Math.abs(count))
+                .reverse();
         }
 
-        return this._newInstance(array.filter((_item, index) => index >= count));
+        return this.filter((_item, index) => index >= count);
     }
 
     /**
@@ -663,23 +689,20 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
     public pluck<Keys extends Readonly<string[]> | string[]>(properties: Keys): Collection<Record<Keys[number], any>>;
     public pluck(properties: MaybeArray<string>): Collection<any> {
         if (!this._allAreObjects()) {
-            throw new TypeError('Every item needs to be an object to be able to access its properties');
+            throw new TypeError('Every item needs to be an object to be able to access its properties.');
         }
 
         if (Array.isArray(properties)) {
-            return new Collection(
-                this.map((item: Record<string, unknown>) => {
-                    const obj: Record<string, unknown> = {};
+            return this.map((item: Record<string, unknown>) => {
+                const obj: Record<string, unknown> = {};
 
-                    properties.forEach(property => obj[property] = item[property]);
+                properties.forEach(property => obj[property] = item[property]);
 
-                    return obj;
-                })
-                    .toArray()
-            );
+                return obj;
+            });
         }
 
-        return new Collection(this.map((item: Record<string, unknown>) => item[properties]).toArray());
+        return this.map((item: Record<string, unknown>) => item[properties]);
     }
 
     /**
@@ -752,7 +775,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
     }
 
     /**
-     * Get the summative of the collection values.
+     * Get summative of the collection values.
      *
      * @param {string|function} key
      */

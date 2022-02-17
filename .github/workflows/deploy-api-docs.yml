@@ -22,6 +22,7 @@ jobs:
         run: |
           git config --global user.email "nandor.kraszlan@gmail.com"
           git config --global user.name "Nandor Kraszlan"
+          git remote add origin https://github.com/upfrontjs/framework.git
           cp -r ./api-docs/* ./
           git add -f assets
           git add -f classes
@@ -30,5 +31,5 @@ jobs:
           git add -f .nojekyll
           git add -f index.html
           git add -f modules.html
-          git commit -m "Updates from ${{ github.ref }}" --no-verify
-          git push -u origin gh-pages
+          git commit -m "Updates from ${{ github.ref }} - {{ github.sha }}" --no-verify
+          git push origin -u gh-pages

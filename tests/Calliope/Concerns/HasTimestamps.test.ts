@@ -129,8 +129,8 @@ describe('HasTimestamps', () => {
             expect(getLastRequest()?.url).toBe(
                 String(config.get('baseEndPoint'))
                 + finish(start(hasTimestamps.getEndpoint(), '/'), '/' + String(hasTimestamps.getKey()))
-                + '?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=1&wheres[][boolean]=and'
-                + '&columns[]=createdAt&columns[]=updatedAt'
+                + '?wheres[0][column]=id&wheres[0][operator]=%3D&wheres[0][value]=1&wheres[0][boolean]=and'
+                + '&columns[0]=createdAt&columns[1]=updatedAt'
             );
         });
 

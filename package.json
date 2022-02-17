@@ -1,6 +1,6 @@
 {
     "name": "@upfrontjs/framework",
-    "version": "0.9.1",
+    "version": "0.10.0",
     "description": "Data handling framework complementary to backend model systems.",
     "main": "index.min.js",
     "module": "index.es.min.js",
@@ -89,8 +89,8 @@
         "@types/qs": "^6.9.5",
         "@types/semantic-release": "^17.2.1",
         "@types/uuid": "^8.3.0",
-        "@typescript-eslint/eslint-plugin": "^5.4.0",
-        "@typescript-eslint/parser": "^5.4.0",
+        "@typescript-eslint/eslint-plugin": "5.11.0",
+        "@typescript-eslint/parser": "5.11.0",
         "commitlint": "^16.0.0",
         "conventional-changelog-conventionalcommits": "4.6.0",
         "eslint": "^8.3.0",

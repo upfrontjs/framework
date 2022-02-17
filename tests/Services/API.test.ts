@@ -39,7 +39,7 @@ describe('API', () => {
             expect(config.url).toBe(
                 url
                 + '?'
-                + 'nested[objects][][id]=1&nested[objects][][id]=2&array[]=1&array[]=2'
+                + 'nested[objects][0][id]=1&nested[objects][1][id]=2&array[0]=1&array[1]=2'
             );
         });
 

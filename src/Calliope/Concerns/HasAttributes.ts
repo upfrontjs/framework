@@ -707,7 +707,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @return {string}
      */
-    public toString(): string {
+    public override toString(): string {
         return JSON.stringify(this.toJSON(), null, 4);
     }
 }

@@ -53,7 +53,7 @@ describe('CallsApi', () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
 
             class UserWithSnakeCase extends User {
-                protected get serverAttributeCasing() {
+                protected override get serverAttributeCasing() {
                     return 'camel' as const;
                 }
             }
@@ -155,7 +155,7 @@ describe('CallsApi', () => {
         it('should get the HandlesApiResponse from the Configuration if set',  async () => {
             const mockFn = jest.fn();
             const apiResponseHandler = class CustomApiResponseHandlerImplementation extends ApiResponseHandler {
-                public handleFinally() {
+                public override handleFinally() {
                     mockFn();
                 }
             };

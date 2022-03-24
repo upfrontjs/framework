@@ -26,7 +26,7 @@ describe('HasAttributes', () => {
 
         it('should get the attributeCasing value from the extending model', () => {
             class UserWithSnakeCase extends User {
-                public get attributeCasing() {
+                public override get attributeCasing() {
                     return 'snake' as const;
                 }
             }
@@ -323,7 +323,7 @@ describe('HasAttributes', () => {
 
                 public attribute2 = 1;
 
-                public get fillable(): string[] {
+                public override get fillable(): string[] {
                     return ['*'];
                 }
 

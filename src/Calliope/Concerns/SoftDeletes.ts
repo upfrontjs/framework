@@ -55,7 +55,9 @@ export default class SoftDeletes extends HasTimestamps {
      *
      * @return {Promise<boolean>}
      */
-    public async delete<T extends Model>(data?: FormData | SimpleAttributes | SimpleAttributes<this>): Promise<T> {
+    public override async delete<T extends Model>(
+        data?: FormData | SimpleAttributes | SimpleAttributes<this>
+    ): Promise<T> {
         if (!this.usesSoftDeletes()) {
             return super.delete(data);
         }

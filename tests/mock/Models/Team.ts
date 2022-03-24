@@ -7,13 +7,13 @@ export default class Team extends Model {
         return 'Team';
     }
 
-    public get fillable(): string[] {
+    public override get fillable(): string[] {
         return ['*'];
     }
 
-    protected readonly timestamps = false;
+    protected override readonly timestamps = false;
 
-    protected readonly softDeletes = false;
+    protected override readonly softDeletes = false;
 
     public $users(): User {
         return this.hasMany(User);

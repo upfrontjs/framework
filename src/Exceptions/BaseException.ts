@@ -4,5 +4,5 @@ export default abstract class BaseException extends Error {
      *
      * @type {string}
      */
-    public abstract get name(): string;
+    public abstract override get name(): string;
 }

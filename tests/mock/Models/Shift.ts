@@ -10,7 +10,7 @@ export default class Shift extends Model {
         return new ShiftFactory;
     }
 
-    public get fillable(): string[] {
+    public override get fillable(): string[] {
         return ['*'];
     }
 }

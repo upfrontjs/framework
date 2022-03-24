@@ -34,7 +34,7 @@ describe('CastsAttributes', () => {
     describe('constructor()', () => {
         it('should merge the getter into the internal casts', () => {
             class CastingClassWithGetter extends CastingClass {
-                public get casts() {
+                public override get casts() {
                     return {
                         test: 'boolean' as const
                     };

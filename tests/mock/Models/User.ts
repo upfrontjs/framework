@@ -10,11 +10,11 @@ export default class User extends Model {
         return 'User';
     }
 
-    public get endpoint(): string {
+    public override get endpoint(): string {
         return 'users';
     }
 
-    public get fillable(): string[] {
+    public override get fillable(): string[] {
         return ['*'];
     }
 

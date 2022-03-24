@@ -305,6 +305,9 @@ export default class CallsApi extends BuildsQuery {
 
     /**
      * Set the last synced at attribute.
+     * This is only expected to be used
+     * when mocking model to look
+     * like it exists.
      *
      * @param {any} to
      *
@@ -312,7 +315,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {this}
      */
-    protected setLastSyncedAt(to: unknown = new Date): this {
+    public setLastSyncedAt(to: unknown = new Date): this {
         const key = '_' + this.setStringCase('last_synced_at');
 
         Object.defineProperty(this, key, {

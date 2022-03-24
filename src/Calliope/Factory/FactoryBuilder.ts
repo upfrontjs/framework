@@ -365,7 +365,6 @@ export default class FactoryBuilder<T extends Model, F extends Factory<T> = Fact
             }
         }
 
-        // @ts-expect-error
         model.setLastSyncedAt();
 
         return model.syncOriginal();

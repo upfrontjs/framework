@@ -22,7 +22,6 @@ jobs:
         run: |
           git config --global user.email "nandor.kraszlan@gmail.com"
           git config --global user.name "Nandor Kraszlan"
-          git remote add origin https://github.com/upfrontjs/framework.git
           cp -r ./api-docs/* ./
           git add -f assets
           git add -f classes

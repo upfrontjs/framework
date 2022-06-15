@@ -407,6 +407,34 @@ collection.dump('test'); // logged: '10:37:05 (test) - All items: 1,2,3,4,5'
 collection.dump().take(2); // Collection[1, 2]
 ```
 
+#### orderBy
+
+When all items in the collections are objects, then you may order them using the `orderBy` method. The method takes one or more objects describing how the collection should be ordered. The object has two properties:
+
+- `property` - the name of the property you want to order by OR a method that accepts the collection item and returns the nested value.
+- `direction` - possible values are `asc`, `desc` respective to weather it should be in ascending or descending order.
+
+```js
+const elements = [
+    { id: 2, nestedObj: { name: '2' } },
+    { id: 1, nestedObj: { name: '5' } },
+    { id: 1, nestedObj: { name: '1' } },
+    { id: 4, nestedObj: { name: '4' } },
+    { id: 3, nestedObj: { name: '3' } }
+];
+
+const collection = new Collection(elements);
+
+collection.orderBy(
+    { property: 'id', directions: 'asc' },
+    { property: element => element.nestedObj.name, direction: 'desc' }
+).at(1)!.nestedObj.name === '1'; // true
+
+collection.orderBy(
+    { property: element => element.nestedObj.name, direction: 'asc' }
+).at(0)!.nestedObj.name === '1'; // true
+```
+
 #### toArray
 
 The `toArray` method creates an [array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) from the collection.

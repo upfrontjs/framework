@@ -7,7 +7,7 @@ import type Model from '../Model';
 import type { QueryParams } from './BuildsQuery';
 import BuildsQuery from './BuildsQuery';
 import type { Attributes, SimpleAttributes } from './HasAttributes';
-import { isObjectLiteral } from '../../Support/function';
+import { isObjectLiteral, transformKeys } from '../../Support/function';
 import { finish, kebab, plural } from '../../Support/string';
 import type { MaybeArray, StaticToThis } from '../../Support/type';
 
@@ -105,7 +105,7 @@ export default class CallsApi extends BuildsQuery {
             );
         }
 
-        let queryParameters = this.transformKeys(this.compileQueryParameters(), true);
+        let queryParameters = transformKeys(this.compileQueryParameters(), this.serverAttributeCasing);
         const config = new GlobalConfig;
         const url = (config.get('baseEndPoint') ? finish(config.get('baseEndPoint', '')!, '/') : '')
             + (endpoint.startsWith('/') ? endpoint.slice(1) : endpoint);
@@ -113,7 +113,7 @@ export default class CallsApi extends BuildsQuery {
         const handlesApiResponse = new (config.get('apiResponseHandler', ApiResponseHandler))!;
 
         if (data && isObjectLiteral<SimpleAttributes>(data) && !(data instanceof FormData)) {
-            data = this.transformKeys(data, true);
+            data = transformKeys(data, this.serverAttributeCasing);
         }
 
         const requestMiddleware = config.get('requestMiddleware');

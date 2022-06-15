@@ -445,14 +445,14 @@ const collection = new Collection([1, 2, 3, 4, 5]);
 collection.toArray(); // [1, 2, 3, 4, 5]
 ```
 
-#### toJson
+#### toJSON
 
-The `toJson` method returns the JSON representation of the collection.
+The `toJSON` method returns the JSON representation of the collection.
 ```js
 import { Collection } from '@upfrontjs/framework';
 
 const collection = new Collection([1, 2, 3, 4, 5]);
-collection.toJson(); // '{"0":1,"1":2,"2":3,"3":4,"4":5,"length":5}'
+collection.toJSON(); // '{"0":1,"1":2,"2":3,"3":4,"4":5,"length":5}'
 ```
 
 #### isCollection

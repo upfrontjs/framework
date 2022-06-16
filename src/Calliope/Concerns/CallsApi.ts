@@ -260,7 +260,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Model|this}
      */
-    private getResponseModel<T extends Model>(responseData: Attributes<T> | any): T {
+    private getResponseModel<T extends Model>(responseData: any): T {
         // returning a collection outside of GET is unexpected.
         return isObjectLiteral<Attributes<T>>(responseData)
             ? this.newInstanceFromResponseData(responseData)

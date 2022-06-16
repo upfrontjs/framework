@@ -130,6 +130,7 @@ describe('HasAttributes', () => {
             };
 
             for (const [item] of hasAttributes) {
+                // eslint-disable-next-line jest/no-conditional-in-test
                 boolean = boolean && hasValue(item);
             }
 
@@ -141,7 +142,6 @@ describe('HasAttributes', () => {
 
             let relationWasLast = false;
             for (const [item] of hasAttributes) {
-                // eslint-disable-next-line jest/no-if
                 relationWasLast = item !== hasAttributes.test;
             }
 
@@ -152,7 +152,7 @@ describe('HasAttributes', () => {
             hasAttributes.setAttribute('myAttr', { key: 1 });
 
             for (const [item, key] of hasAttributes) {
-                // eslint-disable-next-line jest/no-if
+                // eslint-disable-next-line jest/no-conditional-in-test
                 if (key === 'myAttr') {
                     item.key = 2;
                 }

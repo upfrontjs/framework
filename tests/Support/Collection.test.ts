@@ -66,6 +66,7 @@ describe('Collection', () => {
             let boolean = true;
 
             for (const item of collection) {
+                // eslint-disable-next-line jest/no-conditional-in-test
                 boolean = elements.includes(item as number) && boolean;
             }
 

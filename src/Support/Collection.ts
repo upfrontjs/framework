@@ -7,7 +7,7 @@ import type { MaybeArray } from './type';
 import InvalidOffsetException from '../Exceptions/InvalidOffsetException';
 
 export type Order<T extends Record<PropertyKey, any>> = {
-    property: keyof T| ((item: T) => unknown);
+    property: keyof T | ((item: T) => unknown);
     direction: 'asc' | 'desc';
 };
 

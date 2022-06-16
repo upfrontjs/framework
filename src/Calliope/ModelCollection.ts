@@ -113,10 +113,9 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {Model|ModelCollection|undefined|any}
      */
-    public findByKey(
-        key: MaybeArray<number | string>,
-        defaultVal?: ModelCollection<T> | T
-    ): T | any | this | undefined {
+    public findByKey(key: number | string, defaultVal?: T): T | undefined;
+    public findByKey(key: (number | string)[], defaultVal?: ModelCollection<T>): ModelCollection<T> | undefined;
+    public findByKey(key: MaybeArray<number | string>, defaultVal?: ModelCollection<T> | T): any {
         this._throwIfNotModels();
 
         const keys = new Set(this._getArgumentKeys(key));
@@ -401,7 +400,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
     /**
      * @inheritDoc
      */
-    public override map<U extends Model | unknown>(
+    public override map<U>(
         callback: (value: T, index: number, array: T[]) => U,
         thisArg?: any
     ): [U] extends [Model] ? ModelCollection<U> : Collection<U> {

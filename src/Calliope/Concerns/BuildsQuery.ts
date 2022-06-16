@@ -306,12 +306,9 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public where(
-        column: string,
-        operator: Operator | unknown,
-        value?: unknown,
-        boolean: BooleanOperator = 'and'
-    ): this {
+    public where(column: string, value?: unknown): this;
+    public where(column: string, operator: Operator, value: unknown, boolean?: BooleanOperator): this;
+    public where(column: string, operator: unknown, value?: unknown, boolean: BooleanOperator = 'and'): this {
         return this.addWhereConstraint(
             column,
             arguments.length > 2 ? operator as Operator : '=',
@@ -332,10 +329,18 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @see BuildsQuery.prototype.where
      */
+    public static where<T extends StaticToThis>(this: T, column: string, value: unknown): T['prototype'];
     public static where<T extends StaticToThis>(
         this: T,
         column: string,
-        operator: Operator | unknown,
+        operator: Operator,
+        value: unknown,
+        boolean?: BooleanOperator
+    ): T['prototype'];
+    public static where<T extends StaticToThis>(
+        this: T,
+        column: string,
+        operator: unknown,
         value?: unknown,
         boolean: BooleanOperator = 'and'
     ): T['prototype'] {
@@ -356,7 +361,9 @@ export default class BuildsQuery extends HasAttributes {
      *
      * @return {this}
      */
-    public orWhere(column: string, operator: Operator | any, value?: any): this {
+    public orWhere(column: string, value: any): this;
+    public orWhere(column: string, operator: Operator, value: any): this;
+    public orWhere(column: string, operator: Operator, value?: any): this {
         return this.where(column, value ? operator : '=', value ? value : operator, 'or');
     }
 

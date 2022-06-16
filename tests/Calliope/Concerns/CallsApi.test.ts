@@ -53,7 +53,7 @@ describe('CallsApi', () => {
             fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
 
             class UserWithSnakeCase extends User {
-                protected get serverAttributeCasing() {
+                protected override get serverAttributeCasing() {
                     return 'camel' as const;
                 }
             }
@@ -155,7 +155,7 @@ describe('CallsApi', () => {
         it('should get the HandlesApiResponse from the Configuration if set',  async () => {
             const mockFn = jest.fn();
             const apiResponseHandler = class CustomApiResponseHandlerImplementation extends ApiResponseHandler {
-                public handleFinally() {
+                public override handleFinally() {
                     mockFn();
                 }
             };
@@ -433,32 +433,27 @@ describe('CallsApi', () => {
 
     describe('setLastSyncedAt()', () => {
         it('should set the attribute with the correct casing', () => {
-            // @ts-expect-error
             caller.setLastSyncedAt();
             expect(caller._last_synced_at).toBeUndefined();
             expect(caller._lastSyncedAt).toBeDefined();
             Object.defineProperty(caller, 'attributeCasing', { get: () => 'snake' });
 
-            // @ts-expect-error
             caller.setLastSyncedAt();
             expect(caller._last_synced_at).toBeDefined();
-            // if you update the string casing on the fly, that's on you
-            // and you might end up with _lastSyncedAt and _last_synced_at
+            // if you update the string casing on the fly, that's on you.
+            // you might end up with _lastSyncedAt and _last_synced_at at the same time
         });
 
         it('should return itself ready for chaining', () => {
-            // @ts-expect-error
             expect(caller.setLastSyncedAt()).toBeInstanceOf(User);
         });
 
         it('should update the attribute with the new Date', () => {
-            // @ts-expect-error
             caller.setLastSyncedAt();
             expect(caller._lastSyncedAt).toStrictEqual(new Date);
         });
 
         it('should throw an error when invalid value given', () => {
-            // @ts-expect-error
             caller.setLastSyncedAt('invalid value');
             expect(() => caller._lastSyncedAt).toThrow(
                 new LogicException('\'_lastSyncedAt\' is not castable to a date time in \'' + caller.getName() + '\'.')

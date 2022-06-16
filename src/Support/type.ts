@@ -23,9 +23,9 @@ export type MaybeArray<T> = T | T[];
 /**
  * Set every property nested or otherwise to optional.
  */
-export type DeepPartial<T> = {
-    [P in keyof T]?: DeepPartial<T[P]> | T[P];
-};
+export type DeepPartial<T> = T extends Record<PropertyKey, any>
+    ? { [P in keyof T]?: DeepPartial<T[P]> }
+    : T;
 
 /**
  * Get the keys of the given type where the value matches the given argument.

@@ -26,7 +26,7 @@ describe('HasAttributes', () => {
 
         it('should get the attributeCasing value from the extending model', () => {
             class UserWithSnakeCase extends User {
-                public get attributeCasing() {
+                public override get attributeCasing() {
                     return 'snake' as const;
                 }
             }
@@ -130,6 +130,7 @@ describe('HasAttributes', () => {
             };
 
             for (const [item] of hasAttributes) {
+                // eslint-disable-next-line jest/no-conditional-in-test
                 boolean = boolean && hasValue(item);
             }
 
@@ -141,7 +142,6 @@ describe('HasAttributes', () => {
 
             let relationWasLast = false;
             for (const [item] of hasAttributes) {
-                // eslint-disable-next-line jest/no-if
                 relationWasLast = item !== hasAttributes.test;
             }
 
@@ -152,7 +152,7 @@ describe('HasAttributes', () => {
             hasAttributes.setAttribute('myAttr', { key: 1 });
 
             for (const [item, key] of hasAttributes) {
-                // eslint-disable-next-line jest/no-if
+                // eslint-disable-next-line jest/no-conditional-in-test
                 if (key === 'myAttr') {
                     item.key = 2;
                 }
@@ -323,7 +323,7 @@ describe('HasAttributes', () => {
 
                 public attribute2 = 1;
 
-                public get fillable(): string[] {
+                public override get fillable(): string[] {
                     return ['*'];
                 }
 

@@ -5,7 +5,7 @@ class TestClass extends Model {
         return 'TestClass';
     }
 
-    public get fillable(): string[] {
+    public override get fillable(): string[] {
         return ['attr1'];
     }
 }
@@ -39,7 +39,7 @@ describe('GuardsAttributes', () => {
                     return 'TestGuardingClass';
                 }
 
-                public guardedAttributes = ['attr1'];
+                public override guardedAttributes = ['attr1'];
             }
 
             guardedObject = new TestGuardingClass;

@@ -1,10 +1,15 @@
-import { isEqual, uniq } from 'lodash';
+import { isEqual, orderBy, uniq } from 'lodash';
 import type Arrayable from '../Contracts/Arrayable';
 import type Jsonable from '../Contracts/Jsonable';
 import LogicException from '../Exceptions/LogicException';
 import { isObjectLiteral } from './function';
 import type { MaybeArray } from './type';
 import InvalidOffsetException from '../Exceptions/InvalidOffsetException';
+
+export type Order<T extends Record<PropertyKey, any>> = {
+    property: keyof T | ((item: T) => unknown);
+    direction: 'asc' | 'desc';
+};
 
 export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T>, ArrayLike<T> {
     /**
@@ -748,6 +753,29 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      */
     public keys(): string[] {
         return Object.keys(this).filter((propName: string) => !isNaN(Number(propName)));
+    }
+
+    /**
+     * Order the collection by given configurations(s)
+     *
+     * @param {Order | Order[]} order
+     * @param {Order[]=} additional
+     *
+     * @return {this}
+     */
+    public orderBy(order: MaybeArray<Order<T>>, ...additional: Order<T>[]): this {
+        if (!this._allAreObjects()) {
+            throw new TypeError('Every item needs to be an object to be able to access its properties.');
+        }
+
+        const orders = Array.isArray(order) ? order : [order];
+        orders.push(...additional);
+
+        return this._newInstance(orderBy(
+            this.toArray(),
+            orders.map(o => o.property),
+            orders.map(o => o.direction)
+        ));
     }
 
     /**

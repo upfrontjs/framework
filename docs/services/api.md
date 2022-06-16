@@ -35,7 +35,7 @@ With the default settings, your api has to be ready to parse the requests with t
 A sample get request `User.whereKey(1).get()` will encode to the following:
 
 ```http request
-GET https://test-api-endpoint.com/users?wheres[][column]=id&wheres[][operator]=%3D&wheres[][value]=1&wheres[][boolean]=and
+GET https://test-api-endpoint.com/users?wheres[0][column]=id&wheres[0][operator]=%3D&wheres[0][value]=1&wheres[0][boolean]=and
 Content-type: application/x-www-form-urlencoded, charset=utf-8
 Accept: application/json 
 ```

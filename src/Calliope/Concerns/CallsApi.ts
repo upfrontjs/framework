@@ -7,7 +7,7 @@ import type Model from '../Model';
 import type { QueryParams } from './BuildsQuery';
 import BuildsQuery from './BuildsQuery';
 import type { Attributes, SimpleAttributes } from './HasAttributes';
-import { isObjectLiteral } from '../../Support/function';
+import { isObjectLiteral, transformKeys } from '../../Support/function';
 import { finish, kebab, plural } from '../../Support/string';
 import type { MaybeArray, StaticToThis } from '../../Support/type';
 
@@ -105,7 +105,7 @@ export default class CallsApi extends BuildsQuery {
             );
         }
 
-        let queryParameters = this.transformKeys(this.compileQueryParameters(), true);
+        let queryParameters = transformKeys(this.compileQueryParameters(), this.serverAttributeCasing);
         const config = new GlobalConfig;
         const url = (config.get('baseEndPoint') ? finish(config.get('baseEndPoint', '')!, '/') : '')
             + (endpoint.startsWith('/') ? endpoint.slice(1) : endpoint);
@@ -113,7 +113,7 @@ export default class CallsApi extends BuildsQuery {
         const handlesApiResponse = new (config.get('apiResponseHandler', ApiResponseHandler))!;
 
         if (data && isObjectLiteral<SimpleAttributes>(data) && !(data instanceof FormData)) {
-            data = this.transformKeys(data, true);
+            data = transformKeys(data, this.serverAttributeCasing);
         }
 
         const requestMiddleware = config.get('requestMiddleware');
@@ -260,7 +260,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Model|this}
      */
-    private getResponseModel<T extends Model>(responseData: Attributes<T> | any): T {
+    private getResponseModel<T extends Model>(responseData: any): T {
         // returning a collection outside of GET is unexpected.
         return isObjectLiteral<Attributes<T>>(responseData)
             ? this.newInstanceFromResponseData(responseData)
@@ -305,6 +305,9 @@ export default class CallsApi extends BuildsQuery {
 
     /**
      * Set the last synced at attribute.
+     * This is only expected to be used
+     * when mocking model to look
+     * like it exists.
      *
      * @param {any} to
      *
@@ -312,7 +315,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {this}
      */
-    protected setLastSyncedAt(to: unknown = new Date): this {
+    public setLastSyncedAt(to: unknown = new Date): this {
         const key = '_' + this.setStringCase('last_synced_at');
 
         Object.defineProperty(this, key, {

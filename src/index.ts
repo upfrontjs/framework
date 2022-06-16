@@ -39,6 +39,7 @@ import type { ApiResponse } from './Contracts/HandlesApiResponse';
 import type { Events, Listener } from './Support/EventEmitter';
 import type { Method, CustomHeaders } from './Calliope/Concerns/CallsApi';
 import type { ResolvableAttributes } from './Calliope/Factory/FactoryBuilder';
+import type { Order } from './Support/Collection';
 
 export type {
     AttributeCaster,
@@ -59,7 +60,8 @@ export type {
     SimpleAttributeKeys,
     CustomHeaders,
     RawAttributes,
-    ResolvableAttributes
+    ResolvableAttributes,
+    Order
 };
 
 export * from './Support/type';

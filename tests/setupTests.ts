@@ -2,6 +2,7 @@ import fetchMock from 'jest-fetch-mock';
 import GlobalConfig from '../src/Support/GlobalConfig';
 import type Configuration from '../src/Contracts/Configuration';
 
+/* eslint-disable-next-line @typescript-eslint/consistent-generic-constructors */
 const config: GlobalConfig<Configuration> = new GlobalConfig;
 
 /* eslint-disable jest/require-hook */

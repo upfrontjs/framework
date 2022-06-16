@@ -10,7 +10,7 @@ export default class FileModel extends Model {
         return 'FileModel';
     }
 
-    public get endpoint(): string {
+    public override get endpoint(): string {
         return 'files';
     }
 

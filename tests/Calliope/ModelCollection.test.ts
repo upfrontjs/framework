@@ -112,6 +112,7 @@ describe('ModelCollection', () => {
 
         it('should de-duplicate the collection', () => {
             expect(collection.unique()).toHaveLength(2);
+            // eslint-disable-next-line jest/no-conditional-in-test
             expect(collection.includes(user1) && collection.includes(user2)).toBe(true);
         });
 
@@ -181,6 +182,7 @@ describe('ModelCollection', () => {
 
             expect(duplicateOnlyCollection).toHaveLength(1);
             expect(
+                // eslint-disable-next-line jest/no-conditional-in-test
                 duplicateOnlyCollection.includes(user1)
                 && !duplicateOnlyCollection.includes(user2)
             )

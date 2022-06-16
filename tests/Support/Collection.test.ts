@@ -66,6 +66,7 @@ describe('Collection', () => {
             let boolean = true;
 
             for (const item of collection) {
+                // eslint-disable-next-line jest/no-conditional-in-test
                 boolean = elements.includes(item as number) && boolean;
             }
 
@@ -1043,7 +1044,6 @@ describe('Collection', () => {
             { id: 5, name: '5' }
         ];
 
-
         it('should pluck values from objects', () => {
             collection = new Collection(elements);
 
@@ -1136,6 +1136,108 @@ describe('Collection', () => {
             const withoutEmpty = collection.withoutEmpty();
             collection.pop();
             expect(withoutEmpty).toBeInstanceOf(Collection);
+        });
+    });
+
+    describe('orderBy()', () => {
+        it('should order in the correct direction', () => {
+            const elements = [
+                { id: 2, name: '2' },
+                { id: 5, name: '5' },
+                { id: 1, name: '1' },
+                { id: 4, name: '4' },
+                { id: 3, name: '3' }
+            ];
+            const orderableCollection = new Collection(elements);
+
+            const descCollection = orderableCollection.orderBy([{ property: 'id', direction: 'desc' }]);
+            expect(descCollection.first()!.id).toBe(5);
+            expect(descCollection.at(2)!.id).toBe(3);
+            expect(descCollection.last()!.id).toBe(1);
+
+            const ascCollection = orderableCollection.orderBy({ property: 'id', direction: 'asc' });
+            expect(ascCollection.first()!.id).toBe(1);
+            expect(ascCollection.at(2)!.id).toBe(3);
+            expect(ascCollection.last()!.id).toBe(5);
+        });
+
+        it('should accept a function as property accessor', () => {
+            const elements = [
+                { id: 2, subObj: { name: '2' } },
+                { id: 5, subObj: { name: '5' } },
+                { id: 1, subObj: { name: '1' } },
+                { id: 4, subObj: { name: '4' } },
+                { id: 3, subObj: { name: '3' } }
+            ];
+
+            const orderableCollection = new Collection(elements);
+
+            const ascCollection = orderableCollection.orderBy({
+                property: (element) => element.subObj.name,
+                direction: 'asc'
+            });
+
+            expect(ascCollection.first()!.subObj.name).toBe('1');
+            expect(ascCollection.at(2)!.subObj.name).toBe('3');
+            expect(ascCollection.last()!.subObj.name).toBe('5');
+        });
+
+        it('should order by multiple orderings', () => {
+            const elements = [
+                { id: 3, name: '3' },
+                { id: 1, name: '1' },
+                { id: 2, name: '2' },
+                { id: 1, name: '3' },
+                { id: 1, name: '2' }
+            ];
+
+            const orderableCollection = new Collection(elements);
+
+            let mixedOrderCollection = orderableCollection.orderBy([
+                { property: 'id', direction: 'asc' },
+                { property: (element) => element.name, direction: 'desc' }
+            ]);
+
+            expect(mixedOrderCollection.first()!.id).toBe(1);
+            expect(mixedOrderCollection.first()!.name).toBe('3');
+
+            expect(mixedOrderCollection.at(2)!.id).toBe(1);
+            expect(mixedOrderCollection.at(2)!.name).toBe('1');
+
+            expect(mixedOrderCollection.last()!.id).toBe(3);
+            expect(mixedOrderCollection.last()!.name).toBe('3');
+
+            mixedOrderCollection = orderableCollection.orderBy(
+                { property: 'id', direction: 'asc' },
+                { property: 'name', direction: 'asc' }
+            );
+
+            expect(mixedOrderCollection.first()!.id).toBe(1);
+            expect(mixedOrderCollection.first()!.name).toBe('1');
+
+            expect(mixedOrderCollection.at(2)!.id).toBe(1);
+            expect(mixedOrderCollection.at(2)!.name).toBe('3');
+        });
+
+        it('should throw an error if not every item is an object', () => {
+            collection = new Collection(Array.of(null, { id: 1 }));
+
+            const func = () => collection.orderBy({ property: 'id', direction: 'asc' });
+            expect(func)
+                .toThrow(new TypeError('Every item needs to be an object to be able to access its properties.'));
+        });
+
+        it('should return a collection ready for chaining', () => {
+            const elements = [
+                { id: 3, name: '3' },
+                { id: 1, name: '1' },
+                { id: 2, name: '2' },
+                { id: 1, name: '3' },
+                { id: 1, name: '2' }
+            ] as const;
+
+            collection = new Collection(elements);
+            expect(collection.orderBy({ direction: 'asc', property: 'id' }).toArray()).toHaveLength(elements.length);
         });
     });
 

@@ -16,6 +16,7 @@ export default class GlobalConfig<T extends Configuration & Record<PropertyKey, 
     /**
      * Keys marked for not be deeply cloned when setting and returning values.
      */
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     public static usedAsReference: (PropertyKey | keyof Configuration)[] = ['headers'];
 
     /**

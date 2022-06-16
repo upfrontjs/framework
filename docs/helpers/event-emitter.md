@@ -99,7 +99,7 @@ emitter.has(undefined, num => console.log(num)); // true
 ```
 #### listenerCount
 
-The `listenerCount` determines how many listeners are currently registered. If an event name is given only the listeners for the given event is counted.
+The `listenerCount` determines how many listeners are currently registered. If an event name is given only the listeners for the given event are counted.
 
 ```ts
 import { EventEmitter } from '@upfrontjs/framework';

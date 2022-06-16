@@ -70,5 +70,5 @@ Given UpfrontJS is back-end agnostic, there are 2-3 requirements that needs to b
       - `DELETE users/{id}` - delete a single user.
 
 ::: tip
-Note that if you expect to experience high traffic for some unique data, you should probably still write a dedicated endpoint for it, instead of parsing the query and letting an ORM figure it out.
+Note that if you expect to experience high traffic for some unique data, you should probably still write a dedicated RPC endpoint for it, instead of parsing the query and letting an ORM figure it out.
 :::

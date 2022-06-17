@@ -153,6 +153,7 @@ describe('API', () => {
         });
 
         it('should merge in headers from the config if set', async () => {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             globalConfig.set('headers', { 'custom-header': 'value' });
 
             const initConfig = (await api.getConfig(url, 'post')).requestInit;

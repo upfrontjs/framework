@@ -446,6 +446,7 @@ describe('FactoryBuilder', () => {
             const models = factoryBuilder.createMany();
 
             expect(models.every(model => {
+                // eslint-disable-next-line jest/no-conditional-in-test
                 return model.getKey() && model[model.getUpdatedAtName()] && model[model.getCreatedAtName()];
             })).toBe(true);
         });
@@ -614,6 +615,7 @@ describe('FactoryBuilder', () => {
             expect(factoryBuilder.state('resolvedName')
                 .raw({
                     deletedAt: (attributes: Attributes) => {
+                        // eslint-disable-next-line jest/no-conditional-in-test
                         return attributes.deletedAt ?? now;
                     }
                 }))

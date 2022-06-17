@@ -32,4 +32,39 @@ describe('function helpers', () => {
             expect(func.isUserLandClass(class C {})).toBe(true);
         });
     });
+
+    describe('transformKeys()', () => {
+        /* eslint-disable @typescript-eslint/naming-convention */
+        it('should convert to camelCase by default', () => {
+            const serverCasedObj = {
+                start_date: 'Monday'
+            };
+
+            expect(func.transformKeys(serverCasedObj)).toStrictEqual({ startDate: 'Monday' });
+        });
+
+        it('should convert to snake_case on \'snake\' casing argument', () => {
+            const serverCasedObj = {
+                startDate: 'Monday'
+            };
+
+            expect(func.transformKeys(serverCasedObj, 'snake')).toStrictEqual({ start_date: 'Monday' });
+        });
+
+        it('should not transform prototype chain keys', () => {
+            const object = {
+                theProperty: 1,
+                nestedConstructor: Object
+            };
+
+            const transformedObj = func.transformKeys(object, 'snake');
+            expect(transformedObj.the_property).toBe(1);
+            expect(transformedObj.theProperty).toBeUndefined();
+            expect(transformedObj.nested_constructor).toStrictEqual(Object);
+            expect(transformedObj.nestedConstructor).toBeUndefined();
+            expect(transformedObj.nested_constructor.define_property).toBeUndefined();
+            expect(transformedObj.nested_constructor.defineProperty).toBeDefined();
+        });
+        /* eslint-enable @typescript-eslint/naming-convention */
+    });
 });

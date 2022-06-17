@@ -30,7 +30,7 @@ describe('SoftDeletes', () => {
 
         it('should return the deletedAt name correctly if overridden', () => {
             class MyUser extends User {
-                protected static readonly deletedAt = 'my_deleted_at';
+                protected static override readonly deletedAt = 'my_deleted_at';
             }
             softDeletes = new MyUser;
 

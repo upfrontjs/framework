@@ -7,7 +7,7 @@ export default class Contract extends Model {
         return 'Contract';
     }
 
-    public get fillable(): string[] {
+    public override get fillable(): string[] {
         return ['*'];
     }
 

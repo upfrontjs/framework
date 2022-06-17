@@ -26,7 +26,7 @@ describe('HasTimestamps', () => {
 
         it('should return the createdAt attribute correctly if overridden', () => {
             class MyUser extends User {
-                protected static readonly createdAt = 'my_created_at';
+                protected static override readonly createdAt = 'my_created_at';
             }
             hasTimestamps = new MyUser;
 
@@ -41,7 +41,7 @@ describe('HasTimestamps', () => {
 
         it('should return the updatedAt attribute correctly if overridden', () => {
             class MyUser extends User {
-                protected static readonly updatedAt = 'my_updated_at';
+                protected static override readonly updatedAt = 'my_updated_at';
             }
             hasTimestamps = new MyUser;
 

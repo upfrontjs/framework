@@ -35,7 +35,7 @@ export default class ApiResponseHandler implements HandlesApiResponse {
         response: ApiResponse & { request: { method: 'HEAD' | 'head' } }
     ): Promise<Omit<ApiResponse, 'data' | 'json'> | undefined>;
     public async handleResponse<T>(response: ApiResponse<T>): Promise<T | undefined>;
-    public async handleResponse(response: ApiResponse): Promise<unknown | undefined> {
+    public async handleResponse(response: ApiResponse): Promise<unknown> {
         if (response.status >= 400) {
             // eslint-disable-next-line @typescript-eslint/no-throw-literal
             throw response;

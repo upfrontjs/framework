@@ -16,7 +16,12 @@ I'd also love PRs. If you're thinking of a large PR, I advise opening up an issu
 
 ~~**Major** new features should always be sent to the `main` branch, which contains the upcoming release.~~
 
-Until reaching a stable version (v1), all pull requests should start from `main` and with your changes go into `release/0.x`. After that `release/0.x` will gets merged into the `main` branch.
+Until reaching a stable version (v1), all pull requests should start from `main` and with your changes go into `main`. After that `main` will gets merged into the `release/0.x` branch.
+
+## Best pracrices
+
+ - The code should be self documenting. If a piece of logic might not be easy to reason by for a new contributor, consider adding a comment or two explaining the logic.
+ - The code should be written defensively to reduce the possible errors in the consuming applications. However a balance should be struck to avoid overhead and developer relying too much on the library. Throwing errors are also accepted where the developer will likely make a fatal mistake.
 
 ## Submitting a pull request
 

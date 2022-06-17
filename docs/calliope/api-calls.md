@@ -146,3 +146,24 @@ const user = new User;
 user.getEndpoint(); // 'users'
 user.appendToEndpoint('/something').getEndpoint(); // 'users/something'
 ```
+
+### Miscellaneous
+
+#### setLastSyncedAt
+<Badge text="advanced" type="warning"/>
+
+The `setLastSyncedAt` method sets the [_lastSyncedAt](#_lastsyncedat) attribute to the current [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date). It optionally also accepts an argument for the value to be set as. The set value is subject to the [date-time casting](./attributes.md#datetime).
+
+::: warning
+This method should only really be used when mocking the model to look like it exists. Some possible use-cases are:
+    - Testing a model.
+    - Hydrating a model with known to existing record.
+:::
+
+```js
+import User from '@Models/User';
+
+const user = User.create({ id: 1 });
+user.exists; // false
+user.setLastSyncedAt().exists; // true
+```

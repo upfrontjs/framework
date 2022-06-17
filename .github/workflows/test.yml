@@ -21,10 +21,13 @@ jobs:
     strategy:
       matrix:
         # current and active LTS
-        node: [ 16, 17 ]
+        node: [ 16, 18 ]
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+      cancel-in-progress: true
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           cache: 'npm'
           node-version: ${{ matrix.node }}

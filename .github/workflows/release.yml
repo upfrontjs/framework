@@ -14,7 +14,7 @@
 #      - uses: actions/checkout@v2
 #        with:
 #          fetch-depth: 0
-#      - uses: actions/setup-node@v2
+#      - uses: actions/setup-node@v3
 #        with:
 #          node-version: 15
 #          check-latest: true
@@ -40,10 +40,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           registry-url: https://registry.npmjs.org/
-          cache: 'npm'
       - name: Install dependencies
         run: npm ci --ignore-scripts
       - name: Build library
@@ -52,7 +51,7 @@ jobs:
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           registry-url: https://npm.pkg.github.com/
       - run: npm publish --access public

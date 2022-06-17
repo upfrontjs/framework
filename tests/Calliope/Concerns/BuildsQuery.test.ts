@@ -9,7 +9,7 @@ class BuildsQuery extends Model {
         return this.compileQueryParameters();
     }
 
-    public getName(): string {
+    public override getName(): string {
         return 'BuildsQuery';
     }
 }

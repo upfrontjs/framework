@@ -115,6 +115,7 @@ If you just want to extend a service to add some functionality like adding [init
 
 <code-group>
 <code-block title="Javascript">
+
 ```js
 // MyHandler.js
 import { ApiResponseHandler } from '@upfrontjs/framework';
@@ -136,6 +137,7 @@ new GlobalConfig({
 </code-block>
 
 <code-block title="Typescript">
+
 ```ts
 // MyHandler.ts
 import { ApiResponseHandler } from '@upfrontjs/framework';

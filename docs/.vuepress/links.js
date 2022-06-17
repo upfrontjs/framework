@@ -45,14 +45,13 @@ const sidebar = [
     },
     {
         title: 'Cookbook',
-        children: [
-            '/cookbook'
-        ]
+        path: '/cookbook'
     },
     {
         title: 'Testing',
+        path: '/testing',
         children: [
-            '/testing'
+            '/testing/factories'
         ]
     },
 ]

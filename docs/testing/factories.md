@@ -1,5 +1,3 @@
-# Factories
-
 ## Factories
 
 To make testing your code easier with real data independent of your back end, upfront provides factories. With factories, you can construct [models](../calliope/readme.md) hydrated with data that you have defined and/or using a random data generator like [ChanceJs](https://chancejs.com/) set in your [configuration](../helpers/global-config.md#randomdatagenerator). With the  factory defined, construction of a model is easy as `User.factory().create()`
@@ -48,11 +46,11 @@ import type User from './src/Models/User';
 
 export default UserFactory extends Factory<User> {
     public definition(model: T, index: number): Attributes<User> {
-        return {
-            name: 'user name',
-            someUuid: String.uuid()
-        };
-    }
+    return {
+        name: 'user name',
+        someUuid: String.uuid()
+    };
+}
 }
 
 // User.ts
@@ -60,11 +58,11 @@ import { Model } from '@upfrontjs/framework';
 import UserFactory from '../../factories/UserFactory';
 
 export default User extends Model {
-    public override getName(): string {
+public override getName(): string {
         return 'User';
     }
-    
-    public factory(): UserFactory {
+
+public factory(): UserFactory {
         return new UserFactory;
     }
 }
@@ -102,12 +100,12 @@ Just like [getName](../calliope#getname)'s case if you use code mangling your fa
 ```ts
 export default UserFactory extends Factory<User> {
     public definition(): Attributes<User> {
-        return {};
-    }
-    
-    public getClassName(): string {
-        return 'UserFactory';
-    }
+    return {};
+}
+
+public getClassName(): string {
+    return 'UserFactory';
+}
 }
 ```
 :::
@@ -154,7 +152,7 @@ export default UserFactory extends Factory<User> {
             name: 'user name'
         };
     }
-    
+
     nameOverride(model: User, index: number): Attributes<User> {
         return {
             name: 'new name'
@@ -212,7 +210,7 @@ export default UserFactory extends Factory<User> {
             name: 'user name'
         };
     }
-    
+
     afterMaking(modelOrCollection: ModelCollection<User> | User): void {
         if (ModelCollection.isModelCollection(modelOrCollection)) {
             modelOrCollection.forEach(model => model.setAttribute('name', 'name from hook'));
@@ -235,10 +233,10 @@ import { Factory, ModelCollection } from '@upfrontjs/framework';
 export default UserFactory extends Factory
 {
     definition() {
-        return {
-            name: this.random.name()
-        };
-    }
+    return {
+        name: this.random.name()
+    };
+}
 }
 ```
 

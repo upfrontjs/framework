@@ -54,6 +54,7 @@ Creating a service is easy as:
 
 <code-group>
 <code-block title="Javascript">
+
 ```js
 // MyHandler.js
 import notification from 'notification-lib';
@@ -81,6 +82,7 @@ new GlobalConfig({
 </code-block>
 
 <code-block title="Typescript">
+
 ```ts
 // MyHandler.ts
 import type { HandlesApiResponse } from '@upfrontjs/framework';

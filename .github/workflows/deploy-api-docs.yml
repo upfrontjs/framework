@@ -34,4 +34,4 @@ jobs:
           git fetch
           git switch gh-pages
           git branch -r
-          git push origin/gh-pages
+          git push gh-pages

@@ -31,5 +31,5 @@ jobs:
           git add -f index.html
           git add -f modules.html
           git commit -m "Updates from ${{ github.ref }} - {{ github.sha }}" --no-verify
-          git branches -r
+          git branch -r
           git push origin -u gh-pages

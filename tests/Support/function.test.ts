@@ -19,7 +19,7 @@ describe('function helpers', () => {
         });
     });
 
-    describe('isConstructableUserClass()', () => {
+    describe('isUserLandClass()', () => {
         const typesWithoutClass = types.filter(t => !/^\s*class\s+/.test(String(t)));
         // eslint-disable-next-line jest/require-hook
         typesWithoutClass.push('class MyClass {'); // see if it checks for more than just the toString()

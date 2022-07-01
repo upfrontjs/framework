@@ -363,6 +363,23 @@ isUserLandClass(class C {}); // true
 This only returns true for classes that are not built-ins, e.g.: `isUserLandClass(Array)` will be false.
 :::
 
+#### transformKeys
+
+The `transformKeys` method recursively transforms the keys of the given object. to the given casing. The first argument is the object to transform, the second argument is the casing (`'camel'` | `'snake'`) to transform to (default: `'camel'`). This will **not** transform classes and built in methods  (eg.: `toString()` won't become `to_string()`).
+
+```js
+import { transformKeys } from '@upfrontjs/framework';
+
+const obj = {
+    nestedObjects: [
+        { my_key: 1 }
+    ],
+    my_key: 2
+};
+
+transformKeys(obj); // { nestedObjects: [{ myKey: 1 }], myKey: 2 };
+```
+
 #### retry
 
 The `retry` method is a helper to retry a promise function a number of times if the promise rejects. The function takes 3 arguments:

@@ -26,7 +26,7 @@ export function isUserLandClass<T extends new (...args: any) => any>(value: any)
  * Utility to recursively format the keys according to the server argument.
  *
  * @param {object} attributes - The object which should be formatted.
- * @param {'camel' | 'snake'} casing - Whether to use camelCase or snake_case.
+ * @param {'camel' | 'snake'} [casing='camel'] - Whether to use camelCase or snake_case.
  *
  * @return {object}
  */
@@ -45,7 +45,14 @@ export function transformKeys(
             // its prototype chain keys turning into the new object's own keys.
             isObjectLiteral(attributes[key]) && (attributes[key] as new() => any).constructor === Object
                 ? transformKeys(attributes[key] as Record<string, any>, casing)
-                : attributes[key];
+                : Array.isArray(attributes[key])
+                    ? (attributes[key] as any[]).map(item => {
+                        // same check as above
+                        return isObjectLiteral(item) && item.constructor === Object
+                            ? transformKeys(item, casing)
+                            : item;
+                    })
+                    : attributes[key];
     });
 
     return dataWithKeyCasing;

@@ -1,5 +1,6 @@
 import * as func from '../../src/Support/function';
 import { types } from '../test-helpers';
+import User from '../mock/Models/User';
 
 describe('function helpers', () => {
     describe('isObjectLiteral()', () => {
@@ -41,6 +42,34 @@ describe('function helpers', () => {
             };
 
             expect(func.transformKeys(serverCasedObj)).toStrictEqual({ startDate: 'Monday' });
+        });
+
+        it('should convert nested array of objects\' keys', () => {
+            let serverCasedObj = {
+                sub_objects: [
+                    {
+                        my_key: 'value'
+                    }
+                ]
+            } as Record<string, any>;
+
+            serverCasedObj = func.transformKeys(serverCasedObj);
+
+            expect(serverCasedObj).toStrictEqual({ subObjects: [{ myKey: 'value' }] });
+
+            serverCasedObj.subObjects.push([]);
+            serverCasedObj.subObjects.push(new User());
+            serverCasedObj = func.transformKeys(serverCasedObj, 'snake');
+
+            // doesn't transform built in construct
+            expect(serverCasedObj.sub_objects[1].findIndex).toBeDefined();
+            expect(serverCasedObj.sub_objects[1].find_index).toBeUndefined();
+
+            // doesn't transform upfront model
+            expect(serverCasedObj.sub_objects[2].get_endpoint).toBeUndefined();
+            expect(serverCasedObj.sub_objects[2].getEndpoint).toBeDefined();
+            expect(serverCasedObj.sub_objects[2].attribute_casing).toBeUndefined();
+            expect(serverCasedObj.sub_objects[2].getEndpoint).toBeDefined();
         });
 
         it('should convert to snake_case on \'snake\' casing argument', () => {

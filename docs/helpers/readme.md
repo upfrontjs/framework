@@ -362,3 +362,24 @@ isUserLandClass(class C {}); // true
 ::: warning
 This only returns true for classes that are not built-ins, e.g.: `isUserLandClass(Array)` will be false.
 :::
+
+#### retry
+
+The `retry` method is a helper to retry a promise function a number of times if the promise rejects. The function takes 3 arguments:
+ - `fn` - The function to retry
+ - `maxRetries` (default: 3) - The number of times to retry.
+ - `delay` (default: 0) - The delay in milliseconds between retries. If the delay has been set to `0`, the function will run again as soon as the promise rejects. This could also be a function that accepts the current retry count and returns the delay.
+
+```js
+import { retry } from '@upfrontjs/framework';
+import User from '@/Models/User';
+
+// Retry the function `User.get()` 3 times with a delay of 1 second between each retry. Therefore, sending off 4 (initial + retries) requests in total.
+const user = retry(async () => User.find(1), 3, 1000)
+    .catch(() => {
+        console.log('We really can\'t find the user.');
+    });
+
+// Retry the function with progressively longer delays.
+const user2 = retry(User.all, 3, attemptNumber => attemptNumber * 1000);
+```

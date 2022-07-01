@@ -67,4 +67,64 @@ describe('function helpers', () => {
         });
         /* eslint-enable @typescript-eslint/naming-convention */
     });
+
+    describe('retry()', () => {
+        // eslint-disable-next-line jest/require-hook
+        let triesCount = 0;
+
+        /**
+         * Function resolving on last try
+         * @param attemptToResolveOn
+         */
+        const tryFunc = async (attemptToResolveOn: number) => {
+            triesCount++;
+
+            // eslint-disable-next-line jest/no-conditional-in-test
+            if (triesCount !== attemptToResolveOn) {
+                throw new Error('Error');
+            }
+
+            return Promise.resolve('Success');
+        };
+
+        beforeEach(() => {
+            triesCount = 0;
+        });
+
+        it('should retry the given number of times', async () => {
+            await func.retry(async () => tryFunc(4), 3);
+
+            expect(triesCount).toBe(4);
+        });
+
+        it('should return the value as soon as it resolves', async () => {
+            const result = await func.retry(async () => tryFunc(2), 3);
+
+            expect(triesCount).toBe(2);
+            expect(result).toBe('Success');
+        });
+
+        it('should wait the the given number of ms before the next attempt', async () => {
+            jest.useRealTimers();
+            const startTime = performance.now();
+            await func.retry(async () => tryFunc(3), 3, 10);
+
+            // or grater because the time it takes to run the function
+            expect(performance.now() - startTime).toBeGreaterThanOrEqual(20);
+
+            jest.useFakeTimers('modern');
+        });
+
+        it('should accept a closure for timeout and should pass the attempt number to it', async () => {
+            jest.useRealTimers();
+            const mock = jest.fn(() => 10);
+
+            await func.retry(async () => tryFunc(3), 3, mock);
+            expect(mock).toHaveBeenCalledTimes(2);
+            expect(mock).toHaveBeenNthCalledWith(1, 1);
+            expect(mock).toHaveBeenNthCalledWith(2, 2);
+
+            jest.useFakeTimers('modern');
+        });
+    });
 });

@@ -125,5 +125,8 @@
             "type": "github",
             "url": "https://github.com/sponsors/nandi95"
         }
-    ]
+    ],
+    "engines": {
+        "node": ">=14.13.1"
+    }
 }

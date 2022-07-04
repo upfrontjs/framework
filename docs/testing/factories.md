@@ -46,11 +46,11 @@ import type User from './src/Models/User';
 
 export default UserFactory extends Factory<User> {
     public definition(model: T, index: number): Attributes<User> {
-    return {
-        name: 'user name',
-        someUuid: String.uuid()
-    };
-}
+        return {
+            name: 'user name',
+            someUuid: String.uuid()
+        };
+    }
 }
 
 // User.ts
@@ -58,11 +58,11 @@ import { Model } from '@upfrontjs/framework';
 import UserFactory from '../../factories/UserFactory';
 
 export default User extends Model {
-public override getName(): string {
+    public override getName(): string {
         return 'User';
     }
 
-public factory(): UserFactory {
+    public factory(): UserFactory {
         return new UserFactory;
     }
 }
@@ -100,12 +100,12 @@ Just like [getName](../calliope#getname)'s case if you use code mangling your fa
 ```ts
 export default UserFactory extends Factory<User> {
     public definition(): Attributes<User> {
-    return {};
-}
+        return {};
+    }
 
-public getClassName(): string {
-    return 'UserFactory';
-}
+    public getClassName(): string {
+        return 'UserFactory';
+    }
 }
 ```
 :::
@@ -233,10 +233,10 @@ import { Factory, ModelCollection } from '@upfrontjs/framework';
 export default UserFactory extends Factory
 {
     definition() {
-    return {
-        name: this.random.name()
-    };
-}
+        return {
+            name: this.random.name()
+        };
+    }
 }
 ```
 

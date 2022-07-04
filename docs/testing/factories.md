@@ -1,5 +1,3 @@
-# Factories
-
 ## Factories
 
 To make testing your code easier with real data independent of your back end, upfront provides factories. With factories, you can construct [models](../calliope/readme.md) hydrated with data that you have defined and/or using a random data generator like [ChanceJs](https://chancejs.com/) set in your [configuration](../helpers/global-config.md#randomdatagenerator). With the  factory defined, construction of a model is easy as `User.factory().create()`
@@ -63,7 +61,7 @@ export default User extends Model {
     public override getName(): string {
         return 'User';
     }
-    
+
     public factory(): UserFactory {
         return new UserFactory;
     }
@@ -104,7 +102,7 @@ export default UserFactory extends Factory<User> {
     public definition(): Attributes<User> {
         return {};
     }
-    
+
     public getClassName(): string {
         return 'UserFactory';
     }
@@ -154,7 +152,7 @@ export default UserFactory extends Factory<User> {
             name: 'user name'
         };
     }
-    
+
     nameOverride(model: User, index: number): Attributes<User> {
         return {
             name: 'new name'
@@ -212,7 +210,7 @@ export default UserFactory extends Factory<User> {
             name: 'user name'
         };
     }
-    
+
     afterMaking(modelOrCollection: ModelCollection<User> | User): void {
         if (ModelCollection.isModelCollection(modelOrCollection)) {
             modelOrCollection.forEach(model => model.setAttribute('name', 'name from hook'));

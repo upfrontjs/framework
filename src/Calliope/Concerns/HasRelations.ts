@@ -367,7 +367,7 @@ export default class HasRelations extends CallsApi {
         let endpoint = '';
 
         models.forEach((model) => {
-            if (!(model instanceof CallsApi)) {
+            if (!(model instanceof HasRelations)) {
                 model = new model;
             }
 

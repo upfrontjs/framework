@@ -26,7 +26,7 @@ export function isUserLandClass<T extends new (...args: any) => any>(value: any)
  * Utility to recursively format the keys according to the server argument.
  *
  * @param {object} attributes - The object which should be formatted.
- * @param {'camel' | 'snake'} casing - Whether to use camelCase or snake_case.
+ * @param {'camel' | 'snake'} [casing='camel'] - Whether to use camelCase or snake_case.
  *
  * @return {object}
  */
@@ -45,8 +45,57 @@ export function transformKeys(
             // its prototype chain keys turning into the new object's own keys.
             isObjectLiteral(attributes[key]) && (attributes[key] as new() => any).constructor === Object
                 ? transformKeys(attributes[key] as Record<string, any>, casing)
-                : attributes[key];
+                : Array.isArray(attributes[key])
+                    ? (attributes[key] as any[]).map(item => {
+                        // same check as above
+                        return isObjectLiteral(item) && item.constructor === Object
+                            ? transformKeys(item, casing)
+                            : item;
+                    })
+                    : attributes[key];
     });
 
     return dataWithKeyCasing;
+}
+
+/**
+ * Utility to re-run the given promise function until it resolves
+ * or until the number of tries was exceeded.
+ *
+ * @param fn - The function returning a promise to be called.
+ * @param {number} [maxRetries=3] - The number of times the function should be retried.
+ * @param {number|function} [timeout=0] - The wait time between attempts in milliseconds.
+ *                                        If 0, it will not wait.
+ *                                        If a function, it will be called with the number of retries left.
+ *
+ * @example
+ * // try up to four times with 2s delay between each try
+ * const model = await retry(Model.find(1), 4, 2000);
+ *
+ * @return {Promise<any>}
+ */
+export async function retry<T>(
+    fn: () => Promise<T>,
+    maxRetries = 3,
+    timeout: number | ((currentAttemptCount: number) => number) = 0
+): Promise<T> {
+    return new Promise((resolve, reject) => {
+        let retries = 0;
+
+        const attempt = () => {
+            fn().then(resolve).catch(err => {
+                if (retries++ < maxRetries) {
+                    if (timeout) {
+                        setTimeout(attempt, typeof timeout === 'function' ? timeout(retries) : timeout);
+                    } else {
+                        attempt();
+                    }
+                } else {
+                    reject(err);
+                }
+            });
+        };
+
+        attempt();
+    });
 }

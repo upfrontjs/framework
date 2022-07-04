@@ -64,7 +64,9 @@ export function transformKeys(
  *
  * @param fn - The function returning a promise to be called.
  * @param {number} [maxRetries=3] - The number of times the function should be retried.
- * @param {number} [timeout=0] - The wait time between attempts in milliseconds. If 0, it will not wait.
+ * @param {number|function} [timeout=0] - The wait time between attempts in milliseconds.
+ *                                        If 0, it will not wait.
+ *                                        If a function, it will be called with the number of retries left.
  *
  * @example
  * // try up to four times with 2s delay between each try

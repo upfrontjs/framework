@@ -2,6 +2,7 @@ import HasRelations from './HasRelations';
 import type Model from '../Model';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import { finish } from '../../Support/string';
+import LogicException from '../../Exceptions/LogicException';
 
 export default class HasTimestamps extends HasRelations {
     /**
@@ -66,8 +67,7 @@ export default class HasTimestamps extends HasRelations {
             return this;
         }
 
-        // @ts-expect-error
-        (this as unknown as Model).throwIfModelDoesntExistsWhenCalling('touch');
+        this.throwIfModelDoesntExistsWhenCalling('touch');
 
         const updatedAt = this.getUpdatedAtName();
 
@@ -92,8 +92,7 @@ export default class HasTimestamps extends HasRelations {
             return this;
         }
 
-        // @ts-expect-error
-        (this as unknown as Model).throwIfModelDoesntExistsWhenCalling('freshTimestamps');
+        this.throwIfModelDoesntExistsWhenCalling('freshTimestamps');
 
         const createdAt = this.getCreatedAtName();
         const updatedAt = this.getUpdatedAtName();
@@ -114,5 +113,23 @@ export default class HasTimestamps extends HasRelations {
                     .setAttribute(updatedAt, (model as Model).getAttribute(updatedAt))
                     .syncOriginal([createdAt, updatedAt]);
             });
+    }
+
+    /**
+     * Throw an error if the model does not exists before calling the specified method.
+     *
+     * @param {string} methodName
+     *
+     * @protected
+     *
+     * @internal
+     */
+    protected throwIfModelDoesntExistsWhenCalling(methodName: string): void {
+        if (!(this as unknown as Model).exists) {
+            throw new LogicException(
+                'Attempted to call ' + methodName + ' on \'' + (this as unknown as Model).getName()
+                + '\' when it has not been persisted yet or it has been soft deleted.'
+            );
+        }
     }
 }

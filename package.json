@@ -1,6 +1,6 @@
 {
     "name": "@upfrontjs/framework",
-    "version": "0.12.0",
+    "version": "0.13.0",
     "description": "Data handling framework complementary to backend model systems.",
     "main": "index.min.js",
     "module": "index.es.min.js",
@@ -60,7 +60,9 @@
         "in memory store",
         "events",
         "event bus",
-        "event emitter"
+        "event emitter",
+        "eloquent",
+        "upfront"
     ],
     "scripts": {
         "test": "jest",

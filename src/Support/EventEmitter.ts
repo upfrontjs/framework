@@ -180,8 +180,10 @@ export default class EventEmitter<TEvents extends Events = Events> {
      * @param {string=} event - only check for listeners for the given event
      * @param {CallableFunction=} listener - only check for listeners that match this given listener
      */
-    public has(event?: string, listener?: CallableFunction): boolean;
-    public has<P extends keyof TEvents>(event?: P, listener?: Listener): boolean {
+    public has<P extends string | keyof TEvents>(
+        event?: P,
+        listener?: Listener<Parameters<TEvents[P][number]>[number]>
+    ): boolean {
         if (!event) {
             if (listener) {
                 return !!Object.keys(this.listeners).find(eventName => {

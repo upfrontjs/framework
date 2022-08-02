@@ -145,7 +145,7 @@ This is a `string` that the [model's endpoint](../calliope/api-calls.md#endpoint
 
 #### randomDataGenerator
 
-This value if set, it will be available for consuming in your [Factories](../testing.md#factories) under the member key [random](../testing.md#random).
+This value if set, it will be available for consuming in your [Factories](../testing/readme.md#factories) under the member key [random](../testing/readme.md#random).
 
 #### requestMiddleware
 

@@ -115,7 +115,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
     /**
      * Return the last element in the collection,
      * if callback given the last element that  passes the truth test.
-     * Otherwise undefined.
+     * Otherwise, undefined.
      *
      * @param {function} callback
      *

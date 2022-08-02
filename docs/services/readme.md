@@ -161,4 +161,4 @@ new GlobalConfig({
 </code-block>
 </code-group>
 
-You can find examples of testing custom services in the [Testing section](../testing.md#testing-service-implementations).
+You can find examples of testing custom services in the [Testing section](../testing/readme.md#testing-service-implementations).

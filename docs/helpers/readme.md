@@ -245,7 +245,7 @@ Given this is used for generating string, as such isn't available on the `String
 
 #### isUuid
 
-The `isUuid` method determines whether the given value is a uuid.
+The `isUuid` method determines whether the given value is a UUID.
 ```js
 import { isUuid } from '@upfrontjs/framework';
 
@@ -313,7 +313,7 @@ wrap(); // []
 
 #### factory
 
-The `factory` method returns a [FactoryBuilder](../testing.md#factorybuilder). It first takes a [model](../calliope/readme.md) constructor and optionally an `amount` argument which is the equivalent of the `times` method on the [FactoryBuilder](../testing.md#factorybuilder).
+The `factory` method returns a [FactoryBuilder](../testing/readme.md#factorybuilder). It first takes a [model](../calliope/readme.md) constructor and optionally an `amount` argument which is the equivalent of the `times` method on the [FactoryBuilder](../testing/readme.md#factorybuilder).
 ```js
 import { factory } from '@upfrontjs/framework';
 import User from '@/Models/User';

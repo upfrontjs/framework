@@ -116,7 +116,7 @@ export default class HasTimestamps extends HasRelations {
     }
 
     /**
-     * Throw an error if the model does not exists before calling the specified method.
+     * Throw an error if the model does not exist before calling the specified method.
      *
      * @param {string} methodName
      *

@@ -435,7 +435,7 @@ user.getAttributes(); // { firstName: 'John', lastName: 'Doe' }
 
 #### getRawAttributes
 
-The `getRawAttributes` method returns all the attributes similarly to [getAttributes](#getattributes) except is does not use the any value transformation.
+The `getRawAttributes` method returns all the attributes similarly to [getAttributes](#getattributes) except is does not use any value transformation.
 
 #### getAttributeKeys
 
@@ -554,7 +554,7 @@ user.reset().getChanges(); // {}
 
 #### getOriginal
 
-The `getOriginal` method returns the original value in a resolved format. Meaning it will use the [accessor](#mutatorsaccessors) if defined or it will [cast](#casting) the value if cast defined. The method optionally takes a second argument which the method will default to if the key is not found.
+The `getOriginal` method returns the original value in a resolved format. Meaning it will use the [accessor](#mutatorsaccessors) if defined, or it will [cast](#casting) the value if cast defined. The method optionally takes a second argument which the method will default to if the key is not found.
 ```js
 import User from '@Models/User';
 
@@ -631,7 +631,7 @@ The `isDirty` method is an alias of the [hasChanges](#haschanges) method.
 
 #### isClean
 
-The `isClean` method determines whether the attributes matches with the original attributes since the model constructing. Optionally it can take a key argument in which case it only inspect the given attribute's state.
+The `isClean` method determines whether the attributes match with the original attributes since the model constructing. Optionally it can take a key argument in which case it only inspect the given attribute's state.
 ```js
 import User from '@Models/User';
 

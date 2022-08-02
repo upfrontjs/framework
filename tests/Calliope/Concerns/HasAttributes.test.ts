@@ -60,7 +60,7 @@ describe('HasAttributes', () => {
         });
 
         it('should set up accessors', () => {
-            // when it has a accessor defined
+            // when it has an accessor defined
             Object.defineProperty(hasAttributes, 'getTestAttribute', {
                 value: function (): number {
                     return (this.attributes.test as number) + 1;

@@ -8,12 +8,12 @@ Timestamps are a feature of the model used for tracking changes on your entities
 
 #### createdAt
 
-The `createdAt` is a static property on the model. The default value is `'createdAt'`. You may over ride this if the expected timestamp attribute is named differently.
+The `createdAt` is a static property on the model. The default value is `'createdAt'`. You may override this if the expected timestamp attribute is named differently.
 The letter casing is no concern here as [getCreatedAtName](#getcreatedatname) will update it to the correct casing.
 
 #### updatedAt
 
-The `updatedAt` is a static property on the model. The default value is `'updatedAt'`. You may over ride this if the expected timestamp attribute is named differently.
+The `updatedAt` is a static property on the model. The default value is `'updatedAt'`. You may override this if the expected timestamp attribute is named differently.
 The letter casing is no concern here as [getUpdatedAtName](#getupdatedatname) will update it to the correct casing.
 
 #### timestamps
@@ -54,7 +54,7 @@ The `freshTimestamps` method sends `GET` request [selecting](./query-building.md
 
 #### deletedAt
 
-The `deletedAt` is a static property on the model. The default value is `'deletedAt'`. You may over ride this if the expected timestamp attribute is named differently.
+The `deletedAt` is a static property on the model. The default value is `'deletedAt'`. You may override this if the expected timestamp attribute is named differently.
 The letter casing is no concern here as [getDeletedAtName](#getdeletedatname) will update it to the correct casing.
 
 #### softDeletes

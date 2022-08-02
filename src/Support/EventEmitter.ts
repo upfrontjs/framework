@@ -48,8 +48,7 @@ export default class EventEmitter<TEvents extends Events = Events> {
     public async emit<P extends keyof TEvents>(
         event: P,
         ...args: Parameters<TEvents[P][number]>
-    ): Promise<this>;
-    public async emit(event: string, ...args: unknown[]): Promise<this> {
+    ): Promise<this> {
         if (event in this.listenersOnce) {
             await Promise.all(this.listenersOnce[event]!.map(listener => listener(...args)));
 
@@ -64,13 +63,12 @@ export default class EventEmitter<TEvents extends Events = Events> {
     }
 
     /**
-     * Remove the the listeners.
+     * Remove the listeners.
      *
      * @param {string=} event - only remove listeners for the given event
      * @param {CallableFunction=} listener - only remove the event listener that match the given listener.
      */
-    public off(event?: string, listener?: CallableFunction): this;
-    public off<P extends keyof TEvents>(event?: P, listener?: Listener): this {
+    public off<P extends string | keyof TEvents>(event?: P, listener?: TEvents[P][number]): this {
         const functionSignature = listener ? listener.toString() : '';
 
         if (!event) {
@@ -115,12 +113,7 @@ export default class EventEmitter<TEvents extends Events = Events> {
     /**
      * Bind the event listener.
      */
-    public on<P extends keyof TEvents>(
-        event: P,
-        listener: Listener<Parameters<TEvents[P][number]>[number]>
-    ): this;
-    public on(event: string, listener: CallableFunction): this;
-    public on<P extends keyof TEvents>(
+    public on<P extends string | keyof TEvents>(
         event: P,
         listener: Listener<Parameters<TEvents[P][number]>[number]>
     ): this {
@@ -136,12 +129,7 @@ export default class EventEmitter<TEvents extends Events = Events> {
     /**
      * Bind the event listener that should only run once.
      */
-    public once<P extends keyof TEvents>(
-        event: P,
-        listener: Listener<Parameters<TEvents[P][number]>[number]>
-    ): this;
-    public once(event: string, listener: CallableFunction): this;
-    public once<P extends keyof TEvents>(
+    public once<P extends string | keyof TEvents>(
         event: P,
         listener: Listener<Parameters<TEvents[P][number]>[number]>
     ): this {
@@ -157,12 +145,7 @@ export default class EventEmitter<TEvents extends Events = Events> {
     /**
      * Bind the event and to the front of the stack.
      */
-    public prependListener<P extends keyof TEvents>(
-        event: P,
-        listener: Listener<Parameters<TEvents[P][number]>[number]>
-    ): this;
-    public prependListener(event: string, listener: CallableFunction): this;
-    public prependListener<P extends keyof TEvents>(
+    public prependListener<P extends string | keyof TEvents>(
         event: P,
         listener: Listener<Parameters<TEvents[P][number]>[number]>
     ): this {
@@ -178,12 +161,7 @@ export default class EventEmitter<TEvents extends Events = Events> {
     /**
      * Bind the event that only runs once to the front of the stack.
      */
-    public prependOnceListener<P extends keyof TEvents>(
-        event: P,
-        listener: Listener<Parameters<TEvents[P][number]>[number]>
-    ): this;
-    public prependOnceListener(event: string, listener: CallableFunction): this;
-    public prependOnceListener<P extends keyof TEvents>(
+    public prependOnceListener<P extends string | keyof TEvents>(
         event: P,
         listener: Listener<Parameters<TEvents[P][number]>[number]>
     ): this {
@@ -197,7 +175,7 @@ export default class EventEmitter<TEvents extends Events = Events> {
     }
 
     /**
-     * Determine whether listeners exists.
+     * Determine whether listeners exist.
      *
      * @param {string=} event - only check for listeners for the given event
      * @param {CallableFunction=} listener - only check for listeners that match this given listener
@@ -231,8 +209,7 @@ export default class EventEmitter<TEvents extends Events = Events> {
      *
      * @param {string=} event - only count the listeners for the given event
      */
-    public listenerCount(event?: keyof TEvents): number;
-    public listenerCount(event?: string): number {
+    public listenerCount(event?: keyof TEvents): number {
         let count = 0;
 
         if (event) {

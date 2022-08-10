@@ -9,5 +9,5 @@ export default interface FormatsQueryParameters {
      *
      * @param {QueryParams} parameters
      */
-    formatQueryParameters: (parameters: QueryParams & Record<string, any>) => Record<string, any>;
+    formatQueryParameters: (parameters: QueryParams) => Record<string, any>;
 }

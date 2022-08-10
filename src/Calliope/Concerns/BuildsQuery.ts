@@ -27,7 +27,7 @@ export type QueryParams = Partial<{
     offset: number;
     limit: number;
     page: number;
-}>;
+}> & Record<string, unknown>;
 
 export default class BuildsQuery extends HasAttributes {
     /**

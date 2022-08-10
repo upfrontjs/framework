@@ -63,7 +63,7 @@ describe('Model', () => {
     });
 
     describe('getKeyName()', () => {
-        it('should return the primary key\'s name',  () => {
+        it('should return the primary key\'s name', () => {
             expect(user.getKeyName()).toBe('id');
         });
     });
@@ -81,7 +81,7 @@ describe('Model', () => {
     });
 
     describe('getKey()', () => {
-        it('should return the primary key for the model',  () => {
+        it('should return the primary key for the model', () => {
             expect(user.getKey()).toBe(1);
             expect(user.setAttribute('id', 'value').getKey()).toBe('value');
         });
@@ -105,7 +105,7 @@ describe('Model', () => {
     });
 
     describe('is()', () => {
-        it('should determine whether two models are the same',  () => {
+        it('should determine whether two models are the same', () => {
             expect(user.is(1)).toBe(false);
             expect(user.is({})).toBe(false);
             expect(user.is({ id: user.getKey() })).toBe(false);
@@ -116,7 +116,7 @@ describe('Model', () => {
     });
 
     describe('isNot()', () => {
-        it('should determine whether two models are not the same',  () => {
+        it('should determine whether two models are not the same', () => {
             expect(user.isNot(1)).toBe(true);
             expect(user.isNot({})).toBe(true);
             expect(user.isNot({ id: user.getKey() })).toBe(true);
@@ -238,6 +238,18 @@ describe('Model', () => {
 
             expect(responseModel).toBeInstanceOf(User);
         });
+
+        it('should send a GET request with custom query params', async () => {
+            mockUserModelResponse(user);
+            await user.find(String(user.getKey()), { foo: 'bar' });
+
+            expect(getLastRequest()?.url).toBe(
+                config.get('baseEndPoint')! + '/' +
+                user.getEndpoint() + '/' +
+                String(user.getKey()) + '?' +
+                'foo=bar'
+            );
+        });
     });
 
     describe('findMany()', () => {
@@ -279,6 +291,24 @@ describe('Model', () => {
 
             expect(users).toBeInstanceOf(ModelCollection);
             expect(users).toHaveLength(1);
+        });
+
+        it('should send a GET request with custom query params', async () => {
+            fetchMock.mockResponseOnce(
+                async () => Promise.resolve(buildResponse(User.factory().times(2).createMany()))
+            );
+
+            await user.findMany([2, 3], { foo: 'bar' });
+
+            expect(getLastRequest()?.url).toBe(
+                config.get('baseEndPoint')! + '/' +
+                user.getEndpoint() + '?' +
+                'wheres[0][column]=id' +
+                '&wheres[0][operator]=in' +
+                '&wheres[0][value][0]=2&wheres[0][value][1]=3' +
+                '&wheres[0][boolean]=and' +
+                '&foo=bar'
+            );
         });
     });
 

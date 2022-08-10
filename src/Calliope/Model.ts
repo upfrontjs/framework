@@ -8,6 +8,7 @@ import { finish } from '../Support/string';
 import type { MaybeArray, StaticToThis } from '../Support/type';
 import { cloneDeep } from 'lodash';
 import { isObjectLiteral } from '../Support/function';
+import type { QueryParams } from './Concerns/BuildsQuery';
 
 export default class Model extends SoftDeletes implements HasFactory {
     /**
@@ -294,11 +295,15 @@ export default class Model extends SoftDeletes implements HasFactory {
      * Find the model based on the given id.
      *
      * @param {string|number} id
+     * @param {object=} queryParameters
      */
-    public async find<T extends this>(id: number | string): Promise<T> {
+    public async find<T extends this>(
+        id: number | string,
+        queryParameters?: QueryParams
+    ): Promise<T> {
         return await this
             .setEndpoint(finish(this.getEndpoint(), '/') + String(id))
-            .get() as T;
+            .get(queryParameters) as T;
     }
 
     /**
@@ -306,17 +311,25 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @see Model.prototype.find
      */
-    public static async find<T extends StaticToThis>(this: T, id: number | string): Promise<T['prototype']> {
-        return new this().find(id);
+    public static async find<T extends StaticToThis>(
+        this: T,
+        id: number | string,
+        queryParameters?: QueryParams
+    ): Promise<T['prototype']> {
+        return new this().find(id, queryParameters);
     }
 
     /**
      * Return multiple models based on the given ids.
      *
      * @param {string[]|number[]} ids
+     * @param {object=} queryParameters
      */
-    public async findMany<T extends this>(ids: (number | string)[]): Promise<ModelCollection<T>> {
-        let response = await this.whereKey(ids).get<T>();
+    public async findMany<T extends this>(
+        ids: (number | string)[],
+        queryParameters?: QueryParams
+    ): Promise<ModelCollection<T>> {
+        let response = await this.whereKey(ids).get<T>(queryParameters);
 
         if (response instanceof Model) {
             response = new ModelCollection([response]);
@@ -332,9 +345,10 @@ export default class Model extends SoftDeletes implements HasFactory {
      */
     public static async findMany<T extends StaticToThis>(
         this: T,
-        ids: (number | string)[]
+        ids: (number | string)[],
+        queryParameters?: QueryParams
     ): Promise<ModelCollection<T['prototype']>> {
-        return new this().findMany(ids);
+        return new this().findMany(ids, queryParameters);
     }
 
     /**

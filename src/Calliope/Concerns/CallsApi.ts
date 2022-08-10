@@ -174,7 +174,7 @@ export default class CallsApi extends BuildsQuery {
      */
     // @ts-expect-error - despite TS2526, it still infers correctly
     public async get<T extends Model = this>(
-        queryParameters?: QueryParams & Record<string, unknown>
+        queryParameters?: QueryParams
     ): Promise<ModelCollection<T> | T> {
         return this.call('GET', queryParameters)
             .then(responseData => this.newInstanceFromResponseData(
@@ -191,7 +191,7 @@ export default class CallsApi extends BuildsQuery {
      */
     public static async get<T extends StaticToThis>(
         this: T,
-        queryParameters?: QueryParams & Record<string, unknown>
+        queryParameters?: QueryParams
     ): Promise<ModelCollection<T['prototype']> | T['prototype']> {
         return new this().get(queryParameters);
     }

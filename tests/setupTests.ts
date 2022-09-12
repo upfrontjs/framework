@@ -23,6 +23,6 @@ config.set('baseEndPoint', 'https://test-api-endpoint.com');
 beforeEach(() => {
     config.reset();
     config.set('baseEndPoint', 'https://test-api-endpoint.com');
-    // set back to now as advancing timer influences this
+    // set back to now as some test suites might update this
     jest.setSystemTime(now);
 });

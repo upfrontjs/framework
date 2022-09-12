@@ -78,7 +78,7 @@ describe('API', () => {
 
             let config = (await api.getConfig(url, 'post')).requestInit;
 
-            // only merge in if initRequest it is a function, and it returns an object
+            // only merge in if initRequest is a function, and it returns an object
             expect(config.body).toBeUndefined();
 
             api.initRequest = () => ({ body: 'merged value' });

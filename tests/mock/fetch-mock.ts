@@ -4,10 +4,21 @@ import { isObjectLiteral } from '../../src';
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 import { Response } from 'cross-fetch';
 
+/**
+ * The mock of fetch.
+ */
 const spy = jest.spyOn(globalThis, 'fetch').mockRejectedValue('Implementation not set.');
 
+/**
+ * The values permitted in the response body for serialisation.
+ */
 type ResponseBody = any[] | Record<string, any> | string | undefined;
 
+/**
+ * Create a response from the given body and optionally response initialisation values.
+ * @param response
+ * @param responseInit
+ */
 const buildResponse = (
     response?: ResponseBody,
     responseInit?: ResponseInit
@@ -35,7 +46,9 @@ const buildResponse = (
     return new Response(getBody(response), responseInit);
 };
 
-
+/**
+ * Methods controlling the fetch mock.
+ */
 const fetchMock = {
     resetMocks: (): typeof spy => {
         spy.mockReset();
@@ -44,14 +57,12 @@ const fetchMock = {
     mockResponseOnce: (body: ResponseBody, init?: ResponseInit): typeof spy => {
         return spy.mockResolvedValueOnce(buildResponse(body, init));
     },
-    mockRejectOnce: (val: Error | string): typeof spy => spy.mockRejectedValueOnce(val),
-    mockResponse: (body: ResponseBody, init?: ResponseInit): typeof spy => {
-        return spy.mockResolvedValue(buildResponse(body, init));
-    },
-    disableMocks: (): typeof spy => spy.mockReset(),
-    enableMocks: (): typeof spy => spy.mockRejectedValue('Implementation not set.')
+    mockRejectOnce: (val: Error | string): typeof spy => spy.mockRejectedValueOnce(val)
 };
 
+/**
+ * The shape of the request to inspect.
+ */
 interface RequestDescriptor {
     url: string;
     method: Uppercase<Method>;
@@ -69,6 +80,9 @@ export const getRequests = (): RequestDescriptor[] => {
     });
 };
 
+/**
+ * Get the last call from the mock.
+ */
 export const getLastRequest = (): RequestDescriptor | undefined => {
     const calls = getRequests();
 

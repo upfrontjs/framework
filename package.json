@@ -96,7 +96,7 @@
         "commitlint": "^17.0.2",
         "conventional-changelog-conventionalcommits": "4.6.0",
         "cross-fetch": "^3.1.5",
-        "eslint": "8.22.0",
+        "eslint": "8.23.1",
         "eslint-plugin-import": "^2.22.1",
         "eslint-plugin-jest": "^27.0.4",
         "husky": "^8.0.1",

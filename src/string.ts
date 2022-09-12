@@ -11,7 +11,7 @@ declare global {
         ucFirst: () => string;
 
         /**
-         * Determine whether the given string is a uuid of version 4.
+         * Determine whether the given string is a UUID of version 4.
          */
         isUuid: () => boolean;
 
@@ -134,7 +134,7 @@ declare global {
         uuid: () => string;
 
         /**
-         * Determine whether the given string is a uuid of version 4.
+         * Determine whether the given string is a UUID of version 4.
          */
         isUuid: (str: string) => boolean;
     }

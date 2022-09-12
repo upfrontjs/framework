@@ -68,8 +68,7 @@ export default class SoftDeletes extends HasTimestamps {
             return this as unknown as T;
         }
 
-        // @ts-expect-error
-        (this as unknown as Model).throwIfModelDoesntExistsWhenCalling('delete');
+        this.throwIfModelDoesntExistsWhenCalling('delete');
 
         this.setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()));
 

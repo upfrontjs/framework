@@ -60,7 +60,7 @@ The `hasNext` property indicates whether there is a page after the [currentPage]
 
 #### setItemsPerPage
 
-The `setItemsPerPage` method sets the [itemsPerPage](#itemsperpage) property and recalculates the [items](#items) property.
+The `setItemsPerPage` method sets the [itemsPerPage](#itemsperpage) property and recalculates the [items](#items)' property.
 
 ```js
 import { Paginator } from '@upfrontjs/framework';
@@ -73,7 +73,7 @@ paginator.itemsPerPage; // 5
 
 #### first
 
-The `first` method sets the [currentPage](#currentpage) property to 1 and recalculates the [items](#items) property.
+The `first` method sets the [currentPage](#currentpage) property to 1 and recalculates the [items](#items)' property.
 
 ```js
 import { Paginator } from '@upfrontjs/framework';
@@ -86,7 +86,7 @@ paginator.first().currentPage; // 1
 
 #### last
 
-The `last` method sets the [currentPage](#currentpage) property to the last page and recalculates the [items](#items) property.
+The `last` method sets the [currentPage](#currentpage) property to the last page and recalculates the [items](#items)' property.
 
 ```js
 import { Paginator } from '@upfrontjs/framework';
@@ -98,7 +98,7 @@ paginator.last().currentPage; // 5
 
 #### page
 
-The `page` method sets the [currentPage](#currentpage) property to the given page number if it is a valid page number and recalculates the [items](#items) property.
+The `page` method sets the [currentPage](#currentpage) property to the given page number if it is a valid page number and recalculates the [items](#items)' property.
 
 ```js
 import { Paginator } from '@upfrontjs/framework';
@@ -110,7 +110,7 @@ paginator.page(2).currentPage; // 2
 
 #### previous
 
-The `previous` method decrements the [currentPage](#currentpage) property if the paginator [hasPrevious](#hasprevious) page or it [wrapsAround](#wrapsaround) then recalculates the [items](#items) property.
+The `previous` method decrements the [currentPage](#currentpage) property if the paginator [hasPrevious](#hasprevious) page or it [wrapsAround](#wrapsaround) then recalculates the [items](#items)' property.
 
 ```js
 import { Paginator } from '@upfrontjs/framework';
@@ -125,7 +125,7 @@ paginator.previous().currentPage; // 5
 
 #### next
 
-The `next` method increments the [currentPage](#currentpage) property if the paginator [hasNext](#hasnext) page or it [wrapsAround](#wrapsaround) then recalculates the [items](#items) property.
+The `next` method increments the [currentPage](#currentpage) property if the paginator [hasNext](#hasnext) page or it [wrapsAround](#wrapsaround) then recalculates the [items](#items)' property.
 
 ```js
 import { Paginator } from '@upfrontjs/framework';

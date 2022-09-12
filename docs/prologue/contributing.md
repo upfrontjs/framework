@@ -16,21 +16,21 @@ I'd also love PRs. If you're thinking of a large PR, I advise opening up an issu
 
 ~~**Major** new features should always be sent to the `main` branch, which contains the upcoming release.~~
 
-Until reaching a stable version (v1), all pull requests should start from `main` and with your changes go into `main`. After that `main` will gets merged into the `release/0.x` branch.
+Until reaching a stable version (v1), all pull requests should start from `main` and with your changes go into `main`. After that `main` will get merged into the `release/0.x` branch.
 
-## Best pracrices
+## Best practices
 
  - The code should be self documenting. If a piece of logic might not be easy to reason by for a new contributor, consider adding a comment or two explaining the logic.
- - The code should be written defensively to reduce the possible errors in the consuming applications. However a balance should be struck to avoid overhead and developer relying too much on the library. Throwing errors are also accepted where the developer will likely make a fatal mistake.
+ - The code should be written defensively to reduce the possible errors in the consuming applications. However, a balance should be struck to avoid overhead and developer relying too much on the library. Throwing errors are also accepted where the developer will likely make a fatal mistake.
 
 ## Submitting a pull request
 
 1. Fork and clone the repository.
 2. Run `npm ci`.
-5. Create a new branch: `git checkout -b my-branch-name`.
-6. Make your change, add tests, and make sure the tests still pass.
-7. [Commit](#commit-message-formats) and push to your fork and submit a pull request to the [relevant branch](#which-branch).
-8. Pat your self on the back and wait for your pull request to be reviewed and merged.
+3. Create a new branch: `git checkout -b my-branch-name`.
+4. Make your change, add tests, and make sure the tests still pass.
+5. [Commit](#commit-message-formats) and push to your fork and submit a pull request to the [relevant branch](#which-branch).
+6. Pat your self on the back and wait for your pull request to be reviewed and merged.
 
 Here are a few things you can do that will increase the likelihood of your pull request being accepted:
 
@@ -80,15 +80,15 @@ Commit messages are integral to navigating version control, be it by a human or 
     docs(helpers): Clarified testing helper's description
 ```
 
-If your commit is related to a discussion/issue on github, please [link to it](https://docs.github.com/en/github/managing-your-work-on-github/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword) in your commit message.
+If your commit is related to a discussion/issue on GitHub, please [link to it](https://docs.github.com/en/github/managing-your-work-on-github/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword) in your commit message.
 
-If need more guidance beyond the conventional format, you may use `npm run commit` which will help build a commit message. Additional help can be found at the [resources](#resources) section.
+If you need more guidance beyond the conventional format, you may use `npm run commit` which will help build a commit message. Additional help can be found at the [resources](#resources) section.
 
 ## Documentation
 
 This documentation is kept alongside the source code to keep it in sync with the code it belongs to, and to allow for updating the docs in one go with code changes.
 
-To update the docs in the context of this documentation site I advise you pull down the [upfront docs repo](https://github.com/upfrontjs/docs) and create a symbolic link between framework the the docs e.g.:
+To update the docs in the context of this documentation site I advise you pull down the [upfront docs repo](https://github.com/upfrontjs/docs) and create a symbolic link between framework the docs e.g.:
 ```shell
 ln -sf /absolute/path/to/upfrontjs/framework/docs/* /absolute/path/to/upfrontjs/docs/
 ```

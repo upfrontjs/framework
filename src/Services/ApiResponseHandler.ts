@@ -50,7 +50,6 @@ export default class ApiResponseHandler implements HandlesApiResponse {
             return response;
         }
 
-
         if (typeof response.json === 'function') {
             return response.json();
         }
@@ -65,7 +64,7 @@ export default class ApiResponseHandler implements HandlesApiResponse {
      *
      * @return {void}
      */
-    public async handleError(rejectReason: unknown): Promise<never> {
+    public async handleError(rejectReason: unknown): Promise<unknown> {
         return Promise.reject(rejectReason);
     }
 

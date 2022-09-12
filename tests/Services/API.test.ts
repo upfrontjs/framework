@@ -3,6 +3,7 @@ import { config as globalConfig } from '../setupTests';
 import type { CustomHeaders, Method } from '../../src/Calliope/Concerns/CallsApi';
 import { finish } from '../../src/Support/string';
 import InvalidArgumentException from '../../src/Exceptions/InvalidArgumentException';
+import fetchMock from '../mock/fetch-mock';
 
 const url = finish(String(globalConfig.get('baseEndPoint')), '/') + 'users';
 
@@ -77,7 +78,7 @@ describe('API', () => {
 
             let config = (await api.getConfig(url, 'post')).requestInit;
 
-            // only merge in if initRequest it is a function and it returns an object
+            // only merge in if initRequest is a function, and it returns an object
             expect(config.body).toBeUndefined();
 
             api.initRequest = () => ({ body: 'merged value' });
@@ -251,6 +252,7 @@ describe('API', () => {
 
     describe('call()', () => {
         it('should return a promise', () => {
+            fetchMock.mockResponseOnce('value');
             expect(api.call(url, 'GET')).toBeInstanceOf(Promise);
         });
     });

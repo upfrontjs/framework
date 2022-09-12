@@ -338,7 +338,7 @@ User.orderBy('column', 'desc');
 
 #### orderByDesc
 
-The `orderByDesc` method indicates to the backend to order the returned records by the given column in a descending order.
+The `orderByDesc` method indicates to the backend to order the returned records by the given column in descending order.
 
 ```js
 import User from '@Models/User';

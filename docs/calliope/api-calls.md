@@ -163,7 +163,7 @@ This method should only really be used when mocking the model to look like it ex
 ```js
 import User from '@Models/User';
 
-const user = User.create({ id: 1 });
+const user = User.make({ id: 1 });
 user.exists; // false
 user.setLastSyncedAt().exists; // true
 ```

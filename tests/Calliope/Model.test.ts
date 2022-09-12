@@ -1,8 +1,7 @@
 import Model from '../../src/Calliope/Model';
 import User from '../mock/Models/User';
 import FactoryBuilder from '../../src/Calliope/Factory/FactoryBuilder';
-import { buildResponse, getLastRequest, mockUserModelResponse } from '../test-helpers';
-import fetchMock from 'jest-fetch-mock';
+import fetchMock, { getLastRequest } from '../mock/fetch-mock';
 import ModelCollection from '../../src/Calliope/ModelCollection';
 import LogicException from '../../src/Exceptions/LogicException';
 import { finish, snake } from '../../src/Support/string';
@@ -94,13 +93,13 @@ describe('Model', () => {
         });
     });
 
-    describe('create()', () => {
+    describe('make()', () => {
         it('should return a new instance', () => {
-            expect(User.create()).toBeInstanceOf(User);
+            expect(User.make()).toBeInstanceOf(User);
         });
 
         it('should have the capabilities of the model', () => {
-            expect(User.create({ key: 'value' }).getAttribute('key')).toBe('value');
+            expect(User.make({ key: 'value' }).getAttribute('key')).toBe('value');
         });
     });
 
@@ -169,7 +168,7 @@ describe('Model', () => {
         });
 
         it('should clone the model in it\'s current state', () => {
-            user = User.create({ id: 1, myKey: 2 });
+            user = User.make({ id: 1, myKey: 2 });
             user.setFillable(['id', 'something']);
             user.setGuarded(['*']);
             user.setCasts({ id: 'number' });
@@ -218,7 +217,7 @@ describe('Model', () => {
 
     describe('find()', () => {
         it('should send a GET request to the correct endpoint', async () => {
-            mockUserModelResponse(user);
+            fetchMock.mockResponseOnce(user);
             await user.find(String(user.getKey()));
 
             expect(getLastRequest()?.method).toBe('GET');
@@ -226,14 +225,14 @@ describe('Model', () => {
         });
 
         it('should return a model', async () => {
-            mockUserModelResponse(user);
+            fetchMock.mockResponseOnce(user);
             const responseModel = await user.find(String(user.getKey()));
 
             expect(responseModel).toBeInstanceOf(User);
         });
 
         it('should be able to be called statically', async () => {
-            mockUserModelResponse(user);
+            fetchMock.mockResponseOnce(user);
             const responseModel = await User.find(1);
 
             expect(responseModel).toBeInstanceOf(User);
@@ -242,9 +241,7 @@ describe('Model', () => {
 
     describe('findMany()', () => {
         it('should send a GET request with query params', async () => {
-            fetchMock.mockResponseOnce(
-                async () => Promise.resolve(buildResponse(User.factory().times(2).createMany()))
-            );
+            fetchMock.mockResponseOnce(User.factory().times(2).createMany());
             await user.findMany([2, 3]);
 
             expect(getLastRequest()?.method).toBe('GET');
@@ -259,9 +256,7 @@ describe('Model', () => {
         });
 
         it('should be able to be called statically', async () => {
-            fetchMock.mockResponseOnce(
-                async () => Promise.resolve(buildResponse(User.factory().times(2).createMany()))
-            );
+            fetchMock.mockResponseOnce(User.factory().times(2).createMany());
 
             const response = await User.findMany([2, 3]);
 
@@ -269,12 +264,7 @@ describe('Model', () => {
         });
 
         it('should return a ModelCollection even if only one model returned', async () => {
-            fetchMock.mockResponseOnce(
-                async () => Promise.resolve({
-                    status: 200,
-                    body: JSON.stringify(User.factory().rawOne())
-                })
-            );
+            fetchMock.mockResponseOnce(User.factory().rawOne(), { status: 200 });
             const users = await user.findMany([1]);
 
             expect(users).toBeInstanceOf(ModelCollection);
@@ -294,7 +284,7 @@ describe('Model', () => {
         });
 
         it('should send a GET request', async () => {
-            mockUserModelResponse(user);
+            fetchMock.mockResponseOnce(user);
             await user.refresh();
 
             expect(getLastRequest()?.method).toBe('GET');
@@ -302,7 +292,7 @@ describe('Model', () => {
         });
 
         it('should refresh only the attributes that the model already has', async () => {
-            mockUserModelResponse(user);
+            fetchMock.mockResponseOnce(user);
             await user.refresh();
 
             const params = 'columns[0]=' + user.getAttributeKeys().reduce((previous, next, index) => {
@@ -313,7 +303,7 @@ describe('Model', () => {
         });
 
         it('should return the model itself', async () => {
-            mockUserModelResponse(user);
+            fetchMock.mockResponseOnce(user);
             const returnUser = await user.refresh();
             returnUser.name = 'new name';
 
@@ -321,7 +311,7 @@ describe('Model', () => {
         });
 
         it('should clear the changes on the model', async () => {
-            mockUserModelResponse(user);
+            fetchMock.mockResponseOnce(user);
             user.name = 'new name';
             expect(user.getChanges()).not.toStrictEqual({});
             await user.refresh();
@@ -329,7 +319,7 @@ describe('Model', () => {
         });
 
         it('should update the last synced at', async () => {
-            mockUserModelResponse(user);
+            fetchMock.mockResponseOnce(user);
             const lastSyncedAt = user._lastSyncedAt;
 
             jest.advanceTimersByTime(100);
@@ -341,24 +331,20 @@ describe('Model', () => {
 
     describe('all()', () => {
         it('should send a GET request', async () => {
-            mockUserModelResponse(user);
+            fetchMock.mockResponseOnce(user);
             await User.all();
 
             expect(getLastRequest()?.method).toBe('GET');
         });
 
         it('should return a ModelCollection', async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(
-                buildResponse(User.factory().raw())
-            ));
+            fetchMock.mockResponseOnce(User.factory().raw());
 
             let response = await User.all();
             expect(response).toBeInstanceOf(ModelCollection);
             expect(response).toHaveLength(1);
 
-            fetchMock.mockResponseOnce(async () => Promise.resolve(
-                buildResponse(User.factory(2).raw())
-            ));
+            fetchMock.mockResponseOnce(User.factory(2).raw());
 
             response = await User.all();
             expect(response).toBeInstanceOf(ModelCollection);
@@ -375,7 +361,7 @@ describe('Model', () => {
         });
 
         it('should save the given attributes', async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({ name: 'new name' })));
+            fetchMock.mockResponseOnce({ name: 'new name' });
 
             await user.save({ name: 'new name' });
 
@@ -383,7 +369,7 @@ describe('Model', () => {
         });
 
         it('should save the changed attributes', async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({ name: 'new name' })));
+            fetchMock.mockResponseOnce({ name: 'new name' });
             user.name = 'new name';
 
             await user.save();
@@ -392,7 +378,7 @@ describe('Model', () => {
         });
 
         it('should send a PATCH request if the model already exists', async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({ name: 'new name' })));
+            fetchMock.mockResponseOnce({ name: 'new name' });
 
             await user.save({ name: 'new name' });
 
@@ -402,7 +388,7 @@ describe('Model', () => {
 
         it('should send a POST request if the model not yet exists', async () => {
             user.name = 'new name';
-            mockUserModelResponse(user);
+            fetchMock.mockResponseOnce(user);
             user.deleteAttribute(user.getKeyName());
 
             await user.save({});
@@ -412,7 +398,7 @@ describe('Model', () => {
 
         it('should send all attributes if model doesn\'t exist', async () => {
             const thisUser = User.factory().makeOne({ myAttr: 1 });
-            mockUserModelResponse(thisUser);
+            fetchMock.mockResponseOnce(thisUser);
 
             await thisUser.save({ customAttr: 1 });
 
@@ -431,7 +417,7 @@ describe('Model', () => {
 
         it('should sync changes after the request', async () => {
             user.name = 'new name';
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(user.getRawAttributes())));
+            fetchMock.mockResponseOnce(user.getRawAttributes());
 
             expect(user.getChanges('name').name).toBe('new name');
             await user.save();
@@ -439,7 +425,7 @@ describe('Model', () => {
         });
 
         it('should update the last synced at', async () => {
-            mockUserModelResponse(user);
+            fetchMock.mockResponseOnce(user);
             const lastSyncedAt = user._lastSyncedAt;
             user.name = 'new name';
 
@@ -454,10 +440,10 @@ describe('Model', () => {
                 'when using hasOne to instantiate model', async () => {
                 const contract = user.$contract();
 
-                fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({
+                fetchMock.mockResponseOnce({
                     myAttribute: 'value',
                     [user.guessForeignKeyName()]: user.getKey()
-                })));
+                });
 
                 await contract.save({ myAttribute: 'value' });
 
@@ -475,10 +461,10 @@ describe('Model', () => {
                 'when using hasMany to instantiate model', async () => {
                 const shift = user.$shifts();
 
-                fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({
+                fetchMock.mockResponseOnce({
                     myAttribute: 'value',
                     [user.guessForeignKeyName()]: user.getKey()
-                })));
+                });
 
                 await shift.save({ myAttribute: 'value' });
 
@@ -496,14 +482,14 @@ describe('Model', () => {
 
     describe('update()', () => {
         it('should call the patch() method', async () => {
-            mockUserModelResponse(user);
+            fetchMock.mockResponseOnce(user);
             await user.update({ key: 'value' });
 
             expect(getLastRequest()?.method).toBe('PATCH');
         });
 
         it('should set the correct endpoint', async () => {
-            mockUserModelResponse(user);
+            fetchMock.mockResponseOnce(user);
 
             await user.update({ key: 'value' });
             expect(getLastRequest()?.url).toBe(

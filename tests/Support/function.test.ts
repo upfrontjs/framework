@@ -1,6 +1,8 @@
 import * as func from '../../src/Support/function';
 import { types } from '../test-helpers';
 import User from '../mock/Models/User';
+import Team from '../mock/Models/Team';
+import Shift from '../mock/Models/Shift';
 
 describe('function helpers', () => {
     describe('isObjectLiteral()', () => {
@@ -141,7 +143,7 @@ describe('function helpers', () => {
             // or grater because the time it takes to run the function
             expect(performance.now() - startTime).toBeGreaterThanOrEqual(20);
 
-            jest.useFakeTimers('modern');
+            jest.useFakeTimers();
         });
 
         it('should accept a closure for timeout and should pass the attempt number to it', async () => {
@@ -153,7 +155,29 @@ describe('function helpers', () => {
             expect(mock).toHaveBeenNthCalledWith(1, 1);
             expect(mock).toHaveBeenNthCalledWith(2, 2);
 
-            jest.useFakeTimers('modern');
+            jest.useFakeTimers();
+        });
+    });
+
+    describe('dataGet()', () => {
+        it('should handle arrays', () => {
+            expect(func.dataGet(['a', 'b', 'c'], '1')).toBe('b');
+        });
+
+        it('should handle objects', () => {
+            const obj = {
+                key: 'value'
+            };
+
+            expect(func.dataGet(obj, 'key')).toBe('value');
+        });
+
+        it('should handle complex structures', () => {
+            const complexStructure = Team.factory().with(
+                User.factory().with(Shift.factory().attributes({ id: 1 }))
+            ).makeMany();
+
+            expect(func.dataGet(complexStructure, '0.users.0.shifts.0.id')).toBe(1);
         });
     });
 });

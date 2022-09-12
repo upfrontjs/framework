@@ -50,7 +50,6 @@ export default class ApiResponseHandler implements HandlesApiResponse {
             return response;
         }
 
-
         if (typeof response.json === 'function') {
             return response.json();
         }

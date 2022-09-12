@@ -145,7 +145,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
     public random(count = 1): T | this | undefined {
         count = Math.abs(count);
 
-        if (!this.length) {
+        if (!this.length || count === 0) {
             return undefined;
         }
 

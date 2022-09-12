@@ -604,6 +604,11 @@ describe('Collection', () => {
             expect(collection.random()).toBeUndefined();
         });
 
+        it('should return undefined if 0 given as argument', () => {
+            collection = new Collection();
+            expect(collection.random(0)).toBeUndefined();
+        });
+
         it('should return the whole collection if the given count is higher than the length', () => {
             expect(collection.random(collection.length * 2)).toStrictEqual(collection);
         });
@@ -1036,7 +1041,7 @@ describe('Collection', () => {
     });
 
     describe('pluck()', () => {
-        const elements = [
+        const elements: { id: number; name: string }[] = [
             { id: 1, name: '1' },
             { id: 2, name: '2' },
             { id: 3, name: '3' },
@@ -1045,13 +1050,13 @@ describe('Collection', () => {
         ];
 
         it('should pluck values from objects', () => {
-            collection = new Collection(elements);
+            let elCollection = new Collection(elements);
 
-            expect(collection.pluck('id')).toHaveLength(elements.length);
+            expect(elCollection.pluck('id')).toHaveLength(elements.length);
 
-            collection = new Collection(elements);
+            elCollection = new Collection(elements);
 
-            expect(collection.pluck('id').first()).toBe(elements[0]?.id);
+            expect(elCollection.pluck('id').first()).toBe(elements[0]?.id);
         });
 
         it('should pluck multiple values from objects', () => {

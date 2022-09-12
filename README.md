@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="400" src="https://raw.githubusercontent.com/upfrontjs/design/main/upfrontjs.png">
+  <img alt="UpfrontJs logo" width="400" src="https://raw.githubusercontent.com/upfrontjs/design/main/upfrontjs.png">
 </p>
 
 ![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/upfrontjs/framework?color=%233ac200&include_prereleases&label=latest%20version&sort=semver&style=flat-square)

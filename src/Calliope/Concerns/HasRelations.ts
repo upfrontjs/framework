@@ -254,10 +254,10 @@ export default class HasRelations extends CallsApi {
 
             const collection = new ModelCollection;
 
-            value.forEach(modelData => collection.push(relatedCtor.create(modelData)));
+            value.forEach(modelData => collection.push(relatedCtor.make(modelData)));
             relation = collection;
         } else {
-            const model = relatedCtor.create(value);
+            const model = relatedCtor.make(value);
 
             if (relationType === 'belongsTo') {
                 // set attribute to ensure sync between the foreign key and the given value

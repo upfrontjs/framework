@@ -20,13 +20,11 @@ module.exports = {
     setupFilesAfterEnv: ['<rootDir>/tests/setupTests.ts'],
     errorOnDeprecated: true,
     bail: true,
-    notify: true,
-    notifyMode: 'failure-change',
     globals: {
         window: {},
         global: {}
     },
-    extraGlobals: [
+    sandboxInjectedGlobals: [
         'Function',
         'Array',
         'String',

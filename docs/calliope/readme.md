@@ -51,7 +51,7 @@ import User from '@Models/User';
 
 User.find(1);
 // or 
-User.create({ my: attributes });
+User.make({ my: attributes });
 // etc...
 ```
 
@@ -97,7 +97,7 @@ export default class User extends Model {
 #### keyType
 
 The `keyType` is a getter that identifies what the type is of your [primaryKey](#primarykey). Its value has to be either `'string'` or `'number'` with `'number'` being the default value.
-You should update this value to `'string'` if you're using a uuid or some custom string for the primary key as this is used when in the [Factory](../testing.md#factories) and [exists](#exists) logic.
+You should update this value to `'string'` if you're using a UUID or some custom string for the primary key as this is used when in the [Factory](../testing/readme.md#factories) and [exists](#exists) logic.
 
 ```js
 // User.ts
@@ -128,9 +128,9 @@ The `is` method compares the given model with the current model based on the [ge
 import User from '@Models/User';
 import Shift from '@Models/Shift';
 
-const user = User.create({ id: 1 });
-const user2 = User.create({ id: 2 });
-const shift = Shift.create({ id: 1 });
+const user = User.make({ id: 1 });
+const user2 = User.make({ id: 2 });
+const shift = Shift.make({ id: 1 });
 
 user.is(user); // true
 user.is(user2); // false
@@ -175,7 +175,7 @@ The `create` method instantiates your model while setting up attributes and rela
 ```ts
 import User from '@Models/User';
 
-const user = User.create({ name: 'User Name' }); // User
+const user = User.make({ name: 'User Name' }); // User
 ```
 ::: warning
 Constructing a new class like `new User({...})` is **not** acceptable. This will not overwrite your class fields with default values if the same key has been passed in due to how JavaScript first constructs the parent class and only then the subclasses. However, you can still use it to call instance methods. Furthermore, it will not cause unexpected results if using it with the [setAttribute](./attributes.md#setattribute) method or call methods that under the hood uses the [setAttribute](./attributes.md#setattribute).
@@ -187,8 +187,8 @@ When creating an instance and passing in another instance of the model:
 import User from '@Models/User';
 import Shift from '@Models/Shift';
 
-const user = User.create({ name: 'John Doe' });
-const newUser = User.create(user);
+const user = User.make({ name: 'John Doe' });
+const newUser = User.make(user);
 ```
 It will clone the [raw attributes](./attributes#getrawattributes) and the [relationships](./relationships.md#getrelations) of the model.
 :::
@@ -230,7 +230,7 @@ userClone.myKey === 1; // true
 #### factory
 <Badge text="static" type="warning"/>
 
-The `factory` is a method that returns a [Factory](../testing.md#factorybuilder) instance. Optionally it takes a number argument which is a shorthand for the [times](../testing.md#times) method.
+The `factory` is a method that returns a [Factory](../testing/readme.md#factorybuilder) instance. Optionally it takes a number argument which is a shorthand for the [times](../testing/readme.md#times)' method.
 
 ```js
 import User from '@Models/User';
@@ -253,7 +253,7 @@ const users = await User.all(); // ModelCollection[User, ...]
 #### save
 <Badge text="async" type="warning"/>
 
-The `save` method will update or save your model based on whether the model [exists](#exists) or not. If the model exists it will send a `PATCH` request containing the changes, and the optionally passed in attributes. If the model does not exists it will send a `POST` request. The method returns the same current user updated with the response data if any.
+The `save` method will update or save your model based on whether the model [exists](#exists) or not. If the model exists it will send a `PATCH` request containing the changes, and the optionally passed in attributes. If the model does not exist it will send a `POST` request. The method returns the same current user updated with the response data if any.
 
 #### update
 <Badge text="async" type="warning"/>

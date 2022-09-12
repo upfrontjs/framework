@@ -2,7 +2,7 @@
 
 To make testing your code easier with real data independent of your back end, upfront provides factories. With factories, you can construct [models](../calliope/readme.md) hydrated with data that you have defined and/or using a random data generator like [ChanceJs](https://chancejs.com/) set in your [configuration](../helpers/global-config.md#randomdatagenerator). With the  factory defined, construction of a model is easy as `User.factory().create()`
 
-To define a factory what you need to do is extend upfront's `Factory` in you class, implement the [definition](#definition) method, then in you model create a `factory()` method which returns your constructed factory.
+To define a factory what you need to do is extend UpfrontJS' `Factory` in you class, implement the [definition](#definition) method, then in you model create a `factory()` method which returns your constructed factory.
 
 <code-group>
 <code-block title="Javascript">

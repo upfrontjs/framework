@@ -38,6 +38,7 @@ module.exports = {
             {
                 "ignore": ["describe"]
             }
-        ]
+        ],
+        "jest/max-expects": "off"
     }
 }

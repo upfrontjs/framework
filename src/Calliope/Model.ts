@@ -3,7 +3,6 @@ import FactoryBuilder from './Factory/FactoryBuilder';
 import type HasFactory from '../Contracts/HasFactory';
 import type { Attributes, AttributeKeys, SimpleAttributes } from './Concerns/HasAttributes';
 import ModelCollection from './ModelCollection';
-import LogicException from '../Exceptions/LogicException';
 import { finish } from '../Support/string';
 import type { MaybeArray, StaticToThis } from '../Support/type';
 import { cloneDeep } from 'lodash';
@@ -80,7 +79,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      * @return {this}
      */
     public new(attributes?: Attributes<this> | this): this {
-        return (this.constructor as typeof Model).create(attributes) as this;
+        return (this.constructor as typeof Model).make(attributes) as this;
     }
 
     /**
@@ -90,7 +89,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {this}
      */
-    public static create<T extends Model>(
+    public static make<T extends Model>(
         this: StaticToThis<T>,
         attributes?: Attributes<T>
     ): StaticToThis<T>['prototype'] {
@@ -347,23 +346,5 @@ export default class Model extends SoftDeletes implements HasFactory {
         const model = await this.reset().select(this.getAttributeKeys()).find(this.getKey()!);
 
         return this.forceFill(model.getRawAttributes()).syncOriginal().setLastSyncedAt();
-    }
-
-    /**
-     * Throw an error if the model does not exists before calling the specified method.
-     *
-     * @param {string} methodName
-     *
-     * @protected
-     *
-     * @internal
-     */
-    protected throwIfModelDoesntExistsWhenCalling(methodName: string): void {
-        if (!this.exists) {
-            throw new LogicException(
-                'Attempted to call ' + methodName + ' on \'' + this.getName()
-                + '\' when it has not been persisted yet or it has been soft deleted.'
-            );
-        }
     }
 }

@@ -245,7 +245,7 @@ Given this is used for generating string, as such isn't available on the `String
 
 #### isUuid
 
-The `isUuid` method determines whether the given value is a uuid.
+The `isUuid` method determines whether the given value is a UUID.
 ```js
 import { isUuid } from '@upfrontjs/framework';
 
@@ -313,7 +313,7 @@ wrap(); // []
 
 #### factory
 
-The `factory` method returns a [FactoryBuilder](../testing.md#factorybuilder). It first takes a [model](../calliope/readme.md) constructor and optionally an `amount` argument which is the equivalent of the `times` method on the [FactoryBuilder](../testing.md#factorybuilder).
+The `factory` method returns a [FactoryBuilder](../testing/readme.md#factorybuilder). It first takes a [model](../calliope/readme.md) constructor and optionally an `amount` argument which is the equivalent of the `times` method on the [FactoryBuilder](../testing/readme.md#factorybuilder).
 ```js
 import { factory } from '@upfrontjs/framework';
 import User from '@/Models/User';
@@ -399,4 +399,21 @@ const user = retry(async () => User.find(1), 3, 1000)
 
 // Retry the function with progressively longer delays.
 const user2 = retry(User.all, 3, attemptNumber => attemptNumber * 1000);
+```
+
+#### dataGet
+
+The `dataGet` is a helper method to safely access any path within an object or array. If the path does not exist, it will return an `undefined`.
+
+```js
+import { dataGet } from '@upfrontjs/framework';
+import Team from '~/Models/Team';
+import User from '~/Models/User';
+import Shift from '~/Models/Shift';
+
+const complexStructure = Team.factory().with(
+    User.factory().with(Shift.factory().attributes({ id: 1 }))
+).makeMany();
+
+dataGet(complexStructure, '0.users.0.shifts.0.id') === 1; // true
 ```

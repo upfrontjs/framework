@@ -412,7 +412,7 @@ collection.dump().take(2); // Collection[1, 2]
 When all items in the collections are objects, then you may order them using the `orderBy` method. The method takes one or more objects describing how the collection should be ordered. The object has two properties:
 
 - `property` - the name of the property you want to order by OR a method that accepts the collection item and returns the nested value.
-- `direction` - possible values are `asc`, `desc` respective to weather it should be in ascending or descending order.
+- `direction` - possible values are `asc`, `desc` respective to whether it should be in ascending or descending order.
 
 ```js
 const elements = [

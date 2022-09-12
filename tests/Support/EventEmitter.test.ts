@@ -5,6 +5,11 @@ interface MyEvents extends Events {
     myEvent: ((payload?: number) => void)[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const stubFunc = (..._args: any[]) => {
+    return;
+};
+
 /* eslint-disable @typescript-eslint/await-thenable */
 describe('EventEmitter', () => {
     describe('on()', () => {
@@ -19,7 +24,8 @@ describe('EventEmitter', () => {
             emitter.on('myEvent', num => myEventCb(num));
 
             await emitter.emit('myEvent', 1);
-            emitter.on('ds', (s: number) => s);
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            emitter.on('ds', (_s: number) => {});
             await emitter.emit('ds');
 
             expect(myEventCb).toHaveBeenCalledWith(1);
@@ -247,7 +253,9 @@ describe('EventEmitter', () => {
 
         it('should handle promises', async () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
-            const myEventCb = jest.fn(async () => Promise.resolve(1));
+            const myEventCb = jest.fn(async () => {
+                await Promise.resolve(1);
+            });
 
             emitter.once('myEvent', myEventCb);
             await emitter.emit('myEvent');
@@ -278,7 +286,7 @@ describe('EventEmitter', () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
 
             expect(emitter.has()).toBe(false);
-            emitter.on('myEvent', () => ({}));
+            emitter.on('myEvent', () => {});
             expect(emitter.has()).toBe(true);
         });
 
@@ -286,7 +294,7 @@ describe('EventEmitter', () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
 
             expect(emitter.has('myEvent')).toBe(false);
-            emitter.on('myEvent', () => ({}));
+            emitter.on('myEvent', () => stubFunc());
             expect(emitter.has('myEvent')).toBe(true);
         });
 
@@ -294,19 +302,19 @@ describe('EventEmitter', () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
 
             emitter.once('myEvent', () => {});
-            emitter.on('myEvent', () => 1);
+            emitter.on('myEvent', () => stubFunc(1));
             expect(emitter.has('myEvent', () => {})).toBe(true);
-            expect(emitter.has('myEvent', () => 2)).toBe(false);
+            expect(emitter.has('myEvent', () => stubFunc(2))).toBe(false);
         });
 
         it('should determine if there are event listeners that match the given function', () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
 
-            emitter.once('myEvent', () => 1);
-            emitter.on('myEvent', () => 2);
-            expect(emitter.has(undefined, () => 1)).toBe(true);
-            expect(emitter.has(undefined, () => 2)).toBe(true);
-            expect(emitter.has(undefined, () => 3)).toBe(false);
+            emitter.once('myEvent', () => stubFunc(1));
+            emitter.on('myEvent', () => stubFunc(2));
+            expect(emitter.has(undefined, () => stubFunc(1))).toBe(true);
+            expect(emitter.has(undefined, () => stubFunc(2))).toBe(true);
+            expect(emitter.has(undefined, () => stubFunc(3))).toBe(false);
         });
     });
 
@@ -318,9 +326,9 @@ describe('EventEmitter', () => {
         it('should get the listener count for all events', () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
 
-            emitter.on('myEvent', () => ({}));
-            emitter.once('myEvent', () => ({}));
-            emitter.once('someEvent', () => ({}));
+            emitter.on('myEvent', () => {});
+            emitter.once('myEvent', () => {});
+            emitter.once('someEvent', () => {});
 
             expect(emitter.listenerCount()).toBe(3);
         });
@@ -328,9 +336,9 @@ describe('EventEmitter', () => {
         it('should get the listener count only for the given event', () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
 
-            emitter.on('myEvent', () => ({}));
-            emitter.once('myEvent', () => ({}));
-            emitter.once('someEvent', () => ({}));
+            emitter.on('myEvent', () => {});
+            emitter.once('myEvent', () => {});
+            emitter.once('someEvent', () => {});
 
             expect(emitter.listenerCount('myEvent')).toBe(2);
         });
@@ -344,8 +352,8 @@ describe('EventEmitter', () => {
         it('should return the event names', () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
 
-            emitter.on('myEvent', () => ({}));
-            emitter.on('myOtherEvent', () => ({}));
+            emitter.on('myEvent', () => {});
+            emitter.on('myOtherEvent', () => {});
 
             expect(emitter.eventNames()).toStrictEqual(['myEvent', 'myOtherEvent']);
         });
@@ -353,8 +361,8 @@ describe('EventEmitter', () => {
         it('should remove duplicates', () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
 
-            emitter.on('myEvent', () => ({}));
-            emitter.once('myEvent', () => ({}));
+            emitter.on('myEvent', () => {});
+            emitter.once('myEvent', () => {});
 
             expect(emitter.eventNames()).toStrictEqual(['myEvent']);
         });

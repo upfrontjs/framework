@@ -14,7 +14,7 @@ export function ucFirst(str: string): string {
 }
 
 /**
- * Determine whether the given string is a uuid of version 4.
+ * Determine whether the given string is a UUID of version 4.
  *
  * @param {string} str
  *

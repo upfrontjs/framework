@@ -768,19 +768,22 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @return {this}
      */
-    public orderBy(order: MaybeArray<Order<T>>, ...additional: Order<T>[]): this {
+    public orderBy(
+        order: T extends Record<PropertyKey, any> ? MaybeArray<Order<T>> : never,
+        ...additional: T extends Record<PropertyKey, any> ? Order<T>[] : never
+    ): this {
         if (!this._allAreObjects()) {
             throw new TypeError('Every item needs to be an object to be able to access its properties.');
         }
 
-        const orders = Array.isArray(order) ? order : [order];
+        const orders = (Array.isArray(order) ? order : [order]) as Record<PropertyKey, any>[];
         orders.push(...additional);
 
         return this._newInstance(orderBy(
-            this.toArray(),
+            this.toArray() as Record<PropertyKey, any>[],
             orders.map(o => o.property),
             orders.map(o => o.direction)
-        ));
+        )) as this;
     }
 
     /**

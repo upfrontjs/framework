@@ -79,7 +79,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      * @return {this}
      */
     public new(attributes?: Attributes<this> | this): this {
-        return (this.constructor as typeof Model).create(attributes) as this;
+        return (this.constructor as typeof Model).make(attributes) as this;
     }
 
     /**
@@ -89,7 +89,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @return {this}
      */
-    public static create<T extends Model>(
+    public static make<T extends Model>(
         this: StaticToThis<T>,
         attributes?: Attributes<T>
     ): StaticToThis<T>['prototype'] {

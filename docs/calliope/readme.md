@@ -51,7 +51,7 @@ import User from '@Models/User';
 
 User.find(1);
 // or 
-User.create({ my: attributes });
+User.make({ my: attributes });
 // etc...
 ```
 
@@ -128,9 +128,9 @@ The `is` method compares the given model with the current model based on the [ge
 import User from '@Models/User';
 import Shift from '@Models/Shift';
 
-const user = User.create({ id: 1 });
-const user2 = User.create({ id: 2 });
-const shift = Shift.create({ id: 1 });
+const user = User.make({ id: 1 });
+const user2 = User.make({ id: 2 });
+const shift = Shift.make({ id: 1 });
 
 user.is(user); // true
 user.is(user2); // false
@@ -175,7 +175,7 @@ The `create` method instantiates your model while setting up attributes and rela
 ```ts
 import User from '@Models/User';
 
-const user = User.create({ name: 'User Name' }); // User
+const user = User.make({ name: 'User Name' }); // User
 ```
 ::: warning
 Constructing a new class like `new User({...})` is **not** acceptable. This will not overwrite your class fields with default values if the same key has been passed in due to how JavaScript first constructs the parent class and only then the subclasses. However, you can still use it to call instance methods. Furthermore, it will not cause unexpected results if using it with the [setAttribute](./attributes.md#setattribute) method or call methods that under the hood uses the [setAttribute](./attributes.md#setattribute).
@@ -187,8 +187,8 @@ When creating an instance and passing in another instance of the model:
 import User from '@Models/User';
 import Shift from '@Models/Shift';
 
-const user = User.create({ name: 'John Doe' });
-const newUser = User.create(user);
+const user = User.make({ name: 'John Doe' });
+const newUser = User.make(user);
 ```
 It will clone the [raw attributes](./attributes#getrawattributes) and the [relationships](./relationships.md#getrelations) of the model.
 :::

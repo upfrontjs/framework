@@ -380,7 +380,7 @@ describe('CallsApi', () => {
         it('should construct a single instance of a model', () => {
             const userData = User.factory().raw();
             //@ts-expect-error
-            expect(caller.newInstanceFromResponseData(userData)).toStrictEqual(User.create(userData).setLastSyncedAt());
+            expect(caller.newInstanceFromResponseData(userData)).toStrictEqual(User.make(userData).setLastSyncedAt());
         });
 
         it('should construct a model collection on array argument', () => {
@@ -388,13 +388,13 @@ describe('CallsApi', () => {
             const userData = User.factory().raw() as Attributes;
             //@ts-expect-error
             expect(caller.newInstanceFromResponseData([userData]) as ModelCollection<User>)
-                .toStrictEqual(new ModelCollection([User.create(userData).setLastSyncedAt()]));
+                .toStrictEqual(new ModelCollection([User.make(userData).setLastSyncedAt()]));
         });
 
         it('should force fill the models from the response', () => {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
             const userData = User.factory().raw() as Attributes;
-            const expectedUser = User.create(userData);
+            const expectedUser = User.make(userData);
 
             // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
             const originalFillableReturn =  User.prototype.getFillable;

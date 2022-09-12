@@ -1,5 +1,5 @@
 import LogicException from '../../../src/Exceptions/LogicException';
-import fetchMock, { getLastRequest } from '../../fetch-mock';
+import fetchMock, { getLastRequest } from '../../mock/fetch-mock';
 import API from '../../../src/Services/API';
 import ApiResponseHandler from '../../../src/Services/ApiResponseHandler';
 import User from '../../mock/Models/User';

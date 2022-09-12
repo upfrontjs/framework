@@ -1,5 +1,5 @@
 import User from '../../mock/Models/User';
-import fetchMock, { getLastRequest } from '../../fetch-mock';
+import fetchMock, { getLastRequest } from '../../mock/fetch-mock';
 import { finish, snake } from '../../../src';
 import LogicException from '../../../src/Exceptions/LogicException';
 import { now } from '../../setupTests';

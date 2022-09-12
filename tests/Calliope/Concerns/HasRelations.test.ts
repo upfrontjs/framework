@@ -7,7 +7,7 @@ import Shift from '../../mock/Models/Shift';
 import type Model from '../../../src/Calliope/Model';
 import Contract from '../../mock/Models/Contract';
 import FileModel from '../../mock/Models/FileModel';
-import fetchMock, { getLastRequest } from '../../fetch-mock';
+import fetchMock, { getLastRequest } from '../../mock/fetch-mock';
 import { cloneDeep } from 'lodash';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import Collection from '../../../src/Support/Collection';

@@ -1,5 +1,5 @@
 import User from '../../mock/Models/User';
-import fetchMock, { getLastRequest } from '../../fetch-mock';
+import fetchMock, { getLastRequest } from '../../mock/fetch-mock';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import { config } from '../../setupTests';
 import { start, finish } from '../../../src';

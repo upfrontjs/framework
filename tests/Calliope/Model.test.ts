@@ -1,7 +1,7 @@
 import Model from '../../src/Calliope/Model';
 import User from '../mock/Models/User';
 import FactoryBuilder from '../../src/Calliope/Factory/FactoryBuilder';
-import fetchMock, { getLastRequest } from '../fetch-mock';
+import fetchMock, { getLastRequest } from '../mock/fetch-mock';
 import ModelCollection from '../../src/Calliope/ModelCollection';
 import LogicException from '../../src/Exceptions/LogicException';
 import { finish, snake } from '../../src/Support/string';

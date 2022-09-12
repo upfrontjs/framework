@@ -1,7 +1,5 @@
 import ApiResponseHandler from '../../src/Services/ApiResponseHandler';
-import type { MockResponseInit } from 'jest-fetch-mock';
-import fetchMock from 'jest-fetch-mock';
-import { buildResponse } from '../test-helpers';
+import fetchMock from '../fetch-mock';
 import User from '../mock/Models/User';
 import type { ApiResponse } from '../../src/Contracts/HandlesApiResponse';
 import { API } from '../../src';
@@ -14,7 +12,7 @@ describe('ApiResponseHandler', () => {
     });
 
     it('should cast to boolean if only string boolean returned', async () => {
-        fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse('true')));
+        fetchMock.mockResponseOnce('true');
 
         const parsedResponse = await handler.handle(fetch('url'));
 
@@ -24,7 +22,7 @@ describe('ApiResponseHandler', () => {
     it('should call the handleFinally method', async () => {
         const mockFn = jest.fn();
         handler.handleFinally = () => mockFn();
-        fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+        fetchMock.mockResponseOnce(User.factory().raw());
         await handler.handle(fetch('url'));
 
         expect(mockFn).toHaveBeenCalled();
@@ -39,35 +37,39 @@ describe('ApiResponseHandler', () => {
         });
 
         it('should throw the response if the response is a client error', async () => {
-            const response: MockResponseInit = {
+            fetchMock.mockResponseOnce(undefined, {
                 status: 404,
-                statusText: 'Not Found',
-                body: undefined
-            };
-            fetchMock.mockResponse(async () => Promise.resolve(buildResponse(undefined, response)));
+                statusText: 'Not Found'
+            });
 
             await expect(handler.handle(fetch('url'))).rejects.toBeInstanceOf(Response);
+            fetchMock.mockResponseOnce(undefined, {
+                status: 404,
+                statusText: 'Not Found'
+            });
             const resp = await handler.handle<ApiResponse>(fetch('url')).catch(r => r);
             expect(resp.status).toBe(404);
             expect(resp.statusText).toBe('Not Found');
         });
 
         it('should throw the response if the response is a server error', async () => {
-            const response: MockResponseInit = {
+            fetchMock.mockResponseOnce(undefined, {
                 status: 503,
-                statusText: 'Service Unavailable',
-                body: undefined
-            };
-            fetchMock.mockResponse(async () => Promise.resolve(buildResponse(undefined, response)));
+                statusText: 'Service Unavailable'
+            });
 
             await expect(handler.handle(fetch('url'))).rejects.toBeInstanceOf(Response);
+            fetchMock.mockResponseOnce(undefined, {
+                status: 503,
+                statusText: 'Service Unavailable'
+            });
             const resp = await handler.handle<ApiResponse>(fetch('url')).catch(r => r);
             expect(resp.status).toBe(503);
             expect(resp.statusText).toBe('Service Unavailable');
         });
 
         it('should throw JSON error if returned data cannot be parsed', async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse('{"key":"value"')));
+            fetchMock.mockResponseOnce('{"key":"value"');
             await expect(handler.handle(fetch('url')))
                 .rejects
                 .toThrowErrorMatchingInlineSnapshot(
@@ -81,9 +83,7 @@ describe('ApiResponseHandler', () => {
         [101, 'is an informational response'],
         [302, 'as a redirect response']
     ])('should return undefined if the response (%s) %s', async (status) => {
-        const response: MockResponseInit = { status, body: undefined };
-
-        fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(undefined, response)));
+        fetchMock.mockResponseOnce(undefined, { status });
 
         await expect(handler.handle(fetch('url')).catch(r => r)).resolves.toBeUndefined();
     });
@@ -95,17 +95,8 @@ describe('ApiResponseHandler', () => {
     });
 
     it('should return the response if it was called with a head request', async () => {
-        const response = buildResponse(
-            undefined,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            { headers: { 'Content-Length': '12345' } }
-        ) as ApiResponse & MockResponseInit;
-        delete response.body;
-        response.request = {
-            method: 'HEAD'
-        };
-
-        fetchMock.mockResponseOnce(async () => Promise.resolve(response));
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        fetchMock.mockResponseOnce(undefined, { headers: { 'Content-Length': '12345' } });
 
         const apiResponse = (await handler.handle(new API().call('url', 'HEAD')))!;
         expect(apiResponse).toBeInstanceOf(Response);

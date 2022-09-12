@@ -141,7 +141,7 @@ describe('function helpers', () => {
             // or grater because the time it takes to run the function
             expect(performance.now() - startTime).toBeGreaterThanOrEqual(20);
 
-            jest.useFakeTimers('modern');
+            jest.useFakeTimers();
         });
 
         it('should accept a closure for timeout and should pass the attempt number to it', async () => {
@@ -153,7 +153,7 @@ describe('function helpers', () => {
             expect(mock).toHaveBeenNthCalledWith(1, 1);
             expect(mock).toHaveBeenNthCalledWith(2, 2);
 
-            jest.useFakeTimers('modern');
+            jest.useFakeTimers();
         });
     });
 });

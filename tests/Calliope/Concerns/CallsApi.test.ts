@@ -1,8 +1,7 @@
 import LogicException from '../../../src/Exceptions/LogicException';
-import fetchMock from 'jest-fetch-mock';
+import fetchMock, { getLastRequest } from '../../fetch-mock';
 import API from '../../../src/Services/API';
 import ApiResponseHandler from '../../../src/Services/ApiResponseHandler';
-import { buildResponse, getLastRequest, mockUserModelResponse } from '../../test-helpers';
 import User from '../../mock/Models/User';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
 import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
@@ -30,7 +29,7 @@ describe('CallsApi', () => {
 
     describe('.serverAttributeCasing', () => {
         it('should cast the outgoing attributes to the set serverAttributeCasing', async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+            fetchMock.mockResponseOnce(User.factory().raw());
             await caller.call('POST', { someValue: 1 });
 
             // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -38,7 +37,7 @@ describe('CallsApi', () => {
         });
 
         it('should recursively cast the keys to any depth', async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+            fetchMock.mockResponseOnce(User.factory().raw());
             await caller.call('POST', {
                 someValue: {
                     anotherValue: 1
@@ -50,7 +49,7 @@ describe('CallsApi', () => {
         });
 
         it('should get the serverAttributeCasing from the extending model', async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+            fetchMock.mockResponseOnce(User.factory().raw());
 
             class UserWithSnakeCase extends User {
                 protected override get serverAttributeCasing() {
@@ -75,7 +74,7 @@ describe('CallsApi', () => {
             const formData = new FormData();
             // when appending fields, naming is very explicit, so we assume it is deliberate
             formData.append('my_field', 'value');
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+            fetchMock.mockResponseOnce(User.factory().raw());
 
             await caller.call('POST', formData);
 
@@ -108,16 +107,18 @@ describe('CallsApi', () => {
 
         it('should get the endpoint from the model as expected', async () => {
             const baseEndpoint = config.get('baseEndPoint');
-            fetchMock.mockResponse(async () => Promise.resolve(buildResponse()));
+            fetchMock.mockResponseOnce({ data: 'value' });
             await caller.call('GET');
             // it adds the '/' between the baseEndPoint and the endpoint
             expect(getLastRequest()?.url).toBe(finish(baseEndpoint!, '/') + caller.getEndpoint());
 
+            fetchMock.mockResponseOnce({ data: 'value' });
             config.unset('baseEndPoint');
             await caller.call('GET');
             // if no baseEndPoint is set, we have no leading '/'
             expect(getLastRequest()?.url).toBe(caller.getEndpoint());
 
+            fetchMock.mockResponseOnce({ data: 'value' });
             config.set('baseEndPoint', baseEndpoint);
             caller.getEndpoint = () => 'https://test-domain.com/users';
             await caller.call('GET');
@@ -128,7 +129,7 @@ describe('CallsApi', () => {
         });
 
         it('should return a promise with the response',  async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+            fetchMock.mockResponseOnce(User.factory().raw());
             const responseData = await caller.call('GET');
 
             expect(responseData).toStrictEqual(User.factory().raw());
@@ -146,7 +147,7 @@ describe('CallsApi', () => {
 
             config.set('api', api);
 
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse()));
+            fetchMock.mockResponseOnce({ data: 'value' });
             await caller.call('GET');
             expect(getLastRequest()?.headers.has('custom')).toBe(true);
             expect(getLastRequest()?.headers.get('custom')).toBe('header');
@@ -162,17 +163,15 @@ describe('CallsApi', () => {
 
             config.set('apiResponseHandler', apiResponseHandler);
 
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse()));
+            fetchMock.mockResponseOnce({ data: 'value' });
             await caller.call('GET');
             expect(mockFn).toHaveBeenCalled();
         });
 
         it('should internally count the number of ongoing requests', async () => {
-            fetchMock.mockResponse(
-                async () => Promise.resolve(buildResponse((User.factory().create() as User).getRawOriginal()))
-            );
-
+            fetchMock.mockResponseOnce(User.factory().createOne().getRawOriginal());
             const promise1 = caller.call('GET');
+            fetchMock.mockResponseOnce(User.factory().createOne().getRawOriginal());
             const promise2 = caller.call('GET');
 
             // @ts-expect-error
@@ -182,12 +181,12 @@ describe('CallsApi', () => {
 
             // @ts-expect-error
             expect(caller.requestCount).toBe(0);
+
+            fetchMock.resetMocks();
         });
 
         it('should determine whether there is an ongoing request or not', async () => {
-            fetchMock.mockResponseOnce(
-                async () => Promise.resolve(buildResponse((User.factory().create() as User).getRawOriginal()))
-            );
+            fetchMock.mockResponseOnce(User.factory().createOne().getRawOriginal());
 
             const promise = caller.call('GET');
 
@@ -199,7 +198,7 @@ describe('CallsApi', () => {
         });
 
         it('should set the given data to the .serverAttributeCasing', async () => {
-            mockUserModelResponse(User.factory().makeOne());
+            fetchMock.mockResponseOnce(User.factory().makeOne());
             await caller.call('POST', {
                 myKey1: null,
                 myKey2: { some: { deepNested: 'value' } },
@@ -218,7 +217,7 @@ describe('CallsApi', () => {
         });
 
         it('should send all the given data', async () => {
-            mockUserModelResponse(User.factory().makeOne());
+            fetchMock.mockResponseOnce(User.factory().makeOne());
             await caller.call('POST', {
                 falsyKey1: null,
                 falsyKey2: undefined,
@@ -238,14 +237,14 @@ describe('CallsApi', () => {
 
         it('should not parse the response body if data wrapped', async () => {
             const data = User.factory().raw();
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse({ data })));
+            fetchMock.mockResponseOnce({ data });
             const parsedResponse = await caller.call('GET');
 
             expect(parsedResponse).toStrictEqual({ data });
         });
 
         it('should reset the endpoint', async () => {
-            mockUserModelResponse();
+            fetchMock.mockResponseOnce(User.factory().createOne());
 
             caller.setEndpoint('endpoint');
             await caller.get();
@@ -257,7 +256,7 @@ describe('CallsApi', () => {
             // @ts-expect-error
             expect(caller.compileQueryParameters().wheres).toHaveLength(1);
 
-            mockUserModelResponse();
+            fetchMock.mockResponseOnce(User.factory().createOne());
             await caller.get();
 
             // @ts-expect-error
@@ -265,13 +264,13 @@ describe('CallsApi', () => {
         });
 
         it('should return undefined if the response from the handler is undefined', async () => {
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(undefined, { status: 100 })));
+            fetchMock.mockResponseOnce(undefined, { status: 100 });
             await expect(caller.call('GET')).resolves.toBeUndefined();
         });
 
         describe('requestMiddleware', () => {
             it('should run the given request middleware if set in the configuration', async () => {
-                fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+                fetchMock.mockResponseOnce(User.factory().raw());
                 const mockFn = jest.fn();
                 const requestMiddleware: RequestMiddleware = {
                     handle: (url, method, data, customHeaders, queryParameters) => {
@@ -330,7 +329,7 @@ describe('CallsApi', () => {
                 };
                 config.set('requestMiddleware', requestMiddleware);
 
-                fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+                fetchMock.mockResponseOnce(User.factory().raw());
                 await caller.call(
                     'POST',
                     { key: 'value' },
@@ -349,7 +348,7 @@ describe('CallsApi', () => {
                 };
                 config.set('requestMiddleware', requestMiddleware);
 
-                fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse(User.factory().raw())));
+                fetchMock.mockResponseOnce(User.factory().raw());
                 await caller.call(
                     'GET',
                     { key: 'value' },
@@ -381,7 +380,7 @@ describe('CallsApi', () => {
         it('should construct a single instance of a model', () => {
             const userData = User.factory().raw();
             //@ts-expect-error
-            expect(caller.newInstanceFromResponseData(userData)).toStrictEqual(User.create(userData));
+            expect(caller.newInstanceFromResponseData(userData)).toStrictEqual(User.create(userData).setLastSyncedAt());
         });
 
         it('should construct a model collection on array argument', () => {
@@ -389,7 +388,7 @@ describe('CallsApi', () => {
             const userData = User.factory().raw() as Attributes;
             //@ts-expect-error
             expect(caller.newInstanceFromResponseData([userData]) as ModelCollection<User>)
-                .toStrictEqual(new ModelCollection([User.create(userData)]));
+                .toStrictEqual(new ModelCollection([User.create(userData).setLastSyncedAt()]));
         });
 
         it('should force fill the models from the response', () => {
@@ -518,7 +517,7 @@ describe('CallsApi', () => {
     describe('get()', () => {
         it('should send a GET request', async () => {
             const user = User.factory().create() as User;
-            mockUserModelResponse(user);
+            fetchMock.mockResponseOnce(user);
 
             await caller.get();
             expect(getLastRequest()?.method).toBe('GET');
@@ -526,14 +525,14 @@ describe('CallsApi', () => {
 
         it('should return a promise with new model or model collection', async () => {
             const user = User.factory().create() as User;
-            mockUserModelResponse(user);
+            fetchMock.mockResponseOnce(user);
 
             const data = await caller.get();
             expect(data).toStrictEqual(user);
         });
 
         it('should take parameters for the request', async () => {
-            mockUserModelResponse();
+            fetchMock.mockResponseOnce(User.factory().createOne());
             await caller.get({ myParam: 1 });
 
             expect(getLastRequest()?.url)
@@ -541,7 +540,7 @@ describe('CallsApi', () => {
         });
 
         it('should overwrite query parameters from the builder', async () => {
-            mockUserModelResponse();
+            fetchMock.mockResponseOnce(User.factory().createOne());
             await caller.whereKey(1).get({
                 wheres: [
                     {
@@ -559,7 +558,7 @@ describe('CallsApi', () => {
         });
 
         it('should send query parameters in the request', async () => {
-            mockUserModelResponse();
+            fetchMock.mockResponseOnce(User.factory().createOne());
             await caller.whereKey(43).get();
 
             expect(getLastRequest()?.url).toBe(
@@ -571,7 +570,7 @@ describe('CallsApi', () => {
 
         it('should works statically', async () => {
             const user = User.factory().create() as User;
-            mockUserModelResponse(user);
+            fetchMock.mockResponseOnce(user);
 
             const data = await User.get();
 
@@ -581,20 +580,12 @@ describe('CallsApi', () => {
         it('should unwrap data if response comes data wrapped', async () => {
             const user = User.factory().createOne();
 
-            fetchMock.mockResponseOnce(async () => Promise.resolve({
-                status: 200,
-                body: JSON.stringify({
-                    data: [user.getAttributes()]
-                })
-            }));
+            fetchMock.mockResponseOnce({ data: [user.getAttributes()] }, { status: 200 });
 
             let data = await User.get();
             expect(data).toBeInstanceOf(ModelCollection);
 
-            fetchMock.mockResponseOnce(async () => Promise.resolve({
-                status: 200,
-                body: JSON.stringify([user.getAttributes()])
-            }));
+            fetchMock.mockResponseOnce([user.getAttributes()], { status: 200 });
             data = await User.get();
 
             expect(data).toBeInstanceOf(ModelCollection);
@@ -603,7 +594,7 @@ describe('CallsApi', () => {
 
     describe('post()', () => {
         it('should send a POST request', async () => {
-            mockUserModelResponse(caller);
+            fetchMock.mockResponseOnce(caller);
             await caller.post({ key: 'value' });
 
             expect(getLastRequest()?.method).toBe('POST');
@@ -614,14 +605,14 @@ describe('CallsApi', () => {
             const callerUser = User.factory().create() as User;
 
             // if response returns model data
-            mockUserModelResponse(responseUser);
+            fetchMock.mockResponseOnce(responseUser);
             let returnModel = await callerUser.post(responseUser.getRawOriginal());
 
             // a new model will be returned using the response data
             expect(callerUser).not.toStrictEqual(returnModel);
 
             // if response isn't model data
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse('1')));
+            fetchMock.mockResponseOnce('1');
             returnModel = await callerUser.post({ key: 'value' });
 
             // the returned model is the calling model
@@ -631,7 +622,7 @@ describe('CallsApi', () => {
         it('should send query parameters in the url', async () => {
             caller.whereKey(43);
 
-            mockUserModelResponse();
+            fetchMock.mockResponseOnce(User.factory().createOne());
             await caller.post({ key: 'value' });
 
             expect(getLastRequest()?.body).toStrictEqual({ key: 'value' });
@@ -644,7 +635,7 @@ describe('CallsApi', () => {
 
     describe('put()', () => {
         it('should send a PUT request', async () => {
-            mockUserModelResponse(caller);
+            fetchMock.mockResponseOnce(caller);
             await caller.put({ key: 'value' });
 
             expect(getLastRequest()?.method).toBe('PUT');
@@ -655,14 +646,14 @@ describe('CallsApi', () => {
             const callerUser = User.factory().create() as User;
 
             // if response returns model data
-            mockUserModelResponse(responseUser);
+            fetchMock.mockResponseOnce(responseUser);
             let returnModel = await callerUser.put(responseUser.getRawOriginal());
 
             // a new model will be returned using the response data
             expect(callerUser).not.toStrictEqual(returnModel);
 
             // if response isn't model data
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse('1')));
+            fetchMock.mockResponseOnce('1');
             returnModel = await callerUser.put({ key: 'value' });
 
             // the returned model is the calling model
@@ -672,7 +663,7 @@ describe('CallsApi', () => {
         it('should send query parameters in the url', async () => {
             caller.whereKey(43);
 
-            mockUserModelResponse();
+            fetchMock.mockResponseOnce(User.factory().createOne());
             await caller.put({ key: 'value' });
 
             expect(getLastRequest()?.body).toStrictEqual({ key: 'value' });
@@ -685,7 +676,7 @@ describe('CallsApi', () => {
 
     describe('patch()', () => {
         it('should send a PATCH request', async () => {
-            mockUserModelResponse(caller);
+            fetchMock.mockResponseOnce(caller);
             await caller.patch({ key: 'value' });
 
             expect(getLastRequest()?.method).toBe('PATCH');
@@ -696,14 +687,14 @@ describe('CallsApi', () => {
             const callerUser = User.factory().create() as User;
 
             // if response returns model data
-            mockUserModelResponse(responseUser);
+            fetchMock.mockResponseOnce(responseUser);
             let returnModel = await callerUser.patch(responseUser.getRawOriginal());
 
             // a new model will be returned using the response data
             expect(callerUser).not.toStrictEqual(returnModel);
 
             // if response isn't model data
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse('1')));
+            fetchMock.mockResponseOnce('1');
             returnModel = await callerUser.patch({ key: 'value' });
 
             // the returned model is the calling model
@@ -713,7 +704,7 @@ describe('CallsApi', () => {
         it('should send query parameters in the url', async () => {
             caller.whereKey(43);
 
-            mockUserModelResponse();
+            fetchMock.mockResponseOnce(User.factory().createOne());
             await caller.patch({ key: 'value' });
 
             expect(getLastRequest()?.body).toStrictEqual({ key: 'value' });
@@ -726,14 +717,14 @@ describe('CallsApi', () => {
 
     describe('delete()', () => {
         it('should send a DELETE request', async () => {
-            mockUserModelResponse(caller);
+            fetchMock.mockResponseOnce(caller);
             await caller.delete();
 
             expect(getLastRequest()?.method).toBe('DELETE');
         });
 
         it('should send information in the request body', async () => {
-            mockUserModelResponse(caller);
+            fetchMock.mockResponseOnce(caller);
             await caller.delete({ key: 'value' });
 
             expect(getLastRequest()?.body).toStrictEqual({ key: 'value' });
@@ -746,14 +737,14 @@ describe('CallsApi', () => {
             callerUser.usesSoftDeletes = () => false;
 
             // if response returns model data
-            mockUserModelResponse(responseUser);
+            fetchMock.mockResponseOnce(responseUser);
             let returnModel = await callerUser.delete(responseUser.getRawOriginal());
 
             // a new model will be returned using the response data
             expect(callerUser).not.toStrictEqual(returnModel);
 
             // if response isn't model data
-            fetchMock.mockResponseOnce(async () => Promise.resolve(buildResponse('1')));
+            fetchMock.mockResponseOnce('1');
             returnModel = await callerUser.delete();
 
             // the returned model is the calling model
@@ -763,7 +754,7 @@ describe('CallsApi', () => {
         it('should send query parameters in the url', async () => {
             caller.whereKey(43);
 
-            mockUserModelResponse();
+            fetchMock.mockResponseOnce(User.factory().createOne());
             await caller.delete();
 
             expect(getLastRequest()?.url).toBe(

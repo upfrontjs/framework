@@ -1,14 +1,21 @@
-import fetchMock from 'jest-fetch-mock';
 import GlobalConfig from '../src/Support/GlobalConfig';
 import type Configuration from '../src/Contracts/Configuration';
+// for some reason global.Promise not found when referenced within node-fetch
+global.Promise = globalThis.Promise;
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+import fetch, { Response, Headers, Request } from 'cross-fetch';
+
+globalThis.fetch = fetch;
+globalThis.Response = Response;
+globalThis.Headers = Headers;
+globalThis.Request = Request;
 
 /* eslint-disable-next-line @typescript-eslint/consistent-generic-constructors */
-const config: GlobalConfig<Configuration> = new GlobalConfig;
+export const config: GlobalConfig<Configuration> = new GlobalConfig;
 
 /* eslint-disable jest/require-hook */
-fetchMock.enableMocks();
-jest.useFakeTimers('modern');
-const now = new Date(jest.getRealSystemTime());
+export const now = new Date(jest.getRealSystemTime());
+jest.useFakeTimers({ now });
 config.set('baseEndPoint', 'https://test-api-endpoint.com');
 /* eslint-enable jest/require-hook */
 
@@ -16,7 +23,6 @@ config.set('baseEndPoint', 'https://test-api-endpoint.com');
 beforeEach(() => {
     config.reset();
     config.set('baseEndPoint', 'https://test-api-endpoint.com');
+    // set back to now as advancing timer influences this
     jest.setSystemTime(now);
 });
-
-export { config, now };

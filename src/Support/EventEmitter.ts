@@ -68,7 +68,7 @@ export default class EventEmitter<TEvents extends Events = Events> {
      * @param {string=} event - only remove listeners for the given event
      * @param {CallableFunction=} listener - only remove the event listener that match the given listener.
      */
-    public off<P extends string | keyof TEvents>(event?: P, listener?: TEvents[P][number]): this {
+    public off<P extends keyof TEvents>(event?: P, listener?: TEvents[P][number]): this {
         const functionSignature = listener ? listener.toString() : '';
 
         if (!event) {
@@ -113,10 +113,7 @@ export default class EventEmitter<TEvents extends Events = Events> {
     /**
      * Bind the event listener.
      */
-    public on<P extends string | keyof TEvents>(
-        event: P,
-        listener: Listener<Parameters<TEvents[P][number]>[number]>
-    ): this {
+    public on<P extends keyof TEvents>(event: P, listener: Listener<Parameters<TEvents[P][number]>[number]>): this {
         if (!Array.isArray(this.listeners[event])) {
             this.listeners[event as keyof TEvents] = [] as unknown as TEvents[keyof TEvents];
         }
@@ -129,10 +126,7 @@ export default class EventEmitter<TEvents extends Events = Events> {
     /**
      * Bind the event listener that should only run once.
      */
-    public once<P extends string | keyof TEvents>(
-        event: P,
-        listener: Listener<Parameters<TEvents[P][number]>[number]>
-    ): this {
+    public once<P extends keyof TEvents>(event: P, listener: Listener<Parameters<TEvents[P][number]>[number]>): this {
         if (!Array.isArray(this.listenersOnce[event])) {
             this.listenersOnce[event] = [] as unknown as TEvents[P];
         }
@@ -145,7 +139,7 @@ export default class EventEmitter<TEvents extends Events = Events> {
     /**
      * Bind the event and to the front of the stack.
      */
-    public prependListener<P extends string | keyof TEvents>(
+    public prependListener<P extends keyof TEvents>(
         event: P,
         listener: Listener<Parameters<TEvents[P][number]>[number]>
     ): this {
@@ -161,7 +155,7 @@ export default class EventEmitter<TEvents extends Events = Events> {
     /**
      * Bind the event that only runs once to the front of the stack.
      */
-    public prependOnceListener<P extends string | keyof TEvents>(
+    public prependOnceListener<P extends keyof TEvents>(
         event: P,
         listener: Listener<Parameters<TEvents[P][number]>[number]>
     ): this {
@@ -180,7 +174,7 @@ export default class EventEmitter<TEvents extends Events = Events> {
      * @param {string=} event - only check for listeners for the given event
      * @param {CallableFunction=} listener - only check for listeners that match this given listener
      */
-    public has<P extends string | keyof TEvents>(
+    public has<P extends keyof TEvents>(
         event?: P,
         listener?: Listener<Parameters<TEvents[P][number]>[number]>
     ): boolean {
@@ -240,7 +234,7 @@ export default class EventEmitter<TEvents extends Events = Events> {
     /**
      * Get all the even names currently listened to.
      */
-    public eventNames(): (string | keyof TEvents)[] {
+    public eventNames(): (keyof TEvents)[] {
         return [...new Set([...Object.keys(this.listeners), ...Object.keys(this.listenersOnce)])];
     }
 }

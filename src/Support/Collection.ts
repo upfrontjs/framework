@@ -115,7 +115,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
     /**
      * Return the last element in the collection,
      * if callback given the last element that  passes the truth test.
-     * Otherwise undefined.
+     * Otherwise, undefined.
      *
      * @param {function} callback
      *
@@ -145,7 +145,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
     public random(count = 1): T | this | undefined {
         count = Math.abs(count);
 
-        if (!this.length) {
+        if (!this.length || count === 0) {
             return undefined;
         }
 
@@ -690,8 +690,13 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @throws {Error}
      */
-    public pluck(properties: string): Collection<any>;
-    public pluck<Keys extends Readonly<string[]> | string[]>(properties: Keys): Collection<Record<Keys[number], any>>;
+    public pluck<Keys extends (Readonly<keyof T> | keyof T)[]>(
+        properties: Keys
+    ): Collection<Pick<T, Keys[number]>>;
+    public pluck<Keys extends Readonly<keyof T> | keyof T>(
+        properties: Keys
+    ): Collection<Pick<T, Keys>>;
+    public pluck<V>(properties: MaybeArray<string>): Collection<V>;
     public pluck(properties: MaybeArray<string>): Collection<any> {
         if (!this._allAreObjects()) {
             throw new TypeError('Every item needs to be an object to be able to access its properties.');
@@ -763,19 +768,22 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @return {this}
      */
-    public orderBy(order: MaybeArray<Order<T>>, ...additional: Order<T>[]): this {
+    public orderBy(
+        order: T extends Record<PropertyKey, any> ? MaybeArray<Order<T>> : never,
+        ...additional: T extends Record<PropertyKey, any> ? Order<T>[] : never
+    ): this {
         if (!this._allAreObjects()) {
             throw new TypeError('Every item needs to be an object to be able to access its properties.');
         }
 
-        const orders = Array.isArray(order) ? order : [order];
+        const orders = (Array.isArray(order) ? order : [order]) as Record<PropertyKey, any>[];
         orders.push(...additional);
 
         return this._newInstance(orderBy(
-            this.toArray(),
+            this.toArray() as Record<PropertyKey, any>[],
             orders.map(o => o.property),
             orders.map(o => o.direction)
-        ));
+        )) as this;
     }
 
     /**

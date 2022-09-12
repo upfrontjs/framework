@@ -1,6 +1,6 @@
 # Model Collection
 
-ModelCollection is a sub class of the [Collection](../helpers/collection.md), therefore all methods are inherited. The following methods have been updated to use either the model's [is](./readme.md#is) method, or the [primary key](./readme.md#getkey) of the model for comparison between models. `unique`, `hasDuplicates`, `duplicates`, `diff`, `only`, `except`, `intersect`, `delete`, `union`, `includes`. The signature of the before mentioned methods has not changed. In addition, the ModelCollection ensures that only [Models](./readme.md) are included in the collection. On top of the collection's methods couple of others has been added that are only relevant to model values.
+ModelCollection is a subclass of the [Collection](../helpers/collection.md), therefore all methods are inherited. The following methods have been updated to use either the model's [is](./readme.md#is) method, or the [primary key](./readme.md#getkey) of the model for comparison between models. `unique`, `hasDuplicates`, `duplicates`, `diff`, `only`, `except`, `intersect`, `delete`, `union`, `includes`. The signature of the before mentioned methods has not changed. In addition, the ModelCollection ensures that only [Models](./readme.md) are included in the collection. On top of the collection's methods couple of others has been added that are only relevant to model values.
 
 ## Methods
 

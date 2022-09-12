@@ -1,6 +1,5 @@
 import User from '../../mock/Models/User';
-import fetchMock from 'jest-fetch-mock';
-import { buildResponse, getLastRequest } from '../../test-helpers';
+import fetchMock, { getLastRequest } from '../../mock/fetch-mock';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import { config } from '../../setupTests';
 import { start, finish } from '../../../src';
@@ -11,12 +10,9 @@ let hasTimestamps: User;
 describe('HasTimestamps', () => {
     beforeEach(() => {
         hasTimestamps = User.factory().create() as User;
-        fetchMock.mockResponseOnce(async () => Promise.resolve(
-            buildResponse(User.factory()
-                .create()
-                .only([hasTimestamps.getCreatedAtName(), hasTimestamps.getUpdatedAtName()])
-            )
-        ));
+        fetchMock.mockResponseOnce(User.factory().create()
+            .only([hasTimestamps.getCreatedAtName(), hasTimestamps.getUpdatedAtName()])
+        );
     });
 
     describe('getCreatedAtName', () => {
@@ -78,7 +74,10 @@ describe('HasTimestamps', () => {
             const createdAt = hasTimestamps.getAttribute(hasTimestamps.getCreatedAtName());
             const updatedAt = hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtName());
 
-            jest.advanceTimersByTime(1000);
+            jest.setSystemTime(new Date().setSeconds(new Date().getSeconds() + 1));
+            const newUpdatedAt = { data: User.factory().createOne().only(hasTimestamps.getUpdatedAtName()) };
+            fetchMock.resetMocks();
+            fetchMock.mockResponseOnce(newUpdatedAt);
             await hasTimestamps.touch();
 
             expect(hasTimestamps.getAttribute(hasTimestamps.getCreatedAtName())).toBe(createdAt);
@@ -87,8 +86,7 @@ describe('HasTimestamps', () => {
 
         it('should throw an error if updated at attribute is not in the response',  async () => {
             fetchMock.resetMocks();
-            fetchMock.mockResponseOnce(async () =>
-                Promise.resolve(buildResponse({ createdAt: new Date().toISOString() })));
+            fetchMock.mockResponseOnce({ createdAt: new Date().toISOString() });
 
             const failingFunc = jest.fn(async () => hasTimestamps.touch());
 
@@ -136,15 +134,13 @@ describe('HasTimestamps', () => {
 
         it('should update the timestamps', async () => {
             fetchMock.resetMocks();
-            fetchMock.mockResponseOnce(async () => Promise.resolve(
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                buildResponse({ updated_at: new Date().toISOString(), created_at: new Date().toISOString() })
-            ));
 
             const createdAt = hasTimestamps.getAttribute(hasTimestamps.getCreatedAtName());
             const updatedAt = hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtName());
 
-            jest.advanceTimersByTime(1000);
+            jest.setSystemTime(new Date().setSeconds(new Date().getSeconds() + 1));
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            fetchMock.mockResponseOnce({ updated_at: new Date().toISOString(), created_at: new Date().toISOString() });
             await hasTimestamps.freshTimestamps();
 
             expect(hasTimestamps.getAttribute(hasTimestamps.getCreatedAtName())).not.toBe(createdAt);
@@ -160,8 +156,7 @@ describe('HasTimestamps', () => {
 
         it('should throw an error if created at column is not in the response',  async () => {
             fetchMock.resetMocks();
-            fetchMock.mockResponseOnce(async () =>
-                Promise.resolve(buildResponse({ updatedAt: new Date().toISOString() })));
+            fetchMock.mockResponseOnce({ updatedAt: new Date().toISOString() });
 
             const failingFunc = jest.fn(async () => hasTimestamps.freshTimestamps());
 
@@ -172,8 +167,7 @@ describe('HasTimestamps', () => {
 
         it('should throw an error if updated at column is not in the response',  async () => {
             fetchMock.resetMocks();
-            fetchMock.mockResponseOnce(async () =>
-                Promise.resolve(buildResponse({ createdAt: new Date().toISOString() })));
+            fetchMock.mockResponseOnce({ createdAt: new Date().toISOString() });
 
             const failingFunc = jest.fn(async () => hasTimestamps.freshTimestamps());
 

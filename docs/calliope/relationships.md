@@ -32,7 +32,7 @@ Then you may query as:
 ```js
 import User from '@Models/User';
 
-const user = User.create({ id: 1 });
+const user = User.make({ id: 1 });
 const shiftsWithColleagues = await user.$shifts().with('colleagues').get(); // ModelCollection
 
 await user.load('contract');
@@ -233,11 +233,11 @@ The `addRelations` method adds the relation onto the current model. It accepts t
 import User from '@Models/User';
 import Contract from '@Models/Contract';
 
-const user = User.create({ id: 1 });
+const user = User.make({ id: 1 });
 user.addRelation('shifts', { id: 1 });
 user.shifts; // ModelCollection[Shift]
 
-user.addRelation('$contract', Contract.create({ id: 1, user_id: 1 }));
+user.addRelation('$contract', Contract.make({ id: 1, user_id: 1 }));
 user.contract; // Contract
 ```
 
@@ -256,7 +256,7 @@ The `removeRelation` method removes the given relation from the model.
 ```js
 import User from '@Models/User';
 
-const user = User.create({ contract: { id: 1 } });
+const user = User.make({ contract: { id: 1 } });
 user.relationLoaded('contract'); // true
 user.removeRelation('contract').relationLoaded('$contract'); // false
 ```
@@ -268,7 +268,7 @@ The `relationLoaded` method determines whether the given relation has been loade
 ```js
 import User from '@Models/User';
 
-const user = User.create({ contract: { id: 1 } });
+const user = User.make({ contract: { id: 1 } });
 user.relationLoaded('contract'); // true
 user.relationLoaded('$shifts'); // false
 ```
@@ -301,9 +301,9 @@ The `for` method is used for [setting](./api-calls.md#setendpoint) custom endpoi
 ```js
 import User from '@Models/User';
 
-user.for(Team.create({ id: 1 })); // 'teams/1/users'
-user.for([Team.create({ id: 1 }), Contract.create({ id: 1 })]); // 'teams/1/contracts/1/users'
-user.for([new Team, Contract.create({ id: 1 })]); // 'teams/contracts/1/users'
+user.for(Team.make({ id: 1 })); // 'teams/1/users'
+user.for([Team.make({ id: 1 }), Contract.make({ id: 1 })]); // 'teams/1/contracts/1/users'
+user.for([new Team, Contract.make({ id: 1 })]); // 'teams/contracts/1/users'
 user.for([Team, Contract]); // teams/contracts/users
 ```
 

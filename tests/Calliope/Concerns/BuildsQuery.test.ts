@@ -219,7 +219,7 @@ describe('BuildsQuery', () => {
         });
 
         it('should be able to be called statically', () => {
-            // this method will be available when its called from the Model
+            // this method will be available when it's called from the Model
             BuildsQuery.prototype.getKeyName = () => 'id';
             expect(BuildsQuery.whereKey('1')).toBeInstanceOf(BuildsQuery);
         });
@@ -281,7 +281,7 @@ describe('BuildsQuery', () => {
         });
 
         it('should be able to be called statically', () => {
-            // this method will be available when its called from the Model
+            // this method will be available when it's called from the Model
             BuildsQuery.prototype.getKeyName = () => 'id';
             expect(BuildsQuery.whereKeyNot('1')).toBeInstanceOf(BuildsQuery);
         });

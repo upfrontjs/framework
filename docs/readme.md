@@ -18,5 +18,5 @@ features:
 <h3 style="text-align: center;">Supported by</h3>
 
 <div style="text-align: center;">
-    <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg">
+    <img alt="Jet Brains logo" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg">
 </div>

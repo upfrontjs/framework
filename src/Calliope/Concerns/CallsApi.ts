@@ -168,7 +168,7 @@ export default class CallsApi extends BuildsQuery {
     /**
      * Send a GET request to the endpoint.
      *
-     * @param {object=} queryParameters} - append and/or overwrite query parameter values.
+     * @param {object=} queryParameters - append and/or overwrite query parameter values.
      *
      * @return {Promise<Model|ModelCollection<Model>>}
      */

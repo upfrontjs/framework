@@ -13,8 +13,8 @@ Models have been given powerful tools to manage data without involved logic and 
 Casting transforms values when accessing or setting attributes on a model.
 To define the casters on your model you should define a getter for the `casts` property.
 
-<code-group>
-<code-block title="Javascript">
+<CodeGroup>
+<CodeGroupItem title="Javascript">
 ```js
 // User.js
 import { Model } from '@upfrontjs/framework';
@@ -27,9 +27,9 @@ export default class User extends Model {
     }
 }
 ```
-</code-block>
+</CodeGroupItem>
 
-<code-block title="Typescript">
+<CodeGroupItem title="Typescript">
 ```ts
 // User.ts
 import { Model } from '@upfrontjs/framework';
@@ -44,8 +44,8 @@ export default class User extends Model {
     }
 }
 ```
-</code-block>
-</code-group>
+</CodeGroupItem>
+</CodeGroup>
 
 **The following cast types are available:**
 
@@ -72,8 +72,8 @@ Cast the values to the [given date time](../helpers/global-config.md#datetime) b
 
 This is an object which implements the `AttributeCaster` type. Meaning it has a `get` and a `set` method both of which accepts a value, and an `Attributes` object (the equivalent of [getRawAttributes](#getrawattributes)) argument.
 
-<code-group>
-<code-block title="Javascript">
+<CodeGroup>
+<CodeGroupItem title="Javascript">
 ```js
 // User.js
 import { Model } from '@upfrontjs/framework';
@@ -93,9 +93,9 @@ export default class User extends Model {
     }
 }
 ```
-</code-block>
+</CodeGroupItem>
 
-<code-block title="Typescript">
+<CodeGroupItem title="Typescript">
 ```ts
 // User.ts
 import { Model } from '@upfrontjs/framework';
@@ -116,8 +116,8 @@ export default class User extends Model {
     }
 }
 ```
-</code-block>
-</code-group>
+</CodeGroupItem>
+</CodeGroup>
 
 ### Further casting methods
 
@@ -328,8 +328,8 @@ user.fullName; // 'Dr. John Doe'
 
 While some prefer to name their variables and object keys as [camelCase](../helpers/readme.md#camel) others will prefer [snake_case](../helpers/readme.md#snake) or perhaps there are different conventions between the front and back end. To accommodate such preferences you can set the `attributeCasing` getter to return either `'camel'` or `'snake'` like so:
 
-<code-group>
-<code-block title="Javascript">
+<CodeGroup>
+<CodeGroupItem title="Javascript">
 
 ```js
 // User.js
@@ -341,9 +341,9 @@ export default class User extends Model {
     }
 }
 ```
-</code-block>
+</CodeGroupItem>
 
-<code-block title="Typescript">
+<CodeGroupItem title="Typescript">
 
 ```ts
 // User.ts
@@ -355,8 +355,8 @@ export default class User extends Model {
     }
 }
 ```
-</code-block>
-</code-group>
+</CodeGroupItem>
+</CodeGroup>
 
 When using mass-assignment like the [create](./readme.md#create) and the [fill](#fill) methods, all keys of the given arguments will automatically and recursively transform to the set casing. e.g.: `user.fill({ some_value: 1 }).someValue; // 1`
 The default value is `'camel'`. This can be counteracted by the [serverAttributeCasing](./api-calls.md#serverattributecasing) getter method when sending data to the server.

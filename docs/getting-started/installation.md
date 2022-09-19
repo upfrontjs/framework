@@ -1,18 +1,18 @@
 # Installation
 
-<code-group>
-<code-block title="npm">
+<CodeGroup>
+<CodeGroupItem title="npm">
 ```shell
 npm install @upfrontjs/framework
 ```
-</code-block>
+</CodeGroupItem>
 
-<code-block title="yarn">
+<CodeGroupItem title="yarn">
 ```shell
 yarn install @upfrontjs/framework
 ```
-</code-block>
-</code-group>
+</CodeGroupItem>
+</CodeGroup>
 
 The library is transpiled to ES6 (currently the lowest supported version), but if you're using [Typescript](https://www.typescriptlang.org/), you could choose to use the source `.ts` files. To do so, import files from `/src` folder as opposed to the library root.
 ```js

@@ -52,8 +52,8 @@ If you're thinking about creating your own service, for reference you may check 
 Creating a service is easy as:
 
 
-<code-group>
-<code-block title="Javascript">
+<CodeGroup>
+<CodeGroupItem title="Javascript">
 
 ```js
 // MyHandler.js
@@ -79,9 +79,9 @@ new GlobalConfig({
     apiResponseHandler: MyHandler,
 })
 ```
-</code-block>
+</CodeGroupItem>
 
-<code-block title="Typescript">
+<CodeGroupItem title="Typescript">
 
 ```ts
 // MyHandler.ts
@@ -109,14 +109,14 @@ new GlobalConfig({
     apiResponseHandler: MyHandler,
 })
 ```
-</code-block>
-</code-group>
+</CodeGroupItem>
+</CodeGroup>
 
 #### Extending Services
 If you just want to extend a service to add some functionality like adding [initRequest()](./api.md#initrequest) to the [API](./api.md), that can be achieved like so:
 
-<code-group>
-<code-block title="Javascript">
+<CodeGroup>
+<CodeGroupItem title="Javascript">
 
 ```js
 // MyHandler.js
@@ -136,9 +136,9 @@ new GlobalConfig({
     apiResponseHandler: MyHandler,
 })
 ```
-</code-block>
+</CodeGroupItem>
 
-<code-block title="Typescript">
+<CodeGroupItem title="Typescript">
 
 ```ts
 // MyHandler.ts
@@ -158,7 +158,7 @@ new GlobalConfig({
     apiResponseHandler: MyHandler,
 })
 ```
-</code-block>
-</code-group>
+</CodeGroupItem>
+</CodeGroup>
 
 You can find examples of testing custom services in the [Testing section](../testing/readme.md#testing-service-implementations).

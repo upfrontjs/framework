@@ -3,8 +3,10 @@ home: true
 heroImage: https://raw.githubusercontent.com/upfrontjs/design/main/upfrontjs.png
 heroText: 
 tagline: Data handling framework complementary to backend active record systems.
-actionText: Get Started →
-actionLink: /getting-started/
+actions:
+- text: Get Started →
+  link: /getting-started/
+  type: primary
 features:
 - title: Simple
   details: The syntax naturally lends itself to how you manage data in MVC architecture.

@@ -58,6 +58,19 @@ collection.random(2); // collection of 2 random elements
 collection.random(collection.length); // return the whole collection
 ```
 
+#### shuffle
+
+The shuffle method returns the collection with the items in a randomised order.
+
+```js
+import { Collection } from '@upfrontjs/framework';
+
+const numCollection = new Collection([1, 2, 3, 4, 5]);
+
+numCollection.shuffle(); // Collection[3, 1, 4, 2, 5]
+numCollection.shuffle(); // Collection[2, 5, 1, 4, 3]
+```
+
 #### isEmpty
 
 The `isEmpty` method determines whether the collection is empty or not.
@@ -362,7 +375,7 @@ collection.skipWhile(item => item <= 2); // Collection[3, 4, 5]
 
 #### pluck
 
-When all items in the collections are objects then you may use to The `pluck` method to get certain attributes in a collection or multiple attributes in a collection of objects 
+When all items in the collections are objects then you may use to The `pluck` method to get certain attributes in a collection or multiple attributes in a collection of objects. Similarly to [dataGet](./readme.md#dataget) You may also use dot notation.
 ```js
 import { Collection } from '@upfrontjs/framework';
 

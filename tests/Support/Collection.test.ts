@@ -623,6 +623,24 @@ describe('Collection', () => {
         });
     });
 
+    describe('shuffle()', () => {
+        it('should return the collection in a randomised order', () => {
+            const numCollection = new Collection([1, 2, 3, 4, 5]);
+
+            expect(numCollection.shuffle()).not.toStrictEqual(collection);
+        });
+
+        it('should have valid indices and length', () => {
+            const numCollection = new Collection([1, 2, 3, 4, 5]);
+
+            expect(numCollection).toHaveLength(5);
+
+            for (let i = 0; i < 5; i++) {
+                expect(numCollection[i]).toBeDefined();
+            }
+        });
+    });
+
     describe('union()', () => {
         const elements = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }];
 

@@ -169,6 +169,21 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
     }
 
     /**
+     * Randomise the order of elements in the collection using the
+     * {@link https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm|Durstenfeld algorithm}.
+     */
+    public shuffle(): this {
+        const items = this.toArray();
+
+        for (let i = items.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [items[i], items[j]] = [items[j]!, items[i]!];
+        }
+
+        return this._newInstance(items);
+    }
+
+    /**
      * Assert whether the collection
      * is empty or not.
      *

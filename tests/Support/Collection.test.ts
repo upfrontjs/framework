@@ -1081,6 +1081,25 @@ describe('Collection', () => {
             collection = new Collection(elements);
             expect(collection.pluck('id').toArray()).toHaveLength(elements.length);
         });
+
+        it('should work with nested collections', () => {
+            const nestedCollection = new Collection([
+                new Collection([1, 2]),
+                new Collection([3, 4])
+            ]);
+
+            expect(nestedCollection.pluck('1')).toStrictEqual(new Collection([2, 4]));
+        });
+
+        it('should accept dot notation', () => {
+            const complexCollection = new Collection([
+                { topKey: 'value1', key: [{ property: 1 }, { property: 3 }] },
+                { topKey: 'value2', key: [{ property: 2 }], property: 4 }
+            ]);
+
+            console.log(complexCollection.pluck(['key.0.property', 'topKey']));
+            expect(complexCollection.pluck('key.0.property')).toStrictEqual(new Collection([1, 2]));
+        });
     });
 
     describe('isCollection()', () => {

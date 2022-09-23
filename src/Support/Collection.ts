@@ -2,7 +2,7 @@ import { isEqual, orderBy, uniq } from 'lodash';
 import type Arrayable from '../Contracts/Arrayable';
 import type Jsonable from '../Contracts/Jsonable';
 import LogicException from '../Exceptions/LogicException';
-import { isObjectLiteral } from './function';
+import { dataGet, isObjectLiteral } from './function';
 import type { MaybeArray } from './type';
 import InvalidOffsetException from '../Exceptions/InvalidOffsetException';
 
@@ -706,13 +706,13 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
             return this.map((item: Record<string, unknown>) => {
                 const obj: Record<string, unknown> = {};
 
-                properties.forEach(property => obj[property] = item[property]);
+                properties.forEach(property => obj[property] = dataGet(item, property));
 
                 return obj;
             });
         }
 
-        return this.map((item: Record<string, unknown>) => item[properties]);
+        return this.map((item: Record<string, unknown>) => dataGet(item, properties));
     }
 
     /**

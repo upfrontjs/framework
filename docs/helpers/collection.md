@@ -367,12 +367,15 @@ When all items in the collections are objects then you may use to The `pluck` me
 import { Collection } from '@upfrontjs/framework';
 
 const collection = new Collection(
-    { id: 1, name: 'name1', email: 'test1@email.com' },
-    { id: 2, name: 'name2', email: 'test2@email.com' },
-    { id: 3, name: 'name3', email: 'test3@email.com' },
+    { id: 1, name: 'name1', email: 'test1@email.com', property: { key: 'value1' } },
+    { id: 2, name: 'name2', email: 'test2@email.com', property: { key: 'value2' } },
+    { id: 3, name: 'name3', email: 'test3@email.com', property: { key: 'value3' } },
 );
 collection.pluck('name'); // Collection['name1', 'name2', 'name3']
 collection.pluck(['id', 'name']); // Collection[{ id: 1, name: 'name1' }, { id: 2, name: 'name2' }, { id: 3, name: 'name3' }]
+
+collection.pluck('property.key'); // Collection['value1', 'value2', 'value3']
+collection.pluck(['property.key', 'id']); // Collection[{ id: 1, 'property.key': 'value1' }, { id: 2, 'property.key': 'value2' }, { id: 3, 'property.key': 'value3' }]
 ```
 
 #### tap

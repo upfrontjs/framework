@@ -3,10 +3,10 @@ import FactoryBuilder from './Factory/FactoryBuilder';
 import type HasFactory from '../Contracts/HasFactory';
 import type { Attributes, AttributeKeys, SimpleAttributes } from './Concerns/HasAttributes';
 import ModelCollection from './ModelCollection';
-import { finish } from '../Support/string';
+import finish from '../Support/string/finish';
 import type { MaybeArray, StaticToThis } from '../Support/type';
 import { cloneDeep } from 'lodash';
-import { isObjectLiteral } from '../Support/function';
+import isObjectLiteral from '../Support/function/isObjectLiteral';
 
 export default class Model extends SoftDeletes implements HasFactory {
     /**

@@ -2,7 +2,8 @@ import { isEqual, orderBy, uniq } from 'lodash';
 import type Arrayable from '../Contracts/Arrayable';
 import type Jsonable from '../Contracts/Jsonable';
 import LogicException from '../Exceptions/LogicException';
-import { dataGet, isObjectLiteral } from './function';
+import dataGet from './function/dataGet';
+import isObjectLiteral from './function/isObjectLiteral';
 import type { MaybeArray } from './type';
 import InvalidOffsetException from '../Exceptions/InvalidOffsetException';
 

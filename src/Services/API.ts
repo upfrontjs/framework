@@ -1,8 +1,8 @@
 import type ApiCaller from '../Contracts/ApiCaller';
 import qs from 'qs';
-import { isObjectLiteral } from '../Support/function';
+import isObjectLiteral from '../Support/function/isObjectLiteral';
 import GlobalConfig from '../Support/GlobalConfig';
-import { finish } from '../Support/string';
+import finish from '../Support/string/finish';
 import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
 import type { Method, CustomHeaders } from '../Calliope/Concerns/CallsApi';
 import type { ApiResponse } from '../Contracts/HandlesApiResponse';

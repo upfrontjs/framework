@@ -1,7 +1,7 @@
 import HasRelations from './HasRelations';
 import type Model from '../Model';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
-import { finish } from '../../Support/string';
+import finish from '../../Support/string/finish';
 import LogicException from '../../Exceptions/LogicException';
 
 export default class HasTimestamps extends HasRelations {

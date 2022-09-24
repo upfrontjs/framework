@@ -136,8 +136,8 @@ describe('function helpers', () => {
         });
 
         it('should wait the the given number of ms before the next attempt', async () => {
-            // on node@16 on some architectures (?) it's possible that the runtime is marginally lss than 20ms
-            // not sure why...
+            // on node@16 on some architectures (?) it's possible that the runtime is marginally less than 20ms
+            // when using real timers, not sure why...
             jest.useFakeTimers({ advanceTimers: 5 });
             const startTime = performance.now();
             await func.retry(async () => tryFunc(3), 3, 10);

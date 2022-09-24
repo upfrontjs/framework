@@ -4,11 +4,10 @@ import API from '../../../src/Services/API';
 import ApiResponseHandler from '../../../src/Services/ApiResponseHandler';
 import User from '../../mock/Models/User';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
-import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
 import { config } from '../../setupTests';
-import type Collection from '../../../src/Support/Collection';
 import { snake, finish } from '../../../src/Support/string';
 import type RequestMiddleware from '../../../src/Contracts/RequestMiddleware';
+import transformKeys from '../../../src/Support/function/transformKeys';
 
 let caller: User;
 
@@ -385,15 +384,15 @@ describe('CallsApi', () => {
 
         it('should construct a model collection on array argument', () => {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-            const userData = User.factory().raw() as Attributes;
+            const userData = User.factory().rawOne();
             //@ts-expect-error
-            expect(caller.newInstanceFromResponseData([userData]) as ModelCollection<User>)
+            expect(caller.newInstanceFromResponseData([userData]))
                 .toStrictEqual(new ModelCollection([User.make(userData).setLastSyncedAt()]));
         });
 
         it('should force fill the models from the response', () => {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-            const userData = User.factory().raw() as Attributes;
+            const userData = User.factory().rawOne();
             const expectedUser = User.make(userData);
 
             // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
@@ -402,7 +401,7 @@ describe('CallsApi', () => {
             User.prototype.getFillable = () => [];
 
             //@ts-expect-error
-            const callerModel = caller.newInstanceFromResponseData(userData) as caller;
+            const callerModel = caller.newInstanceFromResponseData(userData);
 
             expect(callerModel.getAttributes()).toStrictEqual(expectedUser.getAttributes());
             expect(callerModel.getRawOriginal()).toStrictEqual(expectedUser.getRawOriginal());
@@ -411,14 +410,14 @@ describe('CallsApi', () => {
         });
 
         it('should set _lastSyncedAt or _last_synced_at getter on the model or model collection', () => {
-            const userData = User.factory().raw() as Attributes;
+            const userData = User.factory().rawOne();
 
             //@ts-expect-error
-            const user = caller.newInstanceFromResponseData(userData) as User;
+            const user = caller.newInstanceFromResponseData(userData);
             // @ts-expect-error
             expect(user['_' + String(user.setStringCase('last_synced_at'))]).toStrictEqual(new Date);
 
-            const usersData = User.factory().times(2).raw() as Collection<Attributes>;
+            const usersData = User.factory().times(2).rawMany();
 
             // @ts-expect-error
             const users = caller.newInstanceFromResponseData(usersData.toArray());
@@ -516,7 +515,7 @@ describe('CallsApi', () => {
 
     describe('get()', () => {
         it('should send a GET request', async () => {
-            const user = User.factory().create() as User;
+            const user = User.factory().createOne();
             fetchMock.mockResponseOnce(user);
 
             await caller.get();
@@ -524,7 +523,7 @@ describe('CallsApi', () => {
         });
 
         it('should return a promise with new model or model collection', async () => {
-            const user = User.factory().create() as User;
+            const user = User.factory().createOne();
             fetchMock.mockResponseOnce(user);
 
             const data = await caller.get();
@@ -569,12 +568,12 @@ describe('CallsApi', () => {
         });
 
         it('should works statically', async () => {
-            const user = User.factory().create() as User;
-            fetchMock.mockResponseOnce(user);
+            const user = User.factory().createOne().getAttributes();
+            fetchMock.mockResponseOnce(transformKeys(user));
 
-            const data = await User.get();
+            const data = (await User.get()) as User;
 
-            expect(data).toStrictEqual(user);
+            expect(data.getAttributes()).toStrictEqual(user);
         });
 
         it('should unwrap data if response comes data wrapped', async () => {
@@ -601,8 +600,8 @@ describe('CallsApi', () => {
         });
 
         it('should return this or new model depending on the response', async () => {
-            const responseUser = User.factory().create() as User;
-            const callerUser = User.factory().create() as User;
+            const responseUser = User.factory().createOne();
+            const callerUser = User.factory().createOne();
 
             // if response returns model data
             fetchMock.mockResponseOnce(responseUser);
@@ -642,8 +641,8 @@ describe('CallsApi', () => {
         });
 
         it('should return this or new model depending on the response', async () => {
-            const responseUser = User.factory().create() as User;
-            const callerUser = User.factory().create() as User;
+            const responseUser = User.factory().createOne();
+            const callerUser = User.factory().createOne();
 
             // if response returns model data
             fetchMock.mockResponseOnce(responseUser);
@@ -683,8 +682,8 @@ describe('CallsApi', () => {
         });
 
         it('should return this or new model depending on the response', async () => {
-            const responseUser = User.factory().create() as User;
-            const callerUser = User.factory().create() as User;
+            const responseUser = User.factory().createOne();
+            const callerUser = User.factory().createOne();
 
             // if response returns model data
             fetchMock.mockResponseOnce(responseUser);
@@ -731,9 +730,9 @@ describe('CallsApi', () => {
         });
 
         it('should return this or new model depending on the response', async () => {
-            const responseUser = User.factory().create() as User;
+            const responseUser = User.factory().createOne();
             responseUser.usesSoftDeletes = () => false;
-            const callerUser = User.factory().create() as User;
+            const callerUser = User.factory().createOne();
             callerUser.usesSoftDeletes = () => false;
 
             // if response returns model data

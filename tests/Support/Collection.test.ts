@@ -1115,7 +1115,6 @@ describe('Collection', () => {
                 { topKey: 'value2', key: [{ property: 2 }], property: 4 }
             ]);
 
-            console.log(complexCollection.pluck(['key.0.property', 'topKey']));
             expect(complexCollection.pluck('key.0.property')).toStrictEqual(new Collection([1, 2]));
         });
     });

@@ -136,6 +136,8 @@ describe('function helpers', () => {
         });
 
         it('should wait the the given number of ms before the next attempt', async () => {
+            // on node@16 on some architectures (?) it's possible that the runtime is marginally lss than 20ms
+            // not sure why...
             jest.useFakeTimers({ advanceTimers: 5 });
             const startTime = performance.now();
             await func.retry(async () => tryFunc(3), 3, 10);
@@ -147,7 +149,7 @@ describe('function helpers', () => {
         });
 
         it('should accept a closure for timeout and should pass the attempt number to it', async () => {
-            jest.useFakeTimers({ advanceTimers: 5 });
+            jest.useRealTimers();
             const mock = jest.fn(() => 10);
 
             await func.retry(async () => tryFunc(3), 3, mock);

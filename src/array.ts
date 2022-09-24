@@ -1,7 +1,8 @@
 import type Collection from './Support/Collection';
 import type Paginator from './Support/Paginator';
-import { collect, paginate } from './Support/initialiser';
-import { wrap } from './Support/array';
+import collect from './Support/initialiser/collect';
+import paginate from './Support/initialiser/paginate';
+import wrap from './Support/array/wrap';
 
 declare global {
     /**

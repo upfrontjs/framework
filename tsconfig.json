@@ -1,13 +1,9 @@
 {
     "compilerOptions": {
-        "declaration": true,
-        "declarationDir": "types",
-        "declarationMap": true,
         "importHelpers": true,
         "module": "ESNext",
         "sourceMap": true,
         "downlevelIteration": true,
-        "incremental": true,
         "isolatedModules": true,
         "esModuleInterop": true,
         "lib": [

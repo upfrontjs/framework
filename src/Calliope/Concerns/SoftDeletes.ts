@@ -1,7 +1,7 @@
 import HasTimestamps from './HasTimestamps';
 import type Model from '../Model';
 import LogicException from '../../Exceptions/LogicException';
-import { finish } from '../../Support/string';
+import finish from '../../Support/string/finish';
 import type { SimpleAttributes } from './HasAttributes';
 
 export default class SoftDeletes extends HasTimestamps {

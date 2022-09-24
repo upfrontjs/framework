@@ -136,7 +136,7 @@ describe('function helpers', () => {
         });
 
         it('should wait the the given number of ms before the next attempt', async () => {
-            jest.useRealTimers();
+            jest.useFakeTimers({ advanceTimers: 5 });
             const startTime = performance.now();
             await func.retry(async () => tryFunc(3), 3, 10);
 
@@ -147,7 +147,7 @@ describe('function helpers', () => {
         });
 
         it('should accept a closure for timeout and should pass the attempt number to it', async () => {
-            jest.useRealTimers();
+            jest.useFakeTimers({ advanceTimers: 5 });
             const mock = jest.fn(() => 10);
 
             await func.retry(async () => tryFunc(3), 3, mock);

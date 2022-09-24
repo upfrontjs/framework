@@ -18,9 +18,9 @@ In the documentation simple and concise examples are favoured to avoid too much 
 #### Extend the collections to fit your needs.
 Don't be afraid of changing and overriding methods if that solves your problem. The aim is to make development a breeze.
 
-<code-group>
+<CodeGroup>
 
-<code-block title="Javascript">
+<CodeGroupItem title="Javascript">
 
 ```js
 // UserCollection.js
@@ -52,9 +52,9 @@ if (users.areAwake().length === modelCollection.length) {
     console.log('Oh no, somebody\'s not ready yet!');
 }
 ```
-</code-block>
+</CodeGroupItem>
 
-<code-block title="Typescript">
+<CodeGroupItem title="Typescript">
 
 ```ts
 // UserCollection.ts
@@ -86,9 +86,9 @@ if (users.areAwake().length === modelCollection.length) {
     console.log('Oh no, somebody\'s not ready yet!');
 }
 ```
-</code-block>
+</CodeGroupItem>
 
-</code-group>
+</CodeGroup>
 
 ---
 

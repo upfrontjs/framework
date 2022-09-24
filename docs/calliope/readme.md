@@ -12,9 +12,9 @@ The model is at the hearth of this package. It boasts a lot of features, so they
 
 To create a model, you should first define your model class and define the [getName](#getname) method:
 
-<code-group>
+<CodeGroup>
 
-<code-block title="Javascript">
+<CodeGroupItem title="Javascript">
 
 ```js
 // User.js
@@ -26,9 +26,9 @@ export default class User extends Model {
     }
 }
 ```
-</code-block>
+</CodeGroupItem>
 
-<code-block title="Typescript">
+<CodeGroupItem title="Typescript">
 
 ```ts
 // User.ts
@@ -40,9 +40,9 @@ export default class User extends Model {
     }
 }
 ```
-</code-block>
+</CodeGroupItem>
 
-</code-group>
+</CodeGroup>
 
 Then you can call your model in various way, for example
 ```js

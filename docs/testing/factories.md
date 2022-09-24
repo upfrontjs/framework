@@ -1,11 +1,11 @@
-## Factories
+# Factories
 
 To make testing your code easier with real data independent of your back end, upfront provides factories. With factories, you can construct [models](../calliope/readme.md) hydrated with data that you have defined and/or using a random data generator like [ChanceJs](https://chancejs.com/) set in your [configuration](../helpers/global-config.md#randomdatagenerator). With the  factory defined, construction of a model is easy as `User.factory().create()`
 
 To define a factory what you need to do is extend UpfrontJS' `Factory` in you class, implement the [definition](#definition) method, then in you model create a `factory()` method which returns your constructed factory.
 
-<code-group>
-<code-block title="Javascript">
+<CodeGroup>
+<CodeGroupItem title="Javascript">
 
 ```js
 // UserFactory.js
@@ -34,9 +34,9 @@ export default User extends Model {
     }
 }
 ```
-</code-block>
+</CodeGroupItem>
 
-<code-block title="Typescript">
+<CodeGroupItem title="Typescript">
 
 ```ts
 // UserFactory.ts
@@ -67,8 +67,8 @@ export default User extends Model {
     }
 }
 ```
-</code-block>
-</code-group>
+</CodeGroupItem>
+</CodeGroup>
 
 #### definition
 The `definition` is the only required method on the factory. This base definition will be used by all your factory calls.
@@ -115,8 +115,8 @@ States are a way to encapsulate some changes to the return value of your [defini
 
 To define a state in your factory add a method with your state name:
 
-<code-group>
-<code-block title="Javascript">
+<CodeGroup>
+<CodeGroupItem title="Javascript">
 
 ```js
 // UserFactory.js
@@ -136,9 +136,9 @@ export default UserFactory extends Factory {
     }
 }
 ```
-</code-block>
+</CodeGroupItem>
 
-<code-block title="Typescript">
+<CodeGroupItem title="Typescript">
 
 ```ts
 // UserFactory.ts
@@ -160,9 +160,9 @@ export default UserFactory extends Factory<User> {
     }
 }
 ```
-</code-block>
+</CodeGroupItem>
 
-</code-group>
+</CodeGroup>
 
 Then call your state like: `User.factory().state('nameOverride').create()` For more instructions on how to use the method see [state](#state).
 
@@ -171,8 +171,8 @@ Then call your state like: `User.factory().state('nameOverride').create()` For m
 Factory hooks are methods that called when creating the models. There are two available hooks: `afterMaking` and `afterCreating`.
 These hooks if implemented in your [factory](#factories) will receive the result of the builder at their respective times. As these are passed by reference you, can change their values to your liking without having to return it.
 
-<code-group>
-<code-block title="Javascript">
+<CodeGroup>
+<CodeGroupItem title="Javascript">
 
 ```js
 // UserFactory.js
@@ -194,9 +194,9 @@ export default UserFactory extends Factory {
     }
 }
 ```
-</code-block>
+</CodeGroupItem>
 
-<code-block title="Typescript">
+<CodeGroupItem title="Typescript">
 
 ```ts
 // UserFactory.ts
@@ -220,9 +220,9 @@ export default UserFactory extends Factory<User> {
     }
 }
 ```
-</code-block>
+</CodeGroupItem>
 
-</code-group>
+</CodeGroup>
 
 #### `random`
 

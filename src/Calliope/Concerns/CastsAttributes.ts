@@ -5,7 +5,8 @@ import type AttributeCaster from '../../Contracts/AttributeCaster';
 import GlobalConfig from '../../Support/GlobalConfig';
 import type { Attributes, AttributeKeys } from './HasAttributes';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
-import { isUserLandClass, isObjectLiteral } from '../../Support/function';
+import isObjectLiteral from '../../Support/function/isObjectLiteral';
+import isUserLandClass from '../../Support/function/isUserLandClass';
 import type Model from '../Model';
 
 type BuiltInCastType = 'boolean' | 'collection' | 'datetime' | 'number' | 'string';

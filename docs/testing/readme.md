@@ -6,8 +6,9 @@ Upfront is fully tested to give as much confidence in the code as possible. To c
 Swapping out [services](../services/readme.md) of upfront is easy as setting them in the [GlobalConfig](../helpers/global-config.md).
 For example if you want to test your custom method you added to a model, you could do something similar to the following:
 
-<code-group>
-<code-block title="Javascript">
+<CodeGroup>
+
+<CodeGroupItem title="Javascript">
 
 ```js
 import { GlobalConfig } from '@upfrontjs/framework';
@@ -29,9 +30,9 @@ describe('customAjaxMethod()', () => {
     });
 });
 ```
-</code-block>
+</CodeGroupItem>
 
-<code-block title="Typescript">
+<CodeGroupItem title="Typescript">
 
 ```ts
 import { GlobalConfig } from '@upfrontjs/framework';
@@ -55,5 +56,7 @@ describe('customAjaxMethod()', () => {
     });
 });
 ```
-</code-block>
-</code-group>
+
+</CodeGroupItem>
+
+</CodeGroup>

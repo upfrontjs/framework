@@ -4,9 +4,12 @@ import GuardsAttributes from './GuardsAttributes';
 import type HasRelations from './HasRelations';
 import type Model from '../Model';
 import type ModelCollection from '../ModelCollection';
-import { isObjectLiteral, transformKeys } from '../../Support/function';
+import isObjectLiteral from '../../Support/function/isObjectLiteral';
+import transformKeys from '../../Support/function/transformKeys';
 import Collection from '../../Support/Collection';
-import { camel, pascal, snake } from '../../Support/string';
+import camel from '../../Support/string/camel';
+import pascal from '../../Support/string/pascal';
+import snake from '../../Support/string/snake';
 import type { KeysNotMatching, MaybeArray } from '../../Support/type';
 
 // eslint-disable-next-line max-len

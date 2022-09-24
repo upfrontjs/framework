@@ -6,8 +6,9 @@ import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
 import GlobalConfig from '../../Support/GlobalConfig';
 import Collection from '../../Support/Collection';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
-import { isUserLandClass } from '../../Support/function';
-import { plural, singular } from '../../Support/string';
+import isUserLandClass from '../../Support/function/isUserLandClass';
+import plural from '../../Support/string/plural';
+import singular from '../../Support/string/singular';
 import type Configuration from '../../Contracts/Configuration';
 import type { MaybeArray } from '../../Support/type';
 

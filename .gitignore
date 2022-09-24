@@ -1,16 +1,18 @@
 # compiled output
 api-docs
-index.*.js*
-array.*.js*
-string.*.js*
+index.*.*js*
+array.*.*js*
+string.*.*js*
 types
 *.tgz
+
 # in case gh-pages manually managed
 index.html
 modules.html
 interfaces/
 classes/
 assets/
+functions/
 .nojekyll
 
 # testing

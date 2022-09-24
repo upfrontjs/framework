@@ -6,7 +6,10 @@ import InvalidOffsetException from '../../Exceptions/InvalidOffsetException';
 import type { Attributes } from './HasAttributes';
 import Collection from '../../Support/Collection';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
-import { finish, plural, snake, start } from '../../Support/string';
+import finish from '../../Support/string/finish';
+import plural from '../../Support/string/plural';
+import snake from '../../Support/string/snake';
+import start from '../../Support/string/start';
 import { cloneDeep } from 'lodash';
 import type { MaybeArray } from '../../Support/type';
 

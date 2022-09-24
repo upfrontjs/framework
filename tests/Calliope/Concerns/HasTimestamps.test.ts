@@ -1,7 +1,7 @@
 import User from '../../mock/Models/User';
 import fetchMock, { getLastRequest } from '../../mock/fetch-mock';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
-import { config } from '../../setupTests';
+import { config, now } from '../../setupTests';
 import { start, finish } from '../../../src';
 import LogicException from '../../../src/Exceptions/LogicException';
 
@@ -74,8 +74,8 @@ describe('HasTimestamps', () => {
             const createdAt = hasTimestamps.getAttribute(hasTimestamps.getCreatedAtName());
             const updatedAt = hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtName());
 
-            jest.setSystemTime(new Date().setSeconds(new Date().getSeconds() + 1));
-            const newUpdatedAt = { data: User.factory().createOne().only(hasTimestamps.getUpdatedAtName()) };
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            const newUpdatedAt = { data: {  updated_at: new Date(now.getSeconds() + 1).toISOString() } };
             fetchMock.resetMocks();
             fetchMock.mockResponseOnce(newUpdatedAt);
             await hasTimestamps.touch();
@@ -138,9 +138,12 @@ describe('HasTimestamps', () => {
             const createdAt = hasTimestamps.getAttribute(hasTimestamps.getCreatedAtName());
             const updatedAt = hasTimestamps.getAttribute(hasTimestamps.getUpdatedAtName());
 
-            jest.setSystemTime(new Date().setSeconds(new Date().getSeconds() + 1));
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            fetchMock.mockResponseOnce({ updated_at: new Date().toISOString(), created_at: new Date().toISOString() });
+            fetchMock.mockResponseOnce({
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                updated_at: new Date(now.getSeconds() + 1).toISOString(),
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                created_at: new Date(now.getSeconds() + 1).toISOString()
+            });
             await hasTimestamps.freshTimestamps();
 
             expect(hasTimestamps.getAttribute(hasTimestamps.getCreatedAtName())).not.toBe(createdAt);

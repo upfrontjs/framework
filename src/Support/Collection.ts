@@ -2,7 +2,8 @@ import { isEqual, orderBy, uniq } from 'lodash';
 import type Arrayable from '../Contracts/Arrayable';
 import type Jsonable from '../Contracts/Jsonable';
 import LogicException from '../Exceptions/LogicException';
-import { isObjectLiteral } from './function';
+import dataGet from './function/dataGet';
+import isObjectLiteral from './function/isObjectLiteral';
 import type { MaybeArray } from './type';
 import InvalidOffsetException from '../Exceptions/InvalidOffsetException';
 
@@ -166,6 +167,21 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
         const randomIndex = Math.floor(Math.random() * this.length);
 
         return this[randomIndex];
+    }
+
+    /**
+     * Randomise the order of elements in the collection using the
+     * {@link https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm|Durstenfeld algorithm}.
+     */
+    public shuffle(): this {
+        const items = this.toArray();
+
+        for (let i = items.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [items[i], items[j]] = [items[j]!, items[i]!];
+        }
+
+        return this._newInstance(items);
     }
 
     /**
@@ -706,13 +722,13 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
             return this.map((item: Record<string, unknown>) => {
                 const obj: Record<string, unknown> = {};
 
-                properties.forEach(property => obj[property] = item[property]);
+                properties.forEach(property => obj[property] = dataGet(item, property));
 
                 return obj;
             });
         }
 
-        return this.map((item: Record<string, unknown>) => item[properties]);
+        return this.map((item: Record<string, unknown>) => dataGet(item, properties));
     }
 
     /**

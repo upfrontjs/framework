@@ -7,8 +7,11 @@ import type Model from '../Model';
 import type { QueryParams } from './BuildsQuery';
 import BuildsQuery from './BuildsQuery';
 import type { Attributes, SimpleAttributes } from './HasAttributes';
-import { isObjectLiteral, transformKeys } from '../../Support/function';
-import { finish, kebab, plural } from '../../Support/string';
+import isObjectLiteral from '../../Support/function/isObjectLiteral';
+import transformKeys from '../../Support/function/transformKeys';
+import finish from '../../Support/string/finish';
+import kebab from '../../Support/string/kebab';
+import plural from '../../Support/string/plural';
 import type { MaybeArray, StaticToThis } from '../../Support/type';
 
 /**
@@ -168,7 +171,7 @@ export default class CallsApi extends BuildsQuery {
     /**
      * Send a GET request to the endpoint.
      *
-     * @param {object=} queryParameters} - append and/or overwrite query parameter values.
+     * @param {object=} queryParameters - append and/or overwrite query parameter values.
      *
      * @return {Promise<Model|ModelCollection<Model>>}
      */

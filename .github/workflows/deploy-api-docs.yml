@@ -24,10 +24,13 @@ jobs:
         run: |
           git config --global user.email "nandor.kraszlan@gmail.com"
           git config --global user.name "Nandor Kraszlan"
+          rm -rf types/
           cp -r ./api-docs/* ./
           git add -f assets
           git add -f classes
           git add -f interfaces
+          git add -f functions
+          git add -f types
           touch .nojekyll
           git add -f .nojekyll
           git add -f index.html
@@ -35,5 +38,4 @@ jobs:
           git commit -m "Updates from ${{ github.ref }} - {{ github.sha }}" --no-verify
           git fetch
           git switch gh-pages
-          git branch -r
           git push gh-pages

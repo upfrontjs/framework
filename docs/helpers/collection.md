@@ -58,6 +58,19 @@ collection.random(2); // collection of 2 random elements
 collection.random(collection.length); // return the whole collection
 ```
 
+#### shuffle
+
+The shuffle method returns the collection with the items in a randomised order.
+
+```js
+import { Collection } from '@upfrontjs/framework';
+
+const numCollection = new Collection([1, 2, 3, 4, 5]);
+
+numCollection.shuffle(); // Collection[3, 1, 4, 2, 5]
+numCollection.shuffle(); // Collection[2, 5, 1, 4, 3]
+```
+
 #### isEmpty
 
 The `isEmpty` method determines whether the collection is empty or not.
@@ -362,17 +375,20 @@ collection.skipWhile(item => item <= 2); // Collection[3, 4, 5]
 
 #### pluck
 
-When all items in the collections are objects then you may use to The `pluck` method to get certain attributes in a collection or multiple attributes in a collection of objects 
+When all items in the collections are objects then you may use to The `pluck` method to get certain attributes in a collection or multiple attributes in a collection of objects. Similarly to [dataGet](./readme.md#dataget) You may also use dot notation.
 ```js
 import { Collection } from '@upfrontjs/framework';
 
 const collection = new Collection(
-    { id: 1, name: 'name1', email: 'test1@email.com' },
-    { id: 2, name: 'name2', email: 'test2@email.com' },
-    { id: 3, name: 'name3', email: 'test3@email.com' },
+    { id: 1, name: 'name1', email: 'test1@email.com', property: { key: 'value1' } },
+    { id: 2, name: 'name2', email: 'test2@email.com', property: { key: 'value2' } },
+    { id: 3, name: 'name3', email: 'test3@email.com', property: { key: 'value3' } },
 );
 collection.pluck('name'); // Collection['name1', 'name2', 'name3']
 collection.pluck(['id', 'name']); // Collection[{ id: 1, name: 'name1' }, { id: 2, name: 'name2' }, { id: 3, name: 'name3' }]
+
+collection.pluck('property.key'); // Collection['value1', 'value2', 'value3']
+collection.pluck(['property.key', 'id']); // Collection[{ id: 1, 'property.key': 'value1' }, { id: 2, 'property.key': 'value2' }, { id: 3, 'property.key': 'value3' }]
 ```
 
 #### tap

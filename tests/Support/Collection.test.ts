@@ -623,6 +623,24 @@ describe('Collection', () => {
         });
     });
 
+    describe('shuffle()', () => {
+        it('should return the collection in a randomised order', () => {
+            const numCollection = new Collection([1, 2, 3, 4, 5]);
+
+            expect(numCollection.shuffle()).not.toStrictEqual(collection);
+        });
+
+        it('should have valid indices and length', () => {
+            const numCollection = new Collection([1, 2, 3, 4, 5]);
+
+            expect(numCollection).toHaveLength(5);
+
+            for (let i = 0; i < 5; i++) {
+                expect(numCollection[i]).toBeDefined();
+            }
+        });
+    });
+
     describe('union()', () => {
         const elements = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }];
 
@@ -1080,6 +1098,24 @@ describe('Collection', () => {
         it('should return a collection ready for chaining', () => {
             collection = new Collection(elements);
             expect(collection.pluck('id').toArray()).toHaveLength(elements.length);
+        });
+
+        it('should work with nested collections', () => {
+            const nestedCollection = new Collection([
+                new Collection([1, 2]),
+                new Collection([3, 4])
+            ]);
+
+            expect(nestedCollection.pluck('1')).toStrictEqual(new Collection([2, 4]));
+        });
+
+        it('should accept dot notation', () => {
+            const complexCollection = new Collection([
+                { topKey: 'value1', key: [{ property: 1 }, { property: 3 }] },
+                { topKey: 'value2', key: [{ property: 2 }], property: 4 }
+            ]);
+
+            expect(complexCollection.pluck('key.0.property')).toStrictEqual(new Collection([1, 2]));
         });
     });
 

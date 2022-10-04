@@ -14,7 +14,9 @@ Casting transforms values when accessing or setting attributes on a model.
 To define the casters on your model you should define a getter for the `casts` property.
 
 <CodeGroup>
+
 <CodeGroupItem title="Javascript">
+
 ```js
 // User.js
 import { Model } from '@upfrontjs/framework';
@@ -27,9 +29,11 @@ export default class User extends Model {
     }
 }
 ```
+
 </CodeGroupItem>
 
 <CodeGroupItem title="Typescript">
+
 ```ts
 // User.ts
 import { Model } from '@upfrontjs/framework';
@@ -44,7 +48,9 @@ export default class User extends Model {
     }
 }
 ```
+
 </CodeGroupItem>
+
 </CodeGroup>
 
 **The following cast types are available:**
@@ -73,7 +79,9 @@ Cast the values to the [given date time](../helpers/global-config.md#datetime) b
 This is an object which implements the `AttributeCaster` type. Meaning it has a `get` and a `set` method both of which accepts a value, and an `Attributes` object (the equivalent of [getRawAttributes](#getrawattributes)) argument.
 
 <CodeGroup>
+
 <CodeGroupItem title="Javascript">
+
 ```js
 // User.js
 import { Model } from '@upfrontjs/framework';
@@ -96,6 +104,7 @@ export default class User extends Model {
 </CodeGroupItem>
 
 <CodeGroupItem title="Typescript">
+
 ```ts
 // User.ts
 import { Model } from '@upfrontjs/framework';
@@ -116,7 +125,9 @@ export default class User extends Model {
     }
 }
 ```
+
 </CodeGroupItem>
+
 </CodeGroup>
 
 ### Further casting methods

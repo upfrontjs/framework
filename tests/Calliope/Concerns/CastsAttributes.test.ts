@@ -164,6 +164,11 @@ describe('CastsAttributes', () => {
             ).toStrictEqual(now.toUTCString());
         });
 
+        it('should return null when given value is null and build-in Date is used', () => {
+            caster.mergeCasts({ test: 'datetime' });
+            expect(caster.publicCastAttribute('test', null)).toBeNull();
+        });
+
         it('should cast to a datetime when cast set to datetime and Configuration set to class', () => {
             caster.mergeCasts({ test: 'datetime' });
             config.set('datetime', DateTime);

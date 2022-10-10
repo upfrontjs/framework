@@ -6,9 +6,9 @@ import { types } from '../test-helpers';
 let collection: ModelCollection<User>;
 const incompatibleElementsError = new TypeError('ModelCollection can only handle Model values.');
 
-const user1 = User.factory().create() as User;
-const user2 = User.factory().create() as User;
-const user3 = User.factory().create() as User;
+const user1 = User.factory().createOne();
+const user2 = User.factory().createOne();
+const user3 = User.factory().createOne();
 
 describe('ModelCollection', () => {
     const elements = [user1, user2, user3];

@@ -8,7 +8,7 @@ let softDeletes: User;
 
 describe('SoftDeletes', () => {
     beforeEach(() => {
-        softDeletes = User.factory().create() as User;
+        softDeletes = User.factory().createOne();
         fetchMock.resetMocks();
     });
 
@@ -132,7 +132,7 @@ describe('SoftDeletes', () => {
         });
 
         it('should throw an error if the model has not been persisted before calling the method', async () => {
-            softDeletes = User.factory().make() as User;
+            softDeletes = User.factory().makeOne();
 
             await expect(softDeletes.delete()).rejects.toThrow(new LogicException(
                 'Attempted to call delete on \'' + softDeletes.getName()
@@ -166,7 +166,7 @@ describe('SoftDeletes', () => {
 
         it('should set the deleted at attribute to null', async () => {
             // response will not include the deleted at column
-            const responseUser = User.factory().create() as User;
+            const responseUser = User.factory().createOne();
             responseUser.deleteAttribute(responseUser.getDeletedAtName()).syncOriginal();
             fetchMock.mockResponseOnce(responseUser);
 

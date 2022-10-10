@@ -270,7 +270,7 @@ describe('FactoryBuilder', () => {
 
     describe('make()', () => {
         it('should not set the id and timestamps', () => {
-            const model = factoryBuilder.make() as User;
+            const model = factoryBuilder.makeOne();
 
             expect(model[model.getUpdatedAtName()]).toBeNull();
             expect(model[model.getCreatedAtName()]).toBeNull();
@@ -287,7 +287,7 @@ describe('FactoryBuilder', () => {
         });
 
         it('should return a related model if the raw attributes given for the relation', () => {
-            const team = Team.factory().create() as Team;
+            const team = Team.factory().createOne();
             expect(
                 (factoryBuilder.make({
                     teamId: team.getKey(),
@@ -360,8 +360,8 @@ describe('FactoryBuilder', () => {
 
     describe('create()', () => {
         it('should create independent models', () => {
-            const userOne = factoryBuilder.create() as User;
-            const userTwo = factoryBuilder.create() as User;
+            const userOne = factoryBuilder.createOne();
+            const userTwo = factoryBuilder.createOne();
 
             expect(userOne).not.toStrictEqual(userTwo);
         });
@@ -390,7 +390,7 @@ describe('FactoryBuilder', () => {
         });
 
         it('should set the dates', () => {
-            const userOne = factoryBuilder.create() as User;
+            const userOne = factoryBuilder.createOne();
 
             expect(userOne.createdAt).toBeDefined();
             expect(userOne.updatedAt).toBeDefined();
@@ -399,7 +399,7 @@ describe('FactoryBuilder', () => {
 
         it('should not set the dates if they\'re disabled', () => {
             const teamFactoryBuilder = new FactoryBuilder(Team);
-            const team = teamFactoryBuilder.create() as Team;
+            const team = teamFactoryBuilder.createOne();
 
             expect(team.createdAt).toBeUndefined();
             expect(team.updatedAt).toBeUndefined();
@@ -408,7 +408,7 @@ describe('FactoryBuilder', () => {
 
         it('should set the last synced at value', () => {
             const teamFactoryBuilder = new FactoryBuilder(Team);
-            const team = teamFactoryBuilder.create() as Team;
+            const team = teamFactoryBuilder.createOne();
 
             expect(team._lastSyncedAt).toBeDefined();
         });

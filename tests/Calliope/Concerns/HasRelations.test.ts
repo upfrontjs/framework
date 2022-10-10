@@ -4,7 +4,6 @@ import LogicException from '../../../src/Exceptions/LogicException';
 import InvalidOffsetException from '../../../src/Exceptions/InvalidOffsetException';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
 import Shift from '../../mock/Models/Shift';
-import type Model from '../../../src/Calliope/Model';
 import Contract from '../../mock/Models/Contract';
 import FileModel from '../../mock/Models/FileModel';
 import fetchMock, { getLastRequest } from '../../mock/fetch-mock';
@@ -18,7 +17,7 @@ let hasRelations: User & { team?: Team };
 
 describe('HasRelations', () => {
     beforeEach(() => {
-        hasRelations = User.factory().state('withTeam').create() as User;
+        hasRelations = User.factory().state('withTeam').createOne();
     });
 
     describe('relationDefined()', () => {
@@ -215,7 +214,7 @@ describe('HasRelations', () => {
         beforeEach(() => {
             fetchMock.mockResponseOnce({
                 ...hasRelations.getRawOriginal(),
-                file: (FileModel.factory().create() as Model).getRawOriginal(),
+                file: FileModel.factory().createOne().getRawOriginal(),
                 files: FileModel.factory().times(2).createMany()
                     .map(file => file.getRawOriginal())
                     .toArray()
@@ -223,7 +222,7 @@ describe('HasRelations', () => {
         });
 
         it('should skip relations if already loaded', async () => {
-            const file = FileModel.factory().create() as FileModel;
+            const file = FileModel.factory().createOne();
             hasRelations.addRelation('file', file);
 
             await hasRelations.load('file');
@@ -270,7 +269,7 @@ describe('HasRelations', () => {
             expect(hasRelations.contract).toBeInstanceOf(Contract);
 
             // belongsTo
-            const team = Team.factory().create() as Team;
+            const team = Team.factory().createOne();
             fetchMock.mockResponseOnce(team.getRawOriginal());
             hasRelations.setAttribute('teamId', team.getKey());
             await hasRelations.load('team');
@@ -296,9 +295,11 @@ describe('HasRelations', () => {
             expect(hasRelations.shifts).toBeInstanceOf(ModelCollection);
 
             // belongsToMany
-            fetchMock.mockResponseOnce((Shift.factory().times(2).create() as unknown as ModelCollection<FileModel>)
-                .map(shift => shift.getRawOriginal())
-                .toArray());
+            fetchMock.mockResponseOnce(
+                Shift.factory().times(2).createMany()
+                    .map(shift => shift.getRawOriginal())
+                    .toArray()
+            );
             await hasRelations.load('inverseShifts');
             expect(hasRelations.inverseShifts).toBeInstanceOf(ModelCollection);
         });
@@ -329,7 +330,7 @@ describe('HasRelations', () => {
             fetchMock.resetMocks();
             fetchMock.mockResponseOnce({
                 ...hasRelations.getRawOriginal(),
-                file: (FileModel.factory().create() as Model).getRawOriginal(),
+                file: FileModel.factory().createOne().getRawOriginal(),
                 team: cloneDeep(hasRelations.team!.getRawOriginal())
             });
 
@@ -363,7 +364,7 @@ describe('HasRelations', () => {
             expect(hasRelations.for(hasRelations.team!).getEndpoint())
                 .toBe(String(hasRelations.team!.getEndpoint()) + '/' + String(hasRelations.team!.getKey()) + '/users');
 
-            const contract = Contract.factory().create() as Contract;
+            const contract = Contract.factory().createOne();
 
             expect(hasRelations.for([hasRelations.team!, contract]).getEndpoint())
                 .toBe(
@@ -377,7 +378,7 @@ describe('HasRelations', () => {
         });
 
         it('should omit the key from the endpoint if undefined', () => {
-            const contract = Contract.factory().make() as Contract;
+            const contract = Contract.factory().makeOne();
 
             expect(hasRelations.for([hasRelations.team!, contract]).getEndpoint())
                 .toBe(

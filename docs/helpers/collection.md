@@ -262,6 +262,19 @@ collection.chunkBy('parentId');
 collection.chunkBy(item => item.parentKey);
 ```
 
+#### partition
+
+The `partition` method separates the items into two collections based on the given callback's boolean value.
+```js
+import { Collection } from '@upfrontjs/framework';
+
+const collection = new Collection([1, 2, 3, 4, 5]);
+const [
+    failingPartition, // Collection([1, 2, 3]))
+    pasingPartition // Collection([4, 5])
+] = collection.partition(item => item > 3);
+```
+
 #### when
 
 The `when` method executes the given method if the first argument evaluates to true. The method has to return the collection.

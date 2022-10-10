@@ -139,17 +139,6 @@ export default class BuildsQuery extends HasAttributes {
     protected pageNumber = 0;
 
     /**
-     * The available operators.
-     *
-     * @private
-     *
-     * @type {string[]}
-     */
-    private readonly operators: Operator[] = [
-        '=', '<', '>', '<=', '>=', '!=', 'like', 'in', 'notIn', 'between', 'notBetween'
-    ];
-
-    /**
      * Return the instantiated class.
      *
      * @return {BuildsQuery}
@@ -261,7 +250,11 @@ export default class BuildsQuery extends HasAttributes {
      * @return {this}
      */
     protected addWhereConstraint(column: string, operator: Operator, value: any, boolean: BooleanOperator): this {
-        if (!this.operators.includes(operator)) {
+        const supportedOperators: Operator[] = [
+            '=', '<', '>', '<=', '>=', '!=', 'like', 'in', 'notIn', 'between', 'notBetween'
+        ];
+
+        if (!supportedOperators.includes(operator)) {
             throw new InvalidArgumentException('\'' + operator + '\' is not an expected type of operator.');
         }
 

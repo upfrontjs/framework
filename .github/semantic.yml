@@ -22,6 +22,7 @@ scopes:
   - 'collection'
   - 'model'
   - 'model-collection'
+  - 'ancestry-collection'
   - 'paginator'
   - 'factory'
   - 'query-builder'

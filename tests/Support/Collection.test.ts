@@ -847,6 +847,35 @@ describe('Collection', () => {
         });
     });
 
+    describe('partition()', () => {
+        const elements = [1, 2, 3, 4, 5];
+
+        beforeEach(() => {
+            collection = new Collection(elements);
+        });
+
+        it('should return an array of two collections', () => {
+            const partitioned = collection.partition(number => number > 3);
+
+            expect(partitioned).toHaveLength(2);
+            expect(partitioned).toBeInstanceOf(Array);
+        });
+
+        it('should return collections correctly partitioned', () => {
+            let [falsePartition, truePartition] = collection.partition(number => number > 3);
+
+            expect(falsePartition).toStrictEqual(new Collection([1, 2, 3]));
+            expect(truePartition).toStrictEqual(new Collection([4, 5]));
+
+            [falsePartition, truePartition] = collection.partition(number => number < 3);
+
+            expect(falsePartition).toStrictEqual(new Collection([3, 4, 5]));
+            expect(truePartition).toStrictEqual(new Collection([1, 2]));
+        });
+
+        it.todo('should return sub collections based on the collection constructor it was called on');
+    });
+
     describe('take()', () => {
         const elements = [1, 2, 3, 4, 5];
 
@@ -1503,7 +1532,7 @@ describe('Collection', () => {
                     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
                     .toStrictEqual(elements.lastIndexOf(elements[elements.length - 1]!));
 
-                expect(collection.lastIndexOf('something')).toStrictEqual(-1);
+                expect(collection.lastIndexOf('something')).toBe(-1);
             });
 
             it('should search for the last occurrence from the given index backwards', () => {
@@ -1733,7 +1762,7 @@ describe('Collection', () => {
             it('should return the index of the found element or -1 on not found', () => {
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
                 expect(collection.indexOf(elements[0])).toStrictEqual(elements.indexOf(elements[0]!));
-                expect(collection.indexOf('something')).toStrictEqual(-1);
+                expect(collection.indexOf('something')).toBe(-1);
             });
         });
 

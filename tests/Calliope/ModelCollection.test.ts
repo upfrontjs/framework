@@ -6,9 +6,9 @@ import { types } from '../test-helpers';
 let collection: ModelCollection<User>;
 const incompatibleElementsError = new TypeError('ModelCollection can only handle Model values.');
 
-const user1 = User.factory().create() as User;
-const user2 = User.factory().create() as User;
-const user3 = User.factory().create() as User;
+const user1 = User.factory().createOne();
+const user2 = User.factory().createOne();
+const user3 = User.factory().createOne();
 
 describe('ModelCollection', () => {
     const elements = [user1, user2, user3];
@@ -155,6 +155,9 @@ describe('ModelCollection', () => {
 
         it('should check if the collection has duplicates', () => {
             expect(collection.hasDuplicates()).toBe(true);
+
+            expect(collection.hasDuplicates(user => user.getKey())).toBe(true);
+            expect(collection.hasDuplicates('id')).toBe(true);
 
             users.pop();
             collection = new ModelCollection(users);

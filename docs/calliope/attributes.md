@@ -14,7 +14,9 @@ Casting transforms values when accessing or setting attributes on a model.
 To define the casters on your model you should define a getter for the `casts` property.
 
 <CodeGroup>
+
 <CodeGroupItem title="Javascript">
+
 ```js
 // User.js
 import { Model } from '@upfrontjs/framework';
@@ -27,9 +29,11 @@ export default class User extends Model {
     }
 }
 ```
+
 </CodeGroupItem>
 
 <CodeGroupItem title="Typescript">
+
 ```ts
 // User.ts
 import { Model } from '@upfrontjs/framework';
@@ -44,7 +48,9 @@ export default class User extends Model {
     }
 }
 ```
+
 </CodeGroupItem>
+
 </CodeGroup>
 
 **The following cast types are available:**
@@ -66,14 +72,17 @@ Casts the values to a [Collection](../helpers/collection.md) by calling the coll
 
 #### `'datetime'`
 
-Cast the values to the [given date time](../helpers/global-config.md#datetime) by calling the method or its constructor. If no date time defined in the config by default it will construct  a new [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object with the value.
+Cast the values to the [given date time](../helpers/global-config.md#datetime) by calling the method or its constructor.
+Default: If no date time defined in the config by default it will construct a new [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object with the value. This when receives a `null` value it will return `null` instead of a `Date` set to unix epoch.
 
 #### custom object
 
 This is an object which implements the `AttributeCaster` type. Meaning it has a `get` and a `set` method both of which accepts a value, and an `Attributes` object (the equivalent of [getRawAttributes](#getrawattributes)) argument.
 
 <CodeGroup>
+
 <CodeGroupItem title="Javascript">
+
 ```js
 // User.js
 import { Model } from '@upfrontjs/framework';
@@ -96,6 +105,7 @@ export default class User extends Model {
 </CodeGroupItem>
 
 <CodeGroupItem title="Typescript">
+
 ```ts
 // User.ts
 import { Model } from '@upfrontjs/framework';
@@ -116,7 +126,9 @@ export default class User extends Model {
     }
 }
 ```
+
 </CodeGroupItem>
+
 </CodeGroup>
 
 ### Further casting methods

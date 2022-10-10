@@ -156,6 +156,9 @@ describe('ModelCollection', () => {
         it('should check if the collection has duplicates', () => {
             expect(collection.hasDuplicates()).toBe(true);
 
+            expect(collection.hasDuplicates(user => user.getKey())).toBe(true);
+            expect(collection.hasDuplicates('id')).toBe(true);
+
             users.pop();
             collection = new ModelCollection(users);
 

@@ -1,8 +1,8 @@
 # Ancestry Collection
 
-Sometimes you may encounter data structures that are meant to be sorted based on their relation to each other. For example messages and their replies, folders and their sub folders, tasks and their subtasks, etc... However,sometimes the data sources might not return the data in an easily digestible structured format but a flat array.
+Sometimes you may encounter data structures that are meant to be sorted based on their relation to each other. For example messages and their replies, folders and their sub folders, tasks and their subtasks, etc... However, sometimes the data sources might not return the data in an easily digestible structured format but as a flat array.
 
-For these occasions you may use the AncestryCollection. An ancestry collection is a subclass of the [ModelCollection](./model-collection.md), therefore all methods are inherited. Keep in mind that inherited methods will be operating on the top level items as one might expect.
+For these occasions you may use the AncestryCollection. The AncestryCollection is a subclass of the [ModelCollection](./model-collection.md), therefore all methods are inherited. Keep in mind that inherited methods will be operating on the top level items as one might expect.
 
 ## Properties
 

@@ -18,6 +18,7 @@ module.exports = {
                 'collection',
                 'model',
                 'model-collection',
+                'ancestry-collection',
                 'paginator',
                 'factory',
                 'query-builder',

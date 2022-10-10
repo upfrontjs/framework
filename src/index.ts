@@ -7,6 +7,7 @@ import Factory from './Calliope/Factory/Factory';
 import ApiResponseHandler from './Services/ApiResponseHandler';
 import API from './Services/API';
 import EventEmitter from './Support/EventEmitter';
+import AncestryCollection from './Calliope/AncestryCollection';
 
 export {
     Model,
@@ -17,7 +18,8 @@ export {
     Factory,
     ApiResponseHandler,
     API,
-    EventEmitter
+    EventEmitter,
+    AncestryCollection
 };
 
 import type AttributeCaster from './Contracts/AttributeCaster';

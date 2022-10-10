@@ -373,6 +373,19 @@ const collection = new Collection([1, 2, 3, 4, 5]);
 collection.skipWhile(item => item <= 2); // Collection[3, 4, 5]
 ```
 
+#### partition
+
+The `partition` method separates the items into two collections based on the given callback's boolean value.
+```js
+import { Collection } from '@upfrontjs/framework';
+
+const collection = new Collection([1, 2, 3, 4, 5]);
+const [
+    failingPartition, // Collection([1, 2, 3]))
+    pasingPartition // Collection([4, 5])
+] = collection.partition(item => item > 3);
+```
+
 #### pluck
 
 When all items in the collections are objects then you may use to The `pluck` method to get certain attributes in a collection or multiple attributes in a collection of objects. Similarly to [dataGet](./readme.md#dataget) You may also use dot notation.
@@ -472,6 +485,7 @@ collection.toJSON(); // '{"0":1,"1":2,"2":3,"3":4,"4":5,"length":5}'
 ```
 
 #### isCollection
+<Badge text="static" type="warning"/>
 
 The `isCollection` static method is used to evaluate whether the given value is a collection.
 ```js
@@ -483,6 +497,7 @@ Collection.isCollection(1); // false
 ```
 
 #### times
+<Badge text="static" type="warning"/>
 
 The `times` static method is used to create a new collection consisting of the given value with the given number of times. A function may also be passed which will be called with the current iteration (iteration starting at 1).
 ```js

@@ -9,7 +9,7 @@ let hasTimestamps: User;
 
 describe('HasTimestamps', () => {
     beforeEach(() => {
-        hasTimestamps = User.factory().create() as User;
+        hasTimestamps = User.factory().createOne();
         fetchMock.mockResponseOnce(User.factory().create()
             .only([hasTimestamps.getCreatedAtName(), hasTimestamps.getUpdatedAtName()])
         );
@@ -110,7 +110,7 @@ describe('HasTimestamps', () => {
         });
 
         it('should throw an error if the model has not been persisted before calling the method', async () => {
-            hasTimestamps = User.factory().make() as User;
+            hasTimestamps = User.factory().makeOne();
 
             await expect(hasTimestamps.touch()).rejects.toThrow(new LogicException(
                 'Attempted to call touch on \'' + hasTimestamps.getName()
@@ -194,7 +194,7 @@ describe('HasTimestamps', () => {
         });
 
         it('should throw an error if the model has not been persisted before calling the method', async () => {
-            hasTimestamps = User.factory().make() as User;
+            hasTimestamps = User.factory().makeOne();
 
             await expect(hasTimestamps.freshTimestamps()).rejects.toThrow(new LogicException(
                 'Attempted to call freshTimestamps on \''

@@ -12,7 +12,7 @@ let user: User;
 
 describe('Model', () => {
     beforeEach(() => {
-        user = User.factory().create() as User;
+        user = User.factory().createOne();
         fetchMock.resetMocks();
     });
 
@@ -150,7 +150,7 @@ describe('Model', () => {
         });
 
         it('should clone relations', () => {
-            const team = Team.factory().create() as Team;
+            const team = Team.factory().createOne();
             user.setAttribute('teamId', team.getKey());
             user.addRelation('team', team);
 
@@ -498,7 +498,7 @@ describe('Model', () => {
         });
 
         it('should throw an error if the model not yet exists', async () => {
-            const nonExistentUser = User.factory().make() as User;
+            const nonExistentUser = User.factory().makeOne();
 
             await expect(async () => nonExistentUser.update({ myAttrs: 1 })).rejects.toThrow(
                 new LogicException(

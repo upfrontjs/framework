@@ -278,6 +278,10 @@ export default class CastsAttributes {
         }
 
         if (Object.is(Date, dateTimeLib)) {
+            if (value === null) {
+                return value;
+            }
+
             const date = new Date(value as Date | number | string);
 
             if (isNaN(date.getTime())) {

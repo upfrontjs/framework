@@ -14,7 +14,7 @@ const excellentStudentNames = students
 ```
 
 ## What does it solve?
-There are number of solutions out there for fetching data and working with the response. However not all of these might be as scalable as one would hope. With state management, you might have a getter for users, but those users include all users, meaning for a custom collection you would need a new getter method. An on-demand ajax request written specifically to solve a single issue, while it is simple to do, it quickly gets repetitive and hard to maintain. [Upfront](./installation.md) solves the above by creating abstraction over the data in a unified api. Just like the above examples it can be used to fetch data on demand or be complimentary to state management libraries.
+There are number of solutions out there for fetching data and working with the response. However not all of these might be as maintainable as one would hope. With state management, you might have a getter for users, but those users include all users, meaning for a custom collection you would need a new getter method. An on-demand ajax request written specifically to solve a single issue, while it is simple to do, it quickly gets repetitive and laborious to maintain. [Upfront](./installation.md) solves the above by creating abstraction over the data in a unified api. Just like the above examples it can be used to fetch data on demand or be complimentary to state management libraries.
 
 ## Caveats
 While using this package increases ease of access and cuts down development time, it can also have unintended consequences. By pushing more logic to the client side you may expose backend logic such as data relations. Furthermore, if you're incorrectly implementing the [backend requirements](./installation.md#backend-requirements) you may introduce vulnerabilities such as sql injection.
@@ -22,4 +22,3 @@ While using this package increases ease of access and cuts down development time
 ---
 
 As always you're encouraged to explore the [source](https://github.com/upfrontjs/framework) yourself or look at the [api reference](https://upfrontjs.github.io/framework/) to gain insight on how the package works, and the [tests](https://github.com/upfrontjs/framework/tree/main/tests) to see how it's used.
-

@@ -11,7 +11,7 @@ export default class UserFactory extends Factory<User> {
     }
 
     public withTeam(): Attributes {
-        const team = Team.factory().create() as Team;
+        const team = Team.factory().createOne();
 
         return {
             // the foreign key is required at the same time with the team as when it

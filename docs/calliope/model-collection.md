@@ -4,6 +4,8 @@ ModelCollection is a subclass of the [Collection](../helpers/collection.md), the
 
 ## Methods
 
+[[toc]]
+
 #### modelKeys
 
 The `modelKeys` method returns the [primary key](./readme.md#getkey) of the models on a Collection.
@@ -29,6 +31,7 @@ modelCollection.findByKey(43, defaultModel); // Model
 ```
 
 #### isModelCollection
+<Badge text="static" type="warning"/>
 
 The `isModelCollection` static method same as the [isCollection](../helpers/collection.md#iscollection) method on the collection, is used to evaluate that the given value is a ModelCollection.
 ```js

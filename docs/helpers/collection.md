@@ -485,6 +485,7 @@ collection.toJSON(); // '{"0":1,"1":2,"2":3,"3":4,"4":5,"length":5}'
 ```
 
 #### isCollection
+<Badge text="static" type="warning"/>
 
 The `isCollection` static method is used to evaluate whether the given value is a collection.
 ```js
@@ -496,6 +497,7 @@ Collection.isCollection(1); // false
 ```
 
 #### times
+<Badge text="static" type="warning"/>
 
 The `times` static method is used to create a new collection consisting of the given value with the given number of times. A function may also be passed which will be called with the current iteration (iteration starting at 1).
 ```js

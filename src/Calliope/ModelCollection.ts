@@ -188,7 +188,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      * @return {boolean}
      */
     public override hasDuplicates(key?: string): boolean {
-        return !!new ModelCollection(this.toArray()).duplicates(key).length;
+        return !!this.duplicates(key).length;
     }
 
     /**

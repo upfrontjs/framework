@@ -13,6 +13,7 @@ In the documentation simple and concise examples are favoured to avoid too much 
 - [Sending requests without models](#sending-requests-without-models)
 - [Alias methods](#alias-methods)
 - [Extend query builder functionality](#extend-query-builder-functionality)
+- [Using it with automated query builder packages](#using-it-with-automated-query-builder-packages)
 - [Send paginated requests](#send-paginated-requests)
 
 #### Extend the collections to fit your needs.
@@ -46,7 +47,7 @@ const users = await User.latest()
     .get()
     .then(users => new UserCollection(users.toArray()));
 
-if (users.areAwake().length === modelCollection.length) {
+if (users.areAwake().length === users.length) {
     await users.markAsReady();
 } else {
     console.log('Oh no, somebody\'s not ready yet!');
@@ -184,19 +185,21 @@ Extending/overwriting the model should not be a daunting task. If we wanted we c
 import type { FormatsQueryParameters, QueryParams, StaticToThis } from '@upfrontjs/framework';
 import { Model as BaseModel } from '@upfrontjs/framework';
 
+type Appendage = string;
+
 export default class Model extends BaseModel implements FormatsQueryParameters {
     protected appends: string[] = [];
 
-    public append(name: string): this {
+    public append(name: Appendage): this {
         this.appends.push(name);
         return this;
     }
 
-    public static append<T extends StaticToThis<Model>>(this: T, name: string): T['prototype'] {
+    public static append<T extends StaticToThis<Model>>(this: T, name: Appendage): T['prototype'] {
         this.newQuery().append(name);
     }
 
-    public withoutAppend(name: string): this {
+    public withoutAppend(name: Appendage): this {
         this.appends = this.appends.filter(appended => appended !== name);
         return this;
     }
@@ -217,6 +220,85 @@ export default class Model extends BaseModel implements FormatsQueryParameters {
 ```
 
 Now if our other models extend our own model they will have the option to set the `appends` field on the outgoing requests.
+
+#### Using it with automated query builder packages
+
+For even more convenience the package can be adjusted to be used with some sort of automated query parsing code on the backend.
+Closely similar to [query builder extending](#extend-query-builder-functionality) you may create a more generalised approach to allow setting such query params.
+
+```ts
+import type { AttributeKeys, FormatsQueryParameters, StaticToThis, QueryParams } from '@upfrontjs/framework';
+import { Model as BaseModel } from '@upfrontjs/framework';
+
+// example query parameters the back-end might be looking for.
+interface RequestParameters extends Record<string, unknown> {
+    /**
+     * Append these values if set.
+     */
+    append?: string[];
+    /**
+     * Return with these relations if set.
+     */
+    include?: (string | `${string}Count`)[];
+    /**
+     * Return only these fields if set.
+     */
+    fields?: string[];
+    /**
+     * Only return records where these filters return true when this is set.
+     */
+    filter?: Record<string, string>;
+    /**
+     * Sort by this property if set.
+     */
+    sort?: string;
+}
+
+export default class Model extends BaseModel implements FormatsQueryParameters {
+    /**
+     * The parameters that should be sent along in the next request.
+     *
+     * @protected
+     */
+    protected requestParameters: RequestParameters = {};
+
+    /**
+     * Set url parameters for the next request.
+     */
+    public withParameter(params: RequestParameters): this {
+        this.requestParameters = Object.assign(this.requestParameters, params);
+
+        return this;
+    }
+
+    /**
+     * Static version of the withParameter method.
+     *
+     * @param {RequestParameters} params
+     */
+    public static withParameters<T extends StaticToThis<Model>>(this: T, params: RequestParameters): T['prototype'] {
+        return new this().withParameter(params);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public resetQueryParameters(): this {
+        this.requestParameters = {};
+
+        return super.resetQueryParameters();
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * @protected
+     */
+    public formatQueryParameters(parameters: QueryParams & Record<string, any>): Record<string, any> {
+        return Object.assign(parameters, this.requestParameters);
+    }
+}
+```
 
 #### Send paginated requests
 

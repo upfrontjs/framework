@@ -1,7 +1,7 @@
 import Collection from '../Support/Collection';
 import type Model from './Model';
 import type { MaybeArray } from '../Support/type';
-import type { RawAttributes } from './Concerns/HasAttributes';
+import type { RawAttributes, SimpleAttributeKeys } from './Concerns/HasAttributes';
 
 export default class ModelCollection<T extends Model> extends Collection<T> {
     public constructor(models?: MaybeArray<T>) {
@@ -187,8 +187,8 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {boolean}
      */
-    public override hasDuplicates(key?: string): boolean {
-        return !!new ModelCollection(this.toArray()).duplicates(key).length;
+    public override hasDuplicates<U>(key?: SimpleAttributeKeys<T> | ((model: T) => U)): boolean {
+        return !!this.duplicates(key).length;
     }
 
     /**
@@ -200,7 +200,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {this}
      */
-    public override duplicates<U>(key?: string | ((model: T) => U)): this {
+    public override duplicates<U>(key?: SimpleAttributeKeys<T> | ((model: T) => U)): this {
         this._throwIfNotModels();
 
         const array: T[] = this.toArray();

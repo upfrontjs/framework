@@ -28,7 +28,8 @@ const sidebar: SidebarConfig = [
             '/calliope/query-building',
             '/calliope/relationships',
             '/calliope/timestamps',
-            '/calliope/model-collection'
+            '/calliope/model-collection',
+            '/calliope/ancestry-collection'
         ]
     },
     {

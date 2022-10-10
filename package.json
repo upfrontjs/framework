@@ -1,6 +1,6 @@
 {
     "name": "@upfrontjs/framework",
-    "version": "0.14.0",
+    "version": "0.15.0",
     "description": "Data handling framework complementary to backend model systems.",
     "main": "index.min.js",
     "module": "index.es.min.js",
@@ -42,6 +42,7 @@
         "framework",
         "factory",
         "collection",
+        "ancestry tree",
         "helpers",
         "string",
         "array",

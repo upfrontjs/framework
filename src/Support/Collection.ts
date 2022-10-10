@@ -499,6 +499,21 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
     }
 
     /**
+     * Sort the items into a collection of their own based on
+     * weather they pass the given truthfulness test.
+     *
+     * @param callback
+     */
+    public partition(callback: ((item: T) => boolean)): [this, this] {
+        const left = this._newInstance();
+        const right = this._newInstance();
+
+        this.forEach(item => callback(item) ? right.push(item) : left.push(item));
+
+        return [left, right];
+    }
+
+    /**
      * Call a callback on the collection
      * when the first argument is Boolean(true) or
      * a closure called with the collection

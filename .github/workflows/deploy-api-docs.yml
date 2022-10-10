@@ -38,4 +38,5 @@ jobs:
           git commit -m "Updates from ${{ github.ref }} - {{ github.sha }}" --no-verify
           git fetch
           git switch gh-pages
-          git push gh-pages
+          git merge origin/main
+          git push

@@ -173,7 +173,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @param {object=} queryParameters - append and/or overwrite query parameter values.
      *
-     * @return {Promise<Model|ModelCollection<Model>>}
+     * @return {Promise} - of Model|ModelCollection<Model>
      * @ts-expect-error - despite TS2526, it still infers correctly */
     public async get<T extends Model = this>(
         queryParameters?: QueryParams & Record<string, unknown>
@@ -203,7 +203,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @param {object} data
      *
-     * @return
+     * @return {Promise<Model>}
      * @ts-expect-error - despite TS2526, it still infers correctly */
     public async post<T extends Model = this>(data: FormData | SimpleAttributes | SimpleAttributes<this>): Promise<T> {
         return this.call('POST', data)
@@ -215,7 +215,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @param {object} data
      *
-     * @return
+     * @return {Promise<Model>}
      * @ts-expect-error - despite TS2526, it still infers correctly */
     public async put<T extends Model = this>(data: FormData | SimpleAttributes | SimpleAttributes<this>): Promise<T> {
         return this.call('PUT', data)
@@ -227,7 +227,7 @@ export default class CallsApi extends BuildsQuery {
      *
      * @param {object} data
      *
-     * @return
+     * @return {Promise<Model>}
      * @ts-expect-error - despite TS2526, it still infers correctly */
     public async patch<T extends Model = this>(data: FormData | SimpleAttributes | SimpleAttributes<this>): Promise<T> {
         return this.call('PATCH', data)

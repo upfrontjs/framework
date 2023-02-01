@@ -289,10 +289,8 @@ export default class CallsApi extends BuildsQuery {
         }
 
         const createModel = (attributes: Attributes<T>): T => {
-            // pass the attributes to the create method in case the user needs to use it
-            return (this.constructor as { new(): T; make: typeof Model['make'] })
-                .make<T>(attributes)
-                // but do not lose any data from the server due to fillable settings
+            return (new (this.constructor as new() => T))
+                // do not lose any data from the server due to fillable settings
                 .forceFill(attributes)
                 .syncOriginal()
                 .setLastSyncedAt();

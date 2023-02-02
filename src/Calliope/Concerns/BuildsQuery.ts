@@ -778,7 +778,7 @@ export default class BuildsQuery extends HasAttributes {
     }
 
     /**
-     * The static version of the when method.
+     * The static version of the `when` method.
      *
      * @param {any} value
      * @param {function} closure

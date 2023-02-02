@@ -5,7 +5,7 @@ import InvalidOffsetException from '../../../src/Exceptions/InvalidOffsetExcepti
 import ModelCollection from '../../../src/Calliope/ModelCollection';
 import Shift from '../../mock/Models/Shift';
 import Contract from '../../mock/Models/Contract';
-import FileModel from '../../mock/Models/FileModel';
+import { default as FileModel } from '../../mock/Models/File';
 import fetchMock, { getLastRequest } from '../../mock/fetch-mock';
 import { cloneDeep } from 'lodash';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
@@ -207,6 +207,13 @@ describe('HasRelations', () => {
             hasRelations.addRelation('shifts', shifts);
             expect(hasRelations.shifts).toBeInstanceOf(ModelCollection);
             expect(hasRelations.shifts).toHaveLength(shifts.length);
+        });
+
+        it('should be able to parse a morphTo relation', () => {
+            const contract = Contract.factory().createOne({ contractableType: 'team' });
+            contract.addRelation('contractable', Team.factory().rawOne());
+
+            expect(contract.contractable).toBeInstanceOf(Team);
         });
     });
 
@@ -504,19 +511,35 @@ describe('HasRelations', () => {
         });
 
         describe('morphTo()', () => {
-            let morphModel: FileModel;
+            let morphModel: Contract;
 
             beforeEach(() => {
-                morphModel = new FileModel();
+                morphModel = new Contract();
             });
 
             it('should return an instance of the same morph model', () => {
-                expect(morphModel.$fileables()).toBeInstanceOf(FileModel);
+                expect(morphModel.$contractable()).toBeInstanceOf(Contract);
             });
 
             it('should set the withs for the next query', () => {
                 // @ts-expect-error
-                expect(morphModel.$fileables().compileQueryParameters().with).toStrictEqual(['*']);
+                expect(morphModel.$contractable().compileQueryParameters().with).toStrictEqual(['contractable']);
+            });
+
+            it('should correctly build the morphTo relation', async () => {
+                const contractAttributes = Contract.factory().rawOne({
+                    contractableType: 'team',
+                    contractableId: 1,
+                    contractable: Team.factory().rawOne()
+                });
+                fetchMock.mockResponseOnce(contractAttributes);
+
+                const contractable = await morphModel
+                    .$contractable()
+                    .find(1)
+                    .then(c => c.contractable);
+
+                expect(contractable).toBeInstanceOf(Team);
             });
         });
 

@@ -14,6 +14,7 @@ import { cloneDeep } from 'lodash';
 import type { MaybeArray } from '../../Support/type';
 
 type Relation = 'belongsTo' | 'belongsToMany' | 'hasMany' | 'hasOne' | 'morphMany' | 'morphOne' | 'morphTo';
+type MorphToCallback<MT extends HasRelations, T extends Model = Model> = (self: MT, relatedData: Attributes<T>) => typeof Model;
 
 export default class HasRelations extends CallsApi {
     /**
@@ -201,7 +202,7 @@ export default class HasRelations extends CallsApi {
         }
 
         const relationType = this.getRelationType(name);
-        const isSingularRelationType = ['belongsTo', 'hasOne', 'morphOne'].includes(relationType);
+        const isSingularRelationType = ['belongsTo', 'hasOne', 'morphOne', 'morphTo'].includes(relationType);
         const isModelArray = Array.isArray(value) && value.every(entry => entry instanceof HasRelations);
         /**
          * Callback acting as user guard for collection of models.
@@ -242,7 +243,7 @@ export default class HasRelations extends CallsApi {
             return this;
         }
 
-        const relatedCtor = ((this[start(name, this.relationMethodPrefix)] as CallableFunction)() as T)
+        let relatedCtor = ((this[start(name, this.relationMethodPrefix)] as CallableFunction)() as T)
             .constructor as typeof Model;
         let relation: Model | ModelCollection<Model>;
 
@@ -267,9 +268,37 @@ export default class HasRelations extends CallsApi {
                 this.setAttribute(model.guessForeignKeyName(), model.getKey());
             }
 
-            relation = isSingularRelationType
-                ? model
-                : new ModelCollection([model]);
+            if (isSingularRelationType) {
+                if (relationType === 'morphTo') {
+                    let cb = this.morphToCb as MorphToCallback<this> | undefined;
+
+                    if (!cb) {
+                        const modelWithCb = (this[
+                            start(name, this.relationMethodPrefix)
+                        ] as CallableFunction)() as this;
+
+                        if (!modelWithCb.morphToCb) {
+                            throw new InvalidArgumentException('Called morphTo relation without providing a callback.');
+                        }
+
+                        cb = modelWithCb.morphToCb as MorphToCallback<this>;
+                    }
+
+                    if (typeof cb !== 'function') {
+                        throw new InvalidArgumentException(
+                            'The morphTo relation was called with invalid argument type.'
+                        );
+                    }
+
+                    relatedCtor = cb(this, value);
+                    relation = relatedCtor.make(value);
+                    delete this.morphToCb;
+                } else {
+                    relation = model;
+                }
+            } else {
+                relation = new ModelCollection([model]);
+            }
         }
 
         this.relations[name] = relation as Model;
@@ -503,14 +532,36 @@ export default class HasRelations extends CallsApi {
     /**
      * Add a constraint for the next query to return all relation.
      *
+     * @param cb - Callback that returns a model that this morphs to.
+     * @param relationName - The name of the relation to be called. E.g.: `'commentable'`
+     *
+     * @example
+     * public $contractable(): this {
+     *     return this.morphTo<Team | User>((self, _data) => {
+     *         return self.contractableType === 'team' ? Team : User;
+     *     });
+     * }
+     *
      * @return {Model}
      */
-    public morphTo<T extends Model>(): T {
-        const thisModel = new (this.constructor as typeof Model)().with(['*']) as T;
+    public morphTo<T extends Model>(
+        cb: MorphToCallback<this, T>,
+        relationName?: string
+    ): this {
+        relationName = relationName ?? this.getMorphs().id.slice(0, - '_id'.length);
+
+        const thisModel = new (this.constructor as typeof Model)().with([relationName]);
 
         HasRelations.configureRelationType(thisModel, 'morphTo');
 
-        return thisModel;
+        Object.defineProperty(thisModel, 'morphToCb', {
+            configurable: true,
+            enumerable: false,
+            writable: false,
+            value: cb
+        });
+
+        return thisModel as unknown as this;
     }
 
     /**

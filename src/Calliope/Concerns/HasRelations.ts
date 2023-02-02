@@ -14,7 +14,10 @@ import { cloneDeep } from 'lodash';
 import type { MaybeArray } from '../../Support/type';
 
 type Relation = 'belongsTo' | 'belongsToMany' | 'hasMany' | 'hasOne' | 'morphMany' | 'morphOne' | 'morphTo';
-type MorphToCallback<MT extends HasRelations, T extends Model = Model> = (self: MT, relatedData: Attributes<T>) => typeof Model;
+type MorphToCallback<
+    MT extends HasRelations,
+    T extends Model = Model
+> = (self: MT, relatedData: Attributes<T>) => typeof Model;
 
 export default class HasRelations extends CallsApi {
     /**

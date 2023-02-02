@@ -73,7 +73,7 @@ describe('ApiResponseHandler', () => {
             await expect(handler.handle(fetch('url')))
                 .rejects
                 .toThrowErrorMatchingInlineSnapshot(
-                    '"invalid json response body at  reason: Unexpected end of JSON input"'
+                    '"invalid json response body at  reason: Expected \',\' or \'}\' after property value in JSON at position 14"'
                 );
         });
     });

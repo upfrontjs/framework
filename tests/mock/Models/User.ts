@@ -3,8 +3,7 @@ import Team from './Team';
 import UserFactory from '../Factories/UserFactory';
 import Shift from './Shift';
 import Contract from './Contract';
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-import File from './File';
+import { default as FileModel } from './File';
 
 export default class User extends Model {
     public override getName(): string {
@@ -59,19 +58,19 @@ export default class User extends Model {
         return this.belongsToMany(Shift);
     }
 
-    public $files(): File {
-        return this.morphMany(File, 'User');
+    public $files(): FileModel {
+        return this.morphMany(FileModel, 'User');
     }
 
-    public $filesWithoutMorphName(): File {
-        return this.morphMany(File);
+    public $filesWithoutMorphName(): FileModel {
+        return this.morphMany(FileModel);
     }
 
-    public $file(): File {
-        return this.morphOne(File, 'User');
+    public $file(): FileModel {
+        return this.morphOne(FileModel, 'User');
     }
 
-    public $fileWithoutMorphName(): File {
-        return this.morphOne(File);
+    public $fileWithoutMorphName(): FileModel {
+        return this.morphOne(FileModel);
     }
 }

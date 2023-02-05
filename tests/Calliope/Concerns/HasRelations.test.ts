@@ -541,6 +541,20 @@ describe('HasRelations', () => {
 
                 expect(contractable).toBeInstanceOf(Team);
             });
+
+            it('should throw an error if the callback argument is of wrong type', () => {
+                // eslint-disable-next-line jest/unbound-method,@typescript-eslint/unbound-method
+                const initialCallback = morphModel.$contractable;
+                // @ts-expect-error - setting wrong type intentionally
+                morphModel.$contractable = () => morphModel.morphTo(false);
+
+                expect(() => morphModel.addRelation('contractable', Team.factory().rawOne()))
+                    .toThrow(new InvalidArgumentException(
+                        'The morphTo relation was called with invalid argument type.'
+                    ));
+
+                morphModel.$contractable = initialCallback;
+            });
         });
 
         describe('morphMany()', () => {

@@ -276,15 +276,13 @@ export default class HasRelations extends CallsApi {
                     let cb = this.morphToCb as MorphToCallback<this> | undefined;
 
                     if (!cb) {
+                        // this model might not have the callback set, call the relation to obtain it
                         const modelWithCb = (this[
                             start(name, this.relationMethodPrefix)
                         ] as CallableFunction)() as this;
 
-                        if (!modelWithCb.morphToCb) {
-                            throw new InvalidArgumentException('Called morphTo relation without providing a callback.');
-                        }
-
-                        cb = modelWithCb.morphToCb as MorphToCallback<this>;
+                        // this could be any type, but it's filtered out in the below type check
+                        cb = modelWithCb.morphToCb as typeof cb;
                     }
 
                     if (typeof cb !== 'function') {

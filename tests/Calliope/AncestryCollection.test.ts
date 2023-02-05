@@ -57,11 +57,9 @@ describe('AncestryCollection', () => {
                 [midLevelFolder, folder1, folder2, folder3, topLevelFolder]
             );
 
-            // console.log(newFolderCollection.modelKeys().toArray());
             const tree = AncestryCollection.treeOf(newFolderCollection);
             expect(tree).toHaveLength(2);
-            // console.log(tree.findByKey(folder1.getKey()!)!.children!.pluck('name'));
-            expect(tree.findByKey(folder1.getKey()!)!.children).toHaveLength(2);
+            expect(tree.findByKey(folder1.getKey())!.children).toHaveLength(2);
         });
     });
 

@@ -108,7 +108,7 @@ describe('AncestryCollection', () => {
         });
     });
 
-    describe('isModelCollection()', () => {
+    describe('isAncestryCollection()', () => {
         it('should assert that it\' a model collection', () => {
             expect(AncestryCollection.isAncestryCollection(folderCollection)).toBe(false);
             expect(AncestryCollection.isAncestryCollection(new Collection([1, 2, 3]))).toBe(false);

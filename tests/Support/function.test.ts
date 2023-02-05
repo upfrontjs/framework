@@ -47,7 +47,7 @@ describe('function helpers', () => {
         });
 
         it('should convert nested array of objects\' keys', () => {
-            let serverCasedObj = {
+            let snakeCasedObj = {
                 sub_objects: [
                     {
                         my_key: 'value'
@@ -55,23 +55,23 @@ describe('function helpers', () => {
                 ]
             } as Record<string, any>;
 
-            serverCasedObj = func.transformKeys(serverCasedObj);
+            const camelCasedObj = func.transformKeys(snakeCasedObj);
 
-            expect(serverCasedObj).toStrictEqual({ subObjects: [{ myKey: 'value' }] });
+            expect(camelCasedObj).toStrictEqual({ subObjects: [{ myKey: 'value' }] });
 
-            serverCasedObj.subObjects.push([]);
-            serverCasedObj.subObjects.push(new User());
-            serverCasedObj = func.transformKeys(serverCasedObj, 'snake');
+            camelCasedObj.subObjects.push([]);
+            camelCasedObj.subObjects.push(new User());
+            snakeCasedObj = func.transformKeys(camelCasedObj, 'snake');
 
             // doesn't transform built in construct
-            expect(serverCasedObj.sub_objects[1].findIndex).toBeDefined();
-            expect(serverCasedObj.sub_objects[1].find_index).toBeUndefined();
+            expect(snakeCasedObj.sub_objects[1].findIndex).toBeDefined();
+            expect(snakeCasedObj.sub_objects[1].find_index).toBeUndefined();
 
             // doesn't transform upfront model
-            expect(serverCasedObj.sub_objects[2].get_endpoint).toBeUndefined();
-            expect(serverCasedObj.sub_objects[2].getEndpoint).toBeDefined();
-            expect(serverCasedObj.sub_objects[2].attribute_casing).toBeUndefined();
-            expect(serverCasedObj.sub_objects[2].getEndpoint).toBeDefined();
+            expect(snakeCasedObj.sub_objects[2].get_endpoint).toBeUndefined();
+            expect(snakeCasedObj.sub_objects[2].getEndpoint).toBeDefined();
+            expect(snakeCasedObj.sub_objects[2].attribute_casing).toBeUndefined();
+            expect(snakeCasedObj.sub_objects[2].getEndpoint).toBeDefined();
         });
 
         it('should convert to snake_case on \'snake\' casing argument', () => {

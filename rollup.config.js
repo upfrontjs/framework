@@ -1,6 +1,6 @@
-import typescript from "@rollup/plugin-typescript";
+import typescript from '@rollup/plugin-typescript';
 import pkg from './package.json';
-import { terser } from "rollup-plugin-terser";
+import terser from '@rollup/plugin-terser';
 import bundleSize from 'rollup-plugin-bundle-size';
 
 const banner = `

@@ -124,7 +124,7 @@ export default class AncestryCollection<T extends Model> extends ModelCollection
             models.forEach(model => {
                 const children = model.getAttribute(this.childrenRelation) as ModelCollection<T> | T[] | undefined;
 
-                if (!children || !children.length) {
+                if (!children?.length) {
                     leaves.push(model);
                 }
 

@@ -71,7 +71,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      * @return {this}
      */
     protected _newInstance(items?: MaybeArray<T>): this {
-        return new (this.constructor as new (items?: MaybeArray<T>) => this)(items);
+        return new (this.constructor as new (elements?: MaybeArray<T>) => this)(items);
     }
 
     /**

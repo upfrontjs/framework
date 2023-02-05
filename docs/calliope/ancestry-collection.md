@@ -46,6 +46,10 @@ const folderTree = AncestryCollection.treeOf(folders);
 folderTree.flatten(); // ModelCollection
 ```
 
+::: tip
+This allows to implement a simple `find()` or `contains()` logic by calling `!!folderTree.flatten().findByKey(1)`.
+:::
+
 #### leaves
 
 The `leaves` method returns a [ModelCollection](./model-collection.md) containing all the models that does not have any children. With the analogy of a tree, it will not include roots, branches, only the models at the end of the bloodline.

@@ -159,6 +159,10 @@ describe('function helpers', () => {
 
             jest.useFakeTimers();
         });
+
+        it('should reject the value if cannot be resolved', async () => {
+            await expect(func.retry(async () => Promise.reject(undefined))).rejects.toBeUndefined();
+        });
     });
 
     describe('dataGet()', () => {
@@ -180,6 +184,11 @@ describe('function helpers', () => {
             ).makeMany();
 
             expect(func.dataGet(complexStructure, '0.users.0.shifts.0.id')).toBe(1);
+        });
+
+        it('should return undefined when undefined given', () => {
+            // @ts-expect-error - this test for rogue users not respecting types
+            expect(func.dataGet(undefined, 'key')).toBeUndefined();
         });
     });
 });

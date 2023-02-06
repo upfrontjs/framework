@@ -22,7 +22,13 @@ export default class AncestryCollection<T extends Model> extends ModelCollection
      */
     protected childrenRelation: string;
 
-    public constructor(
+    /**
+     * @param models - The models already arranged in an ancestry tree format.
+     * @param parentKey - The key that identifies the parent's id.
+     * @param childrenRelation - The key that will include descendants.
+     *
+     */
+    protected constructor(
         models?: MaybeArray<T>,
         parentKey = 'parentId',
         childrenRelation = 'children'
@@ -124,7 +130,7 @@ export default class AncestryCollection<T extends Model> extends ModelCollection
             models.forEach(model => {
                 const children = model.getAttribute(this.childrenRelation) as ModelCollection<T> | T[] | undefined;
 
-                if (!children || !children.length) {
+                if (!children?.length) {
                     leaves.push(model);
                 }
 

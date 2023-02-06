@@ -227,7 +227,7 @@ export default class Model extends SoftDeletes implements HasFactory {
     /**
      * Get all the models.
      *
-     * @return {Promise<Model|ModelCollection<Model>>}
+     * @return {Promise<ModelCollection>}
      */
     public static async all<T extends StaticToThis>(this: T): Promise<ModelCollection<T['prototype']>> {
         let response = await new this().get();

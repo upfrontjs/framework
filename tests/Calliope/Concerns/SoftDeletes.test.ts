@@ -139,6 +139,16 @@ describe('SoftDeletes', () => {
                 + '\' when it has not been persisted yet or it has been soft deleted.'
             ));
         });
+
+        it('should set the deleted at key if an object argument given without it', async () => {
+            fetchMock.mockResponseOnce(softDeletes);
+
+            await softDeletes.delete({});
+
+            expect(getLastRequest()?.body).toStrictEqual({
+                [snake(softDeletes.getDeletedAtName())]: now.toISOString()
+            });
+        });
     });
 
     describe('restore()', () => {

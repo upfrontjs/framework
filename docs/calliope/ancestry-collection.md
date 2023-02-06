@@ -18,7 +18,8 @@ This string determines the name of the attribute that is set on the models when 
 #### treeOf
 <Badge text="static" type="warning"/>
 
-The `treeOf` static method creates the AncestryCollection from the given [ModelCollection](./model-collection.md). This arranges the models to as the child of their respective models. Optionally the method takes 2 more arguments:
+The `treeOf` static method creates the AncestryCollection from the given [ModelCollection](./model-collection.md). This arranges the models as the child of their respective models.
+Optionally the method takes 2 more arguments:
 - `parentKey` (default: `'parentId'`) -  the name of the attribute that contains the parent's identifier.
 - `childrenRelation` (default: `'children'`): - the name of the relation the child models are nested under.
 
@@ -44,6 +45,10 @@ const folderTree = AncestryCollection.treeOf(folders);
 
 folderTree.flatten(); // ModelCollection
 ```
+
+::: tip
+This allows to implement a simple `find()` or `contains()` logic by calling `!!folderTree.flatten().findByKey(1)`.
+:::
 
 #### leaves
 

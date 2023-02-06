@@ -113,9 +113,9 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      *
      * @return {Model|ModelCollection|undefined|any}
      */
-    public findByKey(key: number | string, defaultVal?: T): T | undefined;
-    public findByKey(key: (number | string)[], defaultVal?: ModelCollection<T>): ModelCollection<T> | undefined;
-    public findByKey(key: MaybeArray<number | string>, defaultVal?: ModelCollection<T> | T): any {
+    public findByKey(key: ReturnType<T['getKey']>, defaultVal?: T): T | undefined;
+    public findByKey(key: (ReturnType<T['getKey']>)[], defaultVal?: ModelCollection<T>): ModelCollection<T> | undefined;
+    public findByKey(key: MaybeArray<ReturnType<T['getKey']>>, defaultVal?: ModelCollection<T> | T): any {
         this._throwIfNotModels();
 
         const keys = new Set(this._getArgumentKeys(key));

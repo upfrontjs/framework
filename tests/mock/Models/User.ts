@@ -3,7 +3,7 @@ import Team from './Team';
 import UserFactory from '../Factories/UserFactory';
 import Shift from './Shift';
 import Contract from './Contract';
-import FileModel from './FileModel';
+import { default as FileModel } from './File';
 
 export default class User extends Model {
     public override getName(): string {

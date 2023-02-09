@@ -191,4 +191,26 @@ describe('function helpers', () => {
             expect(func.dataGet(undefined, 'key')).toBeUndefined();
         });
     });
+
+    describe('value()', () => {
+        it('should return the return value of the function if function given', () => {
+            expect(func.value(() => 1 + 2)).toBe(3);
+            expect(func.value(() => true)).toBe(true);
+        });
+
+        it('should pass the arguments to the given function', () => {
+            const cb = jest.fn();
+
+            func.value(cb, 1, 2);
+
+            expect(cb).toHaveBeenNthCalledWith(1, 1, 2);
+        });
+
+        it('should resolve return the value as is if not function', () => {
+            expect(func.value(true)).toBe(true);
+
+            // arguments are ignored
+            expect(func.value(true, false, true)).toBe(true);
+        });
+    });
 });

@@ -218,7 +218,7 @@ describe('Model', () => {
     describe('find()', () => {
         it('should send a GET request to the correct endpoint', async () => {
             fetchMock.mockResponseOnce(user);
-            await user.find(String(user.getKey()));
+            await User.find(1);
 
             expect(getLastRequest()?.method).toBe('GET');
             expect(getLastRequest()?.url).toContain('/' + String(user.getKey()));
@@ -226,14 +226,7 @@ describe('Model', () => {
 
         it('should return a model', async () => {
             fetchMock.mockResponseOnce(user);
-            const responseModel = await user.find(String(user.getKey()));
-
-            expect(responseModel).toBeInstanceOf(User);
-        });
-
-        it('should be able to be called statically', async () => {
-            fetchMock.mockResponseOnce(user);
-            const responseModel = await User.find(1);
+            const responseModel = await User.find('d');
 
             expect(responseModel).toBeInstanceOf(User);
         });

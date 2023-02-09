@@ -283,19 +283,9 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @param {string|number} id
      */
-    public async find<T extends this>(id: number | string): Promise<T> {
-        return await this
-            .setEndpoint(finish(this.getEndpoint(), '/') + String(id))
-            .get() as T;
-    }
-
-    /**
-     * The static version of the find method.
-     *
-     * @see Model.prototype.find
-     */
     public static async find<T extends StaticToThis>(this: T, id: number | string): Promise<T['prototype']> {
-        return new this().find(id);
+        const instance = new this();
+        return await instance.setEndpoint(finish(instance.getEndpoint(), '/') + String(id)).get() as T['prototype'];
     }
 
     /**

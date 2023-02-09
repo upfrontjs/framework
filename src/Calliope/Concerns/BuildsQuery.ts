@@ -30,41 +30,97 @@ export type QueryParams = Partial<{
 }>;
 
 export default class BuildsQuery extends HasAttributes {
-    /**
-     * The where constraints for the query.
-     *
-     * @protected
-     *
-     * @type {object[]}
-     */
-    protected wheres: WhereDescription[] = [];
+    protected queryParameters: Required<QueryParams> & { withouts: string[] } = {
+        /**
+         * The requested columns for the query.
+         *
+         * @protected
+         *
+         * @type {string[]}
+         */
+        columns: [],
+        /**
+         * Return distinct rows by these columns.
+         *
+         * @protected
+         *
+         * @type {string[]}
+         */
+        distinct: [],
+        /**
+         * The limit of the number models requested on the query.
+         *
+         * @protected
+         *
+         * @type {number}
+         */
+        limit: 0,
+        /**
+         * The number of records to be skipped.
+         *
+         * @protected
+         *
+         * @type {number}
+         */
+        offset: 0,
+        /**
+         * The column ordering for the query.
+         *
+         * @protected
+         *
+         * @type {Order[]}
+         */
+        orders: [],
+        /**
+         * The page number of the paginated models queried.
+         *
+         * @protected
+         *
+         * @type {number}
+         */
+        page: 0,
+        /**
+         * The model relations to check for existence.
+         *
+         * @protected
+         *
+         * @type {string[]}
+         */
+        relationsExists: [],
+        /**
+         * The backend scopes to be applied on the query.
+         *
+         * @protected
+         *
+         * @type {string[]}
+         */
+        scopes: [],
+        /**
+         * The where constraints for the query.
+         *
+         * @protected
+         *
+         * @type {WhereDescription[]}
+         */
+        wheres: [],
+        /**
+         * The requested eager-loaded models for the query.
+         *
+         * @protected
+         *
+         * @type {string[]}
+         */
+        with: [],
 
-    /**
-     * The requested columns for the query.
-     *
-     * @protected
-     *
-     * @type {string[]}
-     */
-    protected columns: string[] = [];
-
-    /**
-     * The requested eager-loaded models for the query.
-     *
-     * @protected
-     *
-     * @type {string[]}
-     */
-    protected withs: string[] = [];
-
-    /**
-     * The override to remove the previously added relations from the request.
-     *
-     * @protected
-     *
-     * @type {string}
-     */
-    protected withouts: string[] = [];
+        /**
+         * The override to remove the previously added relations from the request.
+         *
+         * @protected
+         *
+         * @type {string}
+         */
+        withouts: []
+    };
 
     /**
      * The relations that should be included on every request.
@@ -74,69 +130,6 @@ export default class BuildsQuery extends HasAttributes {
      * @type {string}
      */
     protected withRelations: string[] = [];
-
-    /**
-     * The backend scopes to be applied on the query.
-     *
-     * @protected
-     *
-     * @type {string[]}
-     */
-    protected scopes: string[] = [];
-
-    /**
-     * The model relations to check for existence.
-     *
-     * @protected
-     *
-     * @type {string[]}
-     */
-    protected relationsExists: string[] = [];
-
-    /**
-     * The column ordering for the query.
-     *
-     * @protected
-     *
-     * @type {object}
-     */
-    protected orders: Order[] = [];
-
-    /**
-     * Return distinct rows by these columns.
-     *
-     * @protected
-     *
-     * @type {string[]}
-     */
-    protected distinctBy: string[] = [];
-
-    /**
-     * The number of records to be skipped.
-     *
-     * @protected
-     *
-     * @type {number}
-     */
-    protected offsetCount = 0;
-
-    /**
-     * The limit of the number models requested on the query.
-     *
-     * @protected
-     *
-     * @type {number}
-     */
-    protected limitCount = 0;
-
-    /**
-     * The page number of the paginated models queried.
-     *
-     * @protected
-     *
-     * @type {number}
-     */
-    protected pageNumber = 0;
 
     /**
      * Return the instantiated class.
@@ -157,18 +150,18 @@ export default class BuildsQuery extends HasAttributes {
     protected compileQueryParameters(): QueryParams {
         const params: QueryParams = {};
 
-        if (this.wheres.length) {
-            params.wheres = this.wheres;
+        if (this.queryParameters.wheres.length) {
+            params.wheres = this.queryParameters.wheres;
         }
 
-        if (this.columns.length) {
-            params.columns = this.columns;
+        if (this.queryParameters.columns.length) {
+            params.columns = this.queryParameters.columns;
         }
 
-        const withs = new Set([...this.withs, ...this.withRelations]);
+        const withs = new Set([...this.queryParameters.with, ...this.withRelations]);
 
         withs.forEach(relationName => {
-            if (this.withouts.includes(relationName)) {
+            if (this.queryParameters.withouts.includes(relationName)) {
                 withs.delete(relationName);
             }
         });
@@ -177,35 +170,35 @@ export default class BuildsQuery extends HasAttributes {
             params.with = [...withs];
         }
 
-        if (this.scopes.length) {
-            params.scopes = this.scopes;
+        if (this.queryParameters.scopes.length) {
+            params.scopes = this.queryParameters.scopes;
         }
 
-        if (this.relationsExists.length) {
-            params.relationsExists = this.relationsExists;
+        if (this.queryParameters.relationsExists.length) {
+            params.relationsExists = this.queryParameters.relationsExists;
         }
 
-        if (this.orders.length) {
-            params.orders = this.orders;
+        if (this.queryParameters.orders.length) {
+            params.orders = this.queryParameters.orders;
         }
 
-        if (this.distinctBy.length) {
-            params.distinct = this.distinctBy;
+        if (this.queryParameters.distinct.length) {
+            params.distinct = this.queryParameters.distinct;
         }
 
-        if (this.offsetCount > 0) {
-            params.offset = this.offsetCount;
+        if (this.queryParameters.offset > 0) {
+            params.offset = this.queryParameters.offset;
         }
 
-        if (this.limitCount > 0) {
-            params.limit = this.limitCount;
+        if (this.queryParameters.limit > 0) {
+            params.limit = this.queryParameters.limit;
         }
 
-        if (this.pageNumber > 0) {
-            params.page = this.pageNumber;
+        if (this.queryParameters.page > 0) {
+            params.page = this.queryParameters.page;
         }
 
-        let parameters = params;
+        let parameters: QueryParams = params;
 
         if ('formatQueryParameters' in this && this.formatQueryParameters instanceof Function) {
             parameters = (this as unknown as FormatsQueryParameters).formatQueryParameters(params);
@@ -222,17 +215,19 @@ export default class BuildsQuery extends HasAttributes {
      * @return {this}
      */
     public resetQueryParameters(): this {
-        this.wheres = [];
-        this.columns = [];
-        this.withs = [];
-        this.withouts = [];
-        this.scopes = [];
-        this.relationsExists = [];
-        this.orders = [];
-        this.distinctBy = [];
-        this.offsetCount = 0;
-        this.limitCount = 0;
-        this.pageNumber = 0;
+        this.queryParameters = {
+            columns: [],
+            distinct: [],
+            limit: 0,
+            offset: 0,
+            orders: [],
+            page: 0,
+            relationsExists: [],
+            scopes: [],
+            wheres: [],
+            with: [],
+            withouts: []
+        };
 
         return this;
     }
@@ -272,7 +267,7 @@ export default class BuildsQuery extends HasAttributes {
             boolean
         };
 
-        const isDuplicate = this.wheres.some(where => {
+        const isDuplicate = this.queryParameters.wheres.some(where => {
             return where.column === column
                 && where.operator === operator
                 && where.boolean === boolean
@@ -284,7 +279,7 @@ export default class BuildsQuery extends HasAttributes {
             return this;
         }
 
-        this.wheres.push(whereDescription);
+        this.queryParameters.wheres.push(whereDescription);
 
         return this;
     }
@@ -721,7 +716,7 @@ export default class BuildsQuery extends HasAttributes {
             throw new InvalidArgumentException('The limit method expects a number, got: ' + typeof count);
         }
 
-        this.limitCount = count;
+        this.queryParameters.limit = count;
         return this;
     }
 
@@ -746,7 +741,7 @@ export default class BuildsQuery extends HasAttributes {
             throw new InvalidArgumentException('The page method expects a number, got: ' + typeof pageNumber);
         }
 
-        this.pageNumber = pageNumber;
+        this.queryParameters.page = pageNumber;
         return this;
     }
 
@@ -833,7 +828,7 @@ export default class BuildsQuery extends HasAttributes {
      * @return {this}
      */
     public distinct(columns: MaybeArray<string>): this {
-        this.distinctBy = Array.isArray(columns) ? columns : [columns];
+        this.queryParameters.distinct = Array.isArray(columns) ? columns : [columns];
 
         return this;
     }
@@ -857,7 +852,7 @@ export default class BuildsQuery extends HasAttributes {
      * @return {this}
      */
     public select(columns: MaybeArray<string>): this {
-        this.columns.push(...Array.isArray(columns) ? columns : [columns]);
+        this.queryParameters.columns.push(...Array.isArray(columns) ? columns : [columns]);
 
         return this;
     }
@@ -883,7 +878,7 @@ export default class BuildsQuery extends HasAttributes {
      * @return {this}
      */
     public has(relations: MaybeArray<string>): this {
-        this.relationsExists.push(...Array.isArray(relations) ? relations : [relations]);
+        this.queryParameters.relationsExists.push(...Array.isArray(relations) ? relations : [relations]);
 
         return this;
     }
@@ -909,7 +904,7 @@ export default class BuildsQuery extends HasAttributes {
      * @return {this}
      */
     public with(relations: MaybeArray<string>): this {
-        this.withs.push(...Array.isArray(relations) ? relations : [relations]);
+        this.queryParameters.with.push(...Array.isArray(relations) ? relations : [relations]);
 
         return this;
     }
@@ -933,7 +928,7 @@ export default class BuildsQuery extends HasAttributes {
      * @param relations
      */
     public without(relations: MaybeArray<string>): this {
-        this.withouts.push(...Array.isArray(relations) ? relations : [relations]);
+        this.queryParameters.withouts.push(...Array.isArray(relations) ? relations : [relations]);
 
         return this;
     }
@@ -959,7 +954,7 @@ export default class BuildsQuery extends HasAttributes {
      * @return {this}
      */
     public scope(scopes: MaybeArray<string>): this {
-        this.scopes.push(...Array.isArray(scopes) ? scopes : [scopes]);
+        this.queryParameters.scopes.push(...Array.isArray(scopes) ? scopes : [scopes]);
 
         return this;
     }
@@ -986,10 +981,7 @@ export default class BuildsQuery extends HasAttributes {
      * @return {this}
      */
     public orderBy(column: string, direction: Direction = 'asc'): this {
-        this.orders.push({
-            column,
-            direction
-        });
+        this.queryParameters.orders.push({ column, direction });
 
         return this;
     }
@@ -1099,7 +1091,7 @@ export default class BuildsQuery extends HasAttributes {
             throw new InvalidArgumentException('The offset method expects a number, got: ' + typeof count);
         }
 
-        this.offsetCount = count;
+        this.queryParameters.offset = count;
         return this;
     }
 

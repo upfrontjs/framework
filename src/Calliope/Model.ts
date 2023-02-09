@@ -163,18 +163,7 @@ export default class Model extends SoftDeletes implements HasFactory {
         clone.mutatedEndpoint = this.mutatedEndpoint;
 
         // query parameters
-        clone.wheres = cloneDeep(this.wheres);
-        clone.columns = cloneDeep(this.columns);
-        clone.withs = cloneDeep(this.withs);
-        clone.withouts = cloneDeep(this.withouts);
-        clone.withRelations = cloneDeep(this.withRelations);
-        clone.scopes = cloneDeep(this.scopes);
-        clone.relationsExists = cloneDeep(this.relationsExists);
-        clone.orders = cloneDeep(this.orders);
-        clone.distinctBy = cloneDeep(this.distinctBy);
-        clone.offsetCount = this.offsetCount;
-        clone.limitCount = this.limitCount;
-        clone.pageNumber = this.pageNumber;
+        clone.queryParameters = cloneDeep(this.queryParameters);
 
         return clone;
     }
@@ -257,7 +246,7 @@ export default class Model extends SoftDeletes implements HasFactory {
             && typeof this._relationType === 'string'
             && ['hasOne', 'hasMany'].includes(this._relationType)
         ) {
-            this.wheres = this.wheres.filter(where => {
+            this.queryParameters.wheres = this.queryParameters.wheres.filter(where => {
                 return !(where.operator === '='
                     && where.boolean === 'and'
                     && where.column === this.hasOneOrManyParentKeyName);

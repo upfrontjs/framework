@@ -105,29 +105,29 @@ describe('BuildsQuery', () => {
             // @ts-expect-error
             builder.addWhereConstraint('column', '=', 'value', 'or');
             // @ts-expect-error
-            expect(builder.wheres).toHaveLength(1);
+            expect(builder.queryParameters.wheres).toHaveLength(1);
 
             // @ts-expect-error
             builder.addWhereConstraint('column', '=', 'value', 'or');
             // @ts-expect-error
-            expect(builder.wheres).toHaveLength(1);
+            expect(builder.queryParameters.wheres).toHaveLength(1);
 
             // @ts-expect-error
             builder.addWhereConstraint('column', '!=', 'value', 'or');
             // @ts-expect-error
-            expect(builder.wheres).toHaveLength(2);
+            expect(builder.queryParameters.wheres).toHaveLength(2);
         });
 
         it('should ignore duplicates when comparing numbers and numbers in string format', () => {
             // @ts-expect-error
             builder.addWhereConstraint('column', '=', '1', 'or');
             // @ts-expect-error
-            expect(builder.wheres).toHaveLength(1);
+            expect(builder.queryParameters.wheres).toHaveLength(1);
 
             // @ts-expect-error
             builder.addWhereConstraint('column', '=', 1, 'or');
             // @ts-expect-error
-            expect(builder.wheres).toHaveLength(1);
+            expect(builder.queryParameters.wheres).toHaveLength(1);
         });
     });
 

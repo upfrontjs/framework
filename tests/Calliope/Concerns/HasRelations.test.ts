@@ -348,6 +348,13 @@ describe('HasRelations', () => {
 
             expect(hasRelations.team!.name).toBe(originalTeamName);
         });
+
+        it('should throw an error if the model has not been persisted before calling the method', async () => {
+            await expect(User.factory().makeOne().load(['file'])).rejects.toThrow(new LogicException(
+                'Attempted to call load on \'' + hasRelations.getName()
+                + '\' when it has not been persisted yet or it has been soft deleted.'
+            ));
+    });
     });
 
     describe('getRelationType()', () => {

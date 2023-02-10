@@ -58,6 +58,8 @@ export default class HasRelations extends CallsApi {
      * @return {Promise<this>}
      */
     public async load(relations: MaybeArray<string>, forceReload = false): Promise<this> {
+        this.throwIfModelDoesntExistsWhenCalling('load');
+
         if (!Array.isArray(relations)) {
             relations = [relations];
         }

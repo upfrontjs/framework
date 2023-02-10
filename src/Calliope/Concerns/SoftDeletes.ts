@@ -106,7 +106,6 @@ export default class SoftDeletes extends HasTimestamps {
             );
         }
 
-        // todo - if soft deleted this will throw no?
         return this.setModelEndpoint()
             .patch({ [this.getDeletedAtName()]: null })
             .then(model => {

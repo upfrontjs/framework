@@ -535,7 +535,7 @@ describe('HasRelations', () => {
             let morphModel: Contract;
 
             beforeEach(() => {
-                morphModel = new Contract();
+                morphModel = Contract.factory().createOne();
             });
 
             it('should return an instance of the same morph model', () => {
@@ -545,6 +545,10 @@ describe('HasRelations', () => {
             it('should set the withs for the next query', () => {
                 // @ts-expect-error
                 expect(morphModel.$contractable().compileQueryParameters().with).toStrictEqual(['contractable']);
+            });
+
+            it('should set the expected endpoint', () => {
+                expect(morphModel.$contractable().getEndpoint()).toBe('contracts/' + String(morphModel.getKey()));
             });
 
             it('should correctly build the morphTo relation', async () => {
@@ -557,7 +561,7 @@ describe('HasRelations', () => {
 
                 const contractable = await morphModel
                     .$contractable()
-                    .find(1)
+                    .get<Contract>()
                     .then(c => c.contractable);
 
                 expect(contractable).toBeInstanceOf(Team);

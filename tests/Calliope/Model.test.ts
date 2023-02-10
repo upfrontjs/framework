@@ -89,6 +89,23 @@ describe('Model', () => {
 
             expect(user.getAttribute('test')).toBe(1);
         });
+
+        it('should resolve if first argument is closure', () => {
+            const fn = jest.fn(() => true);
+
+            expect(user.when(fn, u => u.setAttribute('test', 1)).getAttribute('test')).toBe(1);
+            expect(fn).toHaveBeenCalledTimes(1);
+        });
+
+        it('should pass a clone to the first argument if it\' a function', () => {
+            const fn = jest.fn((u: User) => {
+                u.setAttribute('test', 2);
+
+                return user.is(u);
+            });
+
+            expect(user.when(fn, u => u.setAttribute('test', 1)).getAttribute('test')).toBe(1);
+        });
     });
 
     describe('unless()', () => {
@@ -100,6 +117,23 @@ describe('Model', () => {
             user.unless(false, userInstance => userInstance.setAttribute('test', 1));
 
             expect(user.getAttribute('test')).toBe(1);
+        });
+
+        it('should resolve if first argument is closure', () => {
+            const fn = jest.fn(() => false);
+
+            expect(user.unless(fn, u => u.setAttribute('test', 1)).getAttribute('test')).toBe(1);
+            expect(fn).toHaveBeenCalledTimes(1);
+        });
+
+        it('should pass a clone to the first argument if it\' a function', () => {
+            const fn = jest.fn((u: User) => {
+                u.setAttribute('test', 2);
+
+                return user.isNot(u);
+            });
+
+            expect(user.unless(fn, u => u.setAttribute('test', 1)).getAttribute('test')).toBe(1);
         });
     });
 

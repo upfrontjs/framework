@@ -7,6 +7,7 @@ import finish from '../Support/string/finish';
 import type { MaybeArray, StaticToThis } from '../Support/type';
 import { cloneDeep } from 'lodash';
 import isObjectLiteral from '../Support/function/isObjectLiteral';
+import { value } from '../Support/function';
 
 export default class Model extends SoftDeletes implements HasFactory {
     /**
@@ -210,13 +211,13 @@ export default class Model extends SoftDeletes implements HasFactory {
     /**
      * Call the provided function with the model if the given value is true.
      *
-     * @param {any} value
+     * @param {any} val
      * @param {function} closure
      *
      * @return {this}
      */
-    public when(value: any, closure: (instance: this) => any): this {
-        if (value) {
+    public when(val: any, closure: (instance: this) => any): this {
+        if (value(val, this.clone())) {
             closure(this);
         }
 
@@ -226,13 +227,13 @@ export default class Model extends SoftDeletes implements HasFactory {
     /**
      * Call the provided function with the model if the given value is false.
      *
-     * @param {any} value
+     * @param {any} val
      * @param {function} closure
      *
      * @return {this}
      */
-    public unless(value: any, closure: (instance: this) => any): this {
-        if (!value) {
+    public unless(val: any, closure: (instance: this) => any): this {
+        if (!value(val, this.clone())) {
             closure(this);
         }
 

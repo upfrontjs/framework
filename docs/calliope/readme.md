@@ -250,6 +250,7 @@ import User from '@Models/User';
 
 User.make()
     .when(true, user => user.setAttribute('test', 1))
+    .when(() => false, user.setAttribute('test', 2))
     .getAttribute('test'); // 1
 ```
 
@@ -261,8 +262,8 @@ The `unless` method calls the given closure when the first argument evaluates to
 import User from '@Models/User';
 
 User.make()
-    .when(false, user => user.setAttribute('test', 2))
     .unless(false, user => user.setAttribute('test', 1))
+    .unless(() => true, user => user.setAttribute('test', 2))
     .getAttribute('test'); // 1
 ```
 

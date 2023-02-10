@@ -86,12 +86,7 @@ export default class HasRelations extends CallsApi {
             return this;
         }
 
-        const returnedRelations = (
-            await (this as unknown as Model)
-                .with(relations)
-                .find(((this as unknown as Model)).getKey()!)
-        )
-            .getRelations();
+        const returnedRelations = (await this.with(relations).setModelEndpoint().get<this>()).getRelations();
 
         Object.keys(returnedRelations).forEach(returnedRelation => {
             this.addRelation(returnedRelation, returnedRelations[returnedRelation]!);
@@ -554,6 +549,7 @@ export default class HasRelations extends CallsApi {
         relationName = relationName ?? this.getMorphs().id.slice(0, - '_id'.length);
 
         const thisModel = new (this.constructor as typeof Model)().with([relationName]);
+        thisModel.setEndpoint(finish(thisModel.getEndpoint(), '/') + String((this as unknown as Model).getKey()));
 
         HasRelations.configureRelationType(thisModel, 'morphTo');
 

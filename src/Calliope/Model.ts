@@ -274,8 +274,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      */
     public async update(data: SimpleAttributes<this>): Promise<this> {
         this.throwIfModelDoesntExistsWhenCalling('update');
-        return this.setEndpoint(finish(this.getEndpoint(), '/') + String(this.getKey()))
-            .patch(data);
+        return this.setModelEndpoint().patch(data);
     }
 
     /**
@@ -322,7 +321,8 @@ export default class Model extends SoftDeletes implements HasFactory {
      */
     public async refresh(): Promise<this> {
         this.throwIfModelDoesntExistsWhenCalling('refresh');
-        const model = await this.reset().select(this.getAttributeKeys()).find(this.getKey()!);
+
+        const model = await this.reset().setModelEndpoint().select(this.getAttributeKeys()).get<this>() ;
 
         return this.forceFill(model.getRawAttributes()).syncOriginal().setLastSyncedAt();
     }

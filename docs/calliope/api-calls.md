@@ -152,7 +152,7 @@ user.appendToEndpoint('/something').getEndpoint(); // 'users/something'
 #### setLastSyncedAt
 <Badge text="advanced" type="warning"/>
 
-The `setLastSyncedAt` method sets the [_lastSyncedAt](#_lastsyncedat) attribute to the current [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date). It optionally also accepts an argument for the value to be set as. The set value is subject to the [date-time casting](./attributes.md#datetime).
+The `setLastSyncedAt` method sets the [_lastSyncedAt](#_lastsyncedat) attribute to the current [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date). It optionally also accepts an argument for the value to be set as. The set value is subject to the [date-time casting](./attributes.md#datetime). Furthermore, it takes timestamps into consideration when enabled.
 
 ::: warning
 This method should only really be used when mocking the model to look like it exists. Some possible use-cases are:
@@ -166,4 +166,16 @@ import User from '@Models/User';
 const user = User.make({ id: 1 });
 user.exists; // false
 user.setLastSyncedAt().exists; // true
+```
+
+#### setModelEndpoint
+
+The `setModelEndpoint` sets the endpoint on the model to the resource endpoint by appending the primary key.
+
+```js
+import User from '@Models/User';
+
+const user = User.make({ id: 1 });
+user.getEndpoint(); // '/users'
+user.setModelEndpoint().getEndpoint(); // '/users/1'
 ```

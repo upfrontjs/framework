@@ -338,6 +338,21 @@ export default class CallsApi extends BuildsQuery {
     }
 
     /**
+     * Set the correct endpoint with the id for the next request.
+     *
+     * @return this
+     */
+    public setModelEndpoint(): this {
+        const key = (this as unknown as Model).getKey();
+
+        if (!key) {
+            throw new LogicException('Primary key missing when calling setModelEndpoint method');
+        }
+
+        return this.setEndpoint(finish(this.getEndpoint(), '/') + String(key));
+    }
+
+    /**
      * Get the endpoint for the model.
      *
      * @return {string}

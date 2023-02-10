@@ -1,7 +1,6 @@
 import HasTimestamps from './HasTimestamps';
 import type Model from '../Model';
 import LogicException from '../../Exceptions/LogicException';
-import finish from '../../Support/string/finish';
 import type { SimpleAttributes } from './HasAttributes';
 
 export default class SoftDeletes extends HasTimestamps {
@@ -70,7 +69,7 @@ export default class SoftDeletes extends HasTimestamps {
 
         this.throwIfModelDoesntExistsWhenCalling('delete');
 
-        this.setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()));
+        this.setModelEndpoint();
 
         if (!data) {
             data = { [deletedAt]: new Date().toISOString() };
@@ -107,7 +106,8 @@ export default class SoftDeletes extends HasTimestamps {
             );
         }
 
-        return this.setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()))
+        // todo - if soft deleted this will throw no?
+        return this.setModelEndpoint()
             .patch({ [this.getDeletedAtName()]: null })
             .then(model => {
                 const deletedAt = this.getDeletedAtName();

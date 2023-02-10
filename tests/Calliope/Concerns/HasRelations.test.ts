@@ -354,7 +354,7 @@ describe('HasRelations', () => {
                 'Attempted to call load on \'' + hasRelations.getName()
                 + '\' when it has not been persisted yet or it has been soft deleted.'
             ));
-    });
+        });
     });
 
     describe('getRelationType()', () => {
@@ -406,6 +406,20 @@ describe('HasRelations', () => {
         it('should accept model constructor(s) as argument', () => {
             expect(hasRelations.for([Team, Contract]).getEndpoint()).toBe('teams/contracts/users');
         });
+    });
+
+    describe('setModelEndpoint()', () => {
+        it('should throw an error if primary key isn\'t set', () => {
+            expect(() => User.factory().makeOne().setModelEndpoint()).toThrow(
+                new LogicException('Primary key missing when calling setModelEndpoint method')
+            );
+        });
+
+        it('should set the endpoint to resource endpoint', () => {
+            const endpoint = hasRelations.getEndpoint();
+            expect(hasRelations.setModelEndpoint().getEndpoint()).toBe(endpoint + '/' + String(hasRelations.getKey()));
+        });
+
     });
 
     describe('relation definitions', () => {

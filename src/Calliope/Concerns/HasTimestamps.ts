@@ -1,7 +1,6 @@
 import HasRelations from './HasRelations';
 import type Model from '../Model';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
-import finish from '../../Support/string/finish';
 
 export default class HasTimestamps extends HasRelations {
     /**
@@ -70,7 +69,7 @@ export default class HasTimestamps extends HasRelations {
 
         const updatedAt = this.getUpdatedAtName();
 
-        return this.setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()))
+        return this.setModelEndpoint()
             .patch({ [updatedAt]: new Date().toISOString() })
             .then(model => {
                 if (!(updatedAt in model)) {
@@ -98,7 +97,7 @@ export default class HasTimestamps extends HasRelations {
 
         return this.select([createdAt, updatedAt])
             .whereKey((this as unknown as Model).getKey()!)
-            .setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()))
+            .setModelEndpoint()
             .get()
             .then(model => {
                 if (!(createdAt in model)) {

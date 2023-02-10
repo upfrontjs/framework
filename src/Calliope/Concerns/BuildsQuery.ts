@@ -30,7 +30,7 @@ export type QueryParams = Partial<{
 }>;
 
 export default class BuildsQuery extends HasAttributes {
-    protected queryParameters: Required<QueryParams> & { withouts: string[] } = {
+    protected queryParameters: Required<QueryParams> & { without: string[] } = {
         /**
          * The requested columns for the query.
          *
@@ -119,7 +119,7 @@ export default class BuildsQuery extends HasAttributes {
          *
          * @type {string}
          */
-        withouts: []
+        without: []
     };
 
     /**
@@ -161,7 +161,7 @@ export default class BuildsQuery extends HasAttributes {
         const withs = new Set([...this.queryParameters.with, ...this.withRelations]);
 
         withs.forEach(relationName => {
-            if (this.queryParameters.withouts.includes(relationName)) {
+            if (this.queryParameters.without.includes(relationName)) {
                 withs.delete(relationName);
             }
         });
@@ -226,7 +226,7 @@ export default class BuildsQuery extends HasAttributes {
             scopes: [],
             wheres: [],
             with: [],
-            withouts: []
+            without: []
         };
 
         return this;
@@ -862,7 +862,7 @@ export default class BuildsQuery extends HasAttributes {
      * @param relations
      */
     public without(relations: MaybeArray<string>): this {
-        this.queryParameters.withouts.push(...Array.isArray(relations) ? relations : [relations]);
+        this.queryParameters.without.push(...Array.isArray(relations) ? relations : [relations]);
 
         return this;
     }

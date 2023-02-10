@@ -105,12 +105,14 @@ describe('Model', () => {
 
     describe('tap()', () => {
         it('should pass the model into the given function', () => {
-            const cb = jest.fn((model: User) => model.is(user));
+            const cb = jest.fn((model: User) => {
+                model.setAttribute('test', 1);
+                return model.is(user);
+            });
 
             user.tap(cb);
-            // todo - clone might not be the best here
-            expect(cb).toHaveBeenCalledWith(user.clone());
             expect(cb).toHaveReturnedWith(true);
+            expect(user.getAttribute('test')).toBeUndefined();
         });
 
         it('should pass a clone to the given function', () => {

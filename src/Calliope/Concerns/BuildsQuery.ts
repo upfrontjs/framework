@@ -773,23 +773,6 @@ export default class BuildsQuery extends HasAttributes {
     }
 
     /**
-     * The static version of the `when` method.
-     *
-     * @param {any} value
-     * @param {function} closure
-     *
-     * @return {BuildsQuery}
-     *
-     * @see BuildsQuery.prototype.when
-     */
-    public static when<T extends StaticToThis>(
-        this: T, value: any,
-        closure: (instance: BuildsQuery) => any
-    ): T['prototype'] {
-        return this.newQuery().when(value, closure);
-    }
-
-    /**
      * Call the provided function with the query if the given value is false.
      *
      * @param {any} value
@@ -803,23 +786,6 @@ export default class BuildsQuery extends HasAttributes {
         }
 
         return this;
-    }
-
-    /**
-     * The static version of the unless method.
-     *
-     * @param {any} value
-     * @param {function} closure
-     *
-     * @return {BuildsQuery}
-     *
-     * @see BuildsQuery.prototype.unless
-     */
-    public static unless<T extends StaticToThis>(
-        this: T,
-        value: any, closure: (instance: BuildsQuery) => any
-    ): T['prototype'] {
-        return this.newQuery().unless(value, closure);
     }
 
     /**

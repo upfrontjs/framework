@@ -207,6 +207,18 @@ export default class Model extends SoftDeletes implements HasFactory {
         throw new Error('Your model has to define the getName method.');
     }
 
+
+    /**
+     * Pass a clone of the model to a given function.
+     *
+     * @param callback
+     */
+    public tap(callback: (model: this) => void): this {
+        callback(this.clone());
+
+        return this;
+    }
+
     /**
      * Call the factory fluently from the model.
      */

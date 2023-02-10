@@ -218,13 +218,27 @@ The `clone` method clones the instance in its current state. Meaning all changes
 ```js
 import User from '@Models/User';
 
-const user = User.factory().create({ myKey: 1 });
+const user = User.factory().createOne({ myKey: 1 });
 const userClone = user.clone();
 user.is(userClone); // true
 
 user.myKey = 2;
 userClone.myKey === 1; // true
 
+```
+
+#### tap
+The `tap` method allows to use the model without affecting the model it is called on.
+
+```js
+import User from '@Models/User';
+
+const user = User.factory().createOne();
+user.with('relation')
+    .select(['attribute1', 'attribute2'])
+    .tap(console.log) // the model logged out to the console
+    .tap(model => model.with('another-relation')) // will NOT add `another-relation` to the next query
+    .get();
 ```
 
 #### factory

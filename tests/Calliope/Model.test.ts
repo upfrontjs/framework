@@ -79,6 +79,27 @@ describe('Model', () => {
         });
     });
 
+
+    describe('tap()', () => {
+        it('should pass the model into the given function', () => {
+            const cb = jest.fn((model: User) => model.is(user));
+
+            user.tap(cb);
+            // todo - clone might not be the best here
+            expect(cb).toHaveBeenCalledWith(user.clone());
+            expect(cb).toHaveReturnedWith(true);
+        });
+
+        it('should pass a clone to the given function', () => {
+            user.setAttribute('test', 1)
+                .tap((model) => {
+                    model.setAttribute('test', 2);
+                });
+            expect(user.getAttribute('test')).toBe(1);
+            user.deleteAttribute('test');
+        });
+    });
+
     describe('getKey()', () => {
         it('should return the primary key for the model',  () => {
             expect(user.getKey()).toBe(1);

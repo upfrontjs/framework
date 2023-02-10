@@ -232,7 +232,7 @@ import Contract from '@models/Contract'
 
 const contract = await Contract.find(1);
 // same contract as above fetched from the API, with the relation set
-const contractedEntity = await contract.$contractable().get().then(contract => contract.contractable);
+const contractedEntity = await contract.$contractable().get<Contract>().then(contract => contract.contractable);
 ```
 
 ## Manage Relations

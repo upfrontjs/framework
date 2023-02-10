@@ -226,7 +226,7 @@ describe('Model', () => {
 
         it('should return a model', async () => {
             fetchMock.mockResponseOnce(user);
-            const responseModel = await User.find('d');
+            const responseModel = await User.find(1);
 
             expect(responseModel).toBeInstanceOf(User);
         });

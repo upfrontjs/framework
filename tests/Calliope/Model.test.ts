@@ -202,6 +202,12 @@ describe('Model', () => {
 
             expect(userClone.getAttribute('myKey')).toBe(1);
         });
+
+        it('should should clone the last synced at value', () => {
+            // @ts-expect-error - this is acceptable for the sake of test
+            const lastSyncKey = '_' + user.setStringCase('last_synced_at');
+            expect(String(user.clone()[lastSyncKey])).toBe(String(user[lastSyncKey]));
+        });
     });
 
     describe('factory()', () => {

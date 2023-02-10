@@ -161,6 +161,7 @@ export default class Model extends SoftDeletes implements HasFactory {
         // miscellaneous
         clone.hasOneOrManyParentKeyName = this.hasOneOrManyParentKeyName;
         clone.mutatedEndpoint = this.mutatedEndpoint;
+        clone.setLastSyncedAt(this['_' + this.setStringCase('last_synced_at')]);
 
         // query parameters
         clone.queryParameters = cloneDeep(this.queryParameters);

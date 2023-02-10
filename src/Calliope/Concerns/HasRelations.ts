@@ -575,4 +575,22 @@ export default class HasRelations extends CallsApi {
 
         return { id: name + '_id', type: name + '_type' };
     }
+
+    /**
+     * Throw an error if the model does not exist before calling the specified method.
+     *
+     * @param {string} methodName
+     *
+     * @protected
+     *
+     * @internal
+     */
+    protected throwIfModelDoesntExistsWhenCalling(methodName: string): void {
+        if (!(this as unknown as Model).exists) {
+            throw new LogicException(
+                'Attempted to call ' + methodName + ' on \'' + (this as unknown as Model).getName()
+                + '\' when it has not been persisted yet or it has been soft deleted.'
+            );
+        }
+    }
 }

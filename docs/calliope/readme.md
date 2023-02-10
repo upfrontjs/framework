@@ -167,10 +167,10 @@ Bundlers/minifier options examples:
 - [babel-minify: keepClassName](https://babeljs.io/docs/en/babel-minify#node-api)
   :::
 
-#### create
+#### make
 <Badge text="static" type="warning"/>
 
-The `create` method instantiates your model while setting up attributes and relations. This will mass assign attributes to the model while respecting the [guarding](./attributes#guarding) settings.
+The `make` method instantiates your model while setting up attributes and relations. This will mass assign attributes to the model while respecting the [guarding](./attributes#guarding) settings.
 
 ```ts
 import User from '@Models/User';

@@ -557,6 +557,8 @@ describe('HasRelations', () => {
                     contractableId: 1,
                     contractable: Team.factory().rawOne()
                 });
+                // load's beforeEach somehow bleeds into this
+                fetchMock.resetMocks();
                 fetchMock.mockResponseOnce(contractAttributes);
 
                 const contractable = await morphModel

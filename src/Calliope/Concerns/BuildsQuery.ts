@@ -757,38 +757,6 @@ export default class BuildsQuery extends HasAttributes {
     }
 
     /**
-     * Call the provided function with the query if the given value is true.
-     *
-     * @param {any} value
-     * @param {function} closure
-     *
-     * @return {this}
-     */
-    public when(value: any, closure: (instance: this) => any): this {
-        if (value) {
-            closure(this);
-        }
-
-        return this;
-    }
-
-    /**
-     * Call the provided function with the query if the given value is false.
-     *
-     * @param {any} value
-     * @param {function} closure
-     *
-     * @return {this}
-     */
-    public unless(value: any, closure: (instance: this) => any): this {
-        if (!value) {
-            closure(this);
-        }
-
-        return this;
-    }
-
-    /**
      * Request only distinct values on the query based on the given columns.
      *
      * @return {this}

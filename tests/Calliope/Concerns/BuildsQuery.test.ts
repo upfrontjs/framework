@@ -689,54 +689,6 @@ describe('BuildsQuery', () => {
         });
     });
 
-    describe('when()', () => {
-        it('should call the given closure depending on the truthiness if the first argument', () => {
-            builder.when(false, builderInstance => builderInstance.limit(10));
-
-            expect(builder.compiledParams().limit).toBeUndefined();
-
-            builder.when(true, builderInstance => builderInstance.limit(10));
-
-            expect(builder.compiledParams().limit).toBe(10);
-        });
-
-        it('should be able to be called statically', () => {
-            builder = BuildsQuery.when(false, builderInstance => builderInstance.limit(10));
-
-            // @ts-expect-error
-            expect(builder.compileQueryParameters().limit).toBeUndefined();
-
-            builder = BuildsQuery.when(true, builderInstance => builderInstance.limit(10));
-
-            // @ts-expect-error
-            expect(builder.compileQueryParameters().limit).toBe(10);
-        });
-    });
-
-    describe('unless()', () => {
-        it('should call the given closure depending on the falsy state of the first argument', () => {
-            builder.unless(true, builderInstance => builderInstance.limit(10));
-
-            expect(builder.compiledParams().limit).toBeUndefined();
-
-            builder.unless(false, builderInstance => builderInstance.limit(10));
-
-            expect(builder.compiledParams().limit).toBe(10);
-        });
-
-        it('should be able to be called statically', () => {
-            builder = BuildsQuery.unless(false, builderInstance => builderInstance.limit(10));
-
-            // @ts-expect-error
-            expect(builder.compileQueryParameters().limit).toBe(10);
-
-            builder = BuildsQuery.unless(true, builderInstance => builderInstance.limit(10));
-
-            // @ts-expect-error
-            expect(builder.compileQueryParameters().limit).toBeUndefined();
-        });
-    });
-
     describe('distinct()', () => {
         it('should set the distinct value', () => {
             builder.distinct('column1');

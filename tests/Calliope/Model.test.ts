@@ -79,6 +79,29 @@ describe('Model', () => {
         });
     });
 
+    describe('when()', () => {
+        it('should call the given closure depending on the truthiness if the first argument', () => {
+            user.when(false, userInstance => userInstance.setAttribute('test', 1));
+
+            expect(user.getAttribute('test')).toBeUndefined();
+
+            user.when(true, userInstance => userInstance.setAttribute('test', 1));
+
+            expect(user.getAttribute('test')).toBe(1);
+        });
+    });
+
+    describe('unless()', () => {
+        it('should call the given closure depending on the falsy state of the first argument', () => {
+            user.unless(true, userInstance => userInstance.setAttribute('test', 1));
+
+            expect(user.getAttribute('test')).toBeUndefined();
+
+            user.unless(false, userInstance => userInstance.setAttribute('test', 1));
+
+            expect(user.getAttribute('test')).toBe(1);
+        });
+    });
 
     describe('tap()', () => {
         it('should pass the model into the given function', () => {

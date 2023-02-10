@@ -144,7 +144,7 @@ export default class Model extends SoftDeletes implements HasFactory {
     }
 
     /**
-     * Creates a one to one copy of the model without copying by reference.
+     * Creates a one-to-one copy of the model without copying by reference.
      *
      * @return {this}
      */
@@ -207,6 +207,37 @@ export default class Model extends SoftDeletes implements HasFactory {
         throw new Error('Your model has to define the getName method.');
     }
 
+    /**
+     * Call the provided function with the model if the given value is true.
+     *
+     * @param {any} value
+     * @param {function} closure
+     *
+     * @return {this}
+     */
+    public when(value: any, closure: (instance: this) => any): this {
+        if (value) {
+            closure(this);
+        }
+
+        return this;
+    }
+
+    /**
+     * Call the provided function with the model if the given value is false.
+     *
+     * @param {any} value
+     * @param {function} closure
+     *
+     * @return {this}
+     */
+    public unless(value: any, closure: (instance: this) => any): this {
+        if (!value) {
+            closure(this);
+        }
+
+        return this;
+    }
 
     /**
      * Pass a clone of the model to a given function.

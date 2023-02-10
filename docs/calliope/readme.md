@@ -241,6 +241,31 @@ user.with('relation')
     .get();
 ```
 
+#### when
+
+The `when` method calls the given closure when the first argument evaluates to a truthy value, allowing for changing the model conditionally without breaking the method chaining.
+
+```js
+import User from '@Models/User';
+
+User.make()
+    .when(true, user => user.setAttribute('test', 1))
+    .getAttribute('test'); // 1
+```
+
+#### unless
+
+The `unless` method calls the given closure when the first argument evaluates to a falsy value, allowing for changing the model conditionally without breaking the method chaining.
+
+```js
+import User from '@Models/User';
+
+User.make()
+    .when(false, user => user.setAttribute('test', 2))
+    .unless(false, user => user.setAttribute('test', 1))
+    .getAttribute('test'); // 1
+```
+
 #### factory
 <Badge text="static" type="warning"/>
 

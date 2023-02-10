@@ -292,26 +292,17 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @param {string[]|number[]} ids
      */
-    public async findMany<T extends this>(ids: (number | string)[]): Promise<ModelCollection<T>> {
-        let response = await this.whereKey(ids).get<T>();
+    public static async findMany<T extends StaticToThis>(
+        this: T,
+        ids: (number | string)[]
+    ): Promise<ModelCollection<T['prototype']>> {
+        let response = await new this().whereKey(ids).get();
 
         if (response instanceof Model) {
             response = new ModelCollection([response]);
         }
 
         return response;
-    }
-
-    /**
-     * The static version of the findMany method.
-     *
-     * @see Model.prototype.findMany
-     */
-    public static async findMany<T extends StaticToThis>(
-        this: T,
-        ids: (number | string)[]
-    ): Promise<ModelCollection<T['prototype']>> {
-        return new this().findMany(ids);
     }
 
     /**

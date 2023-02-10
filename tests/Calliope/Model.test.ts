@@ -235,7 +235,7 @@ describe('Model', () => {
     describe('findMany()', () => {
         it('should send a GET request with query params', async () => {
             fetchMock.mockResponseOnce(User.factory().times(2).createMany());
-            await user.findMany([2, 3]);
+            await User.findMany([2, 3]);
 
             expect(getLastRequest()?.method).toBe('GET');
             expect(getLastRequest()?.url).toBe(
@@ -248,17 +248,9 @@ describe('Model', () => {
             );
         });
 
-        it('should be able to be called statically', async () => {
-            fetchMock.mockResponseOnce(User.factory().times(2).createMany());
-
-            const response = await User.findMany([2, 3]);
-
-            expect(response).toBeInstanceOf(ModelCollection);
-        });
-
         it('should return a ModelCollection even if only one model returned', async () => {
             fetchMock.mockResponseOnce(User.factory().rawOne(), { status: 200 });
-            const users = await user.findMany([1]);
+            const users = await User.findMany([1]);
 
             expect(users).toBeInstanceOf(ModelCollection);
             expect(users).toHaveLength(1);

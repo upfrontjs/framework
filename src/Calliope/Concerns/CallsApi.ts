@@ -175,13 +175,13 @@ export default class CallsApi extends BuildsQuery {
      *
      * @return {Promise} - of Model|ModelCollection<Model>
      * @ts-expect-error - despite TS2526, it still infers correctly */
-    public async get<T extends Model = this>(
+    public async get<RT extends (ModelCollection<T> | T), T extends Model = this>(
         queryParameters?: QueryParams & Record<string, unknown>
-    ): Promise<ModelCollection<T> | T> {
+    ): Promise<RT> {
         return this.call('GET', queryParameters)
             .then(responseData => this.newInstanceFromResponseData(
                 this.getDataFromResponse<MaybeArray<Attributes<T>>>(responseData)
-            ));
+            ) as RT);
     }
 
     /**
@@ -335,6 +335,21 @@ export default class CallsApi extends BuildsQuery {
         this.mutatedEndpoint = url;
 
         return this;
+    }
+
+    /**
+     * Set the correct endpoint with the id for the next request.
+     *
+     * @return this
+     */
+    public setModelEndpoint(): this {
+        const key = (this as unknown as Model).getKey();
+
+        if (!key) {
+            throw new LogicException('Primary key missing when calling setModelEndpoint method');
+        }
+
+        return this.setEndpoint(finish(this.getEndpoint(), '/') + String(key));
     }
 
     /**

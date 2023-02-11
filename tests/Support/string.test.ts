@@ -1,4 +1,5 @@
 import * as str from '../../src/Support/string';
+// eslint-disable-next-line @typescript-eslint/no-import-type-side-effects
 import '../../src/string';
 // The String/String.prototype methods are the same as the helper methods so can be tested at the same time
 

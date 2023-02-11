@@ -241,26 +241,6 @@ import User from '@Models/User';
 User.limit(5);
 ```
 
-#### when
-
-The `when` method calls the given closure when the first argument evaluates to a truthy value, allowing for adding constraints conditionally without breaking the method chaining.
-
-```js
-import User from '@Models/User';
-
-User.when(() => true, model => model.whereKey(1));
-```
-
-#### unless
-
-The `unless` method calls the given closure when the first argument evaluates to a falsy value, allowing for adding constraints conditionally without breaking the method chaining.
-
-```js
-import User from '@Models/User';
-
-User.unless(() => false, model => model.whereKey(1));
-```
-
 #### distinct
 
 The `distinct` method adds a distinct parameter for the request where the returned rows are expected to be distinct by the given columns.

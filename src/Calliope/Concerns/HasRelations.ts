@@ -58,6 +58,8 @@ export default class HasRelations extends CallsApi {
      * @return {Promise<this>}
      */
     public async load(relations: MaybeArray<string>, forceReload = false): Promise<this> {
+        this.throwIfModelDoesntExistsWhenCalling('load');
+
         if (!Array.isArray(relations)) {
             relations = [relations];
         }
@@ -84,12 +86,7 @@ export default class HasRelations extends CallsApi {
             return this;
         }
 
-        const returnedRelations = (
-            await (this as unknown as Model)
-                .with(relations)
-                .find(((this as unknown as Model)).getKey()!)
-        )
-            .getRelations();
+        const returnedRelations = (await this.with(relations).setModelEndpoint().get<this>()).getRelations();
 
         Object.keys(returnedRelations).forEach(returnedRelation => {
             this.addRelation(returnedRelation, returnedRelations[returnedRelation]!);
@@ -552,6 +549,7 @@ export default class HasRelations extends CallsApi {
         relationName = relationName ?? this.getMorphs().id.slice(0, - '_id'.length);
 
         const thisModel = new (this.constructor as typeof Model)().with([relationName]);
+        thisModel.setEndpoint(finish(thisModel.getEndpoint(), '/') + String((this as unknown as Model).getKey()));
 
         HasRelations.configureRelationType(thisModel, 'morphTo');
 
@@ -574,5 +572,23 @@ export default class HasRelations extends CallsApi {
         name = name ?? finish((this as unknown as Model).getName().toLowerCase(), 'able');
 
         return { id: name + '_id', type: name + '_type' };
+    }
+
+    /**
+     * Throw an error if the model does not exist before calling the specified method.
+     *
+     * @param {string} methodName
+     *
+     * @protected
+     *
+     * @internal
+     */
+    protected throwIfModelDoesntExistsWhenCalling(methodName: string): void {
+        if (!(this as unknown as Model).exists) {
+            throw new LogicException(
+                'Attempted to call ' + methodName + ' on \'' + (this as unknown as Model).getName()
+                + '\' when it has not been persisted yet or it has been soft deleted.'
+            );
+        }
     }
 }

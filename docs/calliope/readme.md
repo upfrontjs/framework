@@ -167,10 +167,10 @@ Bundlers/minifier options examples:
 - [babel-minify: keepClassName](https://babeljs.io/docs/en/babel-minify#node-api)
   :::
 
-#### create
+#### make
 <Badge text="static" type="warning"/>
 
-The `create` method instantiates your model while setting up attributes and relations. This will mass assign attributes to the model while respecting the [guarding](./attributes#guarding) settings.
+The `make` method instantiates your model while setting up attributes and relations. This will mass assign attributes to the model while respecting the [guarding](./attributes#guarding) settings.
 
 ```ts
 import User from '@Models/User';
@@ -218,13 +218,53 @@ The `clone` method clones the instance in its current state. Meaning all changes
 ```js
 import User from '@Models/User';
 
-const user = User.factory().create({ myKey: 1 });
+const user = User.factory().createOne({ myKey: 1 });
 const userClone = user.clone();
 user.is(userClone); // true
 
 user.myKey = 2;
 userClone.myKey === 1; // true
 
+```
+
+#### tap
+The `tap` method allows to use the model without affecting the model it is called on.
+
+```js
+import User from '@Models/User';
+
+const user = User.factory().createOne();
+user.with('relation')
+    .select(['attribute1', 'attribute2'])
+    .tap(console.log) // the model logged out to the console
+    .tap(model => model.with('another-relation')) // will NOT add `another-relation` to the next query
+    .get();
+```
+
+#### when
+
+The `when` method calls the given closure when the first argument evaluates to a truthy value, allowing for changing the model conditionally without breaking the method chaining.
+
+```js
+import User from '@Models/User';
+
+User.make()
+    .when(true, user => user.setAttribute('test', 1))
+    .when(() => false, user.setAttribute('test', 2))
+    .getAttribute('test'); // 1
+```
+
+#### unless
+
+The `unless` method calls the given closure when the first argument evaluates to a falsy value, allowing for changing the model conditionally without breaking the method chaining.
+
+```js
+import User from '@Models/User';
+
+User.make()
+    .unless(false, user => user.setAttribute('test', 1))
+    .unless(() => true, user => user.setAttribute('test', 2))
+    .getAttribute('test'); // 1
 ```
 
 #### factory

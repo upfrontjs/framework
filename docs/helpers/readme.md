@@ -418,3 +418,20 @@ const complexStructure = Team.factory().with(
 
 dataGet(complexStructure, '0.users.0.shifts.0.id') === 1; // true
 ```
+
+#### value
+
+The `value` is a function that simply resolves the given argument. If function given it will call the function with the passed in parameters. If not function given, it will return the value.
+
+```ts
+import { value } from '@upfrontjs/framework';
+
+value({}); // {};
+value(true); // true;
+value(() => []); // []
+value(
+    (firstNum: number, secondNum: number) => firstNum + secondNum,
+    1,
+    1
+); // 2
+```

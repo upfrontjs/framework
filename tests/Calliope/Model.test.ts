@@ -79,6 +79,86 @@ describe('Model', () => {
         });
     });
 
+    describe('when()', () => {
+        it('should call the given closure depending on the truthiness if the first argument', () => {
+            user.when(false, userInstance => userInstance.setAttribute('test', 1));
+
+            expect(user.getAttribute('test')).toBeUndefined();
+
+            user.when(true, userInstance => userInstance.setAttribute('test', 1));
+
+            expect(user.getAttribute('test')).toBe(1);
+        });
+
+        it('should resolve if first argument is closure', () => {
+            const fn = jest.fn(() => true);
+
+            expect(user.when(fn, u => u.setAttribute('test', 1)).getAttribute('test')).toBe(1);
+            expect(fn).toHaveBeenCalledTimes(1);
+        });
+
+        it('should pass a clone to the first argument if it\' a function', () => {
+            const fn = jest.fn((u: User) => {
+                u.setAttribute('test', 2);
+
+                return user.is(u);
+            });
+
+            expect(user.when(fn, u => u.setAttribute('test', 1)).getAttribute('test')).toBe(1);
+        });
+    });
+
+    describe('unless()', () => {
+        it('should call the given closure depending on the falsy state of the first argument', () => {
+            user.unless(true, userInstance => userInstance.setAttribute('test', 1));
+
+            expect(user.getAttribute('test')).toBeUndefined();
+
+            user.unless(false, userInstance => userInstance.setAttribute('test', 1));
+
+            expect(user.getAttribute('test')).toBe(1);
+        });
+
+        it('should resolve if first argument is closure', () => {
+            const fn = jest.fn(() => false);
+
+            expect(user.unless(fn, u => u.setAttribute('test', 1)).getAttribute('test')).toBe(1);
+            expect(fn).toHaveBeenCalledTimes(1);
+        });
+
+        it('should pass a clone to the first argument if it\' a function', () => {
+            const fn = jest.fn((u: User) => {
+                u.setAttribute('test', 2);
+
+                return user.isNot(u);
+            });
+
+            expect(user.unless(fn, u => u.setAttribute('test', 1)).getAttribute('test')).toBe(1);
+        });
+    });
+
+    describe('tap()', () => {
+        it('should pass the model into the given function', () => {
+            const cb = jest.fn((model: User) => {
+                model.setAttribute('test', 1);
+                return model.is(user);
+            });
+
+            user.tap(cb);
+            expect(cb).toHaveReturnedWith(true);
+            expect(user.getAttribute('test')).toBeUndefined();
+        });
+
+        it('should pass a clone to the given function', () => {
+            user.setAttribute('test', 1)
+                .tap((model) => {
+                    model.setAttribute('test', 2);
+                });
+            expect(user.getAttribute('test')).toBe(1);
+            user.deleteAttribute('test');
+        });
+    });
+
     describe('getKey()', () => {
         it('should return the primary key for the model',  () => {
             expect(user.getKey()).toBe(1);
@@ -202,6 +282,12 @@ describe('Model', () => {
 
             expect(userClone.getAttribute('myKey')).toBe(1);
         });
+
+        it('should should clone the last synced at value', () => {
+            // @ts-expect-error - this is acceptable for the sake of test
+            const lastSyncKey = '_' + user.setStringCase('last_synced_at');
+            expect(String(user.clone()[lastSyncKey])).toBe(String(user[lastSyncKey]));
+        });
     });
 
     describe('factory()', () => {
@@ -218,20 +304,13 @@ describe('Model', () => {
     describe('find()', () => {
         it('should send a GET request to the correct endpoint', async () => {
             fetchMock.mockResponseOnce(user);
-            await user.find(String(user.getKey()));
+            await User.find(1);
 
             expect(getLastRequest()?.method).toBe('GET');
             expect(getLastRequest()?.url).toContain('/' + String(user.getKey()));
         });
 
         it('should return a model', async () => {
-            fetchMock.mockResponseOnce(user);
-            const responseModel = await user.find(String(user.getKey()));
-
-            expect(responseModel).toBeInstanceOf(User);
-        });
-
-        it('should be able to be called statically', async () => {
             fetchMock.mockResponseOnce(user);
             const responseModel = await User.find(1);
 
@@ -242,7 +321,7 @@ describe('Model', () => {
     describe('findMany()', () => {
         it('should send a GET request with query params', async () => {
             fetchMock.mockResponseOnce(User.factory().times(2).createMany());
-            await user.findMany([2, 3]);
+            await User.findMany([2, 3]);
 
             expect(getLastRequest()?.method).toBe('GET');
             expect(getLastRequest()?.url).toBe(
@@ -255,17 +334,9 @@ describe('Model', () => {
             );
         });
 
-        it('should be able to be called statically', async () => {
-            fetchMock.mockResponseOnce(User.factory().times(2).createMany());
-
-            const response = await User.findMany([2, 3]);
-
-            expect(response).toBeInstanceOf(ModelCollection);
-        });
-
         it('should return a ModelCollection even if only one model returned', async () => {
             fetchMock.mockResponseOnce(User.factory().rawOne(), { status: 200 });
-            const users = await user.findMany([1]);
+            const users = await User.findMany([1]);
 
             expect(users).toBeInstanceOf(ModelCollection);
             expect(users).toHaveLength(1);

@@ -348,6 +348,13 @@ describe('HasRelations', () => {
 
             expect(hasRelations.team!.name).toBe(originalTeamName);
         });
+
+        it('should throw an error if the model has not been persisted before calling the method', async () => {
+            await expect(User.factory().makeOne().load(['file'])).rejects.toThrow(new LogicException(
+                'Attempted to call load on \'' + hasRelations.getName()
+                + '\' when it has not been persisted yet or it has been soft deleted.'
+            ));
+        });
     });
 
     describe('getRelationType()', () => {
@@ -399,6 +406,20 @@ describe('HasRelations', () => {
         it('should accept model constructor(s) as argument', () => {
             expect(hasRelations.for([Team, Contract]).getEndpoint()).toBe('teams/contracts/users');
         });
+    });
+
+    describe('setModelEndpoint()', () => {
+        it('should throw an error if primary key isn\'t set', () => {
+            expect(() => User.factory().makeOne().setModelEndpoint()).toThrow(
+                new LogicException('Primary key missing when calling setModelEndpoint method')
+            );
+        });
+
+        it('should set the endpoint to resource endpoint', () => {
+            const endpoint = hasRelations.getEndpoint();
+            expect(hasRelations.setModelEndpoint().getEndpoint()).toBe(endpoint + '/' + String(hasRelations.getKey()));
+        });
+
     });
 
     describe('relation definitions', () => {
@@ -514,7 +535,7 @@ describe('HasRelations', () => {
             let morphModel: Contract;
 
             beforeEach(() => {
-                morphModel = new Contract();
+                morphModel = Contract.factory().createOne();
             });
 
             it('should return an instance of the same morph model', () => {
@@ -526,17 +547,23 @@ describe('HasRelations', () => {
                 expect(morphModel.$contractable().compileQueryParameters().with).toStrictEqual(['contractable']);
             });
 
+            it('should set the expected endpoint', () => {
+                expect(morphModel.$contractable().getEndpoint()).toBe('contracts/' + String(morphModel.getKey()));
+            });
+
             it('should correctly build the morphTo relation', async () => {
                 const contractAttributes = Contract.factory().rawOne({
                     contractableType: 'team',
                     contractableId: 1,
                     contractable: Team.factory().rawOne()
                 });
+                // load's beforeEach somehow bleeds into this
+                fetchMock.resetMocks();
                 fetchMock.mockResponseOnce(contractAttributes);
 
                 const contractable = await morphModel
                     .$contractable()
-                    .find(1)
+                    .get<Contract>()
                     .then(c => c.contractable);
 
                 expect(contractable).toBeInstanceOf(Team);

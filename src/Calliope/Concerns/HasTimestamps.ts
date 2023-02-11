@@ -1,8 +1,6 @@
 import HasRelations from './HasRelations';
 import type Model from '../Model';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
-import finish from '../../Support/string/finish';
-import LogicException from '../../Exceptions/LogicException';
 
 export default class HasTimestamps extends HasRelations {
     /**
@@ -71,7 +69,7 @@ export default class HasTimestamps extends HasRelations {
 
         const updatedAt = this.getUpdatedAtName();
 
-        return this.setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()))
+        return this.setModelEndpoint()
             .patch({ [updatedAt]: new Date().toISOString() })
             .then(model => {
                 if (!(updatedAt in model)) {
@@ -99,7 +97,7 @@ export default class HasTimestamps extends HasRelations {
 
         return this.select([createdAt, updatedAt])
             .whereKey((this as unknown as Model).getKey()!)
-            .setEndpoint(finish(this.getEndpoint(), '/') + String((this as unknown as Model).getKey()))
+            .setModelEndpoint()
             .get()
             .then(model => {
                 if (!(createdAt in model)) {
@@ -113,23 +111,5 @@ export default class HasTimestamps extends HasRelations {
                     .setAttribute(updatedAt, (model as Model).getAttribute(updatedAt))
                     .syncOriginal([createdAt, updatedAt]);
             });
-    }
-
-    /**
-     * Throw an error if the model does not exist before calling the specified method.
-     *
-     * @param {string} methodName
-     *
-     * @protected
-     *
-     * @internal
-     */
-    protected throwIfModelDoesntExistsWhenCalling(methodName: string): void {
-        if (!(this as unknown as Model).exists) {
-            throw new LogicException(
-                'Attempted to call ' + methodName + ' on \'' + (this as unknown as Model).getName()
-                + '\' when it has not been persisted yet or it has been soft deleted.'
-            );
-        }
     }
 }

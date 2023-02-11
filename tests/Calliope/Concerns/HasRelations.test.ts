@@ -5,7 +5,7 @@ import InvalidOffsetException from '../../../src/Exceptions/InvalidOffsetExcepti
 import ModelCollection from '../../../src/Calliope/ModelCollection';
 import Shift from '../../mock/Models/Shift';
 import Contract from '../../mock/Models/Contract';
-import FileModel from '../../mock/Models/FileModel';
+import { default as FileModel } from '../../mock/Models/File';
 import fetchMock, { getLastRequest } from '../../mock/fetch-mock';
 import { cloneDeep } from 'lodash';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
@@ -208,6 +208,13 @@ describe('HasRelations', () => {
             expect(hasRelations.shifts).toBeInstanceOf(ModelCollection);
             expect(hasRelations.shifts).toHaveLength(shifts.length);
         });
+
+        it('should be able to parse a morphTo relation', () => {
+            const contract = Contract.factory().createOne({ contractableType: 'team' });
+            contract.addRelation('contractable', Team.factory().rawOne());
+
+            expect(contract.contractable).toBeInstanceOf(Team);
+        });
     });
 
     describe('load()', () => {
@@ -341,6 +348,13 @@ describe('HasRelations', () => {
 
             expect(hasRelations.team!.name).toBe(originalTeamName);
         });
+
+        it('should throw an error if the model has not been persisted before calling the method', async () => {
+            await expect(User.factory().makeOne().load(['file'])).rejects.toThrow(new LogicException(
+                'Attempted to call load on \'' + hasRelations.getName()
+                + '\' when it has not been persisted yet or it has been soft deleted.'
+            ));
+        });
     });
 
     describe('getRelationType()', () => {
@@ -392,6 +406,20 @@ describe('HasRelations', () => {
         it('should accept model constructor(s) as argument', () => {
             expect(hasRelations.for([Team, Contract]).getEndpoint()).toBe('teams/contracts/users');
         });
+    });
+
+    describe('setModelEndpoint()', () => {
+        it('should throw an error if primary key isn\'t set', () => {
+            expect(() => User.factory().makeOne().setModelEndpoint()).toThrow(
+                new LogicException('Primary key missing when calling setModelEndpoint method')
+            );
+        });
+
+        it('should set the endpoint to resource endpoint', () => {
+            const endpoint = hasRelations.getEndpoint();
+            expect(hasRelations.setModelEndpoint().getEndpoint()).toBe(endpoint + '/' + String(hasRelations.getKey()));
+        });
+
     });
 
     describe('relation definitions', () => {
@@ -504,19 +532,55 @@ describe('HasRelations', () => {
         });
 
         describe('morphTo()', () => {
-            let morphModel: FileModel;
+            let morphModel: Contract;
 
             beforeEach(() => {
-                morphModel = new FileModel();
+                morphModel = Contract.factory().createOne();
             });
 
             it('should return an instance of the same morph model', () => {
-                expect(morphModel.$fileables()).toBeInstanceOf(FileModel);
+                expect(morphModel.$contractable()).toBeInstanceOf(Contract);
             });
 
             it('should set the withs for the next query', () => {
                 // @ts-expect-error
-                expect(morphModel.$fileables().compileQueryParameters().with).toStrictEqual(['*']);
+                expect(morphModel.$contractable().compileQueryParameters().with).toStrictEqual(['contractable']);
+            });
+
+            it('should set the expected endpoint', () => {
+                expect(morphModel.$contractable().getEndpoint()).toBe('contracts/' + String(morphModel.getKey()));
+            });
+
+            it('should correctly build the morphTo relation', async () => {
+                const contractAttributes = Contract.factory().rawOne({
+                    contractableType: 'team',
+                    contractableId: 1,
+                    contractable: Team.factory().rawOne()
+                });
+                // load's beforeEach somehow bleeds into this
+                fetchMock.resetMocks();
+                fetchMock.mockResponseOnce(contractAttributes);
+
+                const contractable = await morphModel
+                    .$contractable()
+                    .get<Contract>()
+                    .then(c => c.contractable);
+
+                expect(contractable).toBeInstanceOf(Team);
+            });
+
+            it('should throw an error if the callback argument is of wrong type', () => {
+                // eslint-disable-next-line jest/unbound-method,@typescript-eslint/unbound-method
+                const initialCallback = morphModel.$contractable;
+                // @ts-expect-error - setting wrong type intentionally
+                morphModel.$contractable = () => morphModel.morphTo(false);
+
+                expect(() => morphModel.addRelation('contractable', Team.factory().rawOne()))
+                    .toThrow(new InvalidArgumentException(
+                        'The morphTo relation was called with invalid argument type.'
+                    ));
+
+                morphModel.$contractable = initialCallback;
             });
         });
 

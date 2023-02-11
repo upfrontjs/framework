@@ -71,7 +71,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      * @return {this}
      */
     protected _newInstance(items?: MaybeArray<T>): this {
-        return new (this.constructor as new (items?: MaybeArray<T>) => this)(items);
+        return new (this.constructor as new (elements?: MaybeArray<T>) => this)(items);
     }
 
     /**
@@ -242,12 +242,13 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
             return this._newInstance(values);
         }
 
-        const objects: T[] = [];
+        const objects: Record<string, any>[] = [];
 
-        this.forEach(object => {
+        this.forEach((object: Record<string, any>) => {
             let boolean: boolean;
 
             if (key instanceof Function) {
+                // @ts-expect-error - we expect that the argument callback can handler objects
                 boolean = !objects.some(obj => isEqual(key(obj), key(object)));
             } else if (key && key in object) {
                 boolean = !objects.some(obj =>
@@ -285,14 +286,16 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
             return this._newInstance(uniq(duplicates));
         }
 
-        const objects: T[] = [];
+        const objects: Record<string, any>[] = [];
 
-        this.forEach(object => {
+        this.forEach((object: Record<string, any>) => {
             let boolean: boolean;
 
             if (key instanceof Function) {
                 boolean =
+                    // @ts-expect-error - we expect that the argument callback can handler objects
                     array.filter(obj => isEqual(key(object), key(obj))).length > 1 &&
+                    // @ts-expect-error - we expect that the argument callback can handler objects
                     !objects.some(obj => isEqual(key(object), key(obj)));
             } else if (key && key in object) {
                 boolean =
@@ -411,6 +414,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @return {this}
      */
+    // todo - allow self as argument
     public diff(values: MaybeArray<T>): this {
         const argCollection = Collection.isCollection(values)
             ? values
@@ -474,7 +478,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
         const result: Record<PropertyKey, Collection<T>> = {};
 
         if (typeof key === 'string' || typeof key === 'number' || typeof key === 'symbol') {
-            if (!this.every(obj => key in obj)) {
+            if (!this.every((obj: Record<string, any>) => key in obj)) {
                 throw new InvalidOffsetException(
                     '\'' + String(key) + '\' is not present in every item of the collection.'
                 );

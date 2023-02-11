@@ -173,16 +173,15 @@ export default class CallsApi extends BuildsQuery {
      *
      * @param {object=} queryParameters - append and/or overwrite query parameter values.
      *
-     * @return {Promise<Model|ModelCollection<Model>>}
-     */
-    // @ts-expect-error - despite TS2526, it still infers correctly
-    public async get<T extends Model = this>(
+     * @return {Promise} - of Model|ModelCollection<Model>
+     * @ts-expect-error - despite TS2526, it still infers correctly */
+    public async get<RT extends (ModelCollection<T> | T), T extends Model = this>(
         queryParameters?: QueryParams & Record<string, unknown>
-    ): Promise<ModelCollection<T> | T> {
+    ): Promise<RT> {
         return this.call('GET', queryParameters)
             .then(responseData => this.newInstanceFromResponseData(
                 this.getDataFromResponse<MaybeArray<Attributes<T>>>(responseData)
-            ));
+            ) as RT);
     }
 
     /**
@@ -204,9 +203,8 @@ export default class CallsApi extends BuildsQuery {
      *
      * @param {object} data
      *
-     * @return
-     */
-    // @ts-expect-error - despite TS2526, it still infers correctly
+     * @return {Promise<Model>}
+     * @ts-expect-error - despite TS2526, it still infers correctly */
     public async post<T extends Model = this>(data: FormData | SimpleAttributes | SimpleAttributes<this>): Promise<T> {
         return this.call('POST', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
@@ -217,9 +215,8 @@ export default class CallsApi extends BuildsQuery {
      *
      * @param {object} data
      *
-     * @return
-     */
-    // @ts-expect-error - despite TS2526, it still infers correctly
+     * @return {Promise<Model>}
+     * @ts-expect-error - despite TS2526, it still infers correctly */
     public async put<T extends Model = this>(data: FormData | SimpleAttributes | SimpleAttributes<this>): Promise<T> {
         return this.call('PUT', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
@@ -230,9 +227,8 @@ export default class CallsApi extends BuildsQuery {
      *
      * @param {object} data
      *
-     * @return
-     */
-    // @ts-expect-error - despite TS2526, it still infers correctly
+     * @return {Promise<Model>}
+     * @ts-expect-error - despite TS2526, it still infers correctly */
     public async patch<T extends Model = this>(data: FormData | SimpleAttributes | SimpleAttributes<this>): Promise<T> {
         return this.call('PATCH', data)
             .then(responseData => this.getResponseModel<T>(this.getDataFromResponse(responseData)));
@@ -245,8 +241,7 @@ export default class CallsApi extends BuildsQuery {
      * @param {object=} data
      *
      * @return {Promise<boolean>}
-     */
-    // @ts-expect-error - despite TS2526, it still infers correctly
+     * @ts-expect-error - despite TS2526, it still infers correctly */
     public async delete<T extends Model = this>(
         data?: FormData | SimpleAttributes | SimpleAttributes<this>
     ): Promise<T> {
@@ -294,10 +289,8 @@ export default class CallsApi extends BuildsQuery {
         }
 
         const createModel = (attributes: Attributes<T>): T => {
-            // pass the attributes to the create method in case the user needs to use it
-            return (this.constructor as { new(): T; make: typeof Model['make'] })
-                .make<T>(attributes)
-                // but do not lose any data from the server due to fillable settings
+            return (new (this.constructor as new() => T))
+                // do not lose any data from the server due to fillable settings
                 .forceFill(attributes)
                 .syncOriginal()
                 .setLastSyncedAt();
@@ -342,6 +335,21 @@ export default class CallsApi extends BuildsQuery {
         this.mutatedEndpoint = url;
 
         return this;
+    }
+
+    /**
+     * Set the correct endpoint with the id for the next request.
+     *
+     * @return this
+     */
+    public setModelEndpoint(): this {
+        const key = (this as unknown as Model).getKey();
+
+        if (!key) {
+            throw new LogicException('Primary key missing when calling setModelEndpoint method');
+        }
+
+        return this.setEndpoint(finish(this.getEndpoint(), '/') + String(key));
     }
 
     /**

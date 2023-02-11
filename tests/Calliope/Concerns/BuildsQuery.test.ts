@@ -105,29 +105,29 @@ describe('BuildsQuery', () => {
             // @ts-expect-error
             builder.addWhereConstraint('column', '=', 'value', 'or');
             // @ts-expect-error
-            expect(builder.wheres).toHaveLength(1);
+            expect(builder.queryParameters.wheres).toHaveLength(1);
 
             // @ts-expect-error
             builder.addWhereConstraint('column', '=', 'value', 'or');
             // @ts-expect-error
-            expect(builder.wheres).toHaveLength(1);
+            expect(builder.queryParameters.wheres).toHaveLength(1);
 
             // @ts-expect-error
             builder.addWhereConstraint('column', '!=', 'value', 'or');
             // @ts-expect-error
-            expect(builder.wheres).toHaveLength(2);
+            expect(builder.queryParameters.wheres).toHaveLength(2);
         });
 
         it('should ignore duplicates when comparing numbers and numbers in string format', () => {
             // @ts-expect-error
             builder.addWhereConstraint('column', '=', '1', 'or');
             // @ts-expect-error
-            expect(builder.wheres).toHaveLength(1);
+            expect(builder.queryParameters.wheres).toHaveLength(1);
 
             // @ts-expect-error
             builder.addWhereConstraint('column', '=', 1, 'or');
             // @ts-expect-error
-            expect(builder.wheres).toHaveLength(1);
+            expect(builder.queryParameters.wheres).toHaveLength(1);
         });
     });
 
@@ -686,54 +686,6 @@ describe('BuildsQuery', () => {
                     new InvalidArgumentException('The page method expects a number, got: ' + typeof type)
                 );
             });
-        });
-    });
-
-    describe('when()', () => {
-        it('should call the given closure depending on the truthiness if the first argument', () => {
-            builder.when(false, builderInstance => builderInstance.limit(10));
-
-            expect(builder.compiledParams().limit).toBeUndefined();
-
-            builder.when(true, builderInstance => builderInstance.limit(10));
-
-            expect(builder.compiledParams().limit).toBe(10);
-        });
-
-        it('should be able to be called statically', () => {
-            builder = BuildsQuery.when(false, builderInstance => builderInstance.limit(10));
-
-            // @ts-expect-error
-            expect(builder.compileQueryParameters().limit).toBeUndefined();
-
-            builder = BuildsQuery.when(true, builderInstance => builderInstance.limit(10));
-
-            // @ts-expect-error
-            expect(builder.compileQueryParameters().limit).toBe(10);
-        });
-    });
-
-    describe('unless()', () => {
-        it('should call the given closure depending on the falsy state of the first argument', () => {
-            builder.unless(true, builderInstance => builderInstance.limit(10));
-
-            expect(builder.compiledParams().limit).toBeUndefined();
-
-            builder.unless(false, builderInstance => builderInstance.limit(10));
-
-            expect(builder.compiledParams().limit).toBe(10);
-        });
-
-        it('should be able to be called statically', () => {
-            builder = BuildsQuery.unless(false, builderInstance => builderInstance.limit(10));
-
-            // @ts-expect-error
-            expect(builder.compileQueryParameters().limit).toBe(10);
-
-            builder = BuildsQuery.unless(true, builderInstance => builderInstance.limit(10));
-
-            // @ts-expect-error
-            expect(builder.compileQueryParameters().limit).toBeUndefined();
         });
     });
 

@@ -42,6 +42,7 @@ import type { Events, Listener } from './Support/EventEmitter';
 import type { Method, CustomHeaders } from './Calliope/Concerns/CallsApi';
 import type { ResolvableAttributes } from './Calliope/Factory/FactoryBuilder';
 import type { Order } from './Support/Collection';
+import type RequestMiddleware from './Contracts/RequestMiddleware';
 
 export type {
     AttributeCaster,
@@ -63,7 +64,8 @@ export type {
     CustomHeaders,
     RawAttributes,
     ResolvableAttributes,
-    Order
+    Order,
+    RequestMiddleware
 };
 
 export * from './Support/type';

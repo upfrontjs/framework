@@ -7,6 +7,7 @@ import finish from '../Support/string/finish';
 import type { MaybeArray, StaticToThis } from '../Support/type';
 import { cloneDeep } from 'lodash';
 import isObjectLiteral from '../Support/function/isObjectLiteral';
+import { value } from '../Support/function';
 
 export default class Model extends SoftDeletes implements HasFactory {
     /**
@@ -144,7 +145,7 @@ export default class Model extends SoftDeletes implements HasFactory {
     }
 
     /**
-     * Creates a one to one copy of the model without copying by reference.
+     * Creates a one-to-one copy of the model without copying by reference.
      *
      * @return {this}
      */
@@ -161,20 +162,10 @@ export default class Model extends SoftDeletes implements HasFactory {
         // miscellaneous
         clone.hasOneOrManyParentKeyName = this.hasOneOrManyParentKeyName;
         clone.mutatedEndpoint = this.mutatedEndpoint;
+        clone.setLastSyncedAt(this['_' + this.setStringCase('last_synced_at')]);
 
         // query parameters
-        clone.wheres = cloneDeep(this.wheres);
-        clone.columns = cloneDeep(this.columns);
-        clone.withs = cloneDeep(this.withs);
-        clone.withouts = cloneDeep(this.withouts);
-        clone.withRelations = cloneDeep(this.withRelations);
-        clone.scopes = cloneDeep(this.scopes);
-        clone.relationsExists = cloneDeep(this.relationsExists);
-        clone.orders = cloneDeep(this.orders);
-        clone.distinctBy = cloneDeep(this.distinctBy);
-        clone.offsetCount = this.offsetCount;
-        clone.limitCount = this.limitCount;
-        clone.pageNumber = this.pageNumber;
+        clone.queryParameters = cloneDeep(this.queryParameters);
 
         return clone;
     }
@@ -218,6 +209,49 @@ export default class Model extends SoftDeletes implements HasFactory {
     }
 
     /**
+     * Call the provided function with the model if the given value is true.
+     *
+     * @param {any} val
+     * @param {function} closure
+     *
+     * @return {this}
+     */
+    public when(val: any, closure: (instance: this) => any): this {
+        if (value(val, this.clone())) {
+            closure(this);
+        }
+
+        return this;
+    }
+
+    /**
+     * Call the provided function with the model if the given value is false.
+     *
+     * @param {any} val
+     * @param {function} closure
+     *
+     * @return {this}
+     */
+    public unless(val: any, closure: (instance: this) => any): this {
+        if (!value(val, this.clone())) {
+            closure(this);
+        }
+
+        return this;
+    }
+
+    /**
+     * Pass a clone of the model to a given function.
+     *
+     * @param callback
+     */
+    public tap(callback: (model: this) => void): this {
+        callback(this.clone());
+
+        return this;
+    }
+
+    /**
      * Call the factory fluently from the model.
      */
     public static factory<T extends StaticToThis>(this: T, times = 1): FactoryBuilder<T['prototype']> {
@@ -227,7 +261,7 @@ export default class Model extends SoftDeletes implements HasFactory {
     /**
      * Get all the models.
      *
-     * @return {Promise<Model|ModelCollection<Model>>}
+     * @return {Promise<ModelCollection>}
      */
     public static async all<T extends StaticToThis>(this: T): Promise<ModelCollection<T['prototype']>> {
         let response = await new this().get();
@@ -257,7 +291,7 @@ export default class Model extends SoftDeletes implements HasFactory {
             && typeof this._relationType === 'string'
             && ['hasOne', 'hasMany'].includes(this._relationType)
         ) {
-            this.wheres = this.wheres.filter(where => {
+            this.queryParameters.wheres = this.queryParameters.wheres.filter(where => {
                 return !(where.operator === '='
                     && where.boolean === 'and'
                     && where.column === this.hasOneOrManyParentKeyName);
@@ -285,8 +319,7 @@ export default class Model extends SoftDeletes implements HasFactory {
      */
     public async update(data: SimpleAttributes<this>): Promise<this> {
         this.throwIfModelDoesntExistsWhenCalling('update');
-        return this.setEndpoint(finish(this.getEndpoint(), '/') + String(this.getKey()))
-            .patch(data);
+        return this.setModelEndpoint().patch(data);
     }
 
     /**
@@ -294,19 +327,9 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @param {string|number} id
      */
-    public async find<T extends this>(id: number | string): Promise<T> {
-        return await this
-            .setEndpoint(finish(this.getEndpoint(), '/') + String(id))
-            .get() as T;
-    }
-
-    /**
-     * The static version of the find method.
-     *
-     * @see Model.prototype.find
-     */
     public static async find<T extends StaticToThis>(this: T, id: number | string): Promise<T['prototype']> {
-        return new this().find(id);
+        const instance = new this();
+        return instance.setEndpoint(finish(instance.getEndpoint(), '/') + String(id)).get<T['prototype']>();
     }
 
     /**
@@ -314,8 +337,11 @@ export default class Model extends SoftDeletes implements HasFactory {
      *
      * @param {string[]|number[]} ids
      */
-    public async findMany<T extends this>(ids: (number | string)[]): Promise<ModelCollection<T>> {
-        let response = await this.whereKey(ids).get<T>();
+    public static async findMany<T extends StaticToThis>(
+        this: T,
+        ids: (number | string)[]
+    ): Promise<ModelCollection<T['prototype']>> {
+        let response = await new this().whereKey(ids).get();
 
         if (response instanceof Model) {
             response = new ModelCollection([response]);
@@ -325,25 +351,14 @@ export default class Model extends SoftDeletes implements HasFactory {
     }
 
     /**
-     * The static version of the findMany method.
-     *
-     * @see Model.prototype.findMany
-     */
-    public static async findMany<T extends StaticToThis>(
-        this: T,
-        ids: (number | string)[]
-    ): Promise<ModelCollection<T['prototype']>> {
-        return new this().findMany(ids);
-    }
-
-    /**
      * Refresh the attributes from the backend.
      *
      * @return {Promise<Model>}
      */
     public async refresh(): Promise<this> {
         this.throwIfModelDoesntExistsWhenCalling('refresh');
-        const model = await this.reset().select(this.getAttributeKeys()).find(this.getKey()!);
+
+        const model = await this.reset().setModelEndpoint().select(this.getAttributeKeys()).get<this>() ;
 
         return this.forceFill(model.getRawAttributes()).syncOriginal().setLastSyncedAt();
     }

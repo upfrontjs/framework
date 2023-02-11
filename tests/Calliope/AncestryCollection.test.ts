@@ -1,6 +1,8 @@
 import AncestryCollection from '../../src/Calliope/AncestryCollection';
 import Folder from '../mock/Models/Folder';
 import ModelCollection from '../../src/Calliope/ModelCollection';
+import Collection from '../../src/Support/Collection';
+import { types } from '../test-helpers';
 
 const folder1 = Folder.factory().createOne({ name: 'folder 1' });
 const folder2 = Folder.factory().createOne({ name: 'folder 2', parentId: folder1.getKey() });
@@ -57,11 +59,9 @@ describe('AncestryCollection', () => {
                 [midLevelFolder, folder1, folder2, folder3, topLevelFolder]
             );
 
-            // console.log(newFolderCollection.modelKeys().toArray());
             const tree = AncestryCollection.treeOf(newFolderCollection);
             expect(tree).toHaveLength(2);
-            // console.log(tree.findByKey(folder1.getKey()!)!.children!.pluck('name'));
-            expect(tree.findByKey(folder1.getKey()!)!.children).toHaveLength(2);
+            expect(tree.findByKey(folder1.getKey())!.children).toHaveLength(2);
         });
     });
 
@@ -105,6 +105,19 @@ describe('AncestryCollection', () => {
             expect(leaves.last()!.is(midLevelFolder)).toBe(true);
 
             folderCollection.pop();
+        });
+    });
+
+    describe('isAncestryCollection()', () => {
+        it('should assert that it\' a model collection', () => {
+            expect(AncestryCollection.isAncestryCollection(folderCollection)).toBe(false);
+            expect(AncestryCollection.isAncestryCollection(new Collection([1, 2, 3]))).toBe(false);
+
+            types.forEach(type => {
+                expect(AncestryCollection.isAncestryCollection(type)).toBe(false);
+            });
+
+            expect(AncestryCollection.isAncestryCollection(collection)).toBe(true);
         });
     });
 });

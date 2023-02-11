@@ -47,10 +47,19 @@ export type UnionToIntersection<T extends Record<PropertyKey, any>> = (T extends
 /**
  * Hack to get the instance type of the given constructable.
  *
- * This can be used like: public static myFunc<T extends StaticToThis>(this: T): T['prototype']
+ * Derived from {@link https://github.com/Microsoft/TypeScript/issues/5863|this discussion}
  *
- * Derived from the discussion on: https://github.com/Microsoft/TypeScript/issues/5863
- * Declaring this: https://www.typescriptlang.org/docs/handbook/2/functions.html#declaring-this-in-a-function
+ * Declaring {@link https://www.typescriptlang.org/docs/handbook/2/functions.html#declaring-this-in-a-function|this}
+ *
+ * This can be used like:
+ * @example
+ * class Parent {
+ *     public static newInstance<T extends StaticToThis>(this: T): T['prototype'] {
+ *         return new this
+ *     }
+ * }
+ * class Child extends Parent {}
+ * const child = Child.newInstance(); // Will be the instance type of Child
  */
 export type StaticToThis<T = Model> = {
     new(...args: any[]): T;

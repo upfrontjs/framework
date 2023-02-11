@@ -14,6 +14,10 @@ import { cloneDeep } from 'lodash';
 import type { MaybeArray } from '../../Support/type';
 
 type Relation = 'belongsTo' | 'belongsToMany' | 'hasMany' | 'hasOne' | 'morphMany' | 'morphOne' | 'morphTo';
+type MorphToCallback<
+    MT extends HasRelations,
+    T extends Model = Model
+> = (self: MT, relatedData: Attributes<T>) => typeof Model;
 
 export default class HasRelations extends CallsApi {
     /**
@@ -54,6 +58,8 @@ export default class HasRelations extends CallsApi {
      * @return {Promise<this>}
      */
     public async load(relations: MaybeArray<string>, forceReload = false): Promise<this> {
+        this.throwIfModelDoesntExistsWhenCalling('load');
+
         if (!Array.isArray(relations)) {
             relations = [relations];
         }
@@ -80,12 +86,7 @@ export default class HasRelations extends CallsApi {
             return this;
         }
 
-        const returnedRelations = (
-            await (this as unknown as Model)
-                .with(relations)
-                .find(((this as unknown as Model)).getKey()!)
-        )
-            .getRelations();
+        const returnedRelations = (await this.with(relations).setModelEndpoint().get<this>()).getRelations();
 
         Object.keys(returnedRelations).forEach(returnedRelation => {
             this.addRelation(returnedRelation, returnedRelations[returnedRelation]!);
@@ -201,7 +202,7 @@ export default class HasRelations extends CallsApi {
         }
 
         const relationType = this.getRelationType(name);
-        const isSingularRelationType = ['belongsTo', 'hasOne', 'morphOne'].includes(relationType);
+        const isSingularRelationType = ['belongsTo', 'hasOne', 'morphOne', 'morphTo'].includes(relationType);
         const isModelArray = Array.isArray(value) && value.every(entry => entry instanceof HasRelations);
         /**
          * Callback acting as user guard for collection of models.
@@ -242,7 +243,7 @@ export default class HasRelations extends CallsApi {
             return this;
         }
 
-        const relatedCtor = ((this[start(name, this.relationMethodPrefix)] as CallableFunction)() as T)
+        let relatedCtor = ((this[start(name, this.relationMethodPrefix)] as CallableFunction)() as T)
             .constructor as typeof Model;
         let relation: Model | ModelCollection<Model>;
 
@@ -267,9 +268,35 @@ export default class HasRelations extends CallsApi {
                 this.setAttribute(model.guessForeignKeyName(), model.getKey());
             }
 
-            relation = isSingularRelationType
-                ? model
-                : new ModelCollection([model]);
+            if (isSingularRelationType) {
+                if (relationType === 'morphTo') {
+                    let cb = this.morphToCb as MorphToCallback<this> | undefined;
+
+                    if (!cb) {
+                        // this model might not have the callback set, call the relation to obtain it
+                        const modelWithCb = (this[
+                            start(name, this.relationMethodPrefix)
+                        ] as CallableFunction)() as this;
+
+                        // this could be any type, but it's filtered out in the below type check
+                        cb = modelWithCb.morphToCb as typeof cb;
+                    }
+
+                    if (typeof cb !== 'function') {
+                        throw new InvalidArgumentException(
+                            'The morphTo relation was called with invalid argument type.'
+                        );
+                    }
+
+                    relatedCtor = cb(this, value);
+                    relation = relatedCtor.make(value);
+                    delete this.morphToCb;
+                } else {
+                    relation = model;
+                }
+            } else {
+                relation = new ModelCollection([model]);
+            }
         }
 
         this.relations[name] = relation as Model;
@@ -503,14 +530,37 @@ export default class HasRelations extends CallsApi {
     /**
      * Add a constraint for the next query to return all relation.
      *
+     * @param cb - Callback that returns a model that this morphs to.
+     * @param relationName - The name of the relation to be called. E.g.: `'commentable'`
+     *
+     * @example
+     * public $contractable(): this {
+     *     return this.morphTo<Team | User>((self, _data) => {
+     *         return self.contractableType === 'team' ? Team : User;
+     *     });
+     * }
+     *
      * @return {Model}
      */
-    public morphTo<T extends Model>(): T {
-        const thisModel = new (this.constructor as typeof Model)().with(['*']) as T;
+    public morphTo<T extends Model>(
+        cb: MorphToCallback<this, T>,
+        relationName?: string
+    ): this {
+        relationName = relationName ?? this.getMorphs().id.slice(0, - '_id'.length);
+
+        const thisModel = new (this.constructor as typeof Model)().with([relationName]);
+        thisModel.setEndpoint(finish(thisModel.getEndpoint(), '/') + String((this as unknown as Model).getKey()));
 
         HasRelations.configureRelationType(thisModel, 'morphTo');
 
-        return thisModel;
+        Object.defineProperty(thisModel, 'morphToCb', {
+            configurable: true,
+            enumerable: false,
+            writable: false,
+            value: cb
+        });
+
+        return thisModel as unknown as this;
     }
 
     /**
@@ -522,5 +572,23 @@ export default class HasRelations extends CallsApi {
         name = name ?? finish((this as unknown as Model).getName().toLowerCase(), 'able');
 
         return { id: name + '_id', type: name + '_type' };
+    }
+
+    /**
+     * Throw an error if the model does not exist before calling the specified method.
+     *
+     * @param {string} methodName
+     *
+     * @protected
+     *
+     * @internal
+     */
+    protected throwIfModelDoesntExistsWhenCalling(methodName: string): void {
+        if (!(this as unknown as Model).exists) {
+            throw new LogicException(
+                'Attempted to call ' + methodName + ' on \'' + (this as unknown as Model).getName()
+                + '\' when it has not been persisted yet or it has been soft deleted.'
+            );
+        }
     }
 }

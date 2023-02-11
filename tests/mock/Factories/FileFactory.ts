@@ -1,6 +1,6 @@
 import Factory from '../../../src/Calliope/Factory/Factory';
 import type { Attributes } from '../../../src/Calliope/Concerns/HasAttributes';
-import type FileModel from '../Models/FileModel';
+import type { default as FileModel } from '../Models/File';
 
 export default class FileFactory extends Factory<FileModel> {
     public override definition(): Attributes<FileModel> {

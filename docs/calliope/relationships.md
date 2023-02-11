@@ -203,24 +203,36 @@ const userPassport = await user.$passport().get();
 
 #### morphTo
 
-The `morphTo` method describes a polymorphic relation where the model can describe to multiple entities.
+The `morphTo` method describes a polymorphic relation and expects one argument. A callback where the correct related model constructor is returned depending on the provided logic. This callback receives the polymorphic parent and the attributes of the relation to help choosing the correct model.
+
+::: tip
+`morphTo` is a special case as this method returns the morph parent itself as opposed to the relation's model. This is because the morphed model is not expected to implement the standard REST endpoints.
+:::
 
 ```ts
-// Rate.ts
+// Contract.ts
 import { Model } from '@upfrontjs/framework';
 import Car from '@models/Car';
+import Team from '@models/Team';
 
-export default class Rate extends Model {
-    public $rateables(): Car {
-        return this.morphTo();
+export default class Contract extends Model {
+    public contractableId?: number;
+    public contractableType?: 'team' | 'car';
+    public contractable?: Team | Car;
+    
+    public $contractable(): this {
+        return this.morphTo((self, attributesOfRelation) => {
+            return self.contractableType === 'team' ? Team : Car; 
+        });
     }
 }
 
 // myScript.ts
-import Rate from '@models/Rate'
+import Contract from '@models/Contract'
 
-const rating = await Rate.limit(1).get();
-const ratingWithRatedEntities = await rating.$rateables().get();
+const contract = await Contract.find(1);
+// same contract as above fetched from the API, with the relation set
+const contractedEntity = await contract.$contractable().get<Contract>().then(contract => contract.contractable);
 ```
 
 ## Manage Relations

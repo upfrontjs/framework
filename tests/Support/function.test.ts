@@ -3,6 +3,7 @@ import { types } from '../test-helpers';
 import User from '../mock/Models/User';
 import Team from '../mock/Models/Team';
 import Shift from '../mock/Models/Shift';
+import collect from '../../src/Support/initialiser/collect';
 
 describe('function helpers', () => {
     describe('isObjectLiteral()', () => {
@@ -178,7 +179,7 @@ describe('function helpers', () => {
             expect(func.dataGet(obj, 'key')).toBe('value');
         });
 
-        it('should handle complex structures', () => {
+        it('should handle complex structures with deterministic path', () => {
             const complexStructure = Team.factory().with(
                 User.factory().with(Shift.factory().attributes({ id: 1 }))
             ).makeMany();
@@ -187,8 +188,92 @@ describe('function helpers', () => {
         });
 
         it('should return undefined when undefined given', () => {
-            // @ts-expect-error - this test for rogue users not respecting types
             expect(func.dataGet(undefined, 'key')).toBeUndefined();
+        });
+
+        it('should return multiple values when used on complex structures with *', () => {
+            const structure = [
+                { id: 1, name: 'test-1' },
+                { id: 2, name: 'test-2' }
+            ];
+
+            expect(func.dataGet(structure, '*.id')).toStrictEqual([1, 2]);
+            expect(func.dataGet(structure, '*')).toStrictEqual(structure);
+
+            const obj = {
+                key1: 1,
+                key2: 2
+            };
+
+            expect(func.dataGet(obj, '*')).toBeUndefined();
+            expect(func.dataGet(obj, '*.*')).toBeUndefined();
+            expect(func.dataGet(obj, '*.*.key1')).toBeUndefined();
+
+            const matrix = [
+                [
+                    structure[0]
+                ],
+                [
+                    structure[1]
+                ]
+            ];
+
+            expect(func.dataGet(matrix, '*')).toStrictEqual(matrix);
+            expect(func.dataGet(matrix, '*.*')).toStrictEqual(structure);
+            expect(func.dataGet(matrix, '*.*.id')).toStrictEqual([1, 2]);
+
+            const complexStructure = {
+                key: [
+                    { sub: [{ test: 1 }] },
+                    { sub: [{ test: 2 }] }
+                ]
+            };
+            expect(func.dataGet(complexStructure, 'key.*.sub.*.test')).toStrictEqual([1, 2]);
+
+            const threeDArray = [
+                [
+                    [{ id: 1, name: 'test-1' }]
+                ],
+                [
+                    [{ id: 2, name: 'test-2' }]
+                ]
+            ];
+
+            expect(func.dataGet(threeDArray, '*.*.*.id')).toStrictEqual([1, 2]);
+        });
+
+        it('should return the default value if path not found', () => {
+            const structure = [
+                { id: 1, name: 'test-1' },
+                { id: 2, name: 'test-2' }
+            ];
+
+            expect(func.dataGet(structure, '0.users.0.shifts.0.id', 'default')).toBe('default');
+        });
+
+        it('should accept key as an array of values', () => {
+            const structure = [
+                { id: 1, name: 'test-1' },
+                { id: 2, name: 'test-2' }
+            ];
+
+            expect(func.dataGet(structure, ['*', 'id'])).toStrictEqual([1, 2]);
+            expect(func.dataGet(structure, ['*', '0'], 'default')).toBe('default');
+        });
+
+        it('should collection as data', () => {
+            const collection = collect([{ id: 1, name: 'test-1' }, { id: 2, name: 'test-2' }]);
+
+            expect(func.dataGet(collection, '*.id')).toStrictEqual([1, 2]);
+        });
+
+        it('should accept keys as collection', () => {
+            const structure = [
+                { id: 1, name: 'test-1' },
+                { id: 2, name: 'test-2' }
+            ];
+
+            expect(func.dataGet(structure, collect(['*', 'id']))).toStrictEqual([1, 2]);
         });
     });
 

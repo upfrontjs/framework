@@ -4,6 +4,7 @@ import User from '../mock/Models/User';
 import Team from '../mock/Models/Team';
 import Shift from '../mock/Models/Shift';
 import collect from '../../src/Support/initialiser/collect';
+import LogicException from '../../src/Exceptions/LogicException';
 
 describe('function helpers', () => {
     describe('isObjectLiteral()', () => {
@@ -109,17 +110,15 @@ describe('function helpers', () => {
          * @param attemptToResolveOn
          */
         const tryFunc = async (attemptToResolveOn: number) => {
-            triesCount++;
-
             // eslint-disable-next-line jest/no-conditional-in-test
-            if (triesCount !== attemptToResolveOn) {
-                throw new Error('Error');
+            if (++triesCount !== attemptToResolveOn) {
+                throw new Error('More attempts than allowed.');
             }
 
             return Promise.resolve('Success');
         };
 
-        beforeEach(() => {
+        afterEach(() => {
             triesCount = 0;
         });
 
@@ -163,6 +162,24 @@ describe('function helpers', () => {
 
         it('should reject the value if cannot be resolved', async () => {
             await expect(func.retry(async () => Promise.reject(undefined))).rejects.toBeUndefined();
+        });
+
+        it('should accept a 4th argument which decides if the function should be retried', async () => {
+            await expect(func.retry(
+                async () => tryFunc(2),
+                1,
+                0,
+                // eslint-disable-next-line jest/no-conditional-in-test
+                (err) => err instanceof Error && err.message === 'More attempts than allowed.'
+            )).resolves.toBe('Success');
+
+            await expect(func.retry(
+                async () => tryFunc(2),
+                1,
+                0,
+                // eslint-disable-next-line jest/no-conditional-in-test
+                (err) => err instanceof LogicException
+            )).rejects.toThrow('More attempts than allowed.');
         });
     });
 

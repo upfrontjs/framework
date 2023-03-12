@@ -3,7 +3,7 @@ import * as str from '../../src/Support/string';
 import '../../src/string';
 // The String/String.prototype methods are the same as the helper methods so can be tested at the same time
 
-const sentence = 'The quick brown fox jumps over the lazy dog.';
+const sentence = 'The quick brown fox jumps over the lazy dog.' as const;
 
 describe('string helpers', () => {
     describe('ucFirst()', () => {

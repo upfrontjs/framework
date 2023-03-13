@@ -257,6 +257,12 @@ describe('string helpers', () => {
 
             expect(sentence.words(3, '(...)')).toBe('The quick brown(...)');
         });
+
+        it('should not add the limiter if the word count is same as the given or lower.', () => {
+            expect(str.words(sentence, sentence.split(' ').length)).toBe(sentence);
+
+            expect(sentence.words(sentence.split(' ').length + 1)).toBe(sentence);
+        });
     });
 
     describe('is()', () => {

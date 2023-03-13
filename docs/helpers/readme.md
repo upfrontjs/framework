@@ -404,7 +404,7 @@ const user2 = retry(User.all, 3, attemptNumber => attemptNumber * 1000);
 
 #### dataGet
 
-The `dataGet` is a helper method to safely access any path within an object or array. If the path does not exist, it will return an `undefined`.
+The `dataGet` is a helper method to safely access any path within an object or array. If the path does not exist, it will return the default value (default: `undefined`). Optionally the path may include a wildcard `*` to match array elements.
 
 ```js
 import { dataGet } from '@upfrontjs/framework';
@@ -414,9 +414,16 @@ import Shift from '~/Models/Shift';
 
 const complexStructure = Team.factory().with(
     User.factory().with(Shift.factory().attributes({ id: 1 }))
-).makeMany();
+).createMany();
 
 dataGet(complexStructure, '0.users.0.shifts.0.id') === 1; // true
+
+const objectMatrix = [
+    [{ id: 1 }, { id: 2 }],
+    [{ id: 3 }, { id: 4 }]
+]
+dataGet(objectMatrix, '*.*.id'); // [1, 2, 3, 4]
+dataGet(objectMatrix, '*.*.name', []); // []
 ```
 
 #### value

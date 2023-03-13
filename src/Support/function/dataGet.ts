@@ -1,14 +1,12 @@
-import type { MaybeArray } from '../type';
+import type { MaybeArray, Data } from '../type';
 import Collection from '../Collection';
-
-type Data = Record<string, any>;
 
 /**
  * Utility to safely access values on a deeply nested structure.
  * If path doesn't exist, return the default value.
  *
  * @param {array|object=} data - the structure to search.
- * @param {string|string[]} key - the path to the value delimited by `'.'`
+ * @param {string|string[]} path - the path to the value delimited by `'.'`
  * @param {*} defaultValue - the value to return if the path doesn't exist.
  *
  * @example
@@ -18,22 +16,22 @@ type Data = Record<string, any>;
 export default function dataGet<T>(
     // eslint-disable-next-line @typescript-eslint/default-param-last
     data: Collection<Data> | MaybeArray<Data> | undefined = undefined,
-    key: Collection<string> | MaybeArray<string>,
+    path: Collection<string> | MaybeArray<string>,
     defaultValue?: T
 ): T | undefined {
     if (!data) {
         return defaultValue;
     }
 
-    if (Collection.isCollection<string>(key)) {
-        key = key.toArray();
+    if (Collection.isCollection<string>(path)) {
+        path = path.toArray();
     }
 
-    const keys = Array.isArray(key) ? key : key.split('.');
+    const segments = Array.isArray(path) ? path : path.split('.');
     let value = data;
 
-    for (let i = 0; i < keys.length; i++) {
-        if (keys[i] === '*') {
+    for (let i = 0; i < segments.length; i++) {
+        if (segments[i] === '*') {
             if (Collection.isCollection<Data>(value)) {
                 value = value.toArray();
             }
@@ -43,10 +41,10 @@ export default function dataGet<T>(
             }
 
             value = value.map((v: Data) => {
-                return dataGet(v, keys.slice(i + 1), defaultValue)!;
+                return dataGet(v, segments.slice(i + 1), defaultValue)!;
             });
 
-            const stars = keys.slice(i).filter(k => k === '*').length;
+            const stars = segments.slice(i).filter(k => k === '*').length;
 
             if (stars > 1) {
                 // every star in lower iterations will be flattened
@@ -64,12 +62,12 @@ export default function dataGet<T>(
             continue;
         }
 
-        if (!(keys[i]! in value)) {
-            i = keys.length;
+        if (!(segments[i]! in value)) {
+            i = segments.length;
             return defaultValue;
         }
 
-        value = value[keys[i] as keyof typeof value];
+        value = value[segments[i] as keyof typeof value];
     }
 
     return value as T;

@@ -1,4 +1,5 @@
 import value from './value';
+import type { MaybeArray } from '../type';
 
 /**
  * Utility to re-run the given promise function until it resolves
@@ -6,6 +7,7 @@ import value from './value';
  *
  * @param fn - The function returning a promise to be called.
  * @param {number} [maxRetries=3] - The number of times the function should be retried.
+ *                                  If an array is given, it will be used as the wait time between each try.
  * @param {number|function} [timeout=0] - The wait time between attempts in milliseconds.
  *                                        If 0, it will not wait.
  *                                        If a function, it will be called with the number of retries left.
@@ -17,9 +19,22 @@ import value from './value';
  *
  * @return {Promise<any>}
  */
+
 export default async function retry<T>(
     fn: () => Promise<T>,
-    maxRetries = 3, // todo make this an array of timeouts
+    maxRetries: number[],
+    timeout?: undefined,
+    errorCheck?: (err: unknown) => boolean
+): Promise<T>;
+export default async function retry<T>(
+    fn: () => Promise<T>,
+    maxRetries?: number,
+    timeout?: number | ((currentAttemptCount: number) => number),
+    errorCheck?: (err: unknown) => boolean
+): Promise<T>;
+export default async function retry<T>(
+    fn: () => Promise<T>,
+    maxRetries: MaybeArray<number> = 3,
     timeout: number | ((currentAttemptCount: number) => number) = 0,
     errorCheck?: (err: unknown) => boolean
 ): Promise<T> {
@@ -32,9 +47,11 @@ export default async function retry<T>(
                     reject(err);
                 }
 
-                if (retries++ < maxRetries) {
-                    if (timeout) {
-                        setTimeout(attempt, value(timeout, retries));
+                const timeOutValue = Array.isArray(maxRetries) ? maxRetries[retries]! : timeout;
+
+                if (retries++ < (Array.isArray(maxRetries) ? maxRetries.length : maxRetries)) {
+                    if (timeOutValue) {
+                        setTimeout(attempt, value(timeOutValue, retries));
                     } else {
                         attempt();
                     }

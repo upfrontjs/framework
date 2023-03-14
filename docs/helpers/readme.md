@@ -385,8 +385,9 @@ transformKeys(obj); // { nestedObjects: [{ myKey: 1 }], myKey: 2 };
 
 The `retry` method is a helper to retry a promise function a number of times if the promise rejects. The function takes 3 arguments:
  - `fn` - The function to retry
- - `maxRetries` (default: 3) - The number of times to retry.
- - `delay` (default: 0) - The delay in milliseconds between retries. If the delay has been set to `0`, the function will run again as soon as the promise rejects. This could also be a function that accepts the current retry count and returns the delay.
+ - `maxRetries` (default: 3) - The number of times to retry. You may specify an array of timeouts as a shorthand for specifying the `maxRetries` and `timeout` arguments. If it is an array, the `timeout` argument will be ignored.
+ - `timeout` (default: 0) - The delay in milliseconds between retries. If the delay has been set to `0`, the function will run again as soon as the promise rejects. This could also be a function that accepts the current retry count and returns the delay.
+ - `errorCheck` - An optional function that accepts the error and returns a boolean to determine whether to retry or not.
 
 ```js
 import { retry } from '@upfrontjs/framework';
@@ -400,6 +401,11 @@ const user = retry(async () => User.find(1), 3, 1000)
 
 // Retry the function with progressively longer delays.
 const user2 = retry(User.all, 3, attemptNumber => attemptNumber * 1000);
+// Retry the request 3 times only if the error is of the expected error.
+retry(fetch('https://example.com'), 3, 1000, error => error instanceof Error && error.code === 429);
+// Retry 3 times with a delay of 1 second, 2 seconds and 3 seconds.
+retry(fetch('https://example.com'), [1000, 2000, 3000]);
+```
 ```
 
 #### dataGet

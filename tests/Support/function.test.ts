@@ -181,6 +181,16 @@ describe('function helpers', () => {
                 (err) => err instanceof LogicException
             )).rejects.toThrow('More attempts than allowed.');
         });
+
+        it('should accept an array of timeouts as the second argument for maxRetries', async () => {
+            jest.useFakeTimers({ advanceTimers: 5 });
+            const startTime = performance.now();
+            await func.retry(async () => tryFunc(4), [10, 20, 30]);
+            // or grater because the time it takes to run the function
+            expect(performance.now() - startTime).toBeGreaterThanOrEqual(60);
+
+            jest.useFakeTimers();
+        });
     });
 
     describe('dataGet()', () => {

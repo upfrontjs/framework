@@ -872,8 +872,6 @@ describe('Collection', () => {
             expect(falsePartition).toStrictEqual(new Collection([3, 4, 5]));
             expect(truePartition).toStrictEqual(new Collection([1, 2]));
         });
-
-        it.todo('should return sub collections based on the collection constructor it was called on');
     });
 
     describe('take()', () => {

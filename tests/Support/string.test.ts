@@ -243,6 +243,12 @@ describe('string helpers', () => {
 
             expect(sentence.limit(10, '(...)')).toBe('The quick (...)');
         });
+
+        it('should not add the limiter if the length is equal or higher than the count', () => {
+            expect(str.limit(sentence, sentence.length)).toBe(sentence);
+
+            expect(sentence.limit(sentence.length + 1)).toBe(sentence);
+        });
     });
 
     describe('words()', () => {

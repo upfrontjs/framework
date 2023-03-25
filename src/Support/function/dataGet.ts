@@ -1,25 +1,73 @@
-import type { MaybeArray } from '../type';
+import type { MaybeArray, Data } from '../type';
+import Collection from '../Collection';
 
 /**
  * Utility to safely access values on a deeply nested structure.
- * If path doesn't exist, return `undefined`.
+ * If path doesn't exist, return the default value.
  *
- * @param {array|object} data - the structure to search.
- * @param {string} key - the path to the value delimited by `'.'`
+ * @param {array|object=} data - the structure to search.
+ * @param {string|string[]} path - the path to the value delimited by `'.'`
+ * @param {*} defaultValue - the value to return if the path doesn't exist.
  *
  * @example
- * const literal = dataGet([{key:{prop:1}}], '0.key.prop') // === 1;
+ * const result1 = dataGet([{key:{prop:1}}], '0.key.prop') // 1;
+ * const result2 = dataGet([{key:{prop:1}}], '*.key.prop') // [1];
  */
-export default function dataGet<T>(data: MaybeArray<Record<string, any>>, key: string): T | undefined {
-    const keys = key.split('.');
+export default function dataGet<T>(
+    // eslint-disable-next-line @typescript-eslint/default-param-last
+    data: Collection<Data> | MaybeArray<Data> | undefined = undefined,
+    path: Collection<string> | MaybeArray<string>,
+    defaultValue?: T
+): T | undefined {
+    if (!data) {
+        return defaultValue;
+    }
+
+    if (Collection.isCollection<string>(path)) {
+        path = path.toArray();
+    }
+
+    const segments = Array.isArray(path) ? path : path.split('.');
     let value = data;
 
-    for (let i = 0; i < keys.length; i++) {
-        if (value === undefined) {
+    for (let i = 0; i < segments.length; i++) {
+        if (segments[i] === '*') {
+            if (Collection.isCollection<Data>(value)) {
+                value = value.toArray();
+            }
+
+            if (!Array.isArray(value)) {
+                return defaultValue;
+            }
+
+            value = value.map((v: Data) => {
+                return dataGet(v, segments.slice(i + 1), defaultValue)!;
+            });
+
+            const stars = segments.slice(i).filter(k => k === '*').length;
+
+            if (stars > 1) {
+                // every star in lower iterations will be flattened
+                value = (value as Data[]).flat(stars);
+            }
+
+            // skip every star and the next key
+            i += stars + 1;
+
+            // if every result is actually the default value, return the default value
+            if ((value as Data[]).every(v => String(v) === String(defaultValue))) {
+                return defaultValue;
+            }
+
             continue;
         }
 
-        value = value[keys[i] as keyof typeof data];
+        if (!(segments[i]! in value)) {
+            i = segments.length;
+            return defaultValue;
+        }
+
+        value = value[segments[i] as keyof typeof value];
     }
 
     return value as T;

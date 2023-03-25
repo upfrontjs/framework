@@ -496,6 +496,19 @@ describe('ModelCollection', () => {
         });
     });
 
+    describe('partition()', () => {
+        it('should return sub collections based on the collection constructor it was called on', () => {
+            const [failed, passed] = collection.partition(model => model.getKey() === user1.getKey());
+            expect(passed).toBeInstanceOf(ModelCollection);
+            expect(failed).toBeInstanceOf(ModelCollection);
+            // when collection is stringified it will be wrapped in `elements` key
+            /* eslint-disable jest/prefer-to-have-length */
+            expect(passed.length).toBe(1);
+            expect(failed.length).toBe(elements.length - 1);
+            /* eslint-disable jest/prefer-to-have-length */
+        });
+    });
+
     describe('intersect()', () => {
         it('should get the intersection of the collection and the arguments', () => {
             const intersectedCollection = collection.intersect(user1);

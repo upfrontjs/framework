@@ -3,7 +3,7 @@ import * as str from '../../src/Support/string';
 import '../../src/string';
 // The String/String.prototype methods are the same as the helper methods so can be tested at the same time
 
-const sentence = 'The quick brown fox jumps over the lazy dog.';
+const sentence = 'The quick brown fox jumps over the lazy dog.' as const;
 
 describe('string helpers', () => {
     describe('ucFirst()', () => {
@@ -243,6 +243,12 @@ describe('string helpers', () => {
 
             expect(sentence.limit(10, '(...)')).toBe('The quick (...)');
         });
+
+        it('should not add the limiter if the length is equal or higher than the count', () => {
+            expect(str.limit(sentence, sentence.length)).toBe(sentence);
+
+            expect(sentence.limit(sentence.length + 1)).toBe(sentence);
+        });
     });
 
     describe('words()', () => {
@@ -256,6 +262,12 @@ describe('string helpers', () => {
             expect(str.words(sentence, 3, '(...)')).toBe('The quick brown(...)');
 
             expect(sentence.words(3, '(...)')).toBe('The quick brown(...)');
+        });
+
+        it('should not add the limiter if the word count is same as the given or lower.', () => {
+            expect(str.words(sentence, sentence.split(' ').length)).toBe(sentence);
+
+            expect(sentence.words(sentence.split(' ').length + 1)).toBe(sentence);
         });
     });
 

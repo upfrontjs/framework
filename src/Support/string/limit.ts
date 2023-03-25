@@ -8,5 +8,7 @@
  * @return {string}
  */
 export default function limit(str: string, count: number, limiter = '...'): string {
-    return str.substring(0, count) + limiter;
+    const string = str.substring(0, count);
+
+    return str.length > string.length ? string + limiter : string;
 }

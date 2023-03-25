@@ -22,16 +22,16 @@ describe('AncestryCollection', () => {
             expect(collection.first()!.is(folder1)).toBe(true);
 
             expect(collection.first()!.children).toHaveLength(1);
-            expect(collection.first()!.children!.first()!.is(folder2)).toBe(true);
+            expect(collection.first()!.children.first()!.is(folder2)).toBe(true);
 
-            expect(collection.first()!.children!.first()!.children).toHaveLength(1);
-            expect(collection.first()!.children!.first()!.children!.first()!.is(folder3)).toBe(true);
+            expect(collection.first()!.children.first()!.children).toHaveLength(1);
+            expect(collection.first()!.children.first()!.children!.first()!.is(folder3)).toBe(true);
         });
 
         it('should should set the depth to the appropriate values', () => {
             expect(collection.first()!.depth).toBe(0);
-            expect(collection.first()!.children!.first()!.depth).toBe(1);
-            expect(collection.first()!.children!.first()!.children!.first()!.depth).toBe(2);
+            expect(collection.first()!.children.first()!.depth).toBe(1);
+            expect(collection.first()!.children.first()!.children!.first()!.depth).toBe(2);
         });
 
         it('should set the depth attribute using the static depth key', () => {

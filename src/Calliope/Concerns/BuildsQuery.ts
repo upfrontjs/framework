@@ -39,6 +39,7 @@ export default class BuildsQuery extends HasAttributes {
          * @type {string[]}
          */
         columns: [],
+
         /**
          * Return distinct rows by these columns.
          *
@@ -47,6 +48,7 @@ export default class BuildsQuery extends HasAttributes {
          * @type {string[]}
          */
         distinct: [],
+
         /**
          * The limit of the number models requested on the query.
          *
@@ -55,6 +57,7 @@ export default class BuildsQuery extends HasAttributes {
          * @type {number}
          */
         limit: 0,
+
         /**
          * The number of records to be skipped.
          *
@@ -63,6 +66,7 @@ export default class BuildsQuery extends HasAttributes {
          * @type {number}
          */
         offset: 0,
+
         /**
          * The column ordering for the query.
          *
@@ -71,6 +75,7 @@ export default class BuildsQuery extends HasAttributes {
          * @type {Order[]}
          */
         orders: [],
+
         /**
          * The page number of the paginated models queried.
          *
@@ -79,6 +84,7 @@ export default class BuildsQuery extends HasAttributes {
          * @type {number}
          */
         page: 0,
+
         /**
          * The model relations to check for existence.
          *
@@ -87,6 +93,7 @@ export default class BuildsQuery extends HasAttributes {
          * @type {string[]}
          */
         relationsExists: [],
+
         /**
          * The backend scopes to be applied on the query.
          *
@@ -95,6 +102,7 @@ export default class BuildsQuery extends HasAttributes {
          * @type {string[]}
          */
         scopes: [],
+
         /**
          * The where constraints for the query.
          *
@@ -103,6 +111,7 @@ export default class BuildsQuery extends HasAttributes {
          * @type {WhereDescription[]}
          */
         wheres: [],
+
         /**
          * The requested eager-loaded models for the query.
          *
@@ -166,7 +175,7 @@ export default class BuildsQuery extends HasAttributes {
             }
         });
 
-        if (withs.size) {// todo - filters on relations?
+        if (withs.size) { // todo - filters on relations?
             params.with = [...withs];
         }
 

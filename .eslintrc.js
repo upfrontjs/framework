@@ -41,6 +41,7 @@ module.exports = {
         "eqeqeq": "error",
         "no-restricted-imports": "off",
         "lines-between-class-members": "off",
+        "lines-around-comment": "off",
 
         // https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin#supported-rules
         '@typescript-eslint/object-curly-spacing': ['warn', 'always'],
@@ -90,5 +91,13 @@ module.exports = {
         "@typescript-eslint/prefer-for-of": "off",
         "@typescript-eslint/no-restricted-imports": "off",
         "@typescript-eslint/lines-between-class-members": ["error"],
+        "@typescript-eslint/lines-around-comment": ["warn", {
+            "allowInterfaceStart": true,
+            "allowBlockStart": true,
+            "allowModuleStart": true,
+            "allowTypeStart": true,
+            "allowObjectStart": true,
+            "allowClassStart": true,
+        }]
     }
 }

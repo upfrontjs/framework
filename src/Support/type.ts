@@ -65,3 +65,8 @@ export type StaticToThis<T = Model> = {
     new(...args: any[]): T;
     prototype: T;
 };
+
+/**
+ * Generic data type.
+ */
+export type Data<T extends Record<string, any> = Record<string, any>> = Record<string, any> & T;

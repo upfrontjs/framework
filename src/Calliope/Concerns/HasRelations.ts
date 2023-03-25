@@ -204,6 +204,7 @@ export default class HasRelations extends CallsApi {
         const relationType = this.getRelationType(name);
         const isSingularRelationType = ['belongsTo', 'hasOne', 'morphOne', 'morphTo'].includes(relationType);
         const isModelArray = Array.isArray(value) && value.every(entry => entry instanceof HasRelations);
+
         /**
          * Callback acting as user guard for collection of models.
          * ModelCollection is a subclass of Collection.

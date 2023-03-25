@@ -2,39 +2,37 @@ import ModelCollection from './ModelCollection';
 import type Model from './Model';
 import type { MaybeArray } from '../Support/type';
 
-export default class AncestryCollection<T extends Model> extends ModelCollection<T> {
+type Ancestralised<
+    T extends Model,
+    CT extends string = 'children'
+> = T & { [key in CT]: ModelCollection<Ancestralised<T, CT>> };
+
+export default class AncestryCollection<
+    T extends Model,
+    CT extends string = 'children'
+> extends ModelCollection<Ancestralised<T, CT>> {
     /**
      * The name of the key that will be set when arranging the items in a tree structure.
      */
     public static depthName = 'depth';
 
     /**
-     * The name of the attribute that identifies the parent's key th models are associated by.
-     *
-     * @protected
-     */
-    protected parentKey: string;
-
-    /**
      * The name of the attribute that includes the related models.
      *
      * @protected
      */
-    protected childrenRelation: string;
+    protected childrenRelation: CT;
 
     /**
      * @param models - The models already arranged in an ancestry tree format.
-     * @param parentKey - The key that identifies the parent's id.
      * @param childrenRelation - The key that will include descendants.
      *
      */
     protected constructor(
-        models?: MaybeArray<T>,
-        parentKey = 'parentId',
-        childrenRelation = 'children'
+        models?: MaybeArray<Ancestralised<T, CT>>,
+        childrenRelation: CT = 'children' as CT
     ) {
         super(models);
-        this.parentKey = parentKey;
         this.childrenRelation = childrenRelation;
     }
 
@@ -47,13 +45,17 @@ export default class AncestryCollection<T extends Model> extends ModelCollection
      *
      * @return {AncestryCollection}
      */
-    public static treeOf<ST extends Model>(
-        models: ModelCollection<ST>,
+    public static treeOf<ST extends Model, CT extends string = 'children'>(
+        models: ModelCollection<ST> | ST[],
         parentKey = 'parentId',
-        childrenRelation = 'children'
-    ): AncestryCollection<ST> {
-        const buildModelsRecursive = (modelItems: ST[], parent?: ST, depth = 0): ST[] => {
-            const modelArray: ST[] = [];
+        childrenRelation: CT = 'children' as CT
+    ): AncestryCollection<ST, CT> {
+        const buildModelsRecursive = (
+            modelItems: ST[],
+            parent?: ST,
+            depth = 0
+        ): Ancestralised<ST, CT>[] => {
+            const modelArray: Ancestralised<ST, CT>[] = [];
 
             modelItems.forEach(model => {
                 // if this is a child, but we are looking for a top level
@@ -74,15 +76,14 @@ export default class AncestryCollection<T extends Model> extends ModelCollection
                         buildModelsRecursive(modelItems.filter(m => m.getKey() !== model.getKey()), model, depth + 1)
                     );
 
-                modelArray.push(model);
+                modelArray.push(model as Ancestralised<ST, CT>);
             });
 
             return modelArray;
         };
 
         return new AncestryCollection(
-            buildModelsRecursive(models.toArray()),
-            parentKey,
+            buildModelsRecursive(Array.isArray(models) ? models : models.toArray()),
             childrenRelation
         );
     }

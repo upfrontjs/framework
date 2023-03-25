@@ -8,5 +8,7 @@
  * @return {string}
  */
 export default function words(str: string, count: number, limiter = '...'): string {
-    return str.split(' ').slice(0, count).join(' ') + limiter;
+    const sentence = str.split(' ').slice(0, count).join(' ');
+
+    return sentence.length === str.length ? str : sentence + limiter;
 }

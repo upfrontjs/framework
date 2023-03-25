@@ -50,13 +50,13 @@ export default class EventEmitter<TEvents extends Events = Events> {
         ...args: Parameters<TEvents[P][number]>
     ): Promise<this> {
         if (event in this.listenersOnce) {
-            await Promise.all(this.listenersOnce[event]!.map(listener => listener(...args)));
+            await Promise.all(this.listenersOnce[event]!.map(async listener => listener(...args)));
 
             delete this.listenersOnce[event];
         }
 
         if (event in this.listeners) {
-            await Promise.all(this.listeners[event]!.map(listener => listener(...args)));
+            await Promise.all(this.listeners[event]!.map(async listener => listener(...args)));
         }
 
         return this;

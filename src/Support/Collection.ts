@@ -174,6 +174,10 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      * {@link https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm|Durstenfeld algorithm}.
      */
     public shuffle(): this {
+        if (this.length <= 1) {
+            return this._newInstance(this.toArray());
+        }
+
         const items = this.toArray();
 
         for (let i = items.length - 1; i > 0; i--) {
@@ -181,7 +185,22 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
             [items[i], items[j]] = [items[j]!, items[i]!];
         }
 
-        return this._newInstance(items);
+        const result = this._newInstance(items);
+
+        return this.is(result) ? this.shuffle() : result;
+    }
+
+    /**
+     * Check that the collection the same as the given one.
+     *
+     * @param value
+     *
+     * @return {this}
+     */
+    public is(value: unknown): value is this {
+        return value instanceof this.constructor &&
+            (value as Collection<any>).length === this.length &&
+            this.every((item, index) => isEqual(item, (value as Collection<any>)[index]));
     }
 
     /**
@@ -725,10 +744,10 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @throws {Error}
      */
-    public pluck<Keys extends (Readonly<keyof T> | keyof T)[]>(
+    public pluck<Keys extends (Readonly<keyof T>  )[]>(
         properties: Keys
     ): Collection<Pick<T, Keys[number]>>;
-    public pluck<Keys extends Readonly<keyof T> | keyof T>(
+    public pluck<Keys extends Readonly<keyof T>  >(
         properties: Keys
     ): Collection<Pick<T, Keys>>;
     public pluck<V>(properties: MaybeArray<string>): Collection<V>;

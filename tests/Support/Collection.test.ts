@@ -138,6 +138,20 @@ describe('Collection', () => {
         });
     });
 
+    describe('is()', () => {
+        const elements = [1, 2, 3, 4, 5];
+
+        beforeEach(() => {
+            collection = new Collection(elements);
+        });
+
+        it('should assert if the collection is equal to another collection', () => {
+            expect(collection.is(new Collection(elements))).toBe(true);
+            expect(collection.is(collection)).toBe(true);
+            expect(collection.is(collection.slice(0, 1))).toBe(false);
+        });
+    });
+
     describe('isEmpty()', () => {
         const elements = [1, 2, 3, 4, 5];
 

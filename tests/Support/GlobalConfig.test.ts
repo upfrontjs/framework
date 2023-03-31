@@ -85,7 +85,7 @@ describe('GlobalConfig', () => {
         });
 
         it('should return the default if key not found', () => {
-            expect(config.get('something', 'default')).toBe('default');
+            expect(config.get('newKey', 'default')).toBe('default');
         });
 
         it('should return falsy values if set', () => {

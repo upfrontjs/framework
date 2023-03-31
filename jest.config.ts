@@ -1,13 +1,29 @@
-import type { Config } from 'jest';
+import type { JestConfigWithTsJest } from 'ts-jest';
 
-const config: Config = {
-    preset: 'ts-jest',
-    testEnvironment: 'jsdom',
-    rootDir: './',
+const commonProjectConfig: Exclude<JestConfigWithTsJest['projects'], undefined>[number] = {
     transform: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         '^.+\\.[t]sx?$': 'ts-jest'
     },
+    setupFilesAfterEnv: ['<rootDir>/tests/setupTests.ts']
+};
+
+const config: JestConfigWithTsJest = {
+    preset: 'ts-jest',
+    rootDir: './',
+    projects: [
+        {
+            ...commonProjectConfig,
+            displayName: 'jsdom',
+            testEnvironment: 'jsdom'
+        },
+        {
+            ...commonProjectConfig,
+            displayName: 'node',
+            testEnvironment: 'node'
+        }
+    ],
+
     collectCoverageFrom: [
         '<rootDir>/src/**/*.ts',
         '!<rootDir>/src/index.ts'
@@ -19,7 +35,6 @@ const config: Config = {
     testMatch: [
         '<rootDir>tests/**/*(*.)@(test).[tj]s?(x)'
     ],
-    setupFilesAfterEnv: ['<rootDir>/tests/setupTests.ts'],
     errorOnDeprecated: true,
     bail: true,
     sandboxInjectedGlobals: [

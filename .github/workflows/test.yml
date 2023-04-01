@@ -21,12 +21,14 @@ jobs:
       group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
       cancel-in-progress: true
     steps:
+      # subsequent calls to this action will use already downloaded code from the workspace
       - uses: actions/checkout@v3
   jest-browser:
     needs: setup-test
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           cache: 'npm'
@@ -44,6 +46,7 @@ jobs:
         # current and active LTS
         node: [ 18, 19 ]
     steps:
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           cache: 'npm'

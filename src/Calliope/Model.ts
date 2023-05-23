@@ -113,6 +113,8 @@ export default class Model extends SoftDeletes implements HasFactory {
             instance.fill(attributes).syncOriginal();
         }
 
+        instance.setupMagicAccess();
+
         return instance;
     }
 

@@ -277,6 +277,62 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     }
 
     /**
+     * Create simple access for the getters and setters that have no underlying attribute set.
+     *
+     * Should only be called after the attributes have already been set.
+     */
+    protected setupMagicAccess(this: this): void {
+        const getters: string[] = [];
+        const setters: string[] = [];
+
+        this.constructor
+            .toString()
+            .match(/(?<!\$)(?:get|set)[a-zA-Z0-9_]*Attribute(?=\s*\()/g)
+            ?.forEach(name => {
+                const type = name.startsWith('get') ? 'get' : 'set';
+                const attribute = this.setStringCase(name.slice(3, name.length - 'Attribute'.length));
+
+                // if the attribute is already defined, the getters and setters will get created already
+                if (this.attributes.hasOwnProperty(attribute)) {
+                    return;
+                }
+
+                if (type === 'get') {
+                    getters.push(attribute);
+                } else {
+                    setters.push(attribute);
+                }
+            });
+
+        getters.forEach(attribute => {
+            const setter = setters.findIndex(name => name === attribute);
+
+            const descriptor: PropertyDescriptor = {
+                get: () => (this[`get${pascal(attribute)}Attribute`] as CallableFunction)(),
+                enumerable: true,
+                configurable: true
+            };
+
+            if (setter !== -1) {
+                descriptor.set = newValue => (this[`set${pascal(attribute)}Attribute`] as CallableFunction)(newValue);
+
+                // remove so it's not set up as a setter again later
+                setters.splice(setter, 1);
+            }
+
+            Object.defineProperty(this, attribute, descriptor);
+        });
+
+        setters.forEach(attribute => {
+            Object.defineProperty(this, attribute, {
+                set: newValue => (this[`set${pascal(attribute)}Attribute`] as CallableFunction)(newValue),
+                enumerable: true,
+                configurable: true
+            });
+        });
+    }
+
+    /**
      * Create descriptors for the given key(s) therefore allowing magic access.
      *
      * @param {string|string[]} keys

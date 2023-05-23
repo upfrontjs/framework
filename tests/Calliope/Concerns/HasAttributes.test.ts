@@ -352,6 +352,59 @@ describe('HasAttributes', () => {
         });
     });
 
+    describe('setupMagicAccess()', () => {
+        class ModelWithAccessor extends User {
+            public override get fillable(): string[] {
+                return ['*'];
+            }
+
+            public override getName() {
+                return 'ModelWithProperties';
+            }
+
+            public getTestAttribute() {
+                // eslint-disable-next-line jest/no-conditional-in-test
+                return (this.attributes.test as number | undefined) ?? 1;
+            }
+
+            public getTest2Attribute() {
+                return 1;
+            }
+
+            public setTestAttribute(value: number | string) {
+                this.attributes.test = Number(value);
+            }
+        }
+
+        let model: ModelWithAccessor;
+
+        beforeEach(() => {
+            model = ModelWithAccessor.make();
+        });
+
+        it('should create access to accessor/getter functions', () => {
+            expect(model.test2).toBe(1);
+            expect(model.test).toBe(1);
+        });
+
+        it('should not allow assigning values to magic access if they don\'t have a setter', () => {
+            expect(() => model.test2 = 2).toThrowErrorMatchingInlineSnapshot(
+                '"Cannot set property test2 of [object Object] which has only a getter"'
+            );
+        });
+
+        it('should allow assigning values to magic access if they have have an underlying value', () => {
+            model = ModelWithAccessor.make({ test2: 2 });
+            expect(() => model.test2 = 2).not.toThrow();
+        });
+
+        it('should allow assigning value using setAttribute if attribute only has accessor', () => {
+            expect(() => model.setAttribute('test2', 2)).not.toThrow();
+            // it would still be the value from the accessor
+            expect(model.test2).toBe(1);
+        });
+    });
+
     describe('deleteAttribute()', () => {
         it('should delete the attribute and class property if defined', () => {
             expect(hasAttributes.test).toBe(1);

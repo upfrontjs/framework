@@ -35,8 +35,8 @@ jobs:
           git add -f .nojekyll
           git add -f index.html
           git add -f modules.html
-          git commit -m "Updates from ${{ github.ref }} - {{ github.sha }}" --no-verify
           git fetch
           git switch gh-pages
+          git commit -m "Updates from ${{ github.ref }} - {{ github.sha }}" --no-verify
           git merge origin/main
           git push

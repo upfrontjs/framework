@@ -163,7 +163,7 @@ describe('HasAttributes', () => {
     });
 
     describe('getAttribute()', () => {
-        // test are in order of priority of how the value is determined
+        // tests are in order of priority of how the value is determined
         it('should return value from accessor', () => {
             Object.defineProperty(hasAttributes, 'getTestAttribute', {
                 value: function (): number {
@@ -494,7 +494,7 @@ describe('HasAttributes', () => {
         });
 
         it('should not error when called with a relating model', () => {
-            // this in reality tests the transformKeys method
+            // this, in reality, tests the transformKeys method
             const team = Team.factory().createOne();
 
             const func = () => hasAttributes
@@ -736,7 +736,7 @@ describe('HasAttributes', () => {
     });
 
     describe('isDirty()', () => {
-        // isDirty an alias of hasChanges
+        // isDirty is an alias of hasChanges
         it('should determine if any changes has been made', () => {
             hasAttributes = User.make({ test: 1, value: 2 });
 

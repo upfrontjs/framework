@@ -55,7 +55,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @type {Symbol.iterator}
      */
-    public* [Symbol.iterator](): Iterator<T> {
+    public *[Symbol.iterator](): Iterator<T> {
         for (let i = 0; i < this.length; i++) {
             yield this[i]!;
         }
@@ -742,10 +742,10 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @throws {Error}
      */
-    public pluck<Keys extends (Readonly<keyof T>  )[]>(
+    public pluck<Keys extends (Readonly<keyof T>)[]>(
         properties: Keys
     ): Collection<Pick<T, Keys[number]>>;
-    public pluck<Keys extends Readonly<keyof T>  >(
+    public pluck<Keys extends Readonly<keyof T>>(
         properties: Keys
     ): Collection<Pick<T, Keys>>;
     public pluck<V>(properties: MaybeArray<string>): Collection<V>;

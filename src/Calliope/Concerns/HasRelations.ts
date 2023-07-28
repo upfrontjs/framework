@@ -50,7 +50,7 @@ export default class HasRelations extends CallsApi {
     protected hasOneOrManyParentKeyName: string | undefined;
 
     /**
-     * Load a relationships from remote.
+     * Load relationship(s) from remote.
      *
      * @param {string|string[]} relations
      * @param {boolean} forceReload - Whether the already loaded relations should also be reloaded.

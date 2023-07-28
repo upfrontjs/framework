@@ -728,7 +728,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
                 return;
             }
 
-            json[relation] = (relations[relation] as ModelCollection<Model>).map(model =>  model.toJSON()).toArray();
+            json[relation] = (relations[relation] as ModelCollection<Model>).map(model => model.toJSON()).toArray();
         });
 
         return json as unknown as T;

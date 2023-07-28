@@ -92,7 +92,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @type {object}
      */
-    protected attributes: SimpleAttributes = {};
+    protected attributes: SimpleAttributes = Object.create(null);
 
     /**
      * The attribute's original state.
@@ -101,7 +101,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @type {object}
      */
-    protected original: SimpleAttributes = {};
+    protected original: SimpleAttributes = Object.create(null);
 
     /**
      * The iterator used for looping over the attributes and relations.

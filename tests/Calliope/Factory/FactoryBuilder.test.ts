@@ -12,7 +12,7 @@ import Shift from '../../mock/Models/Shift';
 import Contract from '../../mock/Models/Contract';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import { now } from '../../setupTests';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash.clonedeep';
 
 let factoryBuilder: FactoryBuilder<User, UserFactory>;
 

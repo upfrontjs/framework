@@ -10,7 +10,7 @@ import finish from '../../Support/string/finish';
 import plural from '../../Support/string/plural';
 import snake from '../../Support/string/snake';
 import start from '../../Support/string/start';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash.clonedeep';
 import type { MaybeArray } from '../../Support/type';
 
 type Relation = 'belongsTo' | 'belongsToMany' | 'hasMany' | 'hasOne' | 'morphMany' | 'morphOne' | 'morphTo';

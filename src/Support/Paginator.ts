@@ -1,4 +1,5 @@
-import { isEqual, cloneDeep } from 'lodash';
+import cloneDeep from 'lodash.clonedeep';
+import isEqual from 'lodash.isequal';
 import InvalidOffsetException from '../Exceptions/InvalidOffsetException';
 import type { MaybeArray } from './type';
 

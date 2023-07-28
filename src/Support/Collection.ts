@@ -1,4 +1,6 @@
-import { isEqual, orderBy, uniq } from 'lodash';
+import uniq from 'lodash.uniq';
+import orderBy from 'lodash.orderby';
+import isEqual from 'lodash.isequal';
 import type Arrayable from '../Contracts/Arrayable';
 import type Jsonable from '../Contracts/Jsonable';
 import LogicException from '../Exceptions/LogicException';

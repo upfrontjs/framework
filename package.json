@@ -76,7 +76,12 @@
         "commit": "commit"
     },
     "dependencies": {
-        "lodash": "^4.17.20",
+        "lodash.clonedeep": "^4.5.0",
+        "lodash.isequal": "^4.5.0",
+        "lodash.merge": "^4.6.2",
+        "lodash.orderby": "^4.6.0",
+        "lodash.snakecase": "^4.1.1",
+        "lodash.uniq": "^4.5.0",
         "pluralize": "^8.0.0",
         "qs": "^6.9.4",
         "uuid": "^9.0.0"
@@ -89,7 +94,12 @@
         "@rollup/plugin-typescript": "^11.0.0",
         "@semantic-release/git": "^10.0.0",
         "@types/jest": "^29.0.1",
-        "@types/lodash": "^4.14.167",
+        "@types/lodash.clonedeep": "^4.5.7",
+        "@types/lodash.isequal": "^4.5.6",
+        "@types/lodash.merge": "^4.6.7",
+        "@types/lodash.orderby": "^4.6.7",
+        "@types/lodash.snakecase": "^4.1.7",
+        "@types/lodash.uniq": "^4.5.7",
         "@types/pluralize": "^0.0.29",
         "@types/qs": "^6.9.5",
         "@types/semantic-release": "^20.0.1",
@@ -115,10 +125,15 @@
         "typescript": "^5.0.2"
     },
     "peerDependencies": {
+        "@types/lodash.clonedeep": "^4.5.7",
+        "@types/lodash.isequal": "^4.5.6",
+        "@types/lodash.merge": "^4.6.7",
+        "@types/lodash.orderby": "^4.6.7",
+        "@types/lodash.snakecase": "^4.1.7",
+        "@types/lodash.uniq": "^4.5.7",
+        "@types/pluralize": "^0.0.29",
         "@types/qs": "^6.9.5",
-        "@types/uuid": "^9.0.0",
-        "@types/lodash": "^4.14.167",
-        "@types/pluralize": "^0.0.29"
+        "@types/uuid": "^9.0.0"
     },
     "peerDependenciesMeta": {
         "@types/qs": {
@@ -127,7 +142,22 @@
         "@types/uuid": {
             "optional": true
         },
-        "@types/lodash": {
+        "@types/lodash.clonedeep": {
+            "optional": true
+        },
+        "@types/lodash.isequal": {
+            "optional": true
+        },
+        "@types/lodash.merge": {
+            "optional": true
+        },
+        "@types/lodash.orderby": {
+            "optional": true
+        },
+        "@types/lodash.snakecase": {
+            "optional": true
+        },
+        "@types/lodash.uniq": {
             "optional": true
         },
         "@types/pluralize": {

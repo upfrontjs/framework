@@ -1,7 +1,7 @@
 import User from '../../mock/Models/User';
 import Shift from '../../mock/Models/Shift';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
-import { isEqual } from 'lodash';
+import isEqual from 'lodash.isequal';
 import Contract from '../../mock/Models/Contract';
 import Team from '../../mock/Models/Team';
 import type { RawAttributes } from '../../../src';

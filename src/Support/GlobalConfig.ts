@@ -1,4 +1,5 @@
-import { cloneDeep, merge } from 'lodash';
+import merge from 'lodash.merge';
+import cloneDeep from 'lodash.clonedeep';
 import type Configuration from '../Contracts/Configuration';
 
 type WithProperty<T, K extends PropertyKey> = T & {

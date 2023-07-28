@@ -11,7 +11,7 @@ import Collection from '../../Support/Collection';
 import camel from '../../Support/string/camel';
 import pascal from '../../Support/string/pascal';
 import snake from '../../Support/string/snake';
-import type { KeysNotMatching, MaybeArray } from '../../Support/type';
+import type { KeysNotMatching, MaybeArray, UnionToIntersection } from '../../Support/type';
 
 // eslint-disable-next-line max-len
 type InternalProperties = 'attributeCasing' | 'attributeCasts' | 'attributes' | 'casts' | 'endpoint' | 'exists' | 'fillable' | 'fillableAttributes' | 'guarded' | 'guardedAttributes' | 'hasOneOrManyParentKeyName' | 'loading' | 'mutatedEndpoint' | 'original' | 'primaryKey' | 'relationMethodPrefix' | 'relations' | 'requestCount' | 'serverAttributeCasing';
@@ -56,6 +56,39 @@ export type RawAttributes<T extends HasAttributes> = {
         ? RawAttributes<T[K]>
         : T[K] extends ModelCollection<infer M> ? RawAttributes<M>[] : T[K]
 };
+
+// only keep getters that are functions
+type FilterGetters<T> = {
+    [K in keyof T as Extract<K, `get${string}Attribute`>]: T[K] extends (...args: any) => any ? T[K] : never
+};
+
+// get an object with keys of the getter property name and value as the return type
+type TransformGetters<T extends Record<`get${string}Attribute`, (...args: any) => any>> = {
+    [K in keyof T]: Record<
+    K extends `get${infer P}Attribute` ? Uncapitalize<P> : never,
+    // todo - this should not be writable id there's no setter
+    T[K] extends (...args: any) => infer R ? R : never
+    >
+};
+
+/* eslint-disable @typescript-eslint/indent */
+/**
+ * Intersect the type with the names of the accessors and their return types.
+ *
+ * This type is experimental and may change.
+ */
+export type Getters<T> =
+// remove empty string keys
+Omit<
+    // make the union into an intersection
+    UnionToIntersection<
+        // get every member of the object
+        TransformGetters<FilterGetters<T>>[keyof TransformGetters<FilterGetters<T>>]
+    >,
+''>
+// intersect with the given type
+& T;
+/* eslint-enable @typescript-eslint/indent */
 
 export default class HasAttributes extends GuardsAttributes implements Jsonable, Iterable<any> {
     /**
@@ -259,7 +292,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
 
         if (
             (isObjectLiteral(value) && !Collection.isCollection(value)
-            || (Array.isArray(value) || Collection.isCollection(value)) && value.every(item => isObjectLiteral(item)))
+                || (Array.isArray(value) || Collection.isCollection(value)) && value.every(item => isObjectLiteral(item)))
             // @ts-expect-error
             && (this as unknown as HasRelations).relationDefined(key)
         ) {

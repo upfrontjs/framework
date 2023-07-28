@@ -259,28 +259,28 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
             return this._newInstance(values);
         }
 
-        const objects: Record<string, any>[] = [];
+        const uniqueObjects: Record<string, unknown>[] = [];
 
-        this.forEach((object: Record<string, any>) => {
-            let boolean: boolean;
-
+        const objectIsUnique = <O extends Record<string, unknown>>(object: O): boolean => {
             if (key instanceof Function) {
                 // @ts-expect-error - we expect that the argument callback can handler objects
-                boolean = !objects.some(obj => isEqual(key(obj), key(object)));
-            } else if (key && key in object) {
-                boolean = !objects.some(obj =>
-                    isEqual((obj as Record<string, unknown>)[key], (object as Record<string, unknown>)[key])
-                );
-            } else {
-                boolean = !objects.some(obj => isEqual(obj, object));
+                return !uniqueObjects.some(obj => isEqual(key(obj), key(object)));
             }
 
-            if (boolean) {
-                objects.push(object);
+            if (typeof key === 'string' && key in object) {
+                return !uniqueObjects.some(obj => isEqual(obj[key], object[key]));
+            }
+
+            return !uniqueObjects.some(obj => isEqual(obj, object));
+        };
+
+        this.forEach((object: Record<string, unknown>) => {
+            if (objectIsUnique(object)) {
+                uniqueObjects.push(object);
             }
         });
 
-        return this._newInstance(objects);
+        return this._newInstance(uniqueObjects);
     }
 
     /**

@@ -98,12 +98,17 @@ describe('ApiResponseHandler', () => {
         ).resolves.toBeUndefined();
     });
 
-    it('should return the response if it was called with a head request', async () => {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        fetchMock.mockResponseOnce(undefined, { headers: { 'Content-Length': '12345' } });
+    it.each(['HEAD', 'OPTIONS', 'TRACE', 'CONNECT'])(
+        'should return the response if it was called with a %s request',
+        async (method) => {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            fetchMock.mockResponseOnce(undefined, { headers: { 'Content-Length': '12345' } });
 
-        const apiResponse = (await handler.handle(new API().call('url', 'HEAD')))!;
-        expect(apiResponse).toBeInstanceOf(Response);
-        expect(apiResponse.headers.get('Content-Length')).toBe('12345');
-    });
+            const apiResponse = (await handler.handle(new API().call(
+                'url',
+                method as 'CONNECT' | 'HEAD' | 'OPTIONS' | 'TRACE'
+            )))!;
+            expect(apiResponse).toBeInstanceOf(Response);
+            expect(apiResponse.headers.get('Content-Length')).toBe('12345');
+        });
 });

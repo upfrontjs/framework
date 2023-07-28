@@ -181,6 +181,24 @@ describe('Model', () => {
         it('should have the capabilities of the model', () => {
             expect(User.make({ key: 'value' }).getAttribute('key')).toBe('value');
         });
+
+        it('should set up magic access for accessors', () => {
+            class ModelWithAccessor extends User {
+                public override get fillable(): string[] {
+                    return ['*'];
+                }
+
+                public override getName() {
+                    return 'ModelWithProperties';
+                }
+
+                public getTestAttribute() {
+                    return 1;
+                }
+            }
+
+            expect(ModelWithAccessor.make({ key: 'value' }).test).toBe(1);
+        });
     });
 
     describe('is()', () => {

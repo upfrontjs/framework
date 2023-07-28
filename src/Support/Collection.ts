@@ -1,4 +1,6 @@
-import { isEqual, orderBy, uniq } from 'lodash';
+import uniq from 'lodash.uniq';
+import orderBy from 'lodash.orderby';
+import isEqual from 'lodash.isequal';
 import type Arrayable from '../Contracts/Arrayable';
 import type Jsonable from '../Contracts/Jsonable';
 import LogicException from '../Exceptions/LogicException';
@@ -55,7 +57,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @type {Symbol.iterator}
      */
-    public* [Symbol.iterator](): Iterator<T> {
+    public *[Symbol.iterator](): Iterator<T> {
         for (let i = 0; i < this.length; i++) {
             yield this[i]!;
         }
@@ -174,6 +176,10 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      * {@link https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm|Durstenfeld algorithm}.
      */
     public shuffle(): this {
+        if (this.length <= 1) {
+            return this._newInstance(this.toArray());
+        }
+
         const items = this.toArray();
 
         for (let i = items.length - 1; i > 0; i--) {
@@ -182,6 +188,19 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
         }
 
         return this._newInstance(items);
+    }
+
+    /**
+     * Check that the collection the same as the given one.
+     *
+     * @param value
+     *
+     * @return {this}
+     */
+    public is(value: unknown): value is this {
+        return value instanceof this.constructor &&
+            (value as Collection<any>).length === this.length &&
+            this.every((item, index) => isEqual(item, (value as Collection<any>)[index]));
     }
 
     /**
@@ -242,28 +261,28 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
             return this._newInstance(values);
         }
 
-        const objects: Record<string, any>[] = [];
+        const uniqueObjects: Record<string, unknown>[] = [];
 
-        this.forEach((object: Record<string, any>) => {
-            let boolean: boolean;
-
+        const objectIsUnique = <O extends Record<string, unknown>>(object: O): boolean => {
             if (key instanceof Function) {
                 // @ts-expect-error - we expect that the argument callback can handler objects
-                boolean = !objects.some(obj => isEqual(key(obj), key(object)));
-            } else if (key && key in object) {
-                boolean = !objects.some(obj =>
-                    isEqual((obj as Record<string, unknown>)[key], (object as Record<string, unknown>)[key])
-                );
-            } else {
-                boolean = !objects.some(obj => isEqual(obj, object));
+                return !uniqueObjects.some(obj => isEqual(key(obj), key(object)));
             }
 
-            if (boolean) {
-                objects.push(object);
+            if (typeof key === 'string' && key in object) {
+                return !uniqueObjects.some(obj => isEqual(obj[key], object[key]));
+            }
+
+            return !uniqueObjects.some(obj => isEqual(obj, object));
+        };
+
+        this.forEach((object: Record<string, unknown>) => {
+            if (objectIsUnique(object)) {
+                uniqueObjects.push(object);
             }
         });
 
-        return this._newInstance(objects);
+        return this._newInstance(uniqueObjects);
     }
 
     /**
@@ -491,7 +510,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
             this.forEach(item => {
                 const propertyKey = key(item);
 
-                if (!result.hasOwnProperty(propertyKey)) {
+                if (!(propertyKey in result)) {
                     result[propertyKey] = new Collection();
                 }
 
@@ -725,10 +744,10 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @throws {Error}
      */
-    public pluck<Keys extends (Readonly<keyof T> | keyof T)[]>(
+    public pluck<Keys extends (Readonly<keyof T>)[]>(
         properties: Keys
     ): Collection<Pick<T, Keys[number]>>;
-    public pluck<Keys extends Readonly<keyof T> | keyof T>(
+    public pluck<Keys extends Readonly<keyof T>>(
         properties: Keys
     ): Collection<Pick<T, Keys>>;
     public pluck<V>(properties: MaybeArray<string>): Collection<V>;

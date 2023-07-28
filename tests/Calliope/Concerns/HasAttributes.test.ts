@@ -1,7 +1,7 @@
 import User from '../../mock/Models/User';
 import Shift from '../../mock/Models/Shift';
 import ModelCollection from '../../../src/Calliope/ModelCollection';
-import { isEqual } from 'lodash';
+import isEqual from 'lodash.isequal';
 import Contract from '../../mock/Models/Contract';
 import Team from '../../mock/Models/Team';
 import type { RawAttributes } from '../../../src';
@@ -163,7 +163,7 @@ describe('HasAttributes', () => {
     });
 
     describe('getAttribute()', () => {
-        // test are in order of priority of how the value is determined
+        // tests are in order of priority of how the value is determined
         it('should return value from accessor', () => {
             Object.defineProperty(hasAttributes, 'getTestAttribute', {
                 value: function (): number {
@@ -352,6 +352,59 @@ describe('HasAttributes', () => {
         });
     });
 
+    describe('setupMagicAccess()', () => {
+        class ModelWithAccessor extends User {
+            public override get fillable(): string[] {
+                return ['*'];
+            }
+
+            public override getName() {
+                return 'ModelWithProperties';
+            }
+
+            public getTestAttribute() {
+                // eslint-disable-next-line jest/no-conditional-in-test
+                return (this.attributes.test as number | undefined) ?? 1;
+            }
+
+            public getTest2Attribute() {
+                return 1;
+            }
+
+            public setTestAttribute(value: number | string) {
+                this.attributes.test = Number(value);
+            }
+        }
+
+        let model: ModelWithAccessor;
+
+        beforeEach(() => {
+            model = ModelWithAccessor.make();
+        });
+
+        it('should create access to accessor/getter functions', () => {
+            expect(model.test2).toBe(1);
+            expect(model.test).toBe(1);
+        });
+
+        it('should not allow assigning values to magic access if they don\'t have a setter', () => {
+            expect(() => model.test2 = 2).toThrowErrorMatchingInlineSnapshot(
+                '"Cannot set property test2 of [object Object] which has only a getter"'
+            );
+        });
+
+        it('should allow assigning values to magic access if they have have an underlying value', () => {
+            model = ModelWithAccessor.make({ test2: 2 });
+            expect(() => model.test2 = 2).not.toThrow();
+        });
+
+        it('should allow assigning value using setAttribute if attribute only has accessor', () => {
+            expect(() => model.setAttribute('test2', 2)).not.toThrow();
+            // it would still be the value from the accessor
+            expect(model.test2).toBe(1);
+        });
+    });
+
     describe('deleteAttribute()', () => {
         it('should delete the attribute and class property if defined', () => {
             expect(hasAttributes.test).toBe(1);
@@ -441,7 +494,7 @@ describe('HasAttributes', () => {
         });
 
         it('should not error when called with a relating model', () => {
-            // this in reality tests the transformKeys method
+            // this, in reality, tests the transformKeys method
             const team = Team.factory().createOne();
 
             const func = () => hasAttributes
@@ -547,11 +600,11 @@ describe('HasAttributes', () => {
                     return 'accessed value';
                 }
             }
-            const userValueTransformator = UserWithAccessor.make({ test: 1, test1: 1 });
+            const userValueTransformer = UserWithAccessor.make({ test: 1, test1: 1 });
 
-            userValueTransformator.mergeCasts({ test1: 'boolean' });
+            userValueTransformer.mergeCasts({ test1: 'boolean' });
 
-            expect(userValueTransformator.getOriginal()).toStrictEqual({ test: 'accessed value', test1: true });
+            expect(userValueTransformer.getOriginal()).toStrictEqual({ test: 'accessed value', test1: true });
         });
 
         it('should get a single original value from the attributes in a resolved format', () => {
@@ -560,12 +613,12 @@ describe('HasAttributes', () => {
                     return 'accessed value';
                 }
             }
-            const userValueTransformator = UserWithAccessor.make({ test: 1, test1: 1 });
+            const userValueTransformer = UserWithAccessor.make({ test: 1, test1: 1 });
 
-            userValueTransformator.mergeCasts({ test1: 'boolean' });
+            userValueTransformer.mergeCasts({ test1: 'boolean' });
 
-            expect(userValueTransformator.getOriginal('test')).toBe('accessed value');
-            expect(userValueTransformator.getOriginal('test1')).toBe(true);
+            expect(userValueTransformer.getOriginal('test')).toBe('accessed value');
+            expect(userValueTransformer.getOriginal('test1')).toBe(true);
         });
 
         it('should return a default value if given key not set', () => {
@@ -683,7 +736,7 @@ describe('HasAttributes', () => {
     });
 
     describe('isDirty()', () => {
-        // isDirty an alias of hasChanges
+        // isDirty is an alias of hasChanges
         it('should determine if any changes has been made', () => {
             hasAttributes = User.make({ test: 1, value: 2 });
 

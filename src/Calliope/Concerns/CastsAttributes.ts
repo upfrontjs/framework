@@ -1,6 +1,7 @@
 import LogicException from '../../Exceptions/LogicException';
 import Collection from '../../Support/Collection';
-import { cloneDeep, merge } from 'lodash';
+import merge from 'lodash.merge';
+import cloneDeep from 'lodash.clonedeep';
 import type AttributeCaster from '../../Contracts/AttributeCaster';
 import GlobalConfig from '../../Support/GlobalConfig';
 import type { Attributes, AttributeKeys } from './HasAttributes';

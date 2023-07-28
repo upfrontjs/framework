@@ -124,11 +124,11 @@ const experiencedSafeDrivers = await User
 With the default [ApiCaller](./services#apicaller) and [HandlesApiRequest](./services#handlesapiresponse) implementations, you can interact with your api without the need for the models or any of their methods.
 
 ```js
-import { GlobalConfig, API, ApiResponseHandler } from '@upfrontjs/framework';
+import { GlobalConfig } from '@upfrontjs/framework';
 
 const config = new GlobalConfig;
-const handler = new ApiResponseHandler;
-const api = new API;
+const handler = new (config.get('apiResponseHandler'));
+const api = new new (config.get('api'));
 
 const form = new FormData;
 // ... collect the form entries
@@ -322,11 +322,11 @@ interface PaginatedApiResponse<T = Attributes> {
         /**
          * From all the existing records this is where the current items start from.
          */
-        from: number;
+        from: number | null;
         /**
          * From all the existing records this is where the current items go to.
          */
-        to: number;
+        to: number | null;
         last_page: number;
         /**
          * String representation of a number.

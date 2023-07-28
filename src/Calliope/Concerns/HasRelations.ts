@@ -10,7 +10,7 @@ import finish from '../../Support/string/finish';
 import plural from '../../Support/string/plural';
 import snake from '../../Support/string/snake';
 import start from '../../Support/string/start';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash.clonedeep';
 import type { MaybeArray } from '../../Support/type';
 
 type Relation = 'belongsTo' | 'belongsToMany' | 'hasMany' | 'hasOne' | 'morphMany' | 'morphOne' | 'morphTo';
@@ -50,7 +50,7 @@ export default class HasRelations extends CallsApi {
     protected hasOneOrManyParentKeyName: string | undefined;
 
     /**
-     * Load a relationships from remote.
+     * Load relationship(s) from remote.
      *
      * @param {string|string[]} relations
      * @param {boolean} forceReload - Whether the already loaded relations should also be reloaded.

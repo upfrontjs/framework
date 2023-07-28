@@ -138,6 +138,20 @@ describe('Collection', () => {
         });
     });
 
+    describe('is()', () => {
+        const elements = [1, 2, 3, 4, 5];
+
+        beforeEach(() => {
+            collection = new Collection(elements);
+        });
+
+        it('should assert if the collection is equal to another collection', () => {
+            expect(collection.is(new Collection(elements))).toBe(true);
+            expect(collection.is(collection)).toBe(true);
+            expect(collection.is(collection.slice(0, 1))).toBe(false);
+        });
+    });
+
     describe('isEmpty()', () => {
         const elements = [1, 2, 3, 4, 5];
 
@@ -624,10 +638,22 @@ describe('Collection', () => {
     });
 
     describe('shuffle()', () => {
-        it('should return the collection in a randomised order', () => {
-            const numCollection = new Collection([1, 2, 3, 4, 5]);
+        const elements = [1, 2, 3, 4, 5];
 
-            expect(numCollection.shuffle()).not.toStrictEqual(collection);
+        beforeEach(() => {
+            collection = new Collection(elements);
+        });
+
+        it('should return the collection in a randomised order', () => {
+            expect(collection.shuffle()).not.toStrictEqual(collection);
+        });
+
+        it('should return return a clone when having 1 element or empty', () => {
+            collection = new Collection([1]);
+            expect(collection.shuffle()).toStrictEqual(collection);
+
+            collection = new Collection();
+            expect(collection.shuffle()).toStrictEqual(collection);
         });
 
         it('should have valid indices and length', () => {

@@ -5,7 +5,7 @@ import type { Attributes, AttributeKeys, SimpleAttributes } from './Concerns/Has
 import ModelCollection from './ModelCollection';
 import finish from '../Support/string/finish';
 import type { MaybeArray, StaticToThis } from '../Support/type';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash.clonedeep';
 import isObjectLiteral from '../Support/function/isObjectLiteral';
 import { value } from '../Support/function';
 
@@ -112,6 +112,8 @@ export default class Model extends SoftDeletes implements HasFactory {
         if (isObjectLiteral(attributes) && Object.keys(attributes).length) {
             instance.fill(attributes).syncOriginal();
         }
+
+        instance.setupMagicAccess();
 
         return instance;
     }

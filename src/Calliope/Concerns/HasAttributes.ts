@@ -1,5 +1,6 @@
 import type Jsonable from '../../Contracts/Jsonable';
-import { isEqual, cloneDeep } from 'lodash';
+import isEqual from 'lodash.isequal';
+import cloneDeep from 'lodash.clonedeep';
 import GuardsAttributes from './GuardsAttributes';
 import type HasRelations from './HasRelations';
 import type Model from '../Model';
@@ -10,7 +11,7 @@ import Collection from '../../Support/Collection';
 import camel from '../../Support/string/camel';
 import pascal from '../../Support/string/pascal';
 import snake from '../../Support/string/snake';
-import type { KeysNotMatching, MaybeArray } from '../../Support/type';
+import type { KeysNotMatching, MaybeArray, UnionToIntersection } from '../../Support/type';
 
 // eslint-disable-next-line max-len
 type InternalProperties = 'attributeCasing' | 'attributeCasts' | 'attributes' | 'casts' | 'endpoint' | 'exists' | 'fillable' | 'fillableAttributes' | 'guarded' | 'guardedAttributes' | 'hasOneOrManyParentKeyName' | 'loading' | 'mutatedEndpoint' | 'original' | 'primaryKey' | 'relationMethodPrefix' | 'relations' | 'requestCount' | 'serverAttributeCasing';
@@ -56,6 +57,39 @@ export type RawAttributes<T extends HasAttributes> = {
         : T[K] extends ModelCollection<infer M> ? RawAttributes<M>[] : T[K]
 };
 
+// only keep getters that are functions
+type FilterGetters<T> = {
+    [K in keyof T as Extract<K, `get${string}Attribute`>]: T[K] extends (...args: any) => any ? T[K] : never
+};
+
+// get an object with keys of the getter property name and value as the return type
+type TransformGetters<T extends Record<`get${string}Attribute`, (...args: any) => any>> = {
+    [K in keyof T]: Record<
+    K extends `get${infer P}Attribute` ? Uncapitalize<P> : never,
+    // todo - this should not be writable id there's no setter
+    T[K] extends (...args: any) => infer R ? R : never
+    >
+};
+
+/* eslint-disable @typescript-eslint/indent */
+/**
+ * Intersect the type with the names of the accessors and their return types.
+ *
+ * This type is experimental and may change.
+ */
+export type Getters<T> =
+// remove empty string keys
+Omit<
+    // make the union into an intersection
+    UnionToIntersection<
+        // get every member of the object
+        TransformGetters<FilterGetters<T>>[keyof TransformGetters<FilterGetters<T>>]
+    >,
+''>
+// intersect with the given type
+& T;
+/* eslint-enable @typescript-eslint/indent */
+
 export default class HasAttributes extends GuardsAttributes implements Jsonable, Iterable<any> {
     /**
      * The model attribute.
@@ -92,7 +126,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @type {object}
      */
-    protected attributes: SimpleAttributes = {};
+    protected attributes: SimpleAttributes = Object.create(null);
 
     /**
      * The attribute's original state.
@@ -101,7 +135,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
      *
      * @type {object}
      */
-    protected original: SimpleAttributes = {};
+    protected original: SimpleAttributes = Object.create(null);
 
     /**
      * The iterator used for looping over the attributes and relations.
@@ -258,7 +292,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
 
         if (
             (isObjectLiteral(value) && !Collection.isCollection(value)
-            || (Array.isArray(value) || Collection.isCollection(value)) && value.every(item => isObjectLiteral(item)))
+                || (Array.isArray(value) || Collection.isCollection(value)) && value.every(item => isObjectLiteral(item)))
             // @ts-expect-error
             && (this as unknown as HasRelations).relationDefined(key)
         ) {
@@ -274,6 +308,62 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
         this.createDescriptor(key);
 
         return this;
+    }
+
+    /**
+     * Create simple access for the getters and setters that have no underlying attribute set.
+     *
+     * Should only be called after the attributes have already been set.
+     */
+    protected setupMagicAccess(this: this): void {
+        const getters: string[] = [];
+        const setters: string[] = [];
+
+        this.constructor
+            .toString()
+            .match(/(?<!\$)(?:get|set)[a-zA-Z0-9_]*Attribute(?=\s*\()/g)
+            ?.forEach(name => {
+                const type = name.startsWith('get') ? 'get' : 'set';
+                const attribute = this.setStringCase(name.slice(3, name.length - 'Attribute'.length));
+
+                // if the attribute is already defined, the getters and setters will get created already
+                if (attribute in this.attributes) {
+                    return;
+                }
+
+                if (type === 'get') {
+                    getters.push(attribute);
+                } else {
+                    setters.push(attribute);
+                }
+            });
+
+        getters.forEach(attribute => {
+            const setter = setters.findIndex(name => name === attribute);
+
+            const descriptor: PropertyDescriptor = {
+                get: () => (this[`get${pascal(attribute)}Attribute`] as CallableFunction)(),
+                enumerable: true,
+                configurable: true
+            };
+
+            if (setter !== -1) {
+                descriptor.set = newValue => (this[`set${pascal(attribute)}Attribute`] as CallableFunction)(newValue);
+
+                // remove so it's not set up as a setter again later
+                setters.splice(setter, 1);
+            }
+
+            Object.defineProperty(this, attribute, descriptor);
+        });
+
+        setters.forEach(attribute => {
+            Object.defineProperty(this, attribute, {
+                set: newValue => (this[`set${pascal(attribute)}Attribute`] as CallableFunction)(newValue),
+                enumerable: true,
+                configurable: true
+            });
+        });
     }
 
     /**
@@ -370,9 +460,9 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     public forceFill(attributes: Attributes): this {
         attributes = transformKeys(attributes, this.attributeCasing);
 
-        Object.keys(attributes).forEach(name => {
-            this.setAttribute(name, attributes[name]);
-        });
+        for (const [key, value] of Object.entries(attributes)) {
+            this.setAttribute(key, value);
+        }
 
         return this;
     }
@@ -390,7 +480,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
             keys = Array.isArray(keys) ? keys : [keys];
 
             keys.flat().forEach(key => {
-                if (this.attributes.hasOwnProperty(key)) {
+                if (key in this.attributes) {
                     this.original[key] = cloneDeep(this.attributes[key]);
                 } else {
                     delete this.original[key];
@@ -438,7 +528,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
         };
 
         if (key) {
-            return this.original.hasOwnProperty(key) ? getOriginalValue(key) : defaultValue;
+            return key in this.original ? getOriginalValue(key) : defaultValue;
         }
 
         const result: Attributes = {};
@@ -460,7 +550,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     public getRawOriginal(): SimpleAttributes<this>;
     public getRawOriginal(key?: string, defaultValue?: unknown): unknown {
         if (key) {
-            return this.original.hasOwnProperty(key) ? cloneDeep(this.original[key]) : defaultValue;
+            return key in this.original ? cloneDeep(this.original[key]) : defaultValue;
         }
 
         return cloneDeep(this.original);
@@ -672,7 +762,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
                 return;
             }
 
-            json[relation] = (relations[relation] as ModelCollection<Model>).map(model =>  model.toJSON()).toArray();
+            json[relation] = (relations[relation] as ModelCollection<Model>).map(model => model.toJSON()).toArray();
         });
 
         return json as unknown as T;

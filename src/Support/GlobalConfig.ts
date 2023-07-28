@@ -1,4 +1,5 @@
-import { cloneDeep, merge } from 'lodash';
+import merge from 'lodash.merge';
+import cloneDeep from 'lodash.clonedeep';
 import type Configuration from '../Contracts/Configuration';
 
 type WithProperty<T, K extends PropertyKey> = T & {
@@ -58,7 +59,7 @@ export default class GlobalConfig<T extends Configuration & Record<PropertyKey, 
      * @param {string} key
      */
     public has<K extends PropertyKey | keyof T>(key: K): this is GlobalConfig<WithProperty<T, K>> {
-        return GlobalConfig.configuration.hasOwnProperty(key);
+        return key in GlobalConfig.configuration;
     }
 
     /**

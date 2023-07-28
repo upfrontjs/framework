@@ -1,4 +1,4 @@
-import { snakeCase } from 'lodash';
+import snakeCase from 'lodash.snakecase';
 
 /**
  * Transform the string to snake_case.

@@ -146,11 +146,11 @@ export default class GuardsAttributes extends CastsAttributes {
             return attributes;
         }
 
-        Object.keys(attributes).forEach(name => {
+        for (const [name, value] of Object.entries(attributes)) {
             if (!this.isGuarded(name)) {
-                fillable[name] = attributes[name];
+                fillable[name] = value;
             }
-        });
+        }
 
         return fillable;
     }

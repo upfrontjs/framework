@@ -303,7 +303,7 @@ user.setGuarded(['dob']).isGuarded('dob'); // false
 Besides [casts](#casting) there is also an alternative method to transform your values on the fly. You can define accessors which are called when you're accessing an attribute and mutators which are called when you're setting a value. You can define them like the following example
 
 ```js
-User.js
+// User.js
 import { Model } from '@upfrontjs/framework';
 
 export default class User extends Model {
@@ -332,6 +332,22 @@ import User from '@Models/User';
 
 const user = User.make({ title: 'Dr.', fullName: 'John Doe' });
 user.fullName; // 'Dr. John Doe'
+```
+
+Furthermore, when defining an accessor that has had no value set previously, the value will be made available on the model as a property. This means that you can access the value like so:
+
+```js
+// User.js
+import { Model } from '@upfrontjs/framework';
+
+export default class User extends Model {
+    getFullNameAttribute(name) {
+        return name ?? 'no name set';
+    }
+}
+
+const user = User.make();
+user.fullName; // 'no name set'
 ```
 
 ## Attribute management

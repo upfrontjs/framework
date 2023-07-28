@@ -7,7 +7,7 @@ import Shift from '../../mock/Models/Shift';
 import Contract from '../../mock/Models/Contract';
 import { default as FileModel } from '../../mock/Models/File';
 import fetchMock, { getLastRequest } from '../../mock/fetch-mock';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash.clonedeep';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import Collection from '../../../src/Support/Collection';
 import { config } from '../../setupTests';

@@ -40,11 +40,12 @@ export default class API implements ApiCaller {
      */
     public async call(
         url: string,
-        method: 'HEAD' | 'head',
+        method: 'CONNECT' | 'connect' | 'HEAD' | 'head' | 'OPTIONS' | 'options' | 'TRACE' | 'trace',
         data?: FormData | Record<string, unknown>,
         customHeaders?: CustomHeaders,
         queryParameters?: Record<string, unknown>
-    ): Promise<ApiResponse & { request: { method: 'HEAD' } }>;
+        // uppercase method because initConfig sets it to uppercase
+    ): Promise<ApiResponse & { request: { method: 'CONNECT' | 'HEAD' | 'OPTIONS' | 'TRACE' } }>;
     public async call<T>(
         url: string,
         method: Method,
@@ -61,11 +62,8 @@ export default class API implements ApiCaller {
     ): Promise<ApiResponse> {
         const config = await this.initConfig(url, method, data, customHeaders, queryParameters);
 
-        return fetch(config.url, config.requestInit).then(resp => {
-            return Object.assign(resp, {
-                request: config.requestInit
-            }) as ApiResponse;
-        });
+        return fetch(config.url, config.requestInit)
+            .then(response => Object.assign(response, { request: config.requestInit }) as ApiResponse);
     }
 
     /**

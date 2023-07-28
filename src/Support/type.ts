@@ -67,6 +67,6 @@ export type StaticToThis<T = Model> = {
 };
 
 /**
- * Generic data type.
+ * Generic object data type.
  */
-export type Data<T extends Record<string, any> = Record<string, any>> = Record<string, any> & T;
+export type Data<T extends Record<string, any> = Record<string, any>> = T;

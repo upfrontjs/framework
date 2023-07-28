@@ -1,7 +1,7 @@
 # Introduction
 
 ## What is it?
-It's a model centric data handling solution. With it, you can write expressive, readable, concise syntax that you already know and love from back-end MVC frameworks while staying back-end agnostic. It provides an elegant structure to complex data with a plethora of features to manage the data, and additional helpers for common tasks like handling lists, pagination, string manipulation etc.
+It's a model centric data handling solution. With it, you can write expressive, readable, concise syntax that you already know and love from back-end MVC frameworks while staying back-end agnostic. It provides an elegant interface to complex data with a plethora of features to access it, and additional helpers for common tasks like handling lists, pagination, string manipulation and more.
 
 ```ts
 import User from '@models/User';
@@ -12,6 +12,8 @@ const excellentStudentNames = students
     .filter(student => student.grades.average('value') > 4)
     .pluck('name');
 ```
+
+Furthermore, the package can be run in multiple environments, including node, react-native, electron etc.
 
 ## What does it solve?
 There are number of solutions out there for fetching data and working with the response. However not all of these might be as maintainable as one would hope. With state management, you might have a getter for users, but those users include all users, meaning for a custom collection you would need a new getter method. An on-demand ajax request written specifically to solve a single issue, while it is simple to do, it quickly gets repetitive and laborious to maintain. [Upfront](./installation.md) solves the above by creating abstraction over the data in a unified api. Just like the above examples it can be used to fetch data on demand or be complimentary to state management libraries.

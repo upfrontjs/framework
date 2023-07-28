@@ -448,3 +448,28 @@ value(
     1
 ); // 2
 ```
+
+#### dataGet
+
+The `dataGet` is a helper method to safely access any path within an object or array. If the path does not exist, it will return the default value (default: `undefined`). Optionally the path may include a wildcard `*` to match array elements.
+
+```ts
+import { dataGet } from '@upfrontjs/framework';
+
+const complexStructure = [
+    {
+        users: [
+            {
+                shifts: [
+                    { id: 1 }
+                ]
+            }
+        ]
+    }
+];
+
+dataGet(complexStructure, '0.users.0.shifts.0.id'); // 1
+dataGet(complexStructure, '0.users.0.shifts.*.id'); // [1]
+dataGet(complexStructure, '0.users.0.shifts.0.name'); // undefined
+dataGet(complexStructure, '0.users.0.shifts.0.name', 'default name'); // 'default name'
+```

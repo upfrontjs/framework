@@ -31,7 +31,8 @@ import type {
     AttributeKeys,
     SimpleAttributes,
     SimpleAttributeKeys,
-    RawAttributes
+    RawAttributes,
+    Getters
 } from './Calliope/Concerns/HasAttributes';
 import type FactoryHooks from './Contracts/FactoryHooks';
 import type { CastType } from './Calliope/Concerns/CastsAttributes';
@@ -65,7 +66,8 @@ export type {
     RawAttributes,
     ResolvableAttributes,
     Order,
-    RequestMiddleware
+    RequestMiddleware,
+    Getters
 };
 
 export * from './Support/type';

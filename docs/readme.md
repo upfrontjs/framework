@@ -9,7 +9,7 @@ actions:
   type: primary
 features:
 - title: Simple
-  details: The syntax naturally lends itself to how you work with objects from ORM.
+  details: The syntax naturally lends itself to how you work with objects from ORM frameworks.
 - title: Robust
   details: Typescript and vast amount of testing and ensures no matter how big project you drop this in, it's going to work.
 - title: Customisable

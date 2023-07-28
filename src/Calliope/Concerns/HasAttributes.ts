@@ -426,9 +426,9 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     public forceFill(attributes: Attributes): this {
         attributes = transformKeys(attributes, this.attributeCasing);
 
-        Object.keys(attributes).forEach(name => {
-            this.setAttribute(name, attributes[name]);
-        });
+        for (const [key, value] of Object.entries(attributes)) {
+            this.setAttribute(key, value);
+        }
 
         return this;
     }

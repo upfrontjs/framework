@@ -76,6 +76,8 @@ type TransformGetters<T extends Record<`get${string}Attribute`, (...args: any) =
  * Intersect the type with the names of the accessors and their return types.
  *
  * This type is experimental and may change.
+ *
+ * @experimental
  */
 export type Getters<T> =
 // remove empty string keys

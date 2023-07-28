@@ -288,7 +288,7 @@ describe('function helpers', () => {
             expect(func.dataGet(structure, ['*', '0'], 'default')).toBe('default');
         });
 
-        it('should collection as data', () => {
+        it('should accept collection as data', () => {
             const collection = collect([{ id: 1, name: 'test-1' }, { id: 2, name: 'test-2' }]);
 
             expect(func.dataGet(collection, '*.id')).toStrictEqual([1, 2]);

@@ -1,5 +1,6 @@
 import type HandlesApiResponse from '../Contracts/HandlesApiResponse';
 import type { ApiResponse } from '../Contracts/HandlesApiResponse';
+import type { Method } from '../Calliope/Concerns/CallsApi';
 
 /**
  * The default HandlesApiResponse implementation used by upfrontjs.
@@ -11,8 +12,11 @@ export default class ApiResponseHandler implements HandlesApiResponse {
      * @inheritDoc
      */
     public async handle(
-        promise: Promise<ApiResponse & { request: { method: 'HEAD' | 'head' } }>
-        // omit to discourage accessing such on HEAD responses
+        promise: Promise<
+        ApiResponse &
+        { request: { method: 'CONNECT' | 'connect' | 'HEAD' | 'head' | 'OPTIONS' | 'options' | 'TRACE' | 'trace' } }
+        >
+        // omit to discourage accessing such on response where it's not available
     ): Promise<Omit<ApiResponse, 'data' | 'json'> | undefined>;
     public async handle<T>(promise: Promise<ApiResponse<T>>): Promise<T | undefined>;
     public async handle(promise: Promise<ApiResponse>): Promise<unknown> {
@@ -32,7 +36,8 @@ export default class ApiResponseHandler implements HandlesApiResponse {
      * @throws {ApiResponse}
      */
     public async handleResponse(
-        response: ApiResponse & { request: { method: 'HEAD' | 'head' } }
+        response: ApiResponse &
+        { request: { method: 'CONNECT' | 'connect' | 'HEAD' | 'head' | 'OPTIONS' | 'options' | 'TRACE' | 'trace' } }
     ): Promise<Omit<ApiResponse, 'data' | 'json'> | undefined>;
     public async handleResponse<T>(response: ApiResponse<T>): Promise<T | undefined>;
     public async handleResponse(response: ApiResponse): Promise<unknown> {
@@ -43,13 +48,14 @@ export default class ApiResponseHandler implements HandlesApiResponse {
 
         if (response.status < 200 || response.status > 299 || response.status === 204) return;
 
-        if (response.request?.method === 'HEAD') {
-            // this response was the answer to the `HEAD` request
-            // and the user is likely looking for the headers
-            // but return the whole response just in case
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+        const method = response.request?.method?.toUpperCase() as Uppercase<Method> | undefined;
+
+        if (method && ['OPTIONS', 'HEAD', 'TRACE', 'CONNECT'].includes(method)) {
+            // the user might just want the headers or debug info
+            // so just return the whole response
             return response;
         }
-
 
         if (typeof response.json === 'function') {
             return response.json();

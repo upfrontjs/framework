@@ -18,12 +18,15 @@ import type { MaybeArray, StaticToThis } from '../../Support/type';
  * The request methods.
  */
 export type Method =
-    'DELETE' | 'delete'
+    'CONNECT' | 'connect'
+    | 'DELETE' | 'delete'
     | 'GET' | 'get'
     | 'HEAD' | 'head'
+    | 'OPTIONS' | 'options'
     | 'PATCH' | 'patch'
     | 'POST' | 'post'
-    | 'PUT' | 'put';
+    | 'PUT' | 'put'
+    | 'TRACE' | 'trace';
 
 /**
  * Key-value pairs of headers where the values can be an array of values.
@@ -85,12 +88,12 @@ export default class CallsApi extends BuildsQuery {
      * @return {Promise<any>}
      */
     public async call<T = any>(
-        method: 'GET' | 'get' | 'HEAD' | 'head',
+        method: 'GET' | 'get' | 'HEAD' | 'head' | 'OPTIONS' | 'options' | 'TRACE' | 'trace',
         data?: QueryParams | SimpleAttributes,
         customHeaders?: CustomHeaders
     ): Promise<T | undefined>;
     public async call<T = any>(
-        method: Exclude<Method, 'GET' | 'get' | 'HEAD' | 'head'>,
+        method: Exclude<Method, 'GET' | 'get' | 'HEAD' | 'head' | 'OPTIONS' | 'options' | 'TRACE' | 'trace'>,
         data?: FormData | SimpleAttributes | SimpleAttributes<this>,
         customHeaders?: CustomHeaders
     ): Promise<T | undefined>;

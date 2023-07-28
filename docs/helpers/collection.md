@@ -71,6 +71,20 @@ numCollection.shuffle(); // Collection[3, 1, 4, 2, 5]
 numCollection.shuffle(); // Collection[2, 5, 1, 4, 3]
 ```
 
+#### is
+
+The `is` method determines if the collection is equal to the given collection. It uses deep equality to ensure every element in the collection is equal to the given collection in the same order.
+
+```js
+import { Collection } from '@upfrontjs/framework';
+
+const collection = new Collection([1, 2, 3, 4, 5]);
+collection.is(collection); // true
+collection.is(new Collection([1, 2, 3, 4, 5])); // true
+collection.is(collection.slice(0, 1)); // false
+(new Collection([{ id: 1 }])).is(new Collection([{ id: 2 }])); // false
+```
+
 #### isEmpty
 
 The `isEmpty` method determines whether the collection is empty or not.

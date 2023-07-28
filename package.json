@@ -4,6 +4,14 @@
     "description": "Data handling framework complementary to backend model systems.",
     "main": "index.min.js",
     "module": "index.es.min.js",
+    "exports": {
+        ".": {
+            "default": "./index.min.js",
+            "import": "./index.es.min.js",
+            "require": "./index.min.js",
+            "node": "./index.min.js"
+        }
+    },
     "types": "types/index.d.ts",
     "files": [
         "string*.js",

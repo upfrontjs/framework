@@ -600,11 +600,11 @@ describe('HasAttributes', () => {
                     return 'accessed value';
                 }
             }
-            const userValueTransformator = UserWithAccessor.make({ test: 1, test1: 1 });
+            const userValueTransformer = UserWithAccessor.make({ test: 1, test1: 1 });
 
-            userValueTransformator.mergeCasts({ test1: 'boolean' });
+            userValueTransformer.mergeCasts({ test1: 'boolean' });
 
-            expect(userValueTransformator.getOriginal()).toStrictEqual({ test: 'accessed value', test1: true });
+            expect(userValueTransformer.getOriginal()).toStrictEqual({ test: 'accessed value', test1: true });
         });
 
         it('should get a single original value from the attributes in a resolved format', () => {
@@ -613,12 +613,12 @@ describe('HasAttributes', () => {
                     return 'accessed value';
                 }
             }
-            const userValueTransformator = UserWithAccessor.make({ test: 1, test1: 1 });
+            const userValueTransformer = UserWithAccessor.make({ test: 1, test1: 1 });
 
-            userValueTransformator.mergeCasts({ test1: 'boolean' });
+            userValueTransformer.mergeCasts({ test1: 'boolean' });
 
-            expect(userValueTransformator.getOriginal('test')).toBe('accessed value');
-            expect(userValueTransformator.getOriginal('test1')).toBe(true);
+            expect(userValueTransformer.getOriginal('test')).toBe('accessed value');
+            expect(userValueTransformer.getOriginal('test1')).toBe(true);
         });
 
         it('should return a default value if given key not set', () => {

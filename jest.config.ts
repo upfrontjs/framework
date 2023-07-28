@@ -23,7 +23,6 @@ const config: JestConfigWithTsJest = {
             testEnvironment: 'node'
         }
     ],
-
     collectCoverageFrom: [
         '<rootDir>/src/**/*.ts',
         '!<rootDir>/src/index.ts'

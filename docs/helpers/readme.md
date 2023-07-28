@@ -11,6 +11,7 @@ Upfront provides some helper methods to help manipulate strings. All of these ar
 The helper can be reached at:
 
 <CodeGroup>
+
 <CodeGroupItem title="Javascript">
 ```js
 import '@upfrontjs/framework/string.min.js';

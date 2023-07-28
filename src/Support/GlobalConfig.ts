@@ -58,7 +58,7 @@ export default class GlobalConfig<T extends Configuration & Record<PropertyKey, 
      * @param {string} key
      */
     public has<K extends PropertyKey | keyof T>(key: K): this is GlobalConfig<WithProperty<T, K>> {
-        return GlobalConfig.configuration.hasOwnProperty(key);
+        return key in GlobalConfig.configuration;
     }
 
     /**

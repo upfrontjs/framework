@@ -508,7 +508,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
             this.forEach(item => {
                 const propertyKey = key(item);
 
-                if (!result.hasOwnProperty(propertyKey)) {
+                if (!(propertyKey in result)) {
                     result[propertyKey] = new Collection();
                 }
 

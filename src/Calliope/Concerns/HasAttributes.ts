@@ -293,7 +293,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
                 const attribute = this.setStringCase(name.slice(3, name.length - 'Attribute'.length));
 
                 // if the attribute is already defined, the getters and setters will get created already
-                if (this.attributes.hasOwnProperty(attribute)) {
+                if (attribute in this.attributes) {
                     return;
                 }
 
@@ -446,7 +446,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
             keys = Array.isArray(keys) ? keys : [keys];
 
             keys.flat().forEach(key => {
-                if (this.attributes.hasOwnProperty(key)) {
+                if (key in this.attributes) {
                     this.original[key] = cloneDeep(this.attributes[key]);
                 } else {
                     delete this.original[key];
@@ -494,7 +494,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
         };
 
         if (key) {
-            return this.original.hasOwnProperty(key) ? getOriginalValue(key) : defaultValue;
+            return key in this.original ? getOriginalValue(key) : defaultValue;
         }
 
         const result: Attributes = {};
@@ -516,7 +516,7 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
     public getRawOriginal(): SimpleAttributes<this>;
     public getRawOriginal(key?: string, defaultValue?: unknown): unknown {
         if (key) {
-            return this.original.hasOwnProperty(key) ? cloneDeep(this.original[key]) : defaultValue;
+            return key in this.original ? cloneDeep(this.original[key]) : defaultValue;
         }
 
         return cloneDeep(this.original);

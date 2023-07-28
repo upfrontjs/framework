@@ -44,7 +44,7 @@ jobs:
     strategy:
       matrix:
         # current and active LTS
-        node: [ 18, 19 ]
+        node: [ 18, 20 ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3

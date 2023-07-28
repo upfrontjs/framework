@@ -13,18 +13,23 @@ The helper can be reached at:
 <CodeGroup>
 
 <CodeGroupItem title="Javascript">
+
 ```js
 import '@upfrontjs/framework/string.min.js';
 // or
 import '@upfrontjs/framework/string.es.min.js';
 ```
+
 </CodeGroupItem>
 
 <CodeGroupItem title="Typescript">
+
 ```ts
 import '@upfrontjs/framework/src/string';
 ```
+
 </CodeGroupItem>
+
 </CodeGroup>
 
 
@@ -33,10 +38,13 @@ The signature of the methods on the `String.prototype` methods matches the below
 <CodeGroup>
 
 <CodeGroupItem title="String.prototype">
+
 ```js
 'The quick brown fox jumps over the lazy dog.'.after('over ').before('.').plural().ucFirst().finish('?'); // 'The lazy dogs?'
 ```
+
 </CodeGroupItem>
+
 <CodeGroupItem title="Helper methods">
 
 ```js
@@ -46,6 +54,7 @@ finish(ucFirst(plural(before(after('The quick brown fox jumps over the lazy dog.
 ```
 
 </CodeGroupItem>
+
 </CodeGroup>
 
 #### ucFirst

@@ -185,9 +185,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
             [items[i], items[j]] = [items[j]!, items[i]!];
         }
 
-        const result = this._newInstance(items);
-
-        return this.is(result) ? this.shuffle() : result;
+        return this._newInstance(items);
     }
 
     /**

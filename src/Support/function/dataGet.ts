@@ -1,5 +1,5 @@
 import type { MaybeArray, Data } from '../type';
-import Collection from '../Collection';
+import type Collection from '../Collection';
 
 /**
  * Utility to safely access values on a deeply nested structure.
@@ -23,17 +23,17 @@ export default function dataGet<T>(
         return defaultValue;
     }
 
-    if (Collection.isCollection<string>(path)) {
+    if (typeof path === 'object' && 'toArray' in path && typeof path.toArray === 'function') {
         path = path.toArray();
     }
 
-    const segments = Array.isArray(path) ? path : path.split('.');
+    const segments = Array.isArray(path) ? path : (path as string).split('.');
     let value = data;
 
     for (let i = 0; i < segments.length; i++) {
         if (segments[i] === '*') {
-            if (Collection.isCollection<Data>(value)) {
-                value = value.toArray();
+            if (typeof value === 'object' && 'toArray' in value && typeof value.toArray === 'function') {
+                value = (value as Collection<Data>).toArray();
             }
 
             if (!Array.isArray(value)) {

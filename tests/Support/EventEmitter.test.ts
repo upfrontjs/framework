@@ -275,6 +275,12 @@ describe('EventEmitter', () => {
             expect(myEventCb).toHaveBeenNthCalledWith(1, 2);
             expect(myEventCb).toHaveBeenNthCalledWith(2, 1);
         });
+
+        it('should not fail if emitting event that has no listeners', async () => {
+            const emitter = EventEmitter.getInstance<MyEvents>();
+
+            await expect(emitter.emit('eventWithNoListeners')).resolves.not.toThrow();
+        });
     });
 
     describe('has()', () => {

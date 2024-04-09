@@ -3,6 +3,7 @@
     "version": "0.19.0",
     "description": "Data handling framework complementary to backend model systems.",
     "main": "index.min.js",
+    "type": "module",
     "module": "index.es.min.js",
     "exports": {
         ".": {

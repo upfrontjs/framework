@@ -91,6 +91,9 @@ module.exports = {
         "@typescript-eslint/prefer-for-of": "off",
         "@typescript-eslint/no-restricted-imports": "off",
         "@typescript-eslint/lines-between-class-members": ["error"],
+        "@typescript-eslint/max-params": ["warn", {
+            "max": 5
+        }],
         "@typescript-eslint/lines-around-comment": ["warn", {
             "allowInterfaceStart": true,
             "allowBlockStart": true,

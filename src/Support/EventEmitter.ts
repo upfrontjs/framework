@@ -118,6 +118,7 @@ export default class EventEmitter<TEvents extends Events = Events> {
             this.listeners[event as keyof TEvents] = [] as unknown as TEvents[keyof TEvents];
         }
 
+        // todo - check if the listener is already bound
         this.listeners[event]!.push(listener);
 
         return this;

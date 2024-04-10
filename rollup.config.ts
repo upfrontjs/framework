@@ -1,7 +1,11 @@
 import typescript from '@rollup/plugin-typescript';
 import pkg from './package.json' assert { type: 'json' };
 import terser from '@rollup/plugin-terser';
-import bundleSize from 'rollup-plugin-bundle-size';
+import bundleSize from 'rollup-plugin-output-size';
+import { fileURLToPath } from 'node:url';
+import { glob } from 'glob';
+import * as path from 'node:path';
+import type { InputOptions, RollupOptions } from 'rollup';
 
 const banner = `
 /*! ================================
@@ -11,13 +15,9 @@ Released under ${pkg.license} License
 ================================== */
 `;
 
-/**
- * @type {import('rollup/dist/rollup').InputOptions}
- */
-const commonConfig = {
+const commonConfig: InputOptions = {
     external: [
         ...Object.keys(pkg.dependencies ?? {}),
-        ...Object.keys(pkg.optionalDependencies ?? {}),
         ...Object.keys(pkg.peerDependencies ?? {})
     ],
     plugins: [
@@ -26,10 +26,12 @@ const commonConfig = {
         typescript({ tsconfig: './tsconfig.json' }),
         terser({
             format: {
-                comments: (node, comment) => {
-                    if (comment.type === "comment2") {
-                        return /@upfront/.test(comment.value);
+                comments: (_node, comment) => {
+                    if (comment.type === 'comment2') {
+                        return comment.value.includes('@upfront');
                     }
+
+                    return false;
                 }
             }
         }),
@@ -37,10 +39,7 @@ const commonConfig = {
     ]
 };
 
-/**
- * @type {import('rollup/dist/rollup').RollupOptions[]}
- */
-const rollupConfig = [
+const rollupConfig: RollupOptions[] = [
     {
         input: 'src/index.ts',
         output: [

@@ -79,7 +79,7 @@
         "test:coverage": "npm run test -- --coverage",
         "lint": "eslint . --cache --fix --ext .ts",
         "emit-declarations": "tsc --declaration --declarationMap --declarationDir ./types --emitDeclarationOnly",
-        "build": "rollup -c && npm run emit-declarations",
+        "build": "rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript && npm run emit-declarations",
         "docs:api": "[ ! -d './types' ] && npm run emit-declarations || echo './types folder exists' && npx typedoc",
         "prepare": "husky install",
         "commit": "commit"

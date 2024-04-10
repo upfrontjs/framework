@@ -2,19 +2,29 @@
     "name": "@upfrontjs/framework",
     "version": "0.19.0",
     "description": "Data handling framework complementary to backend model systems.",
-    "main": "index.min.js",
+    "main": "index.min.cjs",
     "type": "module",
     "module": "index.es.min.js",
     "exports": {
         ".": {
-            "default": "./index.min.js",
+            "require": "./index.min.cjs",
             "import": "./index.es.min.js",
-            "require": "./index.min.js",
-            "node": "./index.min.js"
+            "types": "./types/index.d.ts"
+        },
+        "./string": {
+            "require": "./string.es.min.cjs",
+            "import": "./string.es.min.js",
+            "types": "./types/string.d.ts/"
+        },
+        "./array": {
+            "require": "./array.es.min.cjs",
+            "import": "./array.es.min.js",
+            "types": "./types/array.d.ts/"
         }
     },
-    "types": "types/index.d.ts",
+    "types": "./types/index.d.ts",
     "files": [
+        "Support",
         "string*.js",
         "array*.js",
         "index*.js",
@@ -78,7 +88,7 @@
         "test": "jest",
         "test:coverage": "npm run test -- --coverage",
         "lint": "eslint . --cache --fix --ext .ts",
-        "emit-declarations": "tsc --declaration --declarationMap --declarationDir ./types --emitDeclarationOnly",
+        "emit-declarations": "tsc --project ./build.tsconfig.json --declaration --declarationMap --declarationDir ./types --emitDeclarationOnly",
         "build": "rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript && npm run emit-declarations",
         "docs:api": "[ ! -d './types' ] && npm run emit-declarations || echo './types folder exists' && npx typedoc",
         "prepare": "husky install",

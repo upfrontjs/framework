@@ -5,7 +5,7 @@ import bundleSize from 'rollup-plugin-output-size';
 import { fileURLToPath } from 'node:url';
 import { glob } from 'glob';
 import * as path from 'node:path';
-import type { InputOptions, RollupOptions } from 'rollup';
+import type { InputOptions, RollupOptions, SourcemapPathTransformOption } from 'rollup';
 
 const banner = `
 /*! ================================
@@ -23,7 +23,7 @@ const commonConfig: InputOptions = {
     plugins: [
         // it doesn't find the config by default and doesn't emit interface files
         // todo - https://github.com/rollup/plugins/pull/791/files#diff-77ceb76f06466d761730b952567396e6b5c292cc4044441cdfdf048b4614881dR83 check those tests
-        typescript({ tsconfig: './tsconfig.json' }),
+        typescript({ tsconfig: './build.tsconfig.json' }),
         terser({
             format: {
                 comments: (_node, comment) => {
@@ -39,6 +39,11 @@ const commonConfig: InputOptions = {
     ]
 };
 
+const sourcemapPathTransform: SourcemapPathTransformOption = relativeSourcePath => {
+    return relativeSourcePath.replaceAll('.ts', '.d.ts')
+        .replaceAll('src/', 'types/');
+};
+
 const rollupConfig: RollupOptions[] = [
     {
         input: 'src/index.ts',
@@ -47,12 +52,14 @@ const rollupConfig: RollupOptions[] = [
                 file: pkg.main,
                 format: 'cjs',
                 sourcemap: true,
+                sourcemapPathTransform,
                 banner
             },
             {
                 file: pkg.module,
                 format: 'es',
                 sourcemap: true,
+                sourcemapPathTransform,
                 banner
             }
         ],
@@ -60,18 +67,43 @@ const rollupConfig: RollupOptions[] = [
     },
 
     {
+        input: Object.fromEntries(
+            glob.sync('src/Support/{array,string,function}/*.ts').map(file => [
+                // This removes `src/` as well as the file extension from each
+                // file, so e.g., src/nested/foo.js becomes nested/foo
+                path.relative(
+                    'src',
+                    file.slice(0, file.length - path.extname(file).length)
+                ),
+                // This expands the relative paths to absolute paths, so e.g.
+                // src/nested/foo becomes /project/src/nested/foo.js
+                fileURLToPath(new URL(file, import.meta.url))
+            ])
+        ),
+        output: {
+            format: 'es',
+            sourcemap: true,
+            sourcemapPathTransform,
+            dir: './'
+        },
+        ...commonConfig
+    },
+
+    {
         input: 'src/array.ts',
         output: [
             {
-                file: 'array.min.js',
+                file: 'array.min.cjs',
                 format: 'cjs',
                 sourcemap: true,
+                sourcemapPathTransform,
                 banner
             },
             {
                 file: 'array.es.min.js',
                 format: 'es',
                 sourcemap: true,
+                sourcemapPathTransform,
                 banner
             }
         ],
@@ -82,15 +114,17 @@ const rollupConfig: RollupOptions[] = [
         input: 'src/string.ts',
         output: [
             {
-                file: 'string.min.js',
+                file: 'string.min.cjs',
                 format: 'cjs',
                 sourcemap: true,
+                sourcemapPathTransform,
                 banner
             },
             {
                 file: 'string.es.min.js',
                 format: 'es',
                 sourcemap: true,
+                sourcemapPathTransform,
                 banner
             }
         ],

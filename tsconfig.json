@@ -16,10 +16,12 @@
         "removeComments": false,
         "pretty": true,
         "allowSyntheticDefaultImports": true,
-        "forceConsistentCasingInFileNames": true
+        "forceConsistentCasingInFileNames": true,
+        "noPropertyAccessFromIndexSignature": false
     },
     "include": [
-        "src/*.ts"
+        "src/*.ts",
+        "jest.config.ts"
     ],
     "exclude": [
         "**/node_modules/",

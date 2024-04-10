@@ -1,6 +1,7 @@
 import Collection from '../../src/Support/Collection';
 import Paginator from '../../src/Support/Paginator';
 import * as arr from '../../src/Support/array';
+import { describe, expect, it } from '@jest/globals';
 // eslint-disable-next-line @typescript-eslint/no-import-type-side-effects
 import '../../src/array';
 // The Array/Array.prototype methods are the same as the helper methods so can be tested at the same time

@@ -292,7 +292,9 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
 
         if (
             (isObjectLiteral(value) && !Collection.isCollection(value)
-                || (Array.isArray(value) || Collection.isCollection(value)) && value.every(item => isObjectLiteral(item)))
+                || (Array.isArray(value)
+                || Collection.isCollection(value)) && value.every(item => isObjectLiteral(item))
+            )
             // @ts-expect-error
             && (this as unknown as HasRelations).relationDefined(key)
         ) {

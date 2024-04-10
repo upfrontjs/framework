@@ -5,6 +5,7 @@ import Team from '../mock/Models/Team';
 import Shift from '../mock/Models/Shift';
 import collect from '../../src/Support/initialiser/collect';
 import LogicException from '../../src/Exceptions/LogicException';
+import { afterEach, describe, expect, it, jest } from '@jest/globals';
 
 describe('function helpers', () => {
     describe('isObjectLiteral()', () => {
@@ -161,7 +162,9 @@ describe('function helpers', () => {
         });
 
         it('should reject the value if cannot be resolved', async () => {
-            await expect(func.retry(async () => Promise.reject(undefined))).rejects.toBeUndefined();
+            await expect(func.retry(async () => Promise.reject(new Error())))
+                .rejects
+                .toThrow(new Error());
         });
 
         it('should accept a 4th argument which decides if the function should be retried', async () => {

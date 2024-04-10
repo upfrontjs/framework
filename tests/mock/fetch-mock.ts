@@ -3,6 +3,7 @@ import type { Method } from '../../src';
 import { isObjectLiteral } from '../../src';
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 import { Response } from 'cross-fetch';
+import { jest } from '@jest/globals';
 
 /**
  * The mock of fetch.
@@ -86,7 +87,9 @@ export const getRequests = (): RequestDescriptor[] => {
 export const getLastRequest = (): RequestDescriptor | undefined => {
     const calls = getRequests();
 
-    if (!calls.length) return;
+    if (!calls.length) {
+        return undefined;
+    }
 
     const lastCall = calls[calls.length - 1];
 

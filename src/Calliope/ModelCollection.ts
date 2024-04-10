@@ -157,6 +157,8 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
         this.forEach(model => {
             let boolean;
 
+            // false positive
+            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
             if (key || key && key in model) {
                 if (key instanceof Function) {
                     boolean = !modelArray.some(item => key(item) === key(model));
@@ -370,7 +372,7 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
      */
     public override includes(model: T): boolean {
         this._throwIfNotModels();
-        const id = this._getArgumentKeys(model)[0];
+        const [id] = this._getArgumentKeys(model);
 
         return !!this.toArray().filter(item => String(item.getKey()) === id).length;
     }

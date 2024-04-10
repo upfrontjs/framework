@@ -94,6 +94,7 @@ export default class GlobalConfig<T extends Configuration & Record<PropertyKey, 
      *
      * @return {this}
      */
+    // @ts-expect-error
     public reset(): asserts this is GlobalConfig<Partial<T>> {
         GlobalConfig.configuration = {};
     }

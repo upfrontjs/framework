@@ -13,6 +13,7 @@ import Contract from '../../mock/Models/Contract';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import { now } from '../../setupTests';
 import cloneDeep from 'lodash.clonedeep';
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 
 let factoryBuilder: FactoryBuilder<User, UserFactory>;
 
@@ -303,7 +304,7 @@ describe('FactoryBuilder', () => {
         });
 
         it('should not set the id and timestamps', () => {
-            const model = factoryBuilder.makeOne()!;
+            const model = factoryBuilder.makeOne();
 
             expect(model[model.getUpdatedAtName()]).toBeNull();
             expect(model[model.getCreatedAtName()]).toBeNull();

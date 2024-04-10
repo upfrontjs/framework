@@ -8,6 +8,7 @@ import { config } from '../../setupTests';
 import { snake, finish } from '../../../src/Support/string';
 import type RequestMiddleware from '../../../src/Contracts/RequestMiddleware';
 import transformKeys from '../../../src/Support/function/transformKeys';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 
 let caller: User;
 
@@ -342,7 +343,7 @@ describe('CallsApi', () => {
                 requestMiddleware = {
                     handle: () => ({
                         queryParameters: { key: 'new value' },
-                        customHeaders: undefined
+                        customHeaders: {}
                     })
                 };
                 config.set('requestMiddleware', requestMiddleware);

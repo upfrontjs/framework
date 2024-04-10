@@ -1,5 +1,6 @@
 import GlobalConfig from '../src/Support/GlobalConfig';
 import type Configuration from '../src/Contracts/Configuration';
+import { beforeEach, jest } from '@jest/globals';
 // for some reason global.Promise not found when referenced within node-fetch
 global.Promise = globalThis.Promise;
 // eslint-disable-next-line @typescript-eslint/no-redeclare

@@ -3,6 +3,7 @@ import LogicException from '../../src/Exceptions/LogicException';
 import { now } from '../setupTests';
 import { isObjectLiteral } from '../../src';
 import InvalidOffsetException from '../../src/Exceptions/InvalidOffsetException';
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 
 let collection: Collection<any>;
 
@@ -734,9 +735,9 @@ describe('Collection', () => {
     describe('dump()', () => {
         const elements = [1, 2, 3, 4, 5] as const;
 
-        let consoleLogMock: jest.SpyInstance,
-            consoleGroupCollapsedMock: jest.SpyInstance,
-            consoleGroupEndMock: jest.SpyInstance;
+        let consoleLogMock: jest.Spied<any>,
+            consoleGroupCollapsedMock: jest.Spied<any>,
+            consoleGroupEndMock: jest.Spied<any>;
 
         beforeEach(() => {
             collection = new Collection(elements);
@@ -1096,7 +1097,7 @@ describe('Collection', () => {
 
         it('should execute a method with the collection passed to the closure', () => {
             const func = jest.fn(coll => coll);
-            collection.pipe(func);
+            collection.pipe(func as ((collection: Collection<typeof elements>) => typeof collection));
             expect(func).toHaveBeenCalled();
             expect(func).toHaveBeenCalledWith(collection);
         });

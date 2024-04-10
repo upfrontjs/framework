@@ -4,6 +4,7 @@ import type { CustomHeaders, Method } from '../../src/Calliope/Concerns/CallsApi
 import { finish } from '../../src/Support/string';
 import InvalidArgumentException from '../../src/Exceptions/InvalidArgumentException';
 import fetchMock from '../mock/fetch-mock';
+import { beforeEach, describe, expect, it } from '@jest/globals';
 
 const url = finish(String(globalConfig.get('baseEndPoint')), '/') + 'users';
 
@@ -220,9 +221,7 @@ describe('API', () => {
 
         it('should set the method to GET if it got removed', async () => {
             Object.defineProperty(api, 'requestOptions', {
-                value: {
-                    method: undefined
-                } as Partial<RequestInit>,
+                value: {},
                 configurable: true
             });
             let config = (await api.getConfig(url, 'get', {})).requestInit;
@@ -238,6 +237,7 @@ describe('API', () => {
                     _data?: FormData | Record<string, unknown>
                     /* eslint-enable @typescript-eslint/no-unused-vars */
                 ): Partial<RequestInit> => {
+                    // @ts-expect-error we want to unset for this test
                     return {
                         method: undefined
                     };

@@ -1,6 +1,7 @@
 import GlobalConfig from '../../src/Support/GlobalConfig';
 import API from '../../src/Services/API';
 import type Configuration from '../../src/Contracts/Configuration';
+import { beforeEach, describe, expect, it } from '@jest/globals';
 
 // initial type is required so set's assertion doesn't trigger circular analysis for typescript
 /* eslint-disable-next-line @typescript-eslint/consistent-generic-constructors */

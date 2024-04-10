@@ -3,6 +3,7 @@ import fetchMock from '../mock/fetch-mock';
 import User from '../mock/Models/User';
 import type { ApiResponse } from '../../src/Contracts/HandlesApiResponse';
 import { API } from '../../src';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 
 const handler = new ApiResponseHandler();
 
@@ -47,6 +48,7 @@ describe('ApiResponseHandler', () => {
                 status: 404,
                 statusText: 'Not Found'
             });
+            // eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable
             const resp = await handler.handle<ApiResponse>(fetch('url')).catch(r => r);
             expect(resp.status).toBe(404);
             expect(resp.statusText).toBe('Not Found');
@@ -63,6 +65,7 @@ describe('ApiResponseHandler', () => {
                 status: 503,
                 statusText: 'Service Unavailable'
             });
+            // eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable
             const resp = await handler.handle<ApiResponse>(fetch('url')).catch(r => r);
             expect(resp.status).toBe(503);
             expect(resp.statusText).toBe('Service Unavailable');
@@ -95,7 +98,7 @@ describe('ApiResponseHandler', () => {
     ])('should return undefined if the response (%s) %s', async (status) => {
         fetchMock.mockResponseOnce(undefined, { status });
 
-        await expect(handler.handle(fetch('url')).catch(r => r)).resolves.toBeUndefined();
+        await expect(handler.handle(fetch('url')).catch((r: unknown) => r)).resolves.toBeUndefined();
     });
 
     it('should return undefined if it\'s a successful response but has no json parsing available', async () => {

@@ -2,7 +2,6 @@ import Collection from '../../src/Support/Collection';
 import type { Method } from '../../src';
 import { isObjectLiteral } from '../../src';
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-import { Response } from 'cross-fetch';
 import { jest } from '@jest/globals';
 
 /**

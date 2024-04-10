@@ -67,7 +67,7 @@ const sidebar: SidebarConfig = [
 ]
 
 const navbar: NavbarConfig = [
-    { text: 'API', link: 'https://upfrontjs.github.io/framework', target:'_blank' }
+    { text: 'API', link: 'https://api.upfrontjs.com/framework', target:'_blank' }
 ]
 
 export default {

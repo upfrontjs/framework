@@ -73,18 +73,12 @@ describe('ApiResponseHandler', () => {
 
         it('should throw JSON error if returned data cannot be parsed', async () => {
             fetchMock.mockResponseOnce('{"key":"value"');
-            let expectedError = '"invalid json response body at  reason: Unexpected end of JSON input"';
+            let expectedError = '"Expected \',\' or \'}\' after property value in JSON at position 14"';
             const nodeVersion = parseInt(process.versions.node);
 
             // eslint-disable-next-line jest/no-conditional-in-test
-            if (nodeVersion >= 19) {
-                expectedError = '"invalid json response body at  reason: ' +
-                    'Expected \',\' or \'}\' after property value in JSON at position 14"';
-
-                // eslint-disable-next-line jest/no-conditional-in-test
-                if (nodeVersion >= 21) {
-                    expectedError = expectedError.slice(0, -1) + ' (line 1 column 15)"';
-                }
+            if (nodeVersion >= 21) {
+                expectedError = expectedError.slice(0, -1) + ' (line 1 column 15)"';
             }
 
             await expect(handler.handle(fetch('url'))).rejects.toThrowErrorMatchingInlineSnapshot(expectedError);
@@ -121,3 +115,4 @@ describe('ApiResponseHandler', () => {
             expect(apiResponse.headers.get('Content-Length')).toBe('12345');
         });
 });
+

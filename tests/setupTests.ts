@@ -1,15 +1,6 @@
 import GlobalConfig from '../src/Support/GlobalConfig';
 import type Configuration from '../src/Contracts/Configuration';
 import { beforeEach, jest } from '@jest/globals';
-// for some reason global.Promise not found when referenced within node-fetch
-global.Promise = globalThis.Promise;
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-import fetch, { Response, Headers, Request } from 'cross-fetch';
-
-globalThis.fetch = fetch;
-globalThis.Response = Response;
-globalThis.Headers = Headers;
-globalThis.Request = Request;
 
 /* eslint-disable-next-line @typescript-eslint/consistent-generic-constructors */
 export const config: GlobalConfig<Configuration> = new GlobalConfig;

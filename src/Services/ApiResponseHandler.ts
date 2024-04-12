@@ -55,7 +55,7 @@ export default class ApiResponseHandler implements HandlesApiResponse {
 
         if (method && ['OPTIONS', 'HEAD', 'TRACE', 'CONNECT'].includes(method)) {
             // the user might just want the headers or debug info
-            // so just return the whole response
+            // so return the whole response
             return response;
         }
 

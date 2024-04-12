@@ -87,7 +87,8 @@ describe('ApiResponseHandler', () => {
 
     it.each([
         [204, 'has no content'],
-        [101, 'is an informational response'],
+        // waiting for https://github.com/nodejs/undici/issues/197
+        // [100, 'is an informational response'],
         [302, 'as a redirect response']
     ])('should return undefined if the response (%s) %s', async (status) => {
         fetchMock.mockResponseOnce(undefined, { status });

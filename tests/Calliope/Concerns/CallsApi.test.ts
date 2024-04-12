@@ -264,7 +264,7 @@ describe('CallsApi', () => {
         });
 
         it('should return undefined if the response from the handler is undefined', async () => {
-            fetchMock.mockResponseOnce(undefined, { status: 100 });
+            fetchMock.mockResponseOnce(undefined, { status: 204 });
             await expect(caller.call('GET')).resolves.toBeUndefined();
         });
 

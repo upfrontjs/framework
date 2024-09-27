@@ -328,4 +328,45 @@ describe('function helpers', () => {
             expect(func.value(true, false, true)).toBe(true);
         });
     });
+
+    describe('poll()', () => {
+        it('should poll indefinitely', async () => {
+            const timesToRun = Math.floor(Math.random() * 10) + 1;
+            let timesRan = 0;
+
+            const asyncFunc = jest.fn(async () => new Promise(resolve => {
+                // eslint-disable-next-line jest/no-conditional-in-test
+                if (timesRan === timesToRun) {
+                    throw new Error('Done');
+                }
+
+                timesRan++;
+                resolve('Not yet');
+            }));
+
+            await func.poll(asyncFunc, 10);
+
+            expect(asyncFunc).toHaveBeenCalledTimes(timesToRun);
+        });
+
+        // it('should reject if any attempts fail', () => {
+        //
+        // });
+        //
+        // it('should wait the specified number of seconds', () => {
+        //
+        // });
+        //
+        // it('should wait the specified number of seconds returned from the wait function', () => {
+        //
+        // });
+        //
+        // it('should poll until the given date', () => {
+        //
+        // });
+        //
+        // it('should poll until the until argument returns true', () => {
+        //
+        // });
+    });
 });

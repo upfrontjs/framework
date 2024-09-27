@@ -4,16 +4,12 @@ import type Model from '../Calliope/Model';
 /**
  * Make the properties defined in the union required.
  */
-export type RequireSome<T extends Record<PropertyKey, any>, K extends keyof T> = Omit<T, K> & {
-    [MK in K]-?: NonNullable<T[MK]>
-};
+export type RequireSome<T extends Record<PropertyKey, any>, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 
 /**
  * Make the properties defined in the union optional.
  */
-export type PartialSome<T extends Record<PropertyKey, any>, K extends keyof T> = Omit<T, K> & {
-    [MK in K]?: T[MK]
-};
+export type PartialSome<T extends Record<PropertyKey, any>, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 /**
  * Make the type either the initial value or an array of it.

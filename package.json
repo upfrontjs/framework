@@ -7,6 +7,8 @@
     "module": "index.es.min.js",
     "exports": {
         ".": {
+            "types": "types/index.d.ts",
+            "default": "./index.min.js",
             "require": "./index.min.cjs",
             "import": "./index.es.min.js",
             "types": "./types/index.d.ts"

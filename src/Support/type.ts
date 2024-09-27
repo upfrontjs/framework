@@ -17,6 +17,11 @@ export type PartialSome<T extends Record<PropertyKey, any>, K extends keyof T> =
 export type MaybeArray<T> = T | T[];
 
 /**
+ * Make the type either the initial value or a promise of it.
+ */
+export type MaybePromise<T> = Promise<T> | T;
+
+/**
  * Set every property nested or otherwise to optional.
  */
 export type DeepPartial<T> = T extends Record<PropertyKey, any>

@@ -4,7 +4,7 @@ index.*.*js*
 array.*.*js*
 string.*.*js*
 types
-Support
+/Support
 *.tgz
 
 # in case gh-pages manually managed

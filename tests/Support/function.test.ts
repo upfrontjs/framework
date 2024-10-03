@@ -331,10 +331,11 @@ describe('function helpers', () => {
 
     describe('poll()', () => {
         it('should poll indefinitely', async () => {
+            jest.useRealTimers();
             const timesToRun = Math.floor(Math.random() * 10) + 1;
             let timesRan = 0;
 
-            const asyncFunc = jest.fn(async () => new Promise(resolve => {
+            const asyncFunc = async () => new Promise(resolve => {
                 // eslint-disable-next-line jest/no-conditional-in-test
                 if (timesRan === timesToRun) {
                     throw new Error('Done');
@@ -342,31 +343,90 @@ describe('function helpers', () => {
 
                 timesRan++;
                 resolve('Not yet');
-            }));
+            });
 
-            await func.poll(asyncFunc, 10);
+            await func.poll(asyncFunc).catch(() => {});
 
-            expect(asyncFunc).toHaveBeenCalledTimes(timesToRun);
+            expect(timesRan).toBe(timesToRun);
         });
 
-        // it('should reject if any attempts fail', () => {
-        //
-        // });
-        //
-        // it('should wait the specified number of seconds', () => {
-        //
-        // });
-        //
-        // it('should wait the specified number of seconds returned from the wait function', () => {
-        //
-        // });
-        //
-        // it('should poll until the given date', () => {
-        //
-        // });
-        //
-        // it('should poll until the until argument returns true', () => {
-        //
-        // });
+        it('should reject if any attempts fail', async () => {
+            jest.useRealTimers();
+            const asyncFunc = jest.fn(async () => new Promise(() => {
+                throw new Error('Done');
+            }));
+
+            await expect(func.poll(asyncFunc)).rejects.toThrow('Done');
+        });
+
+        it('should wait the specified number of milliseconds', async () => {
+            const start = jest.useFakeTimers({ advanceTimers: true }).now();
+            let timesRan = 0;
+            const asyncFunc = jest.fn(async () => new Promise(resolve => {
+                timesRan++;
+
+                // eslint-disable-next-line jest/no-conditional-in-test
+                if (timesRan === 2) {
+                    throw new Error('Done');
+                }
+
+                resolve('Not yet');
+            }));
+
+            await func.poll(asyncFunc, 100).catch(() => {});
+
+            expect(asyncFunc).toHaveBeenCalledTimes(2);
+            expect(jest.useFakeTimers().now() - start).toBeGreaterThanOrEqual(100);
+        });
+
+        it('should wait the specified number of seconds returned from the wait function', async () => {
+            const start = jest.useFakeTimers({ advanceTimers: true }).now();
+            let timesRan = 0;
+            const asyncFunc = jest.fn(async () => new Promise(resolve => {
+                timesRan++;
+
+                // eslint-disable-next-line jest/no-conditional-in-test
+                if (timesRan === 3) {
+                    throw new Error('Done');
+                }
+
+                resolve('Not yet');
+            }));
+
+            await func.poll(
+                asyncFunc,
+                // wait for 100ms on the first attempt, 200ms on second and the 3rd attempt exits
+                (_result, attempts) => attempts * 100
+            ).catch(() => {});
+
+            expect(asyncFunc).toHaveBeenCalledTimes(3);
+            expect(jest.useFakeTimers().now() - start).toBeGreaterThanOrEqual(300);
+        });
+
+        it('should poll until the given date', async () => {
+            const start = jest.useFakeTimers({ advanceTimers: true }).now();
+            const asyncFunc = jest.fn(async () => new Promise(resolve => resolve('Not yet')));
+
+            await func.poll(
+                asyncFunc,
+                0,
+                new Date(start + 100)
+            ).catch(() => {});
+
+            expect(jest.useFakeTimers().now() - start).toBeGreaterThanOrEqual(100);
+        });
+
+        it('should poll until the until argument returns true', async () => {
+            jest.useFakeTimers({ advanceTimers: true });
+            const asyncFunc = jest.fn(async () => new Promise(resolve => resolve('Not yet')));
+
+            await func.poll(
+                asyncFunc,
+                0,
+                (_result, attempts) => attempts === 3
+            ).catch(() => {});
+
+            expect(asyncFunc).toHaveBeenCalledTimes(3);
+        });
     });
 });

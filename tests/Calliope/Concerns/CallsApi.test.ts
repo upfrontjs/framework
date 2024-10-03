@@ -236,11 +236,11 @@ describe('CallsApi', () => {
         });
 
         it('should not parse the response body if data wrapped', async () => {
-            const data = User.factory().raw();
+            const data = User.factory().rawOne();
             fetchMock.mockResponseOnce({ data });
             const parsedResponse = await caller.call('GET');
 
-            expect(parsedResponse).toStrictEqual({ data });
+            expect(parsedResponse.data).toStrictEqual(data);
         });
 
         it('should reset the endpoint', async () => {

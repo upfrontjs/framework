@@ -5,7 +5,7 @@ import Team from '../mock/Models/Team';
 import Shift from '../mock/Models/Shift';
 import collect from '../../src/Support/initialiser/collect';
 import LogicException from '../../src/Exceptions/LogicException';
-import { afterEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 describe('function helpers', () => {
     describe('isObjectLiteral()', () => {
@@ -26,7 +26,6 @@ describe('function helpers', () => {
 
     describe('isUserLandClass()', () => {
         const typesWithoutClass = types.filter(t => !/^\s*class\s+/.test(String(t)));
-        // eslint-disable-next-line jest/require-hook
         typesWithoutClass.push('class MyClass {'); // see if it checks for more than just the toString()
 
         it('should correctly evaluate if types are user defined classes', () => {
@@ -103,7 +102,6 @@ describe('function helpers', () => {
     });
 
     describe('retry()', () => {
-        // eslint-disable-next-line jest/require-hook
         let triesCount = 0;
 
         /**
@@ -111,7 +109,6 @@ describe('function helpers', () => {
          * @param attemptToResolveOn
          */
         const tryFunc = async (attemptToResolveOn: number) => {
-            // eslint-disable-next-line jest/no-conditional-in-test
             if (++triesCount !== attemptToResolveOn) {
                 throw new Error('More attempts than allowed.');
             }
@@ -139,26 +136,24 @@ describe('function helpers', () => {
         it('should wait the the given number of ms before the next attempt', async () => {
             // on node@16 on some architectures (?) it's possible that the runtime is marginally less than 20ms
             // when using real timers, not sure why...
-            jest.useFakeTimers({ advanceTimers: 5 });
+            vi.useRealTimers();
             const startTime = performance.now();
-            await func.retry(async () => tryFunc(3), 3, 10);
+            await func.retry(async () => tryFunc(3), 3, 50);
 
             // or grater because the time it takes to run the function
             expect(performance.now() - startTime).toBeGreaterThanOrEqual(20);
-
-            jest.useFakeTimers();
         });
 
         it('should accept a closure for timeout and should pass the attempt number to it', async () => {
-            jest.useRealTimers();
-            const mock = jest.fn(() => 10);
+            vi.useRealTimers();
+            const mock = vi.fn(() => 10);
 
             await func.retry(async () => tryFunc(3), 3, mock);
             expect(mock).toHaveBeenCalledTimes(2);
             expect(mock).toHaveBeenNthCalledWith(1, 1);
             expect(mock).toHaveBeenNthCalledWith(2, 2);
 
-            jest.useFakeTimers();
+            vi.useFakeTimers();
         });
 
         it('should reject the value if cannot be resolved', async () => {
@@ -172,7 +167,6 @@ describe('function helpers', () => {
                 async () => tryFunc(2),
                 1,
                 0,
-                // eslint-disable-next-line jest/no-conditional-in-test
                 (err) => err instanceof Error && err.message === 'More attempts than allowed.'
             )).resolves.toBe('Success');
 
@@ -180,19 +174,16 @@ describe('function helpers', () => {
                 async () => tryFunc(2),
                 1,
                 0,
-                // eslint-disable-next-line jest/no-conditional-in-test
                 (err) => err instanceof LogicException
             )).rejects.toThrow('More attempts than allowed.');
         });
 
         it('should accept an array of timeouts as the second argument for maxRetries', async () => {
-            jest.useFakeTimers({ advanceTimers: 5 });
+            vi.useRealTimers();
             const startTime = performance.now();
             await func.retry(async () => tryFunc(4), [10, 20, 30]);
             // or grater because the time it takes to run the function
             expect(performance.now() - startTime).toBeGreaterThanOrEqual(60);
-
-            jest.useFakeTimers();
         });
     });
 
@@ -314,7 +305,7 @@ describe('function helpers', () => {
         });
 
         it('should pass the arguments to the given function', () => {
-            const cb = jest.fn();
+            const cb = vi.fn();
 
             func.value(cb, 1, 2);
 
@@ -331,12 +322,11 @@ describe('function helpers', () => {
 
     describe('poll()', () => {
         it('should poll indefinitely', async () => {
-            jest.useRealTimers();
+            vi.useRealTimers();
             const timesToRun = Math.floor(Math.random() * 10) + 1;
             let timesRan = 0;
 
             const asyncFunc = async () => new Promise(resolve => {
-                // eslint-disable-next-line jest/no-conditional-in-test
                 if (timesRan === timesToRun) {
                     throw new Error('Done');
                 }
@@ -351,8 +341,8 @@ describe('function helpers', () => {
         });
 
         it('should reject if any attempts fail', async () => {
-            jest.useRealTimers();
-            const asyncFunc = jest.fn(async () => new Promise(() => {
+            vi.useRealTimers();
+            const asyncFunc = vi.fn(async () => new Promise(() => {
                 throw new Error('Done');
             }));
 
@@ -360,12 +350,11 @@ describe('function helpers', () => {
         });
 
         it('should wait the specified number of milliseconds', async () => {
-            const start = jest.useFakeTimers({ advanceTimers: true }).now();
+            const start = vi.useRealTimers().getRealSystemTime();
             let timesRan = 0;
-            const asyncFunc = jest.fn(async () => new Promise(resolve => {
+            const asyncFunc = vi.fn(async () => new Promise(resolve => {
                 timesRan++;
 
-                // eslint-disable-next-line jest/no-conditional-in-test
                 if (timesRan === 2) {
                     throw new Error('Done');
                 }
@@ -376,16 +365,15 @@ describe('function helpers', () => {
             await func.poll(asyncFunc, 100).catch(() => {});
 
             expect(asyncFunc).toHaveBeenCalledTimes(2);
-            expect(jest.useFakeTimers().now() - start).toBeGreaterThanOrEqual(100);
+            expect(vi.getRealSystemTime() - start).toBeGreaterThanOrEqual(100);
         });
 
         it('should wait the specified number of seconds returned from the wait function', async () => {
-            const start = jest.useFakeTimers({ advanceTimers: true }).now();
+            const start = vi.useRealTimers({ shouldAdvanceTime: true }).getRealSystemTime();
             let timesRan = 0;
-            const asyncFunc = jest.fn(async () => new Promise(resolve => {
+            const asyncFunc = vi.fn(async () => new Promise(resolve => {
                 timesRan++;
 
-                // eslint-disable-next-line jest/no-conditional-in-test
                 if (timesRan === 3) {
                     throw new Error('Done');
                 }
@@ -400,12 +388,12 @@ describe('function helpers', () => {
             ).catch(() => {});
 
             expect(asyncFunc).toHaveBeenCalledTimes(3);
-            expect(jest.useFakeTimers().now() - start).toBeGreaterThanOrEqual(300);
+            expect(vi.getRealSystemTime() - start).toBeGreaterThanOrEqual(300);
         });
 
         it('should poll until the given date', async () => {
-            const start = jest.useFakeTimers({ advanceTimers: true }).now();
-            const asyncFunc = jest.fn(async () => new Promise(resolve => resolve('Not yet')));
+            const start = vi.useRealTimers().getRealSystemTime();
+            const asyncFunc = vi.fn(async () => new Promise(resolve => resolve('Not yet')));
 
             await func.poll(
                 asyncFunc,
@@ -413,12 +401,12 @@ describe('function helpers', () => {
                 new Date(start + 100)
             ).catch(() => {});
 
-            expect(jest.useFakeTimers().now() - start).toBeGreaterThanOrEqual(100);
+            expect(vi.getRealSystemTime() - start).toBeGreaterThanOrEqual(100);
         });
 
         it('should poll until the until argument returns true', async () => {
-            jest.useFakeTimers({ advanceTimers: true });
-            const asyncFunc = jest.fn(async () => new Promise(resolve => resolve('Not yet')));
+            vi.useRealTimers();
+            const asyncFunc = vi.fn(async () => new Promise(resolve => resolve('Not yet')));
 
             await func.poll(
                 asyncFunc,

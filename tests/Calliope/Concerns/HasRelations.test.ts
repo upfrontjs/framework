@@ -12,7 +12,7 @@ import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentExc
 import Collection from '../../../src/Support/Collection';
 import { config } from '../../setupTests';
 import { plural } from '../../../src/Support/string';
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 let hasRelations: User & { team?: Team };
 
@@ -57,14 +57,12 @@ describe('HasRelations', () => {
         it('should be able to remove a relation from the model', () => {
             expect(hasRelations.relationLoaded('team')).toBe(true);
             expect(hasRelations.removeRelation('team').relationLoaded('team')).toBe(false);
-            // eslint-disable-next-line @typescript-eslint/unbound-method
             expect(hasRelations.$team).toBeDefined();
         });
 
         it('should be able to remove with the defined prefix too', () => {
             expect(hasRelations.relationLoaded('$team')).toBe(true);
             expect(hasRelations.removeRelation('$team').relationLoaded('team')).toBe(false);
-            // eslint-disable-next-line @typescript-eslint/unbound-method
             expect(hasRelations.$team).toBeDefined();
         });
     });
@@ -77,7 +75,7 @@ describe('HasRelations', () => {
 
     describe('getRelation()', () => {
         it('should throw an error if the relation has not been defined', () => {
-            const failingFunc = jest.fn(() => hasRelations.getRelation('shifts'));
+            const failingFunc = vi.fn(() => hasRelations.getRelation('shifts'));
 
             expect(failingFunc).toThrow(
                 new LogicException('Trying to access the \'shifts\' relationship before it is loaded.')
@@ -85,7 +83,7 @@ describe('HasRelations', () => {
         });
 
         it('should throw an error if the relation has not been loaded', () => {
-            const failingFunc = jest.fn(() => hasRelations.getRelation('undefinedRelation'));
+            const failingFunc = vi.fn(() => hasRelations.getRelation('undefinedRelation'));
 
             expect(failingFunc).toThrow(
                 new InvalidArgumentException('\'undefinedRelation\' relationship is not defined.')
@@ -119,7 +117,7 @@ describe('HasRelations', () => {
         });
 
         it('should throw an error if trying to add undefined relation', () => {
-            const failingFunc = jest.fn(() => hasRelations.addRelation('undefinedRelation', shifts));
+            const failingFunc = vi.fn(() => hasRelations.addRelation('undefinedRelation', shifts));
 
             expect(failingFunc).toThrow(
                 new LogicException('Attempted to add an undefined relation: \'undefinedRelation\'.')
@@ -127,7 +125,7 @@ describe('HasRelations', () => {
         });
 
         it('should throw an error if value is collection or array but the relation is of singular type', () => {
-            let failingFunc = jest.fn(() => hasRelations.addRelation(
+            let failingFunc = vi.fn(() => hasRelations.addRelation(
                 'contract',
                 Contract.factory().times(2).rawMany()
             ));
@@ -138,7 +136,7 @@ describe('HasRelations', () => {
                 )
             );
 
-            failingFunc = jest.fn(() => hasRelations.addRelation(
+            failingFunc = vi.fn(() => hasRelations.addRelation(
                 'contract',
                 Contract.factory().times(2).rawMany().toArray()
             ));
@@ -151,7 +149,7 @@ describe('HasRelations', () => {
         });
 
         it('should throw an error if value is a model collection but the relation is of singular type', () => {
-            const failingFunc = jest.fn(() => hasRelations.addRelation(
+            const failingFunc = vi.fn(() => hasRelations.addRelation(
                 'contract',
                 Contract.factory().times(2).createMany()
             ));
@@ -239,7 +237,7 @@ describe('HasRelations', () => {
         });
 
         it('should throw an error if any of the relations are not defined',  async () => {
-            const failingFunc = jest.fn(async () => hasRelations.load('undefinedRelation'));
+            const failingFunc = vi.fn(async () => hasRelations.load('undefinedRelation'));
 
             await expect(failingFunc).rejects
                 .toStrictEqual(new InvalidOffsetException('\'undefinedRelation\' relationship is not defined.'));
@@ -366,7 +364,7 @@ describe('HasRelations', () => {
 
         it('should throw an error if method not using the expected relation type', () => {
             // @ts-expect-error
-            const failingFunc = jest.fn(() => hasRelations.getRelationType('invalidRelationDefinition'));
+            const failingFunc = vi.fn(() => hasRelations.getRelationType('invalidRelationDefinition'));
 
             expect(failingFunc).toThrow(new LogicException(
                 '\'$invalidRelationDefinition\' relation is not using any of the expected relation types.'
@@ -439,7 +437,7 @@ describe('HasRelations', () => {
 
             it('should throw an error if foreign key not set on the calling model', () => {
                 hasRelations.deleteAttribute('teamId');
-                const failingFunc = jest.fn(() => hasRelations.$team());
+                const failingFunc = vi.fn(() => hasRelations.$team());
 
                 expect(failingFunc).toThrow(new LogicException(
                     '\'User\' doesn\'t have \'teamId\' defined.'
@@ -571,7 +569,7 @@ describe('HasRelations', () => {
             });
 
             it('should throw an error if the callback argument is of wrong type', () => {
-                // eslint-disable-next-line jest/unbound-method,@typescript-eslint/unbound-method
+                // eslint-disable-next-line @typescript-eslint/unbound-method
                 const initialCallback = morphModel.$contractable;
                 // @ts-expect-error - setting wrong type intentionally
                 morphModel.$contractable = () => morphModel.morphTo(false);

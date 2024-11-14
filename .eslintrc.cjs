@@ -8,10 +8,12 @@ module.exports = {
     },
     plugins: [
         "@typescript-eslint",
+        "@stylistic/ts"
     ],
     extends: [
         "eslint:recommended",
-        "plugin:@typescript-eslint/all"
+        "plugin:@typescript-eslint/all",
+        "plugin:@typescript-eslint/stylistic-type-checked"
     ],
     env: {
         browser: true,
@@ -44,11 +46,11 @@ module.exports = {
         "lines-around-comment": "off",
 
         // https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin#supported-rules
-        '@typescript-eslint/object-curly-spacing': ['warn', 'always'],
-        "@typescript-eslint/indent": ["warn", 4],
-        "@typescript-eslint/quotes": ["warn", "single"],
-        "@typescript-eslint/semi": "error",
-        "@typescript-eslint/no-extra-parens": "error",
+        '@stylistic/ts/object-curly-spacing': ['warn', 'always'],
+        "@stylistic/ts/indent": ["warn", 4],
+        "@stylistic/ts/quotes": ["warn", "single"],
+        "@stylistic/ts/semi": "error",
+        "@stylistic/ts/no-extra-parens": "error",
         "@typescript-eslint/no-unused-vars": "warn",
         "@typescript-eslint/no-useless-constructor": "warn",
         "@typescript-eslint/no-explicit-any": "off",
@@ -60,19 +62,19 @@ module.exports = {
         "@typescript-eslint/prefer-optional-chain": "warn",
         "@typescript-eslint/prefer-ts-expect-error": "warn",
         "@typescript-eslint/promise-function-async": "error",
-        "@typescript-eslint/func-call-spacing": ["error", "never"],
-        "@typescript-eslint/comma-spacing": "warn",
-        "@typescript-eslint/keyword-spacing": "warn",
+        "@stylistic/ts/func-call-spacing": ["error", "never"],
+        "@stylistic/ts/comma-spacing": "warn",
+        "@stylistic/ts/keyword-spacing": "warn",
         "@typescript-eslint/consistent-indexed-object-style": ["error", "record"],
         "@typescript-eslint/consistent-type-imports": ["error", { prefer: 'type-imports' }],
-        "@typescript-eslint/member-delimiter-style": "warn",
-        "@typescript-eslint/type-annotation-spacing": "warn",
+        "@stylistic/ts/member-delimiter-style": "warn",
+        "@stylistic/ts/type-annotation-spacing": "warn",
         "@typescript-eslint/naming-convention": "error",
         "@typescript-eslint/no-magic-numbers": "off",
         "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/member-ordering": "off",
         "@typescript-eslint/class-literal-property-style": "off",
-        "@typescript-eslint/space-before-function-paren": ["warn", {
+        "@stylistic/ts/space-before-function-paren": ["warn", {
             "anonymous": "always",
             "named": "never",
             "asyncArrow": "always"
@@ -90,11 +92,11 @@ module.exports = {
         "@typescript-eslint/array-type": "warn",
         "@typescript-eslint/prefer-for-of": "off",
         "@typescript-eslint/no-restricted-imports": "off",
-        "@typescript-eslint/lines-between-class-members": ["error"],
+        "@stylistic/ts/lines-between-class-members": ["error"],
         "@typescript-eslint/max-params": ["warn", {
             "max": 5
         }],
-        "@typescript-eslint/lines-around-comment": ["warn", {
+        "@stylistic/ts/lines-around-comment": ["warn", {
             "allowInterfaceStart": true,
             "allowBlockStart": true,
             "allowModuleStart": true,

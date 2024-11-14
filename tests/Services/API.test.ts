@@ -4,7 +4,7 @@ import type { CustomHeaders, Method } from '../../src/Calliope/Concerns/CallsApi
 import { finish } from '../../src/Support/string';
 import InvalidArgumentException from '../../src/Exceptions/InvalidArgumentException';
 import fetchMock from '../mock/fetch-mock';
-import { beforeEach, describe, expect, it } from '@jest/globals';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 const url = finish(String(globalConfig.get('baseEndPoint')), '/') + 'users';
 

@@ -5,7 +5,7 @@ import { DateTime, dateTime } from '../../mock/Configuration/DateTime';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import type AttributeCaster from '../../../src/Contracts/AttributeCaster';
 import LogicException from '../../../src/Exceptions/LogicException';
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 class CastingClass extends User {
     public override getName(): string {
@@ -181,7 +181,7 @@ describe('CastsAttributes', () => {
 
         it('should throw an error if the datetime is not the expected type in the config', () => {
             caster.mergeCasts({ test: 'datetime' });
-            const failingFunc = jest.fn(() => caster.publicCastAttribute('test', 'value'));
+            const failingFunc = vi.fn(() => caster.publicCastAttribute('test', 'value'));
             config.set('datetime', undefined);
 
             expect(failingFunc).toThrow(new InvalidArgumentException(

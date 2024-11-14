@@ -13,7 +13,7 @@ import Contract from '../../mock/Models/Contract';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import { now } from '../../setupTests';
 import cloneDeep from 'lodash.clonedeep';
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 let factoryBuilder: FactoryBuilder<User, UserFactory>;
 
@@ -49,7 +49,7 @@ describe('FactoryBuilder', () => {
         });
 
         it('should throw an error if the given state is not defined', () => {
-            const failingFunc = jest.fn(
+            const failingFunc = vi.fn(
                 () => factoryBuilder.state('undefinedScope').create()
             );
 
@@ -69,7 +69,7 @@ describe('FactoryBuilder', () => {
             // @ts-expect-error
             User.prototype.factory = () => new FakeFactory();
 
-            const failingFunc = jest.fn(
+            const failingFunc = vi.fn(
                 () => factoryBuilder.state('scopeAsProperty').create()
             );
 
@@ -90,7 +90,7 @@ describe('FactoryBuilder', () => {
             // @ts-expect-error
             User.prototype.factory = () => new FakeFactory();
 
-            const failingFunc = jest.fn(
+            const failingFunc = vi.fn(
                 () => factoryBuilder.state('invalidScope').create()
             );
 
@@ -102,7 +102,7 @@ describe('FactoryBuilder', () => {
         });
 
         it('should not call a state twice', () => {
-            const func = jest.fn();
+            const func = vi.fn();
             class LocalFakeFactory extends Factory<User> {
                 public myState() {
                     func();
@@ -119,7 +119,7 @@ describe('FactoryBuilder', () => {
         });
 
         it('should call the states in order they appear in the argument', () => {
-            const func = jest.fn();
+            const func = vi.fn();
             class LocalFakeFactory extends Factory<User> {
                 public firstState() {
                     func('first name overwrite');
@@ -166,7 +166,7 @@ describe('FactoryBuilder', () => {
         });
 
         it('should be resolved the same format as definition and states', () => {
-            const func = jest.fn();
+            const func = vi.fn();
             factoryBuilder
                 .attributes({
                     name: (attrs: Attributes<User> | RawAttributes<User>) => {
@@ -183,7 +183,7 @@ describe('FactoryBuilder', () => {
     });
 
     describe('getFactory()', () => {
-        // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         const userFactory = User.prototype.factory;
 
         afterEach(() => {
@@ -195,7 +195,7 @@ describe('FactoryBuilder', () => {
             User.prototype.factory = () => ({});
 
             // @ts-expect-error
-            const failingFunc = jest.fn(() => factoryBuilder.getFactory());
+            const failingFunc = vi.fn(() => factoryBuilder.getFactory());
 
             expect(failingFunc).toThrow(
                 new TypeError(
@@ -210,7 +210,7 @@ describe('FactoryBuilder', () => {
             User.prototype.factory = 1;
 
             // @ts-expect-error
-            let failingFunc = jest.fn(() => factoryBuilder.getFactory());
+            let failingFunc = vi.fn(() => factoryBuilder.getFactory());
 
             expect(failingFunc).toThrow(
                 new InvalidOffsetException(
@@ -223,7 +223,7 @@ describe('FactoryBuilder', () => {
             delete User.prototype?.factory;
 
             // @ts-expect-error
-            failingFunc = jest.fn(() => factoryBuilder.getFactory());
+            failingFunc = vi.fn(() => factoryBuilder.getFactory());
 
             expect(failingFunc).toThrow(
                 new InvalidOffsetException(
@@ -334,9 +334,9 @@ describe('FactoryBuilder', () => {
 
     describe('afterMaking()', () => {
         it('should call the afterCreating with the created model or collection', () => {
-            const mockFn = jest.fn();
-            const unCalledMockFn = jest.fn();
-            // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
+            const mockFn = vi.fn();
+            const unCalledMockFn = vi.fn();
+            // eslint-disable-next-line @typescript-eslint/unbound-method
             const originalFactory = User.prototype.factory;
 
             class MockUserFactory extends UserFactory {
@@ -447,7 +447,7 @@ describe('FactoryBuilder', () => {
             const models = factoryBuilder.createMany();
 
             expect(models.every(model => {
-                // eslint-disable-next-line jest/no-conditional-in-test
+                
                 return model.getKey() && model[model.getUpdatedAtName()] && model[model.getCreatedAtName()];
             })).toBe(true);
         });
@@ -459,9 +459,9 @@ describe('FactoryBuilder', () => {
 
     describe('afterCreating()', () => {
         it('should call the afterCreating with the created model or collection', () => {
-            const mockFn = jest.fn();
-            const unCalledMockFn = jest.fn();
-            // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
+            const mockFn = vi.fn();
+            const unCalledMockFn = vi.fn();
+            // eslint-disable-next-line @typescript-eslint/unbound-method
             const originalFactory = User.prototype.factory;
 
             class MockUserFactory extends UserFactory {
@@ -495,7 +495,7 @@ describe('FactoryBuilder', () => {
         });
 
         it('should throw an error if the relation given is not defined', () => {
-            const failingFunc = jest.fn(() => factoryBuilder.with(Contract.factory(), 'undefinedRelationship').make());
+            const failingFunc = vi.fn(() => factoryBuilder.with(Contract.factory(), 'undefinedRelationship').make());
 
             expect(failingFunc).toThrow(new InvalidArgumentException(
                 '\'' + factoryBuilder.model.getName()
@@ -505,7 +505,7 @@ describe('FactoryBuilder', () => {
 
         it('should throw an error if the guessed relation is not defined', () => {
             const contractFactoryBuilder = new FactoryBuilder<Contract>(Contract);
-            const failingFunc = jest.fn(() => contractFactoryBuilder.with(Shift.factory()).make());
+            const failingFunc = vi.fn(() => contractFactoryBuilder.with(Shift.factory()).make());
 
             expect(failingFunc).toThrow(new InvalidArgumentException(
                 '\'' + contractFactoryBuilder.model.getName()
@@ -525,7 +525,7 @@ describe('FactoryBuilder', () => {
         it('should throw an error if the first argument is not a FactoryBuilder nor a Model constructor', () => {
             const contractFactoryBuilder = new FactoryBuilder<Contract>(Contract);
             // @ts-expect-error
-            const failingFunc = jest.fn(() => contractFactoryBuilder.with(new Shift).make());
+            const failingFunc = vi.fn(() => contractFactoryBuilder.with(new Shift).make());
 
             expect(failingFunc).toThrow(new InvalidArgumentException(
                 'Argument for the \'with\' method expected to be an instance of '
@@ -534,13 +534,13 @@ describe('FactoryBuilder', () => {
         });
 
         it('should throw an error if it\'s a singular relation but the amount on the given factory is multiple', () => {
-            const failingCreateFunc = jest.fn(() => factoryBuilder.with(Contract.factory().times(2)).create());
+            const failingCreateFunc = vi.fn(() => factoryBuilder.with(Contract.factory().times(2)).create());
 
             expect(failingCreateFunc).toThrow(new InvalidArgumentException(
                 '\'contract\' is a singular relation, received type: \'' + ModelCollection.name + '\'.'
             ));
 
-            const failingRawFunc = jest.fn(() => factoryBuilder.with(Contract.factory().times(2)).raw());
+            const failingRawFunc = vi.fn(() => factoryBuilder.with(Contract.factory().times(2)).raw());
 
             expect(failingRawFunc).toThrow(new InvalidArgumentException(
                 '\'contract\' is a singular relation, received type: \'' + Collection.name + '\'.'
@@ -561,7 +561,7 @@ describe('FactoryBuilder', () => {
         it('should return an empty object if no attributes has been defined', () => {
             class TestFactory extends Factory<any> {}
 
-            // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
+            // eslint-disable-next-line @typescript-eslint/unbound-method
             const originalValue = Team.prototype.factory;
 
             // @ts-expect-error
@@ -616,7 +616,7 @@ describe('FactoryBuilder', () => {
             expect(factoryBuilder.state('resolvedName')
                 .raw({
                     deletedAt: (attributes: Attributes) => {
-                        // eslint-disable-next-line jest/no-conditional-in-test
+                        
                         return attributes.deletedAt ?? now;
                     }
                 }))

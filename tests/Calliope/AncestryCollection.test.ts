@@ -3,7 +3,7 @@ import Folder from '../mock/Models/Folder';
 import ModelCollection from '../../src/Calliope/ModelCollection';
 import Collection from '../../src/Support/Collection';
 import { types } from '../test-helpers';
-import { beforeEach, describe, expect, it } from '@jest/globals';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 const folder1 = Folder.factory().createOne({ name: 'folder 1' });
 const folder2 = Folder.factory().createOne({ name: 'folder 2', parentId: folder1.getKey() });

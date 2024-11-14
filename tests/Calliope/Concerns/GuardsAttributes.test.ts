@@ -1,5 +1,5 @@
 import Model from '../../../src/Calliope/Model';
-import { beforeEach, describe, expect, it } from '@jest/globals';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 class TestClass extends Model {
     public override getName(): string {

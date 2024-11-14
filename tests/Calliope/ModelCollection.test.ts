@@ -2,7 +2,7 @@ import Collection from '../../src/Support/Collection';
 import ModelCollection from '../../src/Calliope/ModelCollection';
 import User from '../mock/Models/User';
 import { types } from '../test-helpers';
-import { beforeEach, describe, expect, it } from '@jest/globals';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 let collection: ModelCollection<User>;
 const incompatibleElementsError = new TypeError('ModelCollection can only handle Model values.');
@@ -113,7 +113,7 @@ describe('ModelCollection', () => {
 
         it('should de-duplicate the collection', () => {
             expect(collection.unique()).toHaveLength(2);
-            // eslint-disable-next-line jest/no-conditional-in-test
+            
             expect(collection.includes(user1) && collection.includes(user2)).toBe(true);
         });
 
@@ -186,7 +186,7 @@ describe('ModelCollection', () => {
 
             expect(duplicateOnlyCollection).toHaveLength(1);
             expect(
-                // eslint-disable-next-line jest/no-conditional-in-test
+                
                 duplicateOnlyCollection.includes(user1)
                 && !duplicateOnlyCollection.includes(user2)
             )
@@ -256,7 +256,6 @@ describe('ModelCollection', () => {
     });
 
     describe('includes()', () => {
-        /* eslint-disable jest/prefer-to-contain */
         it('should assert whether the given model is in the collection', () => {
             expect(collection.includes(user1)).toBe(true);
         });
@@ -267,7 +266,6 @@ describe('ModelCollection', () => {
             const func = () => collection.includes(user1);
             expect(func).toThrow(incompatibleElementsError);
         });
-        /* eslint-enable jest/prefer-to-contain */
     });
 
     describe('diff()', () => {
@@ -503,10 +501,8 @@ describe('ModelCollection', () => {
             expect(passed).toBeInstanceOf(ModelCollection);
             expect(failed).toBeInstanceOf(ModelCollection);
             // when collection is stringified it will be wrapped in `elements` key
-            /* eslint-disable jest/prefer-to-have-length */
             expect(passed.length).toBe(1);
             expect(failed.length).toBe(elements.length - 1);
-            /* eslint-disable jest/prefer-to-have-length */
         });
     });
 

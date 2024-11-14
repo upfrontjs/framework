@@ -4,7 +4,7 @@ import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentExc
 import { config, now } from '../../setupTests';
 import { start, finish } from '../../../src';
 import LogicException from '../../../src/Exceptions/LogicException';
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 let hasTimestamps: User;
 
@@ -89,7 +89,7 @@ describe('HasTimestamps', () => {
             fetchMock.resetMocks();
             fetchMock.mockResponseOnce({ createdAt: new Date().toISOString() });
 
-            const failingFunc = jest.fn(async () => hasTimestamps.touch());
+            const failingFunc = vi.fn(async () => hasTimestamps.touch());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
                 '\'' + hasTimestamps.getUpdatedAtName() + '\' is not found in the response model.'
@@ -162,7 +162,7 @@ describe('HasTimestamps', () => {
             fetchMock.resetMocks();
             fetchMock.mockResponseOnce({ updatedAt: new Date().toISOString() });
 
-            const failingFunc = jest.fn(async () => hasTimestamps.freshTimestamps());
+            const failingFunc = vi.fn(async () => hasTimestamps.freshTimestamps());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
                 '\'' + hasTimestamps.getCreatedAtName() + '\' is not found in the response model.'
@@ -173,7 +173,7 @@ describe('HasTimestamps', () => {
             fetchMock.resetMocks();
             fetchMock.mockResponseOnce({ createdAt: new Date().toISOString() });
 
-            const failingFunc = jest.fn(async () => hasTimestamps.freshTimestamps());
+            const failingFunc = vi.fn(async () => hasTimestamps.freshTimestamps());
 
             await expect(failingFunc).rejects.toThrow(new InvalidArgumentException(
                 '\'' + hasTimestamps.getUpdatedAtName() + '\' is not found in the response model.'

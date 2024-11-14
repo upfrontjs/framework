@@ -3,7 +3,7 @@ import LogicException from '../../src/Exceptions/LogicException';
 import { now } from '../setupTests';
 import { isObjectLiteral } from '../../src';
 import InvalidOffsetException from '../../src/Exceptions/InvalidOffsetException';
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 let collection: Collection<any>;
 
@@ -67,7 +67,7 @@ describe('Collection', () => {
             let boolean = true;
 
             for (const item of collection) {
-                // eslint-disable-next-line jest/no-conditional-in-test
+                
                 boolean = elements.includes(item as number) && boolean;
             }
 
@@ -180,7 +180,7 @@ describe('Collection', () => {
     });
 
     describe('hasDuplicates()', () => {
-        // eslint-disable-next-line jest/require-hook
+        
         let elements: any[] = [1, 2, 1, 4, 5];
 
         beforeEach(() => {
@@ -304,7 +304,7 @@ describe('Collection', () => {
     });
 
     describe('duplicates()', () => {
-        // eslint-disable-next-line jest/require-hook
+        
         let elements: any[] = [1, 2, 1, '1', 2];
 
         beforeEach(() => {
@@ -457,7 +457,7 @@ describe('Collection', () => {
 
             //quick fix for https://github.com/facebook/jest/issues/2549
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const mock = jest.fn((_collection: Collection<any>) => false);
+            const mock = vi.fn((_collection: Collection<any>) => false);
             // @ts-expect-error
             const mockWrapper = ((...args: any[]) => mock(...args as number[])) as unknown as () => boolean;
 
@@ -466,7 +466,7 @@ describe('Collection', () => {
         });
 
         it('should evaluate non functions as truthy or falsy', () => {
-            const func = jest.fn();
+            const func = vi.fn();
 
             // @ts-expect-error
             collection.when({}, func);
@@ -507,7 +507,7 @@ describe('Collection', () => {
 
             // quick fix for https://github.com/facebook/jest/issues/2549
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const mock = jest.fn((_collection: Collection<any>) => true);
+            const mock = vi.fn((_collection: Collection<any>) => true);
             // @ts-expect-error
             const mockWrapper = ((...args: any[]) => mock(...args as number[])) as unknown as () => boolean;
 
@@ -516,7 +516,7 @@ describe('Collection', () => {
         });
 
         it('should evaluate non functions as truthy or falsy', () => {
-            const func = jest.fn();
+            const func = vi.fn();
 
             // @ts-expect-error
             collection.unless('', func);
@@ -540,7 +540,7 @@ describe('Collection', () => {
         });
 
         it('should only executes is the collection is empty', () => {
-            const func = jest.fn((coll) => coll);
+            const func = vi.fn((coll) => coll);
 
             collection.whenEmpty(func);
             expect(func).not.toHaveBeenCalled();
@@ -548,7 +548,7 @@ describe('Collection', () => {
 
         it('should call the passed closure', () => {
             collection = new Collection();
-            const func = jest.fn((coll) => coll);
+            const func = vi.fn((coll) => coll);
 
             collection.whenEmpty(func);
             expect(func).toHaveBeenCalledWith(collection);
@@ -569,7 +569,7 @@ describe('Collection', () => {
         });
 
         it('should only executes is the collection is not empty', () => {
-            const func = jest.fn((coll) => coll);
+            const func = vi.fn((coll) => coll);
             collection = new Collection();
 
             collection.whenNotEmpty(func);
@@ -578,12 +578,12 @@ describe('Collection', () => {
             collection = new Collection(elements);
 
             collection.whenNotEmpty(func);
-            // eslint-disable-next-line jest/prefer-called-with
+            
             expect(func).toHaveBeenCalled();
         });
 
         it('should call the passed closure', () => {
-            const func = jest.fn((coll) => coll);
+            const func = vi.fn((coll) => coll);
 
             collection.whenNotEmpty(func);
             expect(func).toHaveBeenCalled();
@@ -735,16 +735,16 @@ describe('Collection', () => {
     describe('dump()', () => {
         const elements = [1, 2, 3, 4, 5] as const;
 
-        let consoleLogMock: jest.Spied<any>,
-            consoleGroupCollapsedMock: jest.Spied<any>,
-            consoleGroupEndMock: jest.Spied<any>;
+        let consoleLogMock: vi.Spied<any>,
+            consoleGroupCollapsedMock: vi.Spied<any>,
+            consoleGroupEndMock: vi.Spied<any>;
 
         beforeEach(() => {
             collection = new Collection(elements);
 
-            consoleLogMock = jest.spyOn(console, 'log').mockImplementation(() => {});
-            consoleGroupCollapsedMock = jest.spyOn(console, 'groupCollapsed').mockImplementation(() => {});
-            consoleGroupEndMock = jest.spyOn(console, 'groupEnd').mockImplementation(() => {});
+            consoleLogMock = vi.spyOn(console, 'log').mockImplementation(() => {});
+            consoleGroupCollapsedMock = vi.spyOn(console, 'groupCollapsed').mockImplementation(() => {});
+            consoleGroupEndMock = vi.spyOn(console, 'groupEnd').mockImplementation(() => {});
         });
 
         afterEach(() => {
@@ -1071,7 +1071,7 @@ describe('Collection', () => {
 
         it('should execute a method with the collection passed to the closure', () => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const func = jest.fn((_collection: Collection<any>) => {});
+            const func = vi.fn((_collection: Collection<any>) => {});
             collection.tap(func);
             expect(func).toHaveBeenCalled();
             expect(func).toHaveBeenCalledWith(collection);
@@ -1096,7 +1096,7 @@ describe('Collection', () => {
         });
 
         it('should execute a method with the collection passed to the closure', () => {
-            const func = jest.fn(coll => coll);
+            const func = vi.fn(coll => coll);
             collection.pipe(func as ((collection: Collection<typeof elements>) => typeof collection));
             expect(func).toHaveBeenCalled();
             expect(func).toHaveBeenCalledWith(collection);
@@ -1622,7 +1622,6 @@ describe('Collection', () => {
         });
 
         describe('includes()', () => {
-            /* eslint-disable jest/prefer-to-contain */
             it('should assert whether the collection includes an element', () => {
                 expect(collection.includes(elements[0])).toBe(true);
                 expect(collection.includes(Math.random())).toBe(false);
@@ -1632,7 +1631,6 @@ describe('Collection', () => {
                 collection = new Collection([{ id: 1 }, { id: 2 }]);
                 expect(collection.includes({ id: 1 })).toBe(true);
             });
-            /* eslint-enable jest/prefer-to-contain */
         });
 
         describe('sort()', () => {

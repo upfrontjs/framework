@@ -6,7 +6,7 @@ import Contract from '../../mock/Models/Contract';
 import Team from '../../mock/Models/Team';
 import type { RawAttributes } from '../../../src';
 import { Collection } from '../../../src';
-import { beforeEach, describe, expect, it } from '@jest/globals';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 let hasAttributes: User;
 
@@ -131,7 +131,6 @@ describe('HasAttributes', () => {
             };
 
             for (const [item] of hasAttributes) {
-                // eslint-disable-next-line jest/no-conditional-in-test
                 boolean = boolean && hasValue(item);
             }
 
@@ -153,7 +152,7 @@ describe('HasAttributes', () => {
             hasAttributes.setAttribute('myAttr', { key: 1 });
 
             for (const [item, key] of hasAttributes) {
-                // eslint-disable-next-line jest/no-conditional-in-test
+                
                 if (key === 'myAttr') {
                     item.key = 2;
                 }
@@ -297,9 +296,9 @@ describe('HasAttributes', () => {
 
             const descriptor = Object.getOwnPropertyDescriptor(hasAttributes, 'test');
 
-            // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
+            // eslint-disable-next-line @typescript-eslint/unbound-method
             expect(descriptor?.get).toBeDefined();
-            // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
+            // eslint-disable-next-line @typescript-eslint/unbound-method
             expect(descriptor?.set).toBeDefined();
         });
 
@@ -311,9 +310,9 @@ describe('HasAttributes', () => {
             keys.forEach(key => {
                 const descriptor = Object.getOwnPropertyDescriptor(hasAttributes, key);
 
-                // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
+                // eslint-disable-next-line @typescript-eslint/unbound-method
                 expect(descriptor?.get).toBeDefined();
-                // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
+                // eslint-disable-next-line @typescript-eslint/unbound-method
                 expect(descriptor?.set).toBeDefined();
             });
         });
@@ -364,7 +363,7 @@ describe('HasAttributes', () => {
             }
 
             public getTestAttribute() {
-                // eslint-disable-next-line jest/no-conditional-in-test
+                
                 return (this.attributes.test as number | undefined) ?? 1;
             }
 
@@ -390,7 +389,7 @@ describe('HasAttributes', () => {
 
         it('should not allow assigning values to magic access if they don\'t have a setter', () => {
             expect(() => model.test2 = 2).toThrowErrorMatchingInlineSnapshot(
-                '"Cannot set property test2 of [object Object] which has only a getter"'
+                '[TypeError: Cannot set property test2 of [object Object] which has only a getter]'
             );
         });
 

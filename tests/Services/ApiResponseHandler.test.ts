@@ -3,7 +3,7 @@ import fetchMock from '../mock/fetch-mock';
 import User from '../mock/Models/User';
 import type { ApiResponse } from '../../src/Contracts/HandlesApiResponse';
 import { API } from '../../src';
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const handler = new ApiResponseHandler();
 
@@ -21,7 +21,7 @@ describe('ApiResponseHandler', () => {
     });
 
     it('should call the handleFinally method', async () => {
-        const mockFn = jest.fn();
+        const mockFn = vi.fn();
         handler.handleFinally = () => mockFn();
         fetchMock.mockResponseOnce(User.factory().raw());
         await handler.handle(fetch('url'));
@@ -74,19 +74,11 @@ describe('ApiResponseHandler', () => {
         it('should throw JSON error if returned data cannot be parsed', async () => {
             fetchMock.mockResponseOnce('{"key":"value"');
 
-            const nodeVersion = parseInt(process.versions.node);
-
             await expect(handler.handle(fetch('url')))
                 .rejects
                 .toThrowErrorMatchingInlineSnapshot(
-                    '"invalid json response body at  reason: ' + (
-                        // eslint-disable-next-line jest/no-conditional-in-test
-                        nodeVersion >= 19
-                            ? 'Expected \',\' or \'}\' after property value in JSON at position 14'
-                                // eslint-disable-next-line jest/no-conditional-in-test
-                                + (nodeVersion >= 22 ? ' (line 1 column 15)' : '')
-                            : 'Unexpected end of JSON input'
-                    ) + '"'
+                    '[SyntaxError: Expected \',\' or \'}\' after property value in JSON at position 14 ' +
+                    '(line 1 column 15)]'
                 );
         });
     });

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import Paginator from '../../src/Support/Paginator';
 import InvalidOffsetException from '../../src/Exceptions/InvalidOffsetException';
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('Paginator', () => {
     const elements: [1, 2, 3, 4, 5] = [1, 2, 3, 4, 5];
@@ -304,7 +304,7 @@ describe('Paginator', () => {
 
         describe('jumpToItem', () => {
             it('should throw an error if item doesn\'t exists in the paginator', () => {
-                const failingFunc = jest.fn(() => paginator.jumpToItem(Math.random()));
+                const failingFunc = vi.fn(() => paginator.jumpToItem(Math.random()));
                 expect(failingFunc).toThrow(new InvalidOffsetException('Given item does not exists on the paginator'));
             });
 

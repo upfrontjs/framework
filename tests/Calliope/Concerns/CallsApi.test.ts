@@ -8,7 +8,7 @@ import { config } from '../../setupTests';
 import { snake, finish } from '../../../src/Support/string';
 import type RequestMiddleware from '../../../src/Contracts/RequestMiddleware';
 import transformKeys from '../../../src/Support/function/transformKeys';
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 let caller: User;
 
@@ -88,7 +88,7 @@ describe('CallsApi', () => {
             expect(typeof caller.endpoint).toBe('string');
             // @ts-expect-error
             expect(() => caller.endpoint = 'unexpected assignment').toThrowErrorMatchingInlineSnapshot(
-                '"Cannot set property endpoint of [object Object] which has only a getter"'
+                '[TypeError: Cannot set property endpoint of [object Object] which has only a getter]'
             );
         });
     });
@@ -154,7 +154,7 @@ describe('CallsApi', () => {
         });
 
         it('should get the HandlesApiResponse from the Configuration if set',  async () => {
-            const mockFn = jest.fn();
+            const mockFn = vi.fn();
             const apiResponseHandler = class CustomApiResponseHandlerImplementation extends ApiResponseHandler {
                 public override handleFinally() {
                     mockFn();
@@ -271,7 +271,7 @@ describe('CallsApi', () => {
         describe('requestMiddleware', () => {
             it('should run the given request middleware if set in the configuration', async () => {
                 fetchMock.mockResponseOnce(User.factory().raw());
-                const mockFn = jest.fn();
+                const mockFn = vi.fn();
                 const requestMiddleware: RequestMiddleware = {
                     handle: (url, method, data, customHeaders, queryParameters) => {
                         mockFn(url, method, data, customHeaders, queryParameters);
@@ -396,7 +396,7 @@ describe('CallsApi', () => {
             const userData = User.factory().rawOne();
             const expectedUser = User.make(userData);
 
-            // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
+            // eslint-disable-next-line @typescript-eslint/unbound-method
             const originalFillableReturn =  User.prototype.getFillable;
 
             User.prototype.getFillable = () => [];

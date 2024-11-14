@@ -1,13 +1,12 @@
 import Collection from '../../src/Support/Collection';
 import type { Method } from '../../src';
 import { isObjectLiteral } from '../../src';
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-import { jest } from '@jest/globals';
+import { vi } from 'vitest';
 
 /**
  * The mock of fetch.
  */
-const spy = jest.spyOn(globalThis, 'fetch').mockRejectedValue('Implementation not set.');
+const spy = vi.spyOn(globalThis, 'fetch').mockRejectedValue('Implementation not set.');
 
 /**
  * The values permitted in the response body for serialisation.

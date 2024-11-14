@@ -23,7 +23,7 @@ jobs:
     steps:
       # subsequent calls to this action will use already downloaded code from the workspace
       - uses: actions/checkout@v3
-  jest-browser:
+  test-browser:
     needs: setup-test
     timeout-minutes: 10
     runs-on: ubuntu-latest
@@ -36,8 +36,8 @@ jobs:
       - name: Install dependencies
         run: npm ci --ignore-scripts
       - name: Run tests on jsdom
-        run: npx jest --selectProjects=jsdom
-  jest-node:
+        run: npm run test -- --environment=jsdom
+  test-node:
     needs: setup-test
     timeout-minutes: 10
     runs-on: ubuntu-latest
@@ -54,4 +54,22 @@ jobs:
       - name: Install dependencies
         run: npm ci --ignore-scripts
       - name: Run tests on node v${{ matrix.node }}
-        run: npx jest --selectProjects=node
+        run: npm run test
+  test-edge:
+    needs: setup-test
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # current and active LTS
+        node: [ 20, 22 ]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          cache: 'npm'
+          node-version: ${{ matrix.node }}
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Run tests on node v${{ matrix.node }}
+        run: npm run test -- --environment=edge-runtime

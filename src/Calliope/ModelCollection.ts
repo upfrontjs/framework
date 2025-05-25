@@ -158,12 +158,10 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
             let boolean;
 
             // false positive
-            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
             if (key || key && key in model) {
                 if (key instanceof Function) {
                     boolean = !modelArray.some(item => key(item) === key(model));
                 } else if (key in model && model[key] instanceof Function) {
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                     boolean = !modelArray.some(item =>
                         (item[key] as CallableFunction)() === (model[key] as CallableFunction)()
                     );
@@ -218,11 +216,9 @@ export default class ModelCollection<T extends Model> extends Collection<T> {
             } else if (key && model[key] !== undefined) {
                 if (model[key] instanceof Function) {
                     boolean =
-                        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                         !values.some(item =>
                             (item[key] as CallableFunction)() === (model[key] as CallableFunction)()
                         ) &&
-                        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                         array.filter(item =>
                             (item[key] as CallableFunction)() === (model[key] as CallableFunction)()
                         ).length > 1;

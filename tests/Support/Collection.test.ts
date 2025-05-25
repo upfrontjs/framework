@@ -67,7 +67,6 @@ describe('Collection', () => {
             let boolean = true;
 
             for (const item of collection) {
-                
                 boolean = elements.includes(item as number) && boolean;
             }
 
@@ -180,7 +179,6 @@ describe('Collection', () => {
     });
 
     describe('hasDuplicates()', () => {
-        
         let elements: any[] = [1, 2, 1, 4, 5];
 
         beforeEach(() => {
@@ -304,7 +302,6 @@ describe('Collection', () => {
     });
 
     describe('duplicates()', () => {
-        
         let elements: any[] = [1, 2, 1, '1', 2];
 
         beforeEach(() => {
@@ -578,7 +575,6 @@ describe('Collection', () => {
             collection = new Collection(elements);
 
             collection.whenNotEmpty(func);
-            
             expect(func).toHaveBeenCalled();
         });
 
@@ -735,9 +731,8 @@ describe('Collection', () => {
     describe('dump()', () => {
         const elements = [1, 2, 3, 4, 5] as const;
 
-        let consoleLogMock: vi.Spied<any>,
-            consoleGroupCollapsedMock: vi.Spied<any>,
-            consoleGroupEndMock: vi.Spied<any>;
+        // @ts-expect-error - idk what the problem is
+        let consoleLogMock: vi.Spied<any>, consoleGroupCollapsedMock: vi.Spied<any>, consoleGroupEndMock: vi.Spied<any>;
 
         beforeEach(() => {
             collection = new Collection(elements);
@@ -1044,11 +1039,10 @@ describe('Collection', () => {
         });
 
         it('should skip items from the beginning', () => {
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
             expect(collection.skipUntil(item => item >= elements[elements.length - 1]!)).toStrictEqual(
                 new Collection([elements[elements.length - 1]])
             );
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+
             expect(collection.skipUntil(item => item >= elements[elements.length - 1]!)).toHaveLength(1);
         });
 
@@ -1207,7 +1201,6 @@ describe('Collection', () => {
         it('should take a function to execute or other types', () => {
             expect(Collection.times(5, 1).first()).toBe(1);
             expect(Collection.times(5, (i: number) => ({ id: i })).first()).toStrictEqual({ id: 1 });
-            // eslint-disable-next-line @typescript-eslint/no-extraneous-class
             const test = class Test {};
             expect(Collection.times(5, new test()).first()).toBeInstanceOf(test);
         });
@@ -1480,7 +1473,6 @@ describe('Collection', () => {
             });
 
             it('should transform values', () => {
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
                 expect(collection.map(elem => elem * 2).first()).toStrictEqual(elements[0]! * 2);
             });
 
@@ -1554,7 +1546,6 @@ describe('Collection', () => {
                 collection[0] = lastElement;
 
                 expect(collection.lastIndexOf(lastElement))
-                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
                     .toStrictEqual(elements.lastIndexOf(elements[elements.length - 1]!));
 
                 expect(collection.lastIndexOf('something')).toBe(-1);
@@ -1783,7 +1774,6 @@ describe('Collection', () => {
 
         describe('indexOf()', () => {
             it('should return the index of the found element or -1 on not found', () => {
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
                 expect(collection.indexOf(elements[0])).toStrictEqual(elements.indexOf(elements[0]!));
                 expect(collection.indexOf('something')).toBe(-1);
             });
@@ -1822,7 +1812,6 @@ describe('Collection', () => {
 
         describe('toString()', () => {
             it('should return the string representation of the collection', () => {
-                // eslint-disable-next-line @typescript-eslint/no-base-to-string
                 expect(collection.toString()).toBe(elements.toString());
             });
         });

@@ -898,7 +898,6 @@ describe('BuildsQuery', () => {
 
         it('should be able to be called statically', () => {
             // it will be present when used from the model
-            // eslint-disable-next-line jest/unbound-method,@typescript-eslint/unbound-method
             BuildsQuery.prototype.getCreatedAtName = builder.getCreatedAtName;
 
             builder = BuildsQuery.latest();
@@ -924,7 +923,6 @@ describe('BuildsQuery', () => {
 
         it('should be able to be called statically', () => {
             // it will be present when used from the model
-            // eslint-disable-next-line jest/unbound-method,@typescript-eslint/unbound-method
             BuildsQuery.prototype.getCreatedAtName = builder.getCreatedAtName;
 
             builder = BuildsQuery.oldest();
@@ -935,7 +933,6 @@ describe('BuildsQuery', () => {
                     direction: 'asc'
                 }
             ]);
-
         });
     });
 

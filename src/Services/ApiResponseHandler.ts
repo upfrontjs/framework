@@ -42,7 +42,6 @@ export default class ApiResponseHandler implements HandlesApiResponse {
     public async handleResponse<T>(response: ApiResponse<T>): Promise<T | undefined>;
     public async handleResponse(response: ApiResponse): Promise<unknown> {
         if (response.status >= 400) {
-            // eslint-disable-next-line @typescript-eslint/only-throw-error
             throw response;
         }
 
@@ -50,7 +49,6 @@ export default class ApiResponseHandler implements HandlesApiResponse {
             return undefined;
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
         const method = response.request?.method?.toUpperCase() as Uppercase<Method> | undefined;
 
         if (method && ['OPTIONS', 'HEAD', 'TRACE', 'CONNECT'].includes(method)) {
@@ -74,7 +72,6 @@ export default class ApiResponseHandler implements HandlesApiResponse {
      * @return {void}
      */
     public async handleError(rejectReason: unknown): Promise<unknown> {
-        // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
         return Promise.reject(rejectReason);
     }
 

@@ -387,7 +387,6 @@ describe('HasRelations', () => {
                     + '/' + String(contract.getKey())
                     + '/users'
                 );
-
         });
 
         it('should omit the key from the endpoint if undefined', () => {
@@ -418,7 +417,6 @@ describe('HasRelations', () => {
             const endpoint = hasRelations.getEndpoint();
             expect(hasRelations.setModelEndpoint().getEndpoint()).toBe(endpoint + '/' + String(hasRelations.getKey()));
         });
-
     });
 
     describe('relation definitions', () => {
@@ -569,7 +567,6 @@ describe('HasRelations', () => {
             });
 
             it('should throw an error if the callback argument is of wrong type', () => {
-                // eslint-disable-next-line @typescript-eslint/unbound-method
                 const initialCallback = morphModel.$contractable;
                 // @ts-expect-error - setting wrong type intentionally
                 morphModel.$contractable = () => morphModel.morphTo(false);

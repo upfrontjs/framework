@@ -65,13 +65,12 @@ type FilterGetters<T> = {
 // get an object with keys of the getter property name and value as the return type
 type TransformGetters<T extends Record<`get${string}Attribute`, (...args: any) => any>> = {
     [K in keyof T]: Record<
-    K extends `get${infer P}Attribute` ? Uncapitalize<P> : never,
-    // todo - this should not be writable id there's no setter
-    T[K] extends (...args: any) => infer R ? R : never
+        K extends `get${infer P}Attribute` ? Uncapitalize<P> : never,
+        // todo - this should not be writable id there's no setter
+        T[K] extends (...args: any) => infer R ? R : never
     >
 };
 
-/* eslint-disable @typescript-eslint/indent */
 /**
  * Intersect the type with the names of the accessors and their return types.
  *
@@ -86,10 +85,9 @@ Omit<
         // get every member of the object
         TransformGetters<FilterGetters<T>>[keyof TransformGetters<FilterGetters<T>>]
     >,
-''>
+    ''>
 // intersect with the given type
 & T;
-/* eslint-enable @typescript-eslint/indent */
 
 export default class HasAttributes extends GuardsAttributes implements Jsonable, Iterable<any> {
     /**

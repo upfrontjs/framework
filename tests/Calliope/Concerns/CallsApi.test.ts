@@ -384,7 +384,6 @@ describe('CallsApi', () => {
         });
 
         it('should construct a model collection on array argument', () => {
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
             const userData = User.factory().rawOne();
             //@ts-expect-error
             expect(caller.newInstanceFromResponseData([userData]))
@@ -392,11 +391,9 @@ describe('CallsApi', () => {
         });
 
         it('should force fill the models from the response', () => {
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
             const userData = User.factory().rawOne();
             const expectedUser = User.make(userData);
 
-            // eslint-disable-next-line @typescript-eslint/unbound-method
             const originalFillableReturn =  User.prototype.getFillable;
 
             User.prototype.getFillable = () => [];

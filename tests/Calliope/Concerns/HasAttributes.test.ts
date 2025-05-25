@@ -152,7 +152,7 @@ describe('HasAttributes', () => {
             hasAttributes.setAttribute('myAttr', { key: 1 });
 
             for (const [item, key] of hasAttributes) {
-                
+
                 if (key === 'myAttr') {
                     item.key = 2;
                 }
@@ -296,9 +296,7 @@ describe('HasAttributes', () => {
 
             const descriptor = Object.getOwnPropertyDescriptor(hasAttributes, 'test');
 
-            // eslint-disable-next-line @typescript-eslint/unbound-method
             expect(descriptor?.get).toBeDefined();
-            // eslint-disable-next-line @typescript-eslint/unbound-method
             expect(descriptor?.set).toBeDefined();
         });
 
@@ -310,9 +308,7 @@ describe('HasAttributes', () => {
             keys.forEach(key => {
                 const descriptor = Object.getOwnPropertyDescriptor(hasAttributes, key);
 
-                // eslint-disable-next-line @typescript-eslint/unbound-method
                 expect(descriptor?.get).toBeDefined();
-                // eslint-disable-next-line @typescript-eslint/unbound-method
                 expect(descriptor?.set).toBeDefined();
             });
         });
@@ -363,7 +359,6 @@ describe('HasAttributes', () => {
             }
 
             public getTestAttribute() {
-                
                 return (this.attributes.test as number | undefined) ?? 1;
             }
 

@@ -17,7 +17,6 @@ export default class GlobalConfig<T extends Configuration & Record<PropertyKey, 
     /**
      * Keys marked for not be deeply cloned when setting and returning values.
      */
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     public static usedAsReference: (PropertyKey | keyof Configuration)[] = ['headers'];
 
     /**
@@ -69,7 +68,7 @@ export default class GlobalConfig<T extends Configuration & Record<PropertyKey, 
      * @param {any}    value
      */
     public set<K extends keyof T>(key: K, value: T[K]): asserts this is GlobalConfig<WithProperty<T, K>>;
-    public set<K extends PropertyKey, V>(key: K, value: V): asserts this is GlobalConfig<T & { [key in K]: V }>;
+    public set<K extends PropertyKey, V>(key: K, value: V): asserts this is GlobalConfig<T & Record<K, V>>;
     public set(key: string, value: unknown): void {
         if (GlobalConfig.usedAsReference.includes(key) || GlobalConfig.usedAsReference.includes('*')) {
             GlobalConfig.configuration[key] = value;

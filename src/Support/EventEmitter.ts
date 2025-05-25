@@ -10,7 +10,6 @@ export default class EventEmitter<TEvents extends Events = Events> {
     private static instance?: any;
 
     // mark constructor private so no newing up is allowed
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     private constructor() {
     }
 

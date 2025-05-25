@@ -396,7 +396,6 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
             }
 
             for (let i = 0; i < diff; i++) {
-                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 end ? collection.push(value) : collection.unshift(value);
             }
         }

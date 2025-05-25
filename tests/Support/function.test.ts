@@ -33,7 +33,6 @@ describe('function helpers', () => {
                 expect(func.isUserLandClass(type)).toBe(false);
             });
 
-            // eslint-disable-next-line @typescript-eslint/no-extraneous-class
             expect(func.isUserLandClass(class C {})).toBe(true);
         });
     });

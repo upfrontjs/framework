@@ -94,7 +94,7 @@ export const getLastRequest = (): RequestDescriptor | undefined => {
     if (lastCall && 'body' in lastCall && typeof lastCall.body === 'string') {
         try {
             lastCall.body = JSON.parse(lastCall.body);
-            // eslint-disable-next-line no-empty
+            // eslint-disable-next-line no-empty,@typescript-eslint/no-unused-vars
         } catch (e: unknown) {}
     }
 

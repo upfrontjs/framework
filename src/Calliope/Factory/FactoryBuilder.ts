@@ -531,7 +531,6 @@ export default class FactoryBuilder<T extends Model, F extends Factory<T> = Fact
      * @return {string|number}
      */
     protected getKey(): number | string {
-        /* eslint-disable-next-line @typescript-eslint/consistent-generic-constructors */
         const config: GlobalConfig<Configuration & Record<'_lastIds', Record<string, number>>> = new GlobalConfig();
 
         const _lastIds = config.get('_lastIds', {});

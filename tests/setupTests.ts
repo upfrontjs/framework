@@ -2,7 +2,6 @@ import GlobalConfig from '../src/Support/GlobalConfig';
 import type Configuration from '../src/Contracts/Configuration';
 import { vi, beforeEach } from 'vitest';
 
-/* eslint-disable-next-line @typescript-eslint/consistent-generic-constructors */
 export const config: GlobalConfig<Configuration> = new GlobalConfig;
 
 export const now = new Date(vi.getRealSystemTime());

@@ -7,20 +7,20 @@
     "module": "index.es.min.js",
     "exports": {
         ".": {
-            "default": "./index.min.js",
-            "require": "./index.min.cjs",
             "import": "./index.es.min.js",
-            "types": "./types/index.d.ts"
+            "types": "./types/index.d.ts",
+            "require": "./index.min.cjs",
+            "default": "./index.min.js"
         },
         "./string": {
-            "require": "./string.es.min.cjs",
             "import": "./string.es.min.js",
-            "types": "./types/string.d.ts/"
+            "types": "./types/string.d.ts/",
+            "require": "./string.es.min.cjs"
         },
         "./array": {
-            "require": "./array.es.min.cjs",
             "import": "./array.es.min.js",
-            "types": "./types/array.d.ts/"
+            "types": "./types/array.d.ts/",
+            "require": "./array.es.min.cjs"
         }
     },
     "types": "./types/index.d.ts",
@@ -88,6 +88,7 @@
     "scripts": {
         "test": "vitest run -c ./tests/vitest.config.ts",
         "test:coverage": "npm run test -- --coverage",
+        "test:types": "tsc --noEmit",
         "lint": "eslint . --cache --fix --ext .ts",
         "emit-declarations": "tsc --project ./build.tsconfig.json --declaration --declarationMap --declarationDir ./types --emitDeclarationOnly",
         "build": "rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript && npm run emit-declarations",
@@ -104,17 +105,18 @@
         "lodash.uniq": "^4.5.0",
         "pluralize": "^8.0.0",
         "qs": "^6.9.4",
-        "uuid": "^9.0.0"
+        "uuid": "^11.0.3"
     },
     "devDependencies": {
         "@commitlint/config-conventional": "^19.1.0",
         "@commitlint/prompt-cli": "^19.2.0",
         "@commitlint/types": "^19.0.3",
-        "@edge-runtime/vm": "^4.0.4",
+        "@edge-runtime/vm": "^5.0.0",
+        "@eslint/js": "^9.27.0",
         "@rollup/plugin-terser": "^0.4.0",
-        "@rollup/plugin-typescript": "^11.0.0",
+        "@rollup/plugin-typescript": "^12.1.1",
         "@semantic-release/git": "^10.0.0",
-        "@stylistic/eslint-plugin-ts": "^2.10.1",
+        "@stylistic/eslint-plugin-ts": "^4.2.0",
         "@tsconfig/strictest": "^2.0.5",
         "@types/lodash.clonedeep": "^4.5.7",
         "@types/lodash.isequal": "^4.5.6",
@@ -125,26 +127,29 @@
         "@types/pluralize": "^0.0.33",
         "@types/qs": "^6.9.5",
         "@types/semantic-release": "^20.0.1",
-        "@types/uuid": "^9.0.0",
+        "@types/uuid": "^10.0.0",
         "@typescript-eslint/eslint-plugin": "^8.14.0",
         "@typescript-eslint/parser": "^8.14.0",
-        "@vitest/coverage-v8": "^2.1.4",
+        "@vitest/coverage-v8": "^3.1.1",
         "@vitest/eslint-plugin": "^1.1.10",
         "commitlint": "^19.2.1",
-        "conventional-changelog-conventionalcommits": "7.0.2",
-        "eslint": "^8.23.1",
+        "conventional-changelog-conventionalcommits": "^8.0.0",
+        "eslint": "^9.27.0",
         "eslint-plugin-import": "^2.22.1",
-        "glob": "^10.3.3",
+        "glob": "^11.0.0",
+        "globals": "^16.2.0",
         "husky": "^9.0.11",
+        "jsdom": "^26.1.0",
         "lint-staged": "^15.2.2",
         "rollup": "^4.14.1",
         "rollup-plugin-output-size": "^1.3.0",
-        "semantic-release": "^23.0.7",
+        "semantic-release": "^24.2.0",
         "ts-node": "^10.9.2",
         "tslib": "^2.2.0",
-        "typedoc": "^0.25.13",
-        "typescript": "^5.4.4",
-        "vitest": "^2.1.4"
+        "typedoc": "^0.28.2",
+        "typescript": "^5.7.2",
+        "typescript-eslint": "^8.32.1",
+        "vitest": "^3.1.1"
     },
     "peerDependencies": {
         "@types/lodash.clonedeep": "^4.5.7",
@@ -196,6 +201,6 @@
         }
     ],
     "engines": {
-        "node": ">=18.0.0"
+        "node": ">=18.20.0"
     }
 }

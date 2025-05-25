@@ -129,13 +129,11 @@ export default class CallsApi extends BuildsQuery {
             // values are either undefined or objects
             if ('data' in result && result.data === undefined
                 || isObjectLiteral(result.data)) {
-                // eslint-disable-next-line @typescript-eslint/prefer-destructuring
                 data = result.data;
             }
 
             if ('customHeaders' in result && result.customHeaders === undefined
                 || isObjectLiteral(result.customHeaders)) {
-                // eslint-disable-next-line @typescript-eslint/prefer-destructuring
                 customHeaders = result.customHeaders;
             }
 

@@ -183,7 +183,6 @@ describe('FactoryBuilder', () => {
     });
 
     describe('getFactory()', () => {
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         const userFactory = User.prototype.factory;
 
         afterEach(() => {
@@ -336,7 +335,6 @@ describe('FactoryBuilder', () => {
         it('should call the afterCreating with the created model or collection', () => {
             const mockFn = vi.fn();
             const unCalledMockFn = vi.fn();
-            // eslint-disable-next-line @typescript-eslint/unbound-method
             const originalFactory = User.prototype.factory;
 
             class MockUserFactory extends UserFactory {
@@ -447,7 +445,6 @@ describe('FactoryBuilder', () => {
             const models = factoryBuilder.createMany();
 
             expect(models.every(model => {
-                
                 return model.getKey() && model[model.getUpdatedAtName()] && model[model.getCreatedAtName()];
             })).toBe(true);
         });
@@ -461,7 +458,6 @@ describe('FactoryBuilder', () => {
         it('should call the afterCreating with the created model or collection', () => {
             const mockFn = vi.fn();
             const unCalledMockFn = vi.fn();
-            // eslint-disable-next-line @typescript-eslint/unbound-method
             const originalFactory = User.prototype.factory;
 
             class MockUserFactory extends UserFactory {
@@ -561,7 +557,6 @@ describe('FactoryBuilder', () => {
         it('should return an empty object if no attributes has been defined', () => {
             class TestFactory extends Factory<any> {}
 
-            // eslint-disable-next-line @typescript-eslint/unbound-method
             const originalValue = Team.prototype.factory;
 
             // @ts-expect-error
@@ -616,7 +611,6 @@ describe('FactoryBuilder', () => {
             expect(factoryBuilder.state('resolvedName')
                 .raw({
                     deletedAt: (attributes: Attributes) => {
-                        
                         return attributes.deletedAt ?? now;
                     }
                 }))

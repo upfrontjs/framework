@@ -1,5 +1,5 @@
 import typescript from '@rollup/plugin-typescript';
-import pkg from './package.json' assert { type: 'json' };
+import pkg from './package.json' with { type: 'json' };
 import terser from '@rollup/plugin-terser';
 import bundleSize from 'rollup-plugin-output-size';
 import { fileURLToPath } from 'node:url';
@@ -22,7 +22,8 @@ const commonConfig: InputOptions = {
     ],
     plugins: [
         // it doesn't find the config by default and doesn't emit interface files
-        // todo - https://github.com/rollup/plugins/pull/791/files#diff-77ceb76f06466d761730b952567396e6b5c292cc4044441cdfdf048b4614881dR83 check those tests
+        // eslint-disable-next-line max-len
+        // todo -https://github.com/rollup/plugins/pull/791/files#diff-77ceb76f06466d761730b952567396e6b5c292cc4044441cdfdf048b4614881dR83 check those tests
         typescript({ tsconfig: './build.tsconfig.json' }),
         terser({
             format: {

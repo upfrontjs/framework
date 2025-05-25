@@ -18,7 +18,6 @@ export default async function poll<T>(
 
                 setTimeout(() => void check(), typeof wait === 'function' ? wait(result, attempts) : wait);
             } catch (err: unknown) {
-                // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
                 reject(err);
             }
         };

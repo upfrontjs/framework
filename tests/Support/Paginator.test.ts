@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/unbound-method */
 import Paginator from '../../src/Support/Paginator';
 import InvalidOffsetException from '../../src/Exceptions/InvalidOffsetException';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -96,7 +95,7 @@ describe('Paginator', () => {
 
         describe('first()', () => {
             it('should set to first page', () => {
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+
                 expect(paginator.first().items).toContain(elements[0]);
             });
         });
@@ -140,19 +139,19 @@ describe('Paginator', () => {
 
             it('should jump to first page if wrapping is enabled', () => {
                 paginator = new Paginator(paginator.getAll(), 1, true);
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+
                 expect(paginator.last().next().items).toContain(elements[0]);
             });
         });
 
         describe('previous()', () => {
             it('should paginate to the previous page', () => {
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+
                 expect(paginator.next().previous().items).toContain(elements[0]);
             });
 
             it('should do nothing if there isn\'t a previous page', () => {
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+
                 expect(paginator.first().previous().items).toContain(elements[0]);
             });
 

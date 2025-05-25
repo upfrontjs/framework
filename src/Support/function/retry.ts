@@ -32,7 +32,6 @@ export default async function retry<T>(
         const attempt = () => {
             fn().then(resolve).catch((err: unknown) => {
                 if (errorCheck && !errorCheck(err)) {
-                    // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
                     reject(err);
                 }
 
@@ -45,7 +44,6 @@ export default async function retry<T>(
                         attempt();
                     }
                 } else {
-                    // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
                     reject(err);
                 }
             });

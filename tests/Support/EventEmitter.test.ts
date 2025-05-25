@@ -11,7 +11,6 @@ const stubFunc = (..._args: any[]) => {
     return;
 };
 
-/* eslint-disable @typescript-eslint/await-thenable */
 describe('EventEmitter', () => {
     describe('on()', () => {
         afterEach(() => {

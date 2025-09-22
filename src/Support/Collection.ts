@@ -1193,12 +1193,33 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
     }
 
     /**
+     * @see Array.prototype.findLast
+     *
+     * @return {any}
+     */
+    public findLast(
+        predicate: (value: T, index: number, obj: T[]) => unknown,
+        thisArg?: any
+    ): T | undefined {
+        return this.toArray().reverse().find(predicate, thisArg);
+    }
+
+    /**
      * @see Array.prototype.findIndex
      *
      * @return {number}
      */
     public findIndex(predicate: (value: T, index: number, obj: T[]) => unknown, thisArg?: any): number {
         return this.toArray().findIndex(predicate, thisArg);
+    }
+
+    /**
+     * @see Array.prototype.findLastIndex
+     *
+     * @return {number}
+     */
+    public findLastIndex(predicate: (value: T, index: number, obj: T[]) => unknown, thisArg?: any): number {
+        return this.toArray().findLastIndex(predicate, thisArg);
     }
 
     /**
@@ -1281,6 +1302,15 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
         }
 
         return this.toArray().reduceRight(callback, initialValue);
+    }
+
+    /**
+     * @see Array.prototype.with
+     *
+     * @return {any}
+     */
+    public with(index: number, value: T): this {
+        return this._newInstance(this.toArray().with(index, value));
     }
 
     /**

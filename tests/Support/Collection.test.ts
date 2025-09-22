@@ -1463,6 +1463,27 @@ describe('Collection', () => {
     describe('array-methods', () => {
         const elements = [1, 2, 3, 4, 5];
 
+        it('should implement all functions of the Array prototype', () => {
+            const ignoredProperties = [
+                // collection is already immutable, so these methods are not needed
+                'toReversed',
+                'toSorted',
+                'toSpliced',
+
+                // length is checked separately
+                'length'
+            ];
+
+            const arrayMethods = Object.getOwnPropertyNames(Array.prototype)
+                .filter(method => !ignoredProperties.includes(method));
+
+            arrayMethods.forEach(method => {
+                expect((collection as any)[method], 'Collection expected to implement method `' + method + '`')
+                    .toBeInstanceOf(Function);
+            });
+            expect(collection).toHaveProperty('length');
+        });
+
         beforeEach(() => {
             collection = new Collection(elements);
         });
@@ -1769,6 +1790,53 @@ describe('Collection', () => {
         describe('findIndex()', () => {
             it('should find item\'s index based on the given closure', () => {
                 expect(collection.findIndex(elem => elem === elements[0])).toBe(0);
+            });
+        });
+
+        describe('findLast()', () => {
+            it('should find the last item based on the given closure', () => {
+                expect(collection.findLast(elem => elem > 2)).toBe(5);
+            });
+
+            it('should return undefined if no item matches', () => {
+                expect(collection.findLast(elem => elem > 10)).toBeUndefined();
+            });
+        });
+
+        describe('findLastIndex()', () => {
+            it('should find the index of the last item based on the given closure', () => {
+                collection.push(3); // [1, 2, 3, 4, 5, 3]
+                expect(collection.findLastIndex(elem => elem === 3)).toBe(5);
+            });
+
+            it('should return -1 if no item matches', () => {
+                expect(collection.findLastIndex(elem => elem > 10)).toBe(-1);
+            });
+        });
+
+        describe('with()', () => {
+            it('should return a new collection with the element at the given index replaced', () => {
+                const newCollection = collection.with(2, 99);
+                expect(newCollection.at(2)).toBe(99);
+                expect(newCollection).not.toBe(collection);
+                expect(collection.at(2)).toBe(elements[2]);
+            });
+
+            it('should work with negative indices', () => {
+                const newCollection = collection.with(-1, 99);
+                expect(newCollection.at(-1)).toBe(99);
+                expect(newCollection.last()).toBe(99);
+            });
+
+            it('should return a collection ready for chaining', () => {
+                expect(collection.with(0, 99).toArray()).toHaveLength(elements.length);
+                expect(collection.with(0, 99).first()).toBe(99);
+            });
+
+            it('should preserve the original collection', () => {
+                const original = collection.toArray();
+                collection.with(0, 99);
+                expect(collection.toArray()).toStrictEqual(original);
             });
         });
 

@@ -1,19 +1,31 @@
 {
     "name": "@upfrontjs/framework",
-    "version": "0.18.1",
+    "version": "0.19.0",
     "description": "Data handling framework complementary to backend model systems.",
-    "main": "index.min.js",
+    "main": "index.min.cjs",
+    "type": "module",
     "module": "index.es.min.js",
     "exports": {
         ".": {
-            "default": "./index.min.js",
             "import": "./index.es.min.js",
-            "require": "./index.min.js",
-            "node": "./index.min.js"
+            "types": "./types/index.d.ts",
+            "require": "./index.min.cjs",
+            "default": "./index.min.js"
+        },
+        "./string": {
+            "import": "./string.es.min.js",
+            "types": "./types/string.d.ts/",
+            "require": "./string.es.min.cjs"
+        },
+        "./array": {
+            "import": "./array.es.min.js",
+            "types": "./types/array.d.ts/",
+            "require": "./array.es.min.cjs"
         }
     },
-    "types": "types/index.d.ts",
+    "types": "./types/index.d.ts",
     "files": [
+        "Support",
         "string*.js",
         "array*.js",
         "index*.js",
@@ -74,11 +86,12 @@
         "upfront"
     ],
     "scripts": {
-        "test": "jest",
+        "test": "vitest run -c ./tests/vitest.config.ts",
         "test:coverage": "npm run test -- --coverage",
+        "test:types": "tsc --noEmit",
         "lint": "eslint . --cache --fix --ext .ts",
-        "emit-declarations": "tsc --declaration --declarationMap --declarationDir ./types --emitDeclarationOnly",
-        "build": "rollup -c && npm run emit-declarations",
+        "emit-declarations": "tsc --project ./build.tsconfig.json --declaration --declarationMap --declarationDir ./types --emitDeclarationOnly",
+        "build": "rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript && npm run emit-declarations",
         "docs:api": "[ ! -d './types' ] && npm run emit-declarations || echo './types folder exists' && npx typedoc",
         "prepare": "husky install",
         "commit": "commit"
@@ -92,45 +105,50 @@
         "lodash.uniq": "^4.5.0",
         "pluralize": "^8.0.0",
         "qs": "^6.9.4",
-        "uuid": "^9.0.0"
+        "uuid": "^13.0.0"
     },
     "devDependencies": {
-        "@commitlint/config-conventional": "^17.0.0",
-        "@commitlint/prompt-cli": "^17.0.0",
-        "@commitlint/types": "^17.0.0",
+        "@commitlint/config-conventional": "^19.1.0",
+        "@commitlint/prompt-cli": "^19.2.0",
+        "@commitlint/types": "^19.0.3",
+        "@edge-runtime/vm": "^5.0.0",
+        "@eslint/js": "^9.27.0",
         "@rollup/plugin-terser": "^0.4.0",
-        "@rollup/plugin-typescript": "^11.0.0",
+        "@rollup/plugin-typescript": "^12.1.1",
         "@semantic-release/git": "^10.0.0",
-        "@types/jest": "^29.0.1",
+        "@stylistic/eslint-plugin": "^5.4.0",
+        "@tsconfig/strictest": "^2.0.5",
         "@types/lodash.clonedeep": "^4.5.7",
         "@types/lodash.isequal": "^4.5.6",
         "@types/lodash.merge": "^4.6.7",
         "@types/lodash.orderby": "^4.6.7",
         "@types/lodash.snakecase": "^4.1.7",
         "@types/lodash.uniq": "^4.5.7",
-        "@types/pluralize": "^0.0.29",
+        "@types/pluralize": "^0.0.33",
         "@types/qs": "^6.9.5",
         "@types/semantic-release": "^20.0.1",
-        "@types/uuid": "^9.0.0",
-        "@typescript-eslint/eslint-plugin": "^5.38.0",
-        "@typescript-eslint/parser": "^5.38.0",
-        "commitlint": "^17.0.2",
-        "conventional-changelog-conventionalcommits": "5.0.0",
-        "cross-fetch": "^3.1.5",
-        "eslint": "^8.23.1",
+        "@typescript-eslint/eslint-plugin": "^8.14.0",
+        "@typescript-eslint/parser": "^8.14.0",
+        "@vitest/coverage-v8": "^3.1.1",
+        "@vitest/eslint-plugin": "^1.1.10",
+        "commitlint": "^19.2.1",
+        "conventional-changelog-conventionalcommits": "^9.1.0",
+        "eslint": "^9.27.0",
         "eslint-plugin-import": "^2.22.1",
-        "eslint-plugin-jest": "^27.0.4",
-        "husky": "^8.0.1",
-        "jest": "^29.0.3",
-        "jest-environment-jsdom": "^29.0.3",
-        "lint-staged": "^13.0.1",
-        "rollup": "^3.13.0",
-        "rollup-plugin-bundle-size": "^1.0.3",
-        "semantic-release": "^21.0.0",
-        "ts-jest": "^29.0.0",
+        "glob": "^11.0.0",
+        "globals": "^16.2.0",
+        "husky": "^9.0.11",
+        "jsdom": "^27.0.0",
+        "lint-staged": "^16.2.0",
+        "rollup": "^4.14.1",
+        "rollup-plugin-output-size": "^2.0.0",
+        "semantic-release": "^24.2.0",
+        "ts-node": "^10.9.2",
         "tslib": "^2.2.0",
-        "typedoc": "^0.24.1",
-        "typescript": "^5.0.2"
+        "typedoc": "^0.28.2",
+        "typescript": "^5.7.2",
+        "typescript-eslint": "^8.32.1",
+        "vitest": "^3.1.1"
     },
     "peerDependencies": {
         "@types/lodash.clonedeep": "^4.5.7",
@@ -139,15 +157,11 @@
         "@types/lodash.orderby": "^4.6.7",
         "@types/lodash.snakecase": "^4.1.7",
         "@types/lodash.uniq": "^4.5.7",
-        "@types/pluralize": "^0.0.29",
-        "@types/qs": "^6.9.5",
-        "@types/uuid": "^9.0.0"
+        "@types/pluralize": "^0.0.33",
+        "@types/qs": "^6.9.5"
     },
     "peerDependenciesMeta": {
         "@types/qs": {
-            "optional": true
-        },
-        "@types/uuid": {
             "optional": true
         },
         "@types/lodash.clonedeep": {
@@ -182,6 +196,6 @@
         }
     ],
     "engines": {
-        "node": ">=18.0.0"
+        "node": ">=18.20.0"
     }
 }

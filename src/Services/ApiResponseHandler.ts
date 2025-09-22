@@ -22,7 +22,7 @@ export default class ApiResponseHandler implements HandlesApiResponse {
     public async handle(promise: Promise<ApiResponse>): Promise<unknown> {
         return promise
             .then(async response => this.handleResponse(response))
-            .catch(async error => this.handleError(error))
+            .catch(async (error: unknown) => this.handleError(error))
             .finally(() => this.handleFinally());
     }
 
@@ -42,18 +42,18 @@ export default class ApiResponseHandler implements HandlesApiResponse {
     public async handleResponse<T>(response: ApiResponse<T>): Promise<T | undefined>;
     public async handleResponse(response: ApiResponse): Promise<unknown> {
         if (response.status >= 400) {
-            // eslint-disable-next-line @typescript-eslint/no-throw-literal
             throw response;
         }
 
-        if (response.status < 200 || response.status > 299 || response.status === 204) return;
+        if (response.status < 200 || response.status > 299 || response.status === 204) {
+            return undefined;
+        }
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
         const method = response.request?.method?.toUpperCase() as Uppercase<Method> | undefined;
 
         if (method && ['OPTIONS', 'HEAD', 'TRACE', 'CONNECT'].includes(method)) {
             // the user might just want the headers or debug info
-            // so just return the whole response
+            // so return the whole response
             return response;
         }
 
@@ -61,7 +61,7 @@ export default class ApiResponseHandler implements HandlesApiResponse {
             return response.json();
         }
 
-        return;
+        return undefined;
     }
 
     /**

@@ -6,7 +6,7 @@ export interface ApiResponse<
 > extends Pick<Response, 'headers' | 'status' | 'statusText'> {
     /**
      * The parsed response content.
-     * (in case of libraries like axios)
+     * (in the case of libraries like axios)
      */
     data?: T;
 

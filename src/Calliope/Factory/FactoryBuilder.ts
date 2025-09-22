@@ -275,7 +275,7 @@ export default class FactoryBuilder<T extends Model, F extends Factory<T> = Fact
             relationName = relationName ?? relation.model.getName().toLowerCase();
         } else if (isUserLandClass<typeof Model>(relation)) {
             relationName = relationName ?? (new relation).getName().toLowerCase();
-            relation = relation.factory();
+            relation = relation.factory() as unknown as FactoryBuilder<M>;
         } else {
             throw new InvalidArgumentException(
                 'Argument for the \'with\' method expected to be an instance of '
@@ -531,7 +531,6 @@ export default class FactoryBuilder<T extends Model, F extends Factory<T> = Fact
      * @return {string|number}
      */
     protected getKey(): number | string {
-        /* eslint-disable-next-line @typescript-eslint/consistent-generic-constructors */
         const config: GlobalConfig<Configuration & Record<'_lastIds', Record<string, number>>> = new GlobalConfig();
 
         const _lastIds = config.get('_lastIds', {});

@@ -2,6 +2,7 @@ import type { QueryParams } from '../../../src/Calliope/Concerns/BuildsQuery';
 import InvalidArgumentException from '../../../src/Exceptions/InvalidArgumentException';
 import type FormatsQueryParameters from '../../../src/Contracts/FormatsQueryParameters';
 import { types } from '../../test-helpers';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Model from '../../../src/Calliope/Model';
 
 class BuildsQuery extends Model {
@@ -40,7 +41,7 @@ describe('BuildsQuery', () => {
 
     describe('compileQueryParameters', () => {
         it('should call the formatQueryParameters if defined', () => {
-            const mockFn = jest.fn();
+            const mockFn = vi.fn();
             class FormatterClass extends BuildsQuery implements FormatsQueryParameters {
                 public formatQueryParameters(attributes: QueryParams) {
                     mockFn();
@@ -897,7 +898,6 @@ describe('BuildsQuery', () => {
 
         it('should be able to be called statically', () => {
             // it will be present when used from the model
-            // eslint-disable-next-line jest/unbound-method,@typescript-eslint/unbound-method
             BuildsQuery.prototype.getCreatedAtName = builder.getCreatedAtName;
 
             builder = BuildsQuery.latest();
@@ -923,7 +923,6 @@ describe('BuildsQuery', () => {
 
         it('should be able to be called statically', () => {
             // it will be present when used from the model
-            // eslint-disable-next-line jest/unbound-method,@typescript-eslint/unbound-method
             BuildsQuery.prototype.getCreatedAtName = builder.getCreatedAtName;
 
             builder = BuildsQuery.oldest();
@@ -934,7 +933,6 @@ describe('BuildsQuery', () => {
                     direction: 'asc'
                 }
             ]);
-
         });
     });
 

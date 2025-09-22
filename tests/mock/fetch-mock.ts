@@ -1,13 +1,12 @@
 import Collection from '../../src/Support/Collection';
 import type { Method } from '../../src';
 import { isObjectLiteral } from '../../src';
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-import { Response } from 'cross-fetch';
+import { vi } from 'vitest';
 
 /**
  * The mock of fetch.
  */
-const spy = jest.spyOn(globalThis, 'fetch').mockRejectedValue('Implementation not set.');
+const spy = vi.spyOn(globalThis, 'fetch').mockRejectedValue('Implementation not set.');
 
 /**
  * The values permitted in the response body for serialisation.
@@ -86,14 +85,16 @@ export const getRequests = (): RequestDescriptor[] => {
 export const getLastRequest = (): RequestDescriptor | undefined => {
     const calls = getRequests();
 
-    if (!calls.length) return;
+    if (!calls.length) {
+        return undefined;
+    }
 
     const lastCall = calls[calls.length - 1];
 
     if (lastCall && 'body' in lastCall && typeof lastCall.body === 'string') {
         try {
             lastCall.body = JSON.parse(lastCall.body);
-            // eslint-disable-next-line no-empty
+            // eslint-disable-next-line no-empty,@typescript-eslint/no-unused-vars
         } catch (e: unknown) {}
     }
 

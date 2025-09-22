@@ -103,7 +103,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @return {undefined|any}
      */
-    public first(callback?: ((item: T, index: number) => boolean)): T | undefined {
+    public first(callback?: (item: T, index: number) => boolean): T | undefined {
         if (this.isEmpty()) {
             return undefined;
         }
@@ -124,7 +124,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @return {undefined|any}
      */
-    public last(callback?: ((item: T, index: number) => boolean)): T | undefined {
+    public last(callback?: (item: T, index: number) => boolean): T | undefined {
         if (this.isEmpty()) {
             return undefined;
         }
@@ -396,7 +396,6 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
             }
 
             for (let i = 0; i < diff; i++) {
-                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 end ? collection.push(value) : collection.unshift(value);
             }
         }
@@ -527,7 +526,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @param callback
      */
-    public partition(callback: ((item: T) => boolean)): [this, this] {
+    public partition(callback: (item: T) => boolean): [this, this] {
         const left = this._newInstance();
         const right = this._newInstance();
 
@@ -1075,7 +1074,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      * @return {Collection}
      */
     public flatMap<U, This = undefined>(
-        callback: (this: This, value: T, index: number, array: T[]) => (U | readonly U[]),
+        callback: (this: This, value: T, index: number, array: T[]) => U | readonly U[],
         thisArg?: This
     ): Collection<U> {
         return new Collection(this.toArray().flatMap(callback, thisArg));
@@ -1194,12 +1193,33 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
     }
 
     /**
+     * @see Array.prototype.findLast
+     *
+     * @return {any}
+     */
+    public findLast(
+        predicate: (value: T, index: number, obj: T[]) => unknown,
+        thisArg?: any
+    ): T | undefined {
+        return this.toArray().reverse().find(predicate, thisArg);
+    }
+
+    /**
      * @see Array.prototype.findIndex
      *
      * @return {number}
      */
     public findIndex(predicate: (value: T, index: number, obj: T[]) => unknown, thisArg?: any): number {
         return this.toArray().findIndex(predicate, thisArg);
+    }
+
+    /**
+     * @see Array.prototype.findLastIndex
+     *
+     * @return {number}
+     */
+    public findLastIndex(predicate: (value: T, index: number, obj: T[]) => unknown, thisArg?: any): number {
+        return this.toArray().findLastIndex(predicate, thisArg);
     }
 
     /**
@@ -1282,6 +1302,15 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
         }
 
         return this.toArray().reduceRight(callback, initialValue);
+    }
+
+    /**
+     * @see Array.prototype.with
+     *
+     * @return {any}
+     */
+    public with(index: number, value: T): this {
+        return this._newInstance(this.toArray().with(index, value));
     }
 
     /**

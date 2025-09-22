@@ -31,7 +31,7 @@ export type AttributeKeys<T, Ex = CallableFunction> = Exclude<KeysNotMatching<T,
  * Results in a union of keys.
  */
 export type SimpleAttributeKeys<T extends HasAttributes = HasAttributes> =
-    AttributeKeys<T, CallableFunction | (Model | ModelCollection<Model> | undefined)>;
+    AttributeKeys<T, CallableFunction | Model | ModelCollection<Model> | undefined>;
 
 
 /**
@@ -65,17 +65,17 @@ type FilterGetters<T> = {
 // get an object with keys of the getter property name and value as the return type
 type TransformGetters<T extends Record<`get${string}Attribute`, (...args: any) => any>> = {
     [K in keyof T]: Record<
-    K extends `get${infer P}Attribute` ? Uncapitalize<P> : never,
-    // todo - this should not be writable id there's no setter
-    T[K] extends (...args: any) => infer R ? R : never
+        K extends `get${infer P}Attribute` ? Uncapitalize<P> : never,
+        // todo - this should not be writable id there's no setter
+        T[K] extends (...args: any) => infer R ? R : never
     >
 };
 
-/* eslint-disable @typescript-eslint/indent */
 /**
  * Intersect the type with the names of the accessors and their return types.
  *
  * This type is experimental and may change.
+ * @experimental
  */
 export type Getters<T> =
 // remove empty string keys
@@ -85,10 +85,9 @@ Omit<
         // get every member of the object
         TransformGetters<FilterGetters<T>>[keyof TransformGetters<FilterGetters<T>>]
     >,
-''>
+    ''>
 // intersect with the given type
 & T;
-/* eslint-enable @typescript-eslint/indent */
 
 export default class HasAttributes extends GuardsAttributes implements Jsonable, Iterable<any> {
     /**
@@ -292,7 +291,9 @@ export default class HasAttributes extends GuardsAttributes implements Jsonable,
 
         if (
             (isObjectLiteral(value) && !Collection.isCollection(value)
-                || (Array.isArray(value) || Collection.isCollection(value)) && value.every(item => isObjectLiteral(item)))
+                || (Array.isArray(value)
+                || Collection.isCollection(value)) && value.every(item => isObjectLiteral(item))
+            )
             // @ts-expect-error
             && (this as unknown as HasRelations).relationDefined(key)
         ) {

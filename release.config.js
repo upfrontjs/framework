@@ -1,5 +1,5 @@
 /** @type {import('@types/semantic-release').GlobalConfig} */
-module.exports = {
+export default {
     branches: [
         'release\\/([0-9])\\.x',
         'main'

@@ -22,18 +22,6 @@ import type { MaybeArray } from '../type';
 
 export default async function retry<T>(
     fn: () => Promise<T>,
-    maxRetries: number[],
-    timeout?: undefined,
-    errorCheck?: (err: unknown) => boolean
-): Promise<T>;
-export default async function retry<T>(
-    fn: () => Promise<T>,
-    maxRetries?: number,
-    timeout?: number | ((currentAttemptCount: number) => number),
-    errorCheck?: (err: unknown) => boolean
-): Promise<T>;
-export default async function retry<T>(
-    fn: () => Promise<T>,
     maxRetries: MaybeArray<number> = 3,
     timeout: number | ((currentAttemptCount: number) => number) = 0,
     errorCheck?: (err: unknown) => boolean
@@ -42,7 +30,7 @@ export default async function retry<T>(
         let retries = 0;
 
         const attempt = () => {
-            fn().then(resolve).catch(err => {
+            fn().then(resolve).catch((err: unknown) => {
                 if (errorCheck && !errorCheck(err)) {
                     reject(err);
                 }

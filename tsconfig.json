@@ -1,10 +1,10 @@
 {
+    "extends": "@tsconfig/strictest/tsconfig.json",
     "compilerOptions": {
         "importHelpers": true,
         "module": "ESNext",
         "sourceMap": true,
         "downlevelIteration": true,
-        "isolatedModules": true,
         "esModuleInterop": true,
         "lib": [
             "ESNext",
@@ -15,23 +15,18 @@
         "moduleResolution": "node",
         "removeComments": false,
         "pretty": true,
-        "noImplicitReturns": true,
-        "noImplicitOverride": true,
         "allowSyntheticDefaultImports": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
         "forceConsistentCasingInFileNames": true,
-        "noUncheckedIndexedAccess": true,
-        "strict": true,
-        "noFallthroughCasesInSwitch": true,
-        "allowUnreachableCode": false
+        "noPropertyAccessFromIndexSignature": false,
+        "resolveJsonModule": true,
     },
     "include": [
-        "src/*.ts"
+        "src/*.ts",
+        "jest.config.ts",
+        "rollup.config.ts"
     ],
     "exclude": [
         "**/node_modules/",
         "**/.*"
-    ],
-    "$schema": "https://json.schemastore.org/tsconfig"
+    ]
 }

@@ -8,6 +8,7 @@ import { config } from '../../setupTests';
 import { snake, finish } from '../../../src/Support/string';
 import type RequestMiddleware from '../../../src/Contracts/RequestMiddleware';
 import transformKeys from '../../../src/Support/function/transformKeys';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 let caller: User;
 
@@ -87,7 +88,7 @@ describe('CallsApi', () => {
             expect(typeof caller.endpoint).toBe('string');
             // @ts-expect-error
             expect(() => caller.endpoint = 'unexpected assignment').toThrowErrorMatchingInlineSnapshot(
-                '"Cannot set property endpoint of [object Object] which has only a getter"'
+                '[TypeError: Cannot set property endpoint of [object Object] which has only a getter]'
             );
         });
     });
@@ -153,7 +154,7 @@ describe('CallsApi', () => {
         });
 
         it('should get the HandlesApiResponse from the Configuration if set',  async () => {
-            const mockFn = jest.fn();
+            const mockFn = vi.fn();
             const apiResponseHandler = class CustomApiResponseHandlerImplementation extends ApiResponseHandler {
                 public override handleFinally() {
                     mockFn();
@@ -235,11 +236,11 @@ describe('CallsApi', () => {
         });
 
         it('should not parse the response body if data wrapped', async () => {
-            const data = User.factory().raw();
+            const data = User.factory().rawOne();
             fetchMock.mockResponseOnce({ data });
             const parsedResponse = await caller.call('GET');
 
-            expect(parsedResponse).toStrictEqual({ data });
+            expect(parsedResponse.data).toStrictEqual(data);
         });
 
         it('should reset the endpoint', async () => {
@@ -263,14 +264,14 @@ describe('CallsApi', () => {
         });
 
         it('should return undefined if the response from the handler is undefined', async () => {
-            fetchMock.mockResponseOnce(undefined, { status: 100 });
+            fetchMock.mockResponseOnce(undefined, { status: 204 });
             await expect(caller.call('GET')).resolves.toBeUndefined();
         });
 
         describe('requestMiddleware', () => {
             it('should run the given request middleware if set in the configuration', async () => {
                 fetchMock.mockResponseOnce(User.factory().raw());
-                const mockFn = jest.fn();
+                const mockFn = vi.fn();
                 const requestMiddleware: RequestMiddleware = {
                     handle: (url, method, data, customHeaders, queryParameters) => {
                         mockFn(url, method, data, customHeaders, queryParameters);
@@ -342,7 +343,7 @@ describe('CallsApi', () => {
                 requestMiddleware = {
                     handle: () => ({
                         queryParameters: { key: 'new value' },
-                        customHeaders: undefined
+                        customHeaders: {}
                     })
                 };
                 config.set('requestMiddleware', requestMiddleware);
@@ -383,7 +384,6 @@ describe('CallsApi', () => {
         });
 
         it('should construct a model collection on array argument', () => {
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
             const userData = User.factory().rawOne();
             //@ts-expect-error
             expect(caller.newInstanceFromResponseData([userData]))
@@ -391,11 +391,9 @@ describe('CallsApi', () => {
         });
 
         it('should force fill the models from the response', () => {
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
             const userData = User.factory().rawOne();
             const expectedUser = User.make(userData);
 
-            // eslint-disable-next-line @typescript-eslint/unbound-method,jest/unbound-method
             const originalFillableReturn =  User.prototype.getFillable;
 
             User.prototype.getFillable = () => [];

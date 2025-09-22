@@ -1,9 +1,9 @@
 import GlobalConfig from '../../src/Support/GlobalConfig';
 import API from '../../src/Services/API';
 import type Configuration from '../../src/Contracts/Configuration';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 // initial type is required so set's assertion doesn't trigger circular analysis for typescript
-/* eslint-disable-next-line @typescript-eslint/consistent-generic-constructors */
 const config: GlobalConfig<Configuration> = new GlobalConfig();
 
 describe('GlobalConfig', () => {
@@ -67,8 +67,7 @@ describe('GlobalConfig', () => {
 
             deepObj.count++;
 
-            // eslint-disable-next-line max-len
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/non-nullable-type-assertion-style
+
             expect((config.get('obj') as typeof obj).test.count).toBe(1);
         });
     });

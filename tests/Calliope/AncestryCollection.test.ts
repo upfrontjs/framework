@@ -62,7 +62,9 @@ describe('AncestryCollection', () => {
 
             const tree = AncestryCollection.treeOf(newFolderCollection);
             expect(tree).toHaveLength(2);
-            expect(tree.findByKey(folder1.getKey())!.children).toHaveLength(2);
+            const children = tree.findByKey(folder1.getKey())!.children;
+            expect(children).toHaveLength(2);
+            expect(children).toBeInstanceOf(ModelCollection);
         });
     });
 

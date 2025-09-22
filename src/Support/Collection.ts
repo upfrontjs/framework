@@ -103,7 +103,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @return {undefined|any}
      */
-    public first(callback?: ((item: T, index: number) => boolean)): T | undefined {
+    public first(callback?: (item: T, index: number) => boolean): T | undefined {
         if (this.isEmpty()) {
             return undefined;
         }
@@ -124,7 +124,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @return {undefined|any}
      */
-    public last(callback?: ((item: T, index: number) => boolean)): T | undefined {
+    public last(callback?: (item: T, index: number) => boolean): T | undefined {
         if (this.isEmpty()) {
             return undefined;
         }
@@ -526,7 +526,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      *
      * @param callback
      */
-    public partition(callback: ((item: T) => boolean)): [this, this] {
+    public partition(callback: (item: T) => boolean): [this, this] {
         const left = this._newInstance();
         const right = this._newInstance();
 
@@ -1074,7 +1074,7 @@ export default class Collection<T> implements Jsonable, Arrayable<T>, Iterable<T
      * @return {Collection}
      */
     public flatMap<U, This = undefined>(
-        callback: (this: This, value: T, index: number, array: T[]) => (U | readonly U[]),
+        callback: (this: This, value: T, index: number, array: T[]) => U | readonly U[],
         thisArg?: This
     ): Collection<U> {
         return new Collection(this.toArray().flatMap(callback, thisArg));

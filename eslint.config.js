@@ -2,7 +2,7 @@ import js from "@eslint/js";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 import vitest from "@vitest/eslint-plugin";
-import stylistic from "@stylistic/eslint-plugin-ts";
+import stylistic from "@stylistic/eslint-plugin";
 import {defineConfig} from "eslint/config";
 
 export default defineConfig([
@@ -31,7 +31,7 @@ export default defineConfig([
         files: ["**/*.{ts,mts,cts}"],
         plugins: {
             "@typescript-eslint": tseslint.plugin,
-            "@stylistic/ts": stylistic,
+            "@stylistic": stylistic,
         },
         languageOptions: {
             parser: tseslint.parser,
@@ -75,11 +75,11 @@ export default defineConfig([
             "lines-around-comment": "off",
 
             // https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin#supported-rules
-            '@stylistic/ts/object-curly-spacing': ['warn', 'always'],
-            "@stylistic/ts/indent": ["warn", 4],
-            "@stylistic/ts/quotes": ["warn", "single"],
-            "@stylistic/ts/semi": "error",
-            "@stylistic/ts/no-extra-parens": "error",
+            '@stylistic/object-curly-spacing': ['warn', 'always'],
+            "@stylistic/indent": ["warn", 4],
+            "@stylistic/quotes": ["warn", "single"],
+            "@stylistic/semi": "error",
+            "@stylistic/no-extra-parens": "error",
             "@typescript-eslint/no-unused-vars": "warn",
             "@typescript-eslint/no-useless-constructor": "warn",
             "@typescript-eslint/no-explicit-any": "off",
@@ -91,19 +91,19 @@ export default defineConfig([
             "@typescript-eslint/prefer-optional-chain": "warn",
             "@typescript-eslint/prefer-ts-expect-error": "warn",
             "@typescript-eslint/promise-function-async": "error",
-            "@stylistic/ts/func-call-spacing": ["error", "never"],
-            "@stylistic/ts/comma-spacing": "warn",
-            "@stylistic/ts/keyword-spacing": "warn",
+            "@stylistic/function-call-spacing": ["error", "never"],
+            "@stylistic/comma-spacing": "warn",
+            "@stylistic/keyword-spacing": "warn",
             "@typescript-eslint/consistent-indexed-object-style": ["error", "record"],
             "@typescript-eslint/consistent-type-imports": ["error", {prefer: 'type-imports'}],
-            "@stylistic/ts/member-delimiter-style": "warn",
-            "@stylistic/ts/type-annotation-spacing": "warn",
+            "@stylistic/member-delimiter-style": "warn",
+            "@stylistic/type-annotation-spacing": "warn",
             "@typescript-eslint/naming-convention": "error",
             "@typescript-eslint/no-magic-numbers": "off",
             "@typescript-eslint/no-non-null-assertion": "off",
             "@typescript-eslint/member-ordering": "off",
             "@typescript-eslint/class-literal-property-style": "off",
-            "@stylistic/ts/space-before-function-paren": ["warn", {
+            "@stylistic/space-before-function-paren": ["warn", {
                 "anonymous": "always",
                 "named": "never",
                 "asyncArrow": "always"
@@ -121,11 +121,11 @@ export default defineConfig([
             "@typescript-eslint/array-type": "warn",
             "@typescript-eslint/prefer-for-of": "off",
             "@typescript-eslint/no-restricted-imports": "off",
-            "@stylistic/ts/lines-between-class-members": ["error"],
+            "@stylistic/lines-between-class-members": ["error"],
             "@typescript-eslint/max-params": ["warn", {
                 "max": 5
             }],
-            "@stylistic/ts/lines-around-comment": ["warn", {
+            "@stylistic/lines-around-comment": ["warn", {
                 "allowInterfaceStart": true,
                 "allowBlockStart": true,
                 "allowModuleStart": true,

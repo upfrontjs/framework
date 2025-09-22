@@ -31,7 +31,7 @@ export type AttributeKeys<T, Ex = CallableFunction> = Exclude<KeysNotMatching<T,
  * Results in a union of keys.
  */
 export type SimpleAttributeKeys<T extends HasAttributes = HasAttributes> =
-    AttributeKeys<T, CallableFunction | (Model | ModelCollection<Model> | undefined)>;
+    AttributeKeys<T, CallableFunction | Model | ModelCollection<Model> | undefined>;
 
 
 /**

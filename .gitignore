@@ -6,6 +6,7 @@ string.*.*js*
 types
 /Support
 *.tgz
+tslib.es6-*
 
 # in case gh-pages manually managed
 index.html

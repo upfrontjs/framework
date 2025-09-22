@@ -1,11 +1,13 @@
 import typescript from '@rollup/plugin-typescript';
-import pkg from './package.json' with { type: 'json' };
 import terser from '@rollup/plugin-terser';
 import bundleSize from 'rollup-plugin-output-size';
 import { fileURLToPath } from 'node:url';
+import { readFileSync } from 'node:fs';
 import { glob } from 'glob';
 import * as path from 'node:path';
 import type { InputOptions, RollupOptions, SourcemapPathTransformOption } from 'rollup';
+
+const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
 
 const banner = `
 /*! ================================

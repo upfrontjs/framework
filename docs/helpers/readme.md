@@ -459,6 +459,39 @@ value(
 ); // 2
 ```
 
+#### poll
+
+The `poll` method repeatedly executes a promise function until a specified condition is met. It's useful for polling operations where you need to wait for a resource to become available or reach a desired state. The function takes 3 arguments:
+ - `fn` - The function returning a promise to be called repeatedly
+ - `wait` (default: 0) - The wait time between attempts in milliseconds. If 0, it will not wait between attempts. If a function, it will be called with the result and attempt count.
+ - `until` - The condition to stop polling. If a Date, polling stops when that time is reached. If a function, it receives the result and attempt count and should return true to stop.
+
+```ts
+import { poll } from '@upfrontjs/framework';
+
+// Poll an API endpoint every 1000ms until a specific condition is met
+const result = await poll(
+  () => fetch('/api/status').then(r => r.json()),
+  1000,
+  (data) => data.status === 'complete'
+);
+
+// Poll with dynamic wait time based on attempts
+const result = await poll(
+  () => checkResource(),
+  (result, attempts) => Math.min(1000 * attempts, 10000), // exponential backoff with cap
+  (result) => result.ready
+);
+
+// Poll until a specific time
+const timeoutDate = new Date(Date.now() + 30000); // 30 seconds from now
+const result = await poll(
+  () => performCheck(),
+  500,
+  timeoutDate
+);
+```
+
 #### dataGet
 
 The `dataGet` is a helper method to safely access any path within an object or array. If the path does not exist, it will return the default value (default: `undefined`). Optionally the path may include a wildcard `*` to match array elements.

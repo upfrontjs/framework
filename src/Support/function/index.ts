@@ -4,3 +4,4 @@ export { default as transformKeys } from './transformKeys';
 export { default as isUserLandClass } from './isUserLandClass';
 export { default as isObjectLiteral } from './isObjectLiteral';
 export { default as value } from './value';
+export { default as poll } from './poll';

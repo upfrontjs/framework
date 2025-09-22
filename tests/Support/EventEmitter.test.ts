@@ -1,5 +1,6 @@
 import type { Events } from '../../src/Support/EventEmitter';
 import EventEmitter from '../../src/Support/EventEmitter';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 interface MyEvents extends Events {
     myEvent: ((payload?: number) => void)[];
@@ -10,7 +11,6 @@ const stubFunc = (..._args: any[]) => {
     return;
 };
 
-/* eslint-disable @typescript-eslint/await-thenable */
 describe('EventEmitter', () => {
     describe('on()', () => {
         afterEach(() => {
@@ -19,7 +19,8 @@ describe('EventEmitter', () => {
 
         it('should execute registered listener on event dispatched', async () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
-            const myEventCb = jest.fn();
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const myEventCb = vi.fn((_arg?: number) => {});
 
             emitter.on('myEvent', num => myEventCb(num));
 
@@ -33,7 +34,8 @@ describe('EventEmitter', () => {
 
         it('should execute listeners in order they were added in', async () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
-            const myEventCb = jest.fn();
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const myEventCb = vi.fn((_arg: number) => {});
 
             emitter.on('myEvent', () => myEventCb(1));
             emitter.on('myEvent', () => myEventCb(2));
@@ -52,7 +54,8 @@ describe('EventEmitter', () => {
 
         it('should only execute the listener once', async () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
-            const myEventCb = jest.fn();
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const myEventCb = vi.fn((_arg?: number) => {});
 
             emitter.once('myEvent', num => myEventCb(num));
             await emitter.emit('myEvent', 1);
@@ -65,7 +68,7 @@ describe('EventEmitter', () => {
     describe('prependListener()', () => {
         it('should execute the listener that has been added', async () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
-            const myEventCb = jest.fn();
+            const myEventCb = vi.fn(() => {});
 
             emitter.prependListener('myEvent', myEventCb);
             await emitter.emit('myEvent');
@@ -75,7 +78,8 @@ describe('EventEmitter', () => {
 
         it('should execute the prepended listener before other listeners', async () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
-            const myEventCb = jest.fn();
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const myEventCb = vi.fn((_arg: number) => {});
 
             emitter.on('myEvent', () => myEventCb(1));
             emitter.prependListener('myEvent', () => myEventCb(2));
@@ -93,7 +97,7 @@ describe('EventEmitter', () => {
 
         it('should execute the listener that has been added', async () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
-            const myEventCb = jest.fn();
+            const myEventCb = vi.fn(() => {});
 
             emitter.prependOnceListener('myEvent', myEventCb);
             await emitter.emit('myEvent');
@@ -103,7 +107,8 @@ describe('EventEmitter', () => {
 
         it('should execute the prepended once listener before other listeners', async () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
-            const myEventCb = jest.fn();
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const myEventCb = vi.fn((_arg: number) => {});
 
             emitter.on('myEvent', () => myEventCb(1));
             emitter.prependOnceListener('myEvent', () => myEventCb(2));
@@ -119,7 +124,7 @@ describe('EventEmitter', () => {
 
     describe('off()', () => {
         it('should not execute the listener if it was turned off', async () => {
-            const myEventCb = jest.fn();
+            const myEventCb = vi.fn(() => {});
             const emitter = EventEmitter.getInstance<MyEvents>();
 
             emitter.on('myEvent', myEventCb);
@@ -131,9 +136,9 @@ describe('EventEmitter', () => {
         });
 
         it('should remove all listeners from always and once running listeners', async () => {
-            const myEventCb = jest.fn();
-            const myEventCbOnce = jest.fn();
-            const otherEventCb = jest.fn();
+            const myEventCb = vi.fn(() => {});
+            const myEventCbOnce = vi.fn(() => {});
+            const otherEventCb = vi.fn(() => {});
             const emitter = EventEmitter.getInstance<MyEvents>();
 
             emitter.on('myEvent', myEventCb);
@@ -153,9 +158,9 @@ describe('EventEmitter', () => {
         });
 
         it('should remove the specified event listeners only from always and once running listeners', async () => {
-            const myEventCb = jest.fn();
-            const myEventCbOnce = jest.fn();
-            const otherEventCb = jest.fn();
+            const myEventCb = vi.fn(() => {});
+            const myEventCbOnce = vi.fn(() => {});
+            const otherEventCb = vi.fn(() => {});
             const emitter = EventEmitter.getInstance<MyEvents>();
 
             emitter.on('myEvent', myEventCb);
@@ -176,8 +181,8 @@ describe('EventEmitter', () => {
 
         it('should remove the callback matching the signature of the given callback' +
             'from always and once running listeners', async () => {
-            const myEventCb = jest.fn();
-            const secondMock = jest.fn();
+            const myEventCb = vi.fn(() => {});
+            const secondMock = vi.fn(() => {});
             const otherMyEventCb = () => secondMock();
             const emitter = EventEmitter.getInstance<MyEvents>();
 
@@ -194,8 +199,8 @@ describe('EventEmitter', () => {
 
         it('should remove always and once running listeners that match the given listener if no event name given',
             async () => {
-                const myEventCb = jest.fn();
-                const secondMock = jest.fn();
+                const myEventCb = vi.fn(() => {});
+                const secondMock = vi.fn(() => {});
                 const otherMyEventCb = () => secondMock();
                 const emitter = EventEmitter.getInstance<MyEvents>();
 
@@ -218,7 +223,7 @@ describe('EventEmitter', () => {
 
         it('should trigger listeners', async () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
-            const myEventCb = jest.fn();
+            const myEventCb = vi.fn(() => {});
 
             emitter.on('myEvent', myEventCb);
             await emitter.emit('myEvent');
@@ -228,7 +233,7 @@ describe('EventEmitter', () => {
 
         it('should trigger listeners that runs once then remove them', async () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
-            const myEventCb = jest.fn();
+            const myEventCb = vi.fn(() => {});
 
             emitter.once('myEvent', myEventCb);
             await emitter.emit('myEvent');
@@ -239,8 +244,8 @@ describe('EventEmitter', () => {
 
         it('should pass on any argument given to the listeners', async () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
-            const myEventCb = jest.fn();
-            const myOtherEventCB = jest.fn();
+            const myEventCb = vi.fn(() => {});
+            const myOtherEventCB = vi.fn(() => {});
 
             emitter.on('myEvent', myEventCb);
             emitter.on('myOtherEvent', myOtherEventCB);
@@ -253,7 +258,7 @@ describe('EventEmitter', () => {
 
         it('should handle promises', async () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
-            const myEventCb = jest.fn(async () => {
+            const myEventCb = vi.fn(async () => {
                 await Promise.resolve(1);
             });
 
@@ -265,7 +270,8 @@ describe('EventEmitter', () => {
 
         it('should first run once listeners', async () => {
             const emitter = EventEmitter.getInstance<MyEvents>();
-            const myEventCb = jest.fn();
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const myEventCb = vi.fn((_arg: number) => {});
 
             emitter.on('myEvent', () => myEventCb(1));
             emitter.once('myEvent', () => myEventCb(2));
@@ -274,6 +280,12 @@ describe('EventEmitter', () => {
             expect(myEventCb).toHaveBeenCalledTimes(2);
             expect(myEventCb).toHaveBeenNthCalledWith(1, 2);
             expect(myEventCb).toHaveBeenNthCalledWith(2, 1);
+        });
+
+        it('should not fail if emitting event that has no listeners', async () => {
+            const emitter = EventEmitter.getInstance<MyEvents>();
+
+            await expect(emitter.emit('eventWithNoListeners')).resolves.not.toThrow();
         });
     });
 

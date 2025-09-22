@@ -7,6 +7,6 @@ import { validate } from 'uuid';
  *
  * @return {string}
  */
-export default function isUuid(str: unknown): boolean {
+export default function isUuid(str: unknown): str is string {
     return typeof str === 'string' && validate(str);
 }

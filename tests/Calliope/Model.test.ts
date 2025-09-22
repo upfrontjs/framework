@@ -7,6 +7,7 @@ import LogicException from '../../src/Exceptions/LogicException';
 import { finish, snake } from '../../src/Support/string';
 import Team from '../mock/Models/Team';
 import { config } from '../setupTests';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 let user: User;
 
@@ -91,14 +92,14 @@ describe('Model', () => {
         });
 
         it('should resolve if first argument is closure', () => {
-            const fn = jest.fn(() => true);
+            const fn = vi.fn(() => true);
 
             expect(user.when(fn, u => u.setAttribute('test', 1)).getAttribute('test')).toBe(1);
             expect(fn).toHaveBeenCalledTimes(1);
         });
 
         it('should pass a clone to the first argument if it\' a function', () => {
-            const fn = jest.fn((u: User) => {
+            const fn = vi.fn((u: User) => {
                 u.setAttribute('test', 2);
 
                 return user.is(u);
@@ -120,14 +121,14 @@ describe('Model', () => {
         });
 
         it('should resolve if first argument is closure', () => {
-            const fn = jest.fn(() => false);
+            const fn = vi.fn(() => false);
 
             expect(user.unless(fn, u => u.setAttribute('test', 1)).getAttribute('test')).toBe(1);
             expect(fn).toHaveBeenCalledTimes(1);
         });
 
         it('should pass a clone to the first argument if it\' a function', () => {
-            const fn = jest.fn((u: User) => {
+            const fn = vi.fn((u: User) => {
                 u.setAttribute('test', 2);
 
                 return user.isNot(u);
@@ -139,7 +140,7 @@ describe('Model', () => {
 
     describe('tap()', () => {
         it('should pass the model into the given function', () => {
-            const cb = jest.fn((model: User) => {
+            const cb = vi.fn((model: User) => {
                 model.setAttribute('test', 1);
                 return model.is(user);
             });
@@ -364,7 +365,7 @@ describe('Model', () => {
     describe('refresh()', () => {
         it('should throw an error if the model doesn\'t exists', async () => {
             user.deleteAttribute(user.getKeyName());
-            const failingFunc = jest.fn(async () => user.refresh());
+            const failingFunc = vi.fn(async () => user.refresh());
 
             await expect(failingFunc).rejects.toThrow(new LogicException(
                 'Attempted to call refresh on \'' + user.getName()
@@ -411,7 +412,7 @@ describe('Model', () => {
             fetchMock.mockResponseOnce(user);
             const lastSyncedAt = user._lastSyncedAt;
 
-            jest.advanceTimersByTime(100);
+            vi.advanceTimersByTime(100);
             await user.refresh();
 
             expect(user._lastSyncedAt).not.toBe(lastSyncedAt);
@@ -518,7 +519,7 @@ describe('Model', () => {
             const lastSyncedAt = user._lastSyncedAt;
             user.name = 'new name';
 
-            jest.advanceTimersByTime(100);
+            vi.advanceTimersByTime(100);
             await user.save();
 
             expect(user._lastSyncedAt).not.toBe(lastSyncedAt);

@@ -1,10 +1,9 @@
 import * as str from '../../src/Support/string';
-// eslint-disable-next-line @typescript-eslint/no-import-type-side-effects
 import '../../src/string';
+import { describe, expect, it } from 'vitest';
 // The String/String.prototype methods are the same as the helper methods so can be tested at the same time
 
-const sentence = 'The quick brown fox jumps over the lazy dog.' as const;
-
+const sentence = 'The quick brown fox jumps over the lazy dog.';
 describe('string helpers', () => {
     describe('ucFirst()', () => {
         it('should capitalise the first letter', () => {

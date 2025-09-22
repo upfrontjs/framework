@@ -3,6 +3,7 @@ import fetchMock from '../mock/fetch-mock';
 import User from '../mock/Models/User';
 import type { ApiResponse } from '../../src/Contracts/HandlesApiResponse';
 import { API } from '../../src';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const handler = new ApiResponseHandler();
 
@@ -20,7 +21,7 @@ describe('ApiResponseHandler', () => {
     });
 
     it('should call the handleFinally method', async () => {
-        const mockFn = jest.fn();
+        const mockFn = vi.fn();
         handler.handleFinally = () => mockFn();
         fetchMock.mockResponseOnce(User.factory().raw());
         await handler.handle(fetch('url'));
@@ -47,6 +48,7 @@ describe('ApiResponseHandler', () => {
                 status: 404,
                 statusText: 'Not Found'
             });
+
             const resp = await handler.handle<ApiResponse>(fetch('url')).catch(r => r);
             expect(resp.status).toBe(404);
             expect(resp.statusText).toBe('Not Found');
@@ -63,6 +65,7 @@ describe('ApiResponseHandler', () => {
                 status: 503,
                 statusText: 'Service Unavailable'
             });
+
             const resp = await handler.handle<ApiResponse>(fetch('url')).catch(r => r);
             expect(resp.status).toBe(503);
             expect(resp.statusText).toBe('Service Unavailable');
@@ -70,26 +73,25 @@ describe('ApiResponseHandler', () => {
 
         it('should throw JSON error if returned data cannot be parsed', async () => {
             fetchMock.mockResponseOnce('{"key":"value"');
+
             await expect(handler.handle(fetch('url')))
                 .rejects
                 .toThrowErrorMatchingInlineSnapshot(
-                    // eslint-disable-next-line jest/no-conditional-in-test
-                    parseInt(process.versions.node) >= 19
-                        ? '"invalid json response body at  reason: ' +
-                       'Expected \',\' or \'}\' after property value in JSON at position 14"'
-                        : '"invalid json response body at  reason: Unexpected end of JSON input"'
+                    '[SyntaxError: Expected \',\' or \'}\' after property value in JSON at position 14 ' +
+                    '(line 1 column 15)]'
                 );
         });
     });
 
     it.each([
         [204, 'has no content'],
-        [101, 'is an informational response'],
+        // waiting for https://github.com/nodejs/undici/issues/197
+        // [100, 'is an informational response'],
         [302, 'as a redirect response']
     ])('should return undefined if the response (%s) %s', async (status) => {
         fetchMock.mockResponseOnce(undefined, { status });
 
-        await expect(handler.handle(fetch('url')).catch(r => r)).resolves.toBeUndefined();
+        await expect(handler.handle(fetch('url')).catch((r: unknown) => r)).resolves.toBeUndefined();
     });
 
     it('should return undefined if it\'s a successful response but has no json parsing available', async () => {
@@ -112,3 +114,4 @@ describe('ApiResponseHandler', () => {
             expect(apiResponse.headers.get('Content-Length')).toBe('12345');
         });
 });
+

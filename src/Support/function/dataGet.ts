@@ -14,7 +14,6 @@ import type Collection from '../Collection';
  * const result2 = dataGet([{key:{prop:1}}], '*.key.prop') // [1];
  */
 export default function dataGet<T>(
-    // eslint-disable-next-line @typescript-eslint/default-param-last
     data: Collection<Data> | MaybeArray<Data> | undefined = undefined,
     path: Collection<string> | MaybeArray<string>,
     defaultValue?: T

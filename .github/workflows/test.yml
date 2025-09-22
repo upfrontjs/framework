@@ -7,7 +7,6 @@ on:
       - '**/tsconfig.json'
       - 'tests/**/*.ts'
       - 'src/**/*.ts'
-      - 'jest.config.ts'
       - 'package-lock.json'
     branches:
       - main
@@ -21,37 +20,54 @@ jobs:
       group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
       cancel-in-progress: true
     steps:
-      # subsequent calls to this action will use already downloaded code from the workspace
-      - uses: actions/checkout@v3
-  jest-browser:
+      - uses: actions/checkout@v5
+  test-browser:
     needs: setup-test
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
+          node-version: 'lts/*'
           cache: 'npm'
-          node-version: 'latest'
       - name: Install dependencies
-        run: npm ci --ignore-scripts
+        run: npm ci
       - name: Run tests on jsdom
-        run: npx jest --selectProjects=jsdom
-  jest-node:
+        run: npm run test -- --environment=jsdom
+  test-node:
     needs: setup-test
     timeout-minutes: 10
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # current and active LTS
-        node: [ 18, 20 ]
+        node: ['lts/*', 'current']
+      fail-fast: false
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          cache: 'npm'
           node-version: ${{ matrix.node }}
+          cache: 'npm'
       - name: Install dependencies
-        run: npm ci --ignore-scripts
-      - name: Run tests on node v${{ matrix.node }}
-        run: npx jest --selectProjects=node
+        run: npm ci
+      - name: Run tests on node ${{ matrix.node }}
+        run: npm run test
+  test-edge:
+    needs: setup-test
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['lts/*', 'current']
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests on node ${{ matrix.node }}
+        run: npm run test -- --environment edge-runtime

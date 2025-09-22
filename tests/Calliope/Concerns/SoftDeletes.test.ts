@@ -3,6 +3,7 @@ import fetchMock, { getLastRequest } from '../../mock/fetch-mock';
 import { finish, snake } from '../../../src';
 import LogicException from '../../../src/Exceptions/LogicException';
 import { now } from '../../setupTests';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 let softDeletes: User;
 

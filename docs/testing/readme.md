@@ -17,7 +17,7 @@ import User from '@/Models'
 const config = new GlobalConfig;
 
 describe('customAjaxMethod()', () => {
-    const mockFunc = jest.fn();
+    const mockFunc = vi.fn();
     const user = new User;
     config.set('api', {
         handle: mockFunc
@@ -43,7 +43,7 @@ import User from '@/Models/User'
 const config: GlobalConfig<MyConfig extends Configuration> = new GlobalConfig;
 
 describe('customAjaxMethod()', () => {
-    const mockFunc = jest.fn();
+    const mockFunc = vi.fn();
     const user = new User;
     config.set('api', {
         handle: mockFunc
